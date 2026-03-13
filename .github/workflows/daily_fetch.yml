@@ -1,0 +1,36 @@
+name: 每日台股數據更新
+
+on:
+  schedule:
+    # 台灣時間 14:40（UTC+8），換算 UTC 06:40
+    - cron: "40 6 * * 1-5"   # 週一到週五自動執行
+  workflow_dispatch:           # 也可以手動觸發
+
+jobs:
+  fetch-stocks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests google-generativeai
+
+      - name: Run fetch script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python fetch_stocks.py
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/stocks.json
+          git diff --staged --quiet || git commit -m "每日更新：$(date +'%Y-%m-%d %H:%M') 台股數據"
+          git push
