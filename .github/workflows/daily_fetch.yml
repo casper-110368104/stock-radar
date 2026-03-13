@@ -25,6 +25,7 @@ jobs:
       - name: Run fetch script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
         run: python fetch_stocks.py
 
       - name: Commit and push updated data
