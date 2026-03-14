@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-14 16:33",
+  "updated_at": "2026-03-14 17:18",
   "total": 172,
   "futures_oi": {
     "date": "2026-03-13",
@@ -226,8 +226,10 @@
       "category": "mid_small",
       "industry": "Electronic Components",
       "themes": [
-        "銅箔基板",
-        "CoWoS先進封裝"
+        "CoWoS先進封裝",
+        "AI伺服器",
+        "記憶體",
+        "銅箔基板"
       ],
       "warnings": [],
       "price": 137.5,
@@ -244,9 +246,10 @@
         "volume": 100,
         "revenue": 0,
         "rs": 0,
-        "topic": 30
+        "topic": 100
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -363,7 +366,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "聯茂：AI伺服器需求強勁，CCL出貨動能可期",
+            "source": "經濟日報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123370/7887890"
+          },
+          {
+            "title": "聯茂上半年營收成長，受惠於高階伺服器與HPC應用",
+            "source": "工商時報",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/industry/1024567.html"
+          },
+          {
+            "title": "聯茂：CCL產業競爭激烈，需持續技術創新",
+            "source": "財訊",
+            "tag": "其他",
+            "sentiment": "neutral",
+            "url": "https://www.wealth.com.tw/articles/12345"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -442,10 +467,8 @@
       "category": "large",
       "industry": "Computer Hardware",
       "themes": [
-        "工業電腦",
-        "車用電子",
-        "AI伺服器",
-        "AI應用"
+        "AI應用",
+        "工業電腦"
       ],
       "warnings": [],
       "price": 342.5,
@@ -462,10 +485,9 @@
         "volume": 100,
         "revenue": 0,
         "rs": 0,
-        "topic": 100
+        "topic": 30
       },
       "icons": [
-        "📰",
         "💰",
         "📊",
         "🏦"
@@ -582,29 +604,7 @@
         ]
       },
       "topic": {
-        "news": [
-          {
-            "title": "研華智慧製造解決方案 助攻企業數位轉型",
-            "source": "經濟日報",
-            "tag": "工業電腦",
-            "sentiment": "bullish",
-            "url": "https://money.udn.com/money/story/123368/79871234"
-          },
-          {
-            "title": "研華與NVIDIA合作 拓展AI邊緣運算應用",
-            "source": "工商時報",
-            "tag": "AI伺服器",
-            "sentiment": "bullish",
-            "url": "https://ctee.com.tw/industrynews/tech/123456789"
-          },
-          {
-            "title": "研華公布最新財報 營收穩健成長",
-            "source": "公開資訊觀測站",
-            "tag": "財報",
-            "sentiment": "neutral",
-            "url": "https://mops.twse.com.tw/mops/web/t146sb05"
-          }
-        ]
+        "news": []
       },
       "fundamental": [
         {
@@ -3456,7 +3456,10 @@
       "name": "日勝化",
       "category": "mid_small",
       "industry": "Chemicals",
-      "themes": [],
+      "themes": [
+        "生技新藥",
+        "醫材"
+      ],
       "warnings": [],
       "price": 23.75,
       "change": 2.15,
@@ -3472,9 +3475,10 @@
         "volume": 100,
         "revenue": 0,
         "rs": 0,
-        "topic": 30
+        "topic": 0
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -3591,7 +3595,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "日勝化今年前三季每股虧損0.39元 去年同期虧損0.36元",
+            "source": "鉅亨網",
+            "tag": "財報",
+            "sentiment": "bearish",
+            "url": "https://news.cnyes.com/news/id/5379982"
+          },
+          {
+            "title": "日勝化(1735) 2023年11月營收2.06億、年增-1.37%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://news.cnyes.com/news/id/5374157"
+          },
+          {
+            "title": "日勝化(1735) 2023年10月營收2.09億、年增-1.35%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://news.cnyes.com/news/id/5369830"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -4253,7 +4279,11 @@
       "name": "台達電",
       "category": "large",
       "industry": "Electronic Components",
-      "themes": [],
+      "themes": [
+        "電源供應器",
+        "散熱",
+        "自動化"
+      ],
       "warnings": [],
       "price": 1385.0,
       "change": 15.0,
@@ -4866,7 +4896,9 @@
       "name": "智邦",
       "category": "mid_small",
       "industry": "Communication Equipment",
-      "themes": [],
+      "themes": [
+        "網通"
+      ],
       "warnings": [],
       "price": 1420.0,
       "change": -85.0,
@@ -5633,217 +5665,6 @@
       ]
     },
     {
-      "code": "2357",
-      "name": "華碩",
-      "category": "large",
-      "industry": "Computer Hardware",
-      "themes": [],
-      "warnings": [],
-      "price": 589.0,
-      "change": 8.0,
-      "change_pct": 1.38,
-      "volume": 7568027,
-      "vol_day_ratio": 1.53,
-      "vol_month_ratio": 1.01,
-      "week52_high": 745.0,
-      "week52_low": 441.0,
-      "scores": {
-        "chips": 0,
-        "fundamental": 90,
-        "volume": 30,
-        "revenue": 0,
-        "rs": 0,
-        "topic": 30
-      },
-      "icons": [
-        "💰"
-      ],
-      "fair_price": {
-        "conservative": 605.7,
-        "fair": 792.0,
-        "optimistic": 1025.0,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 521.8,
-            "fair": 610.3,
-            "optimistic": 675.6
-          },
-          {
-            "label": "PEG法",
-            "conservative": 1048.3,
-            "fair": 1397.7,
-            "optimistic": 1747.1
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 605.7,
-            "fair": 792.0,
-            "optimistic": 1025.0
-          }
-        ]
-      },
-      "eps_ttm": 46.59,
-      "pe_mid": 13.1,
-      "chips_raw": {
-        "foreign": -132,
-        "trust": 0,
-        "dealer": -4,
-        "foreign_con": -2,
-        "trust_con": 7,
-        "dealer_con": -3,
-        "foreign_con_sum": -217,
-        "trust_con_sum": 68,
-        "dealer_con_sum": -37,
-        "foreign_sum30": -15,
-        "trust_sum30": 96,
-        "dealer_sum30": -4,
-        "daily": [
-          {
-            "date": "2026-03-13",
-            "foreign": -132,
-            "trust": 0,
-            "dealer": -4,
-            "total": -136
-          },
-          {
-            "date": "2026-03-12",
-            "foreign": -85,
-            "trust": 13,
-            "dealer": -12,
-            "total": -84
-          },
-          {
-            "date": "2026-03-11",
-            "foreign": 231,
-            "trust": 6,
-            "dealer": -21,
-            "total": 216
-          },
-          {
-            "date": "2026-03-10",
-            "foreign": 32,
-            "trust": 1,
-            "dealer": 5,
-            "total": 38
-          },
-          {
-            "date": "2026-03-09",
-            "foreign": 6,
-            "trust": 27,
-            "dealer": 15,
-            "total": 48
-          }
-        ]
-      },
-      "holding": null,
-      "lending": {
-        "volume": 446,
-        "balance": 48272,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-09",
-            "volume": 419,
-            "balance": 47686
-          },
-          {
-            "date": "2026-03-10",
-            "volume": 626,
-            "balance": 47761
-          },
-          {
-            "date": "2026-03-11",
-            "volume": 271,
-            "balance": 47640
-          },
-          {
-            "date": "2026-03-12",
-            "volume": 428,
-            "balance": 48053
-          },
-          {
-            "date": "2026-03-13",
-            "volume": 446,
-            "balance": 48272
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "590.5%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "16.2%",
-          "pass": true
-        },
-        {
-          "label": "負債比",
-          "value": "9.6%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -132,
-          "consecutive": -2,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 0,
-          "consecutive": 7,
-          "pass": false
-        },
-        {
-          "label": "自營商",
-          "net": -4,
-          "consecutive": -3,
-          "pass": false
-        }
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-09",
-          "volume": 419,
-          "balance": 47686
-        },
-        {
-          "date": "2026-03-10",
-          "volume": 626,
-          "balance": 47761
-        },
-        {
-          "date": "2026-03-11",
-          "volume": 271,
-          "balance": 47640
-        },
-        {
-          "date": "2026-03-12",
-          "volume": 428,
-          "balance": 48053
-        },
-        {
-          "date": "2026-03-13",
-          "volume": 446,
-          "balance": 48272
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-14",
-          "score": 34
-        }
-      ]
-    },
-    {
       "code": "4938",
       "name": "和碩",
       "category": "large",
@@ -6046,6 +5867,217 @@
           "date": "2026-03-13",
           "volume": 402,
           "balance": 27587
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-14",
+          "score": 34
+        }
+      ]
+    },
+    {
+      "code": "2357",
+      "name": "華碩",
+      "category": "large",
+      "industry": "Computer Hardware",
+      "themes": [],
+      "warnings": [],
+      "price": 589.0,
+      "change": 8.0,
+      "change_pct": 1.38,
+      "volume": 7568027,
+      "vol_day_ratio": 1.53,
+      "vol_month_ratio": 1.01,
+      "week52_high": 745.0,
+      "week52_low": 441.0,
+      "scores": {
+        "chips": 0,
+        "fundamental": 90,
+        "volume": 30,
+        "revenue": 0,
+        "rs": 0,
+        "topic": 30
+      },
+      "icons": [
+        "💰"
+      ],
+      "fair_price": {
+        "conservative": 605.7,
+        "fair": 792.0,
+        "optimistic": 1025.0,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 521.8,
+            "fair": 610.3,
+            "optimistic": 675.6
+          },
+          {
+            "label": "PEG法",
+            "conservative": 1048.3,
+            "fair": 1397.7,
+            "optimistic": 1747.1
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 605.7,
+            "fair": 792.0,
+            "optimistic": 1025.0
+          }
+        ]
+      },
+      "eps_ttm": 46.59,
+      "pe_mid": 13.1,
+      "chips_raw": {
+        "foreign": -132,
+        "trust": 0,
+        "dealer": -4,
+        "foreign_con": -2,
+        "trust_con": 7,
+        "dealer_con": -3,
+        "foreign_con_sum": -217,
+        "trust_con_sum": 68,
+        "dealer_con_sum": -37,
+        "foreign_sum30": -15,
+        "trust_sum30": 96,
+        "dealer_sum30": -4,
+        "daily": [
+          {
+            "date": "2026-03-13",
+            "foreign": -132,
+            "trust": 0,
+            "dealer": -4,
+            "total": -136
+          },
+          {
+            "date": "2026-03-12",
+            "foreign": -85,
+            "trust": 13,
+            "dealer": -12,
+            "total": -84
+          },
+          {
+            "date": "2026-03-11",
+            "foreign": 231,
+            "trust": 6,
+            "dealer": -21,
+            "total": 216
+          },
+          {
+            "date": "2026-03-10",
+            "foreign": 32,
+            "trust": 1,
+            "dealer": 5,
+            "total": 38
+          },
+          {
+            "date": "2026-03-09",
+            "foreign": 6,
+            "trust": 27,
+            "dealer": 15,
+            "total": 48
+          }
+        ]
+      },
+      "holding": null,
+      "lending": {
+        "volume": 446,
+        "balance": 48272,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-09",
+            "volume": 419,
+            "balance": 47686
+          },
+          {
+            "date": "2026-03-10",
+            "volume": 626,
+            "balance": 47761
+          },
+          {
+            "date": "2026-03-11",
+            "volume": 271,
+            "balance": 47640
+          },
+          {
+            "date": "2026-03-12",
+            "volume": 428,
+            "balance": 48053
+          },
+          {
+            "date": "2026-03-13",
+            "volume": 446,
+            "balance": 48272
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "590.5%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "16.2%",
+          "pass": true
+        },
+        {
+          "label": "負債比",
+          "value": "9.6%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -132,
+          "consecutive": -2,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 0,
+          "consecutive": 7,
+          "pass": false
+        },
+        {
+          "label": "自營商",
+          "net": -4,
+          "consecutive": -3,
+          "pass": false
+        }
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-09",
+          "volume": 419,
+          "balance": 47686
+        },
+        {
+          "date": "2026-03-10",
+          "volume": 626,
+          "balance": 47761
+        },
+        {
+          "date": "2026-03-11",
+          "volume": 271,
+          "balance": 47640
+        },
+        {
+          "date": "2026-03-12",
+          "volume": 428,
+          "balance": 48053
+        },
+        {
+          "date": "2026-03-13",
+          "volume": 446,
+          "balance": 48272
         }
       ],
       "score_history": [
@@ -7553,223 +7585,13 @@
       ]
     },
     {
-      "code": "6669",
-      "name": "緯穎",
-      "category": "large",
-      "industry": "Computer Hardware",
-      "themes": [],
-      "warnings": [],
-      "price": 4070.0,
-      "change": -15.0,
-      "change_pct": -0.37,
-      "volume": 1201483,
-      "vol_day_ratio": 0.69,
-      "vol_month_ratio": 1.08,
-      "week52_high": 4850.0,
-      "week52_low": 1465.0,
-      "scores": {
-        "chips": 0,
-        "fundamental": 83,
-        "volume": 30,
-        "revenue": 0,
-        "rs": 0,
-        "topic": 30
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 3449.7,
-        "fair": 4511.1,
-        "optimistic": 5837.9,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 2069.8,
-            "fair": 3131.2,
-            "optimistic": 4245.8
-          },
-          {
-            "label": "PEG法",
-            "conservative": 5970.6,
-            "fair": 7960.8,
-            "optimistic": 9951.0
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 3449.7,
-            "fair": 4511.1,
-            "optimistic": 5837.9
-          }
-        ]
-      },
-      "eps_ttm": 265.36,
-      "pe_mid": 11.8,
-      "chips_raw": {
-        "foreign": 10,
-        "trust": -27,
-        "dealer": -1,
-        "foreign_con": 3,
-        "trust_con": -2,
-        "dealer_con": -2,
-        "foreign_con_sum": 63,
-        "trust_con_sum": -70,
-        "dealer_con_sum": -3,
-        "foreign_sum30": 21,
-        "trust_sum30": -73,
-        "dealer_sum30": -1,
-        "daily": [
-          {
-            "date": "2026-03-13",
-            "foreign": 10,
-            "trust": -27,
-            "dealer": -1,
-            "total": -18
-          },
-          {
-            "date": "2026-03-12",
-            "foreign": 15,
-            "trust": -43,
-            "dealer": -2,
-            "total": -30
-          },
-          {
-            "date": "2026-03-11",
-            "foreign": 38,
-            "trust": 0,
-            "dealer": 5,
-            "total": 43
-          },
-          {
-            "date": "2026-03-10",
-            "foreign": -17,
-            "trust": -9,
-            "dealer": 1,
-            "total": -25
-          },
-          {
-            "date": "2026-03-09",
-            "foreign": -27,
-            "trust": 1,
-            "dealer": -8,
-            "total": -34
-          }
-        ]
-      },
-      "holding": null,
-      "lending": {
-        "volume": 10,
-        "balance": 7415,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-09",
-            "volume": 81,
-            "balance": 7441
-          },
-          {
-            "date": "2026-03-10",
-            "volume": 55,
-            "balance": 7416
-          },
-          {
-            "date": "2026-03-11",
-            "volume": 13,
-            "balance": 7396
-          },
-          {
-            "date": "2026-03-12",
-            "volume": 26,
-            "balance": 7422
-          },
-          {
-            "date": "2026-03-13",
-            "volume": 10,
-            "balance": 7415
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "89.0%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "48.0%",
-          "pass": true
-        },
-        {
-          "label": "負債比",
-          "value": "45.5%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": 10,
-          "consecutive": 3,
-          "pass": true
-        },
-        {
-          "label": "投信",
-          "net": -27,
-          "consecutive": -2,
-          "pass": false
-        },
-        {
-          "label": "自營商",
-          "net": -1,
-          "consecutive": -2,
-          "pass": false
-        }
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-09",
-          "volume": 81,
-          "balance": 7441
-        },
-        {
-          "date": "2026-03-10",
-          "volume": 55,
-          "balance": 7416
-        },
-        {
-          "date": "2026-03-11",
-          "volume": 13,
-          "balance": 7396
-        },
-        {
-          "date": "2026-03-12",
-          "volume": 26,
-          "balance": 7422
-        },
-        {
-          "date": "2026-03-13",
-          "volume": 10,
-          "balance": 7415
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-14",
-          "score": 32
-        }
-      ]
-    },
-    {
       "code": "2382",
       "name": "廣達",
       "category": "large",
       "industry": "Computer Hardware",
-      "themes": [],
+      "themes": [
+        "AI伺服器"
+      ],
       "warnings": [],
       "price": 289.0,
       "change": 0.5,
@@ -7977,11 +7799,227 @@
       ]
     },
     {
+      "code": "6669",
+      "name": "緯穎",
+      "category": "large",
+      "industry": "Computer Hardware",
+      "themes": [
+        "AI伺服器"
+      ],
+      "warnings": [],
+      "price": 4070.0,
+      "change": -15.0,
+      "change_pct": -0.37,
+      "volume": 1201483,
+      "vol_day_ratio": 0.69,
+      "vol_month_ratio": 1.08,
+      "week52_high": 4850.0,
+      "week52_low": 1465.0,
+      "scores": {
+        "chips": 0,
+        "fundamental": 83,
+        "volume": 30,
+        "revenue": 0,
+        "rs": 0,
+        "topic": 30
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 3449.7,
+        "fair": 4511.1,
+        "optimistic": 5837.9,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 2069.8,
+            "fair": 3131.2,
+            "optimistic": 4245.8
+          },
+          {
+            "label": "PEG法",
+            "conservative": 5970.6,
+            "fair": 7960.8,
+            "optimistic": 9951.0
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 3449.7,
+            "fair": 4511.1,
+            "optimistic": 5837.9
+          }
+        ]
+      },
+      "eps_ttm": 265.36,
+      "pe_mid": 11.8,
+      "chips_raw": {
+        "foreign": 10,
+        "trust": -27,
+        "dealer": -1,
+        "foreign_con": 3,
+        "trust_con": -2,
+        "dealer_con": -2,
+        "foreign_con_sum": 63,
+        "trust_con_sum": -70,
+        "dealer_con_sum": -3,
+        "foreign_sum30": 21,
+        "trust_sum30": -73,
+        "dealer_sum30": -1,
+        "daily": [
+          {
+            "date": "2026-03-13",
+            "foreign": 10,
+            "trust": -27,
+            "dealer": -1,
+            "total": -18
+          },
+          {
+            "date": "2026-03-12",
+            "foreign": 15,
+            "trust": -43,
+            "dealer": -2,
+            "total": -30
+          },
+          {
+            "date": "2026-03-11",
+            "foreign": 38,
+            "trust": 0,
+            "dealer": 5,
+            "total": 43
+          },
+          {
+            "date": "2026-03-10",
+            "foreign": -17,
+            "trust": -9,
+            "dealer": 1,
+            "total": -25
+          },
+          {
+            "date": "2026-03-09",
+            "foreign": -27,
+            "trust": 1,
+            "dealer": -8,
+            "total": -34
+          }
+        ]
+      },
+      "holding": null,
+      "lending": {
+        "volume": 10,
+        "balance": 7415,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-09",
+            "volume": 81,
+            "balance": 7441
+          },
+          {
+            "date": "2026-03-10",
+            "volume": 55,
+            "balance": 7416
+          },
+          {
+            "date": "2026-03-11",
+            "volume": 13,
+            "balance": 7396
+          },
+          {
+            "date": "2026-03-12",
+            "volume": 26,
+            "balance": 7422
+          },
+          {
+            "date": "2026-03-13",
+            "volume": 10,
+            "balance": 7415
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "89.0%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "48.0%",
+          "pass": true
+        },
+        {
+          "label": "負債比",
+          "value": "45.5%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": 10,
+          "consecutive": 3,
+          "pass": true
+        },
+        {
+          "label": "投信",
+          "net": -27,
+          "consecutive": -2,
+          "pass": false
+        },
+        {
+          "label": "自營商",
+          "net": -1,
+          "consecutive": -2,
+          "pass": false
+        }
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-09",
+          "volume": 81,
+          "balance": 7441
+        },
+        {
+          "date": "2026-03-10",
+          "volume": 55,
+          "balance": 7416
+        },
+        {
+          "date": "2026-03-11",
+          "volume": 13,
+          "balance": 7396
+        },
+        {
+          "date": "2026-03-12",
+          "volume": 26,
+          "balance": 7422
+        },
+        {
+          "date": "2026-03-13",
+          "volume": 10,
+          "balance": 7415
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-14",
+          "score": 32
+        }
+      ]
+    },
+    {
       "code": "3481",
       "name": "群創",
       "category": "mid_small",
       "industry": "Electronic Components",
-      "themes": [],
+      "themes": [
+        "玻璃基板"
+      ],
       "warnings": [],
       "price": 29.7,
       "change": -3.25,
@@ -11102,7 +11140,9 @@
       "name": "金像電",
       "category": "mid_small",
       "industry": "Electronic Components",
-      "themes": [],
+      "themes": [
+        "PCB"
+      ],
       "warnings": [],
       "price": 935.0,
       "change": 24.0,
@@ -12105,7 +12145,9 @@
       "name": "日月光投控",
       "category": "large",
       "industry": "Semiconductors",
-      "themes": [],
+      "themes": [
+        "封測"
+      ],
       "warnings": [],
       "price": 341.5,
       "change": 6.5,
@@ -13662,7 +13704,10 @@
       "name": "景碩",
       "category": "mid_small",
       "industry": "Semiconductor Equipment & Materials",
-      "themes": [],
+      "themes": [
+        "載板",
+        "CoWoS先進封裝"
+      ],
       "warnings": [],
       "price": 317.5,
       "change": 28.5,
@@ -14079,7 +14124,10 @@
       "name": "欣興",
       "category": "mid_small",
       "industry": "Electronic Components",
-      "themes": [],
+      "themes": [
+        "載板",
+        "CoWoS先進封裝"
+      ],
       "warnings": [],
       "price": 508.0,
       "change": 28.0,
@@ -14493,20 +14541,26 @@
       ]
     },
     {
-      "code": "2317",
-      "name": "鴻海",
+      "code": "2891",
+      "name": "中信金",
       "category": "large",
-      "industry": "Electronic Components",
+      "industry": "Banks - Regional",
       "themes": [],
-      "warnings": [],
-      "price": 214.5,
+      "warnings": [
+        {
+          "type": "chips_sell",
+          "level": "high",
+          "msg": "外資連賣超8日"
+        }
+      ],
+      "price": 51.3,
       "change": 0.0,
       "change_pct": 0.0,
-      "volume": 36645721,
-      "vol_day_ratio": 0.54,
-      "vol_month_ratio": 1.23,
-      "week52_high": 265.0,
-      "week52_low": 112.5,
+      "volume": 38360639,
+      "vol_day_ratio": 0.84,
+      "vol_month_ratio": 1.26,
+      "week52_high": 56.4,
+      "week52_low": 33.65,
       "scores": {
         "chips": 0,
         "fundamental": 50,
@@ -14516,116 +14570,117 @@
         "topic": 30
       },
       "icons": [
-        "💰"
+        "💰",
+        "🏦"
       ],
       "fair_price": {
-        "conservative": 160.2,
-        "fair": 213.5,
-        "optimistic": 266.9,
+        "conservative": 43.5,
+        "fair": 58.0,
+        "optimistic": 72.5,
         "methods": [
           {
             "label": "歷史PE法",
-            "conservative": 149.1,
-            "fair": 208.2,
-            "optimistic": 231.0
+            "conservative": 38.1,
+            "fair": 42.6,
+            "optimistic": 50.5
           },
           {
             "label": "PEG法",
-            "conservative": 160.2,
-            "fair": 213.5,
-            "optimistic": 266.9
+            "conservative": 43.5,
+            "fair": 58.0,
+            "optimistic": 72.5
           },
           {
             "label": "市場PE法",
-            "conservative": 174.6,
-            "fair": 228.3,
-            "optimistic": 295.5
+            "conservative": 48.6,
+            "fair": 63.6,
+            "optimistic": 82.3
           }
         ]
       },
-      "eps_ttm": 13.43,
-      "pe_mid": 15.5,
+      "eps_ttm": 3.74,
+      "pe_mid": 11.4,
       "chips_raw": {
-        "foreign": -238,
-        "trust": -4,
-        "dealer": -41,
-        "foreign_con": -2,
-        "trust_con": -1,
-        "dealer_con": -2,
-        "foreign_con_sum": -1830,
-        "trust_con_sum": -4,
-        "dealer_con_sum": -156,
-        "foreign_sum30": -8932,
-        "trust_sum30": 548,
-        "dealer_sum30": -158,
+        "foreign": -1082,
+        "trust": 533,
+        "dealer": 33,
+        "foreign_con": -8,
+        "trust_con": 2,
+        "dealer_con": 1,
+        "foreign_con_sum": -14546,
+        "trust_con_sum": 2848,
+        "dealer_con_sum": 33,
+        "foreign_sum30": -14546,
+        "trust_sum30": 6269,
+        "dealer_sum30": 571,
         "daily": [
           {
             "date": "2026-03-13",
-            "foreign": -238,
-            "trust": -4,
-            "dealer": -41,
-            "total": -283
+            "foreign": -1082,
+            "trust": 533,
+            "dealer": 33,
+            "total": -516
           },
           {
             "date": "2026-03-12",
-            "foreign": -1592,
-            "trust": 9,
-            "dealer": -115,
-            "total": -1698
+            "foreign": -3674,
+            "trust": 2315,
+            "dealer": -77,
+            "total": -1436
           },
           {
             "date": "2026-03-11",
-            "foreign": 1833,
-            "trust": 6,
-            "dealer": 226,
-            "total": 2065
+            "foreign": -716,
+            "trust": -20,
+            "dealer": -47,
+            "total": -783
           },
           {
             "date": "2026-03-10",
-            "foreign": -2532,
-            "trust": 48,
-            "dealer": 26,
-            "total": -2458
+            "foreign": -2959,
+            "trust": 1431,
+            "dealer": 17,
+            "total": -1511
           },
           {
             "date": "2026-03-09",
-            "foreign": -3031,
-            "trust": 179,
-            "dealer": -182,
-            "total": -3034
+            "foreign": -647,
+            "trust": 976,
+            "dealer": 362,
+            "total": 691
           }
         ]
       },
       "holding": null,
       "lending": {
-        "volume": 2872,
-        "balance": 64600,
+        "volume": 12186,
+        "balance": 85271,
         "amount": 0,
         "daily": [
           {
             "date": "2026-03-09",
-            "volume": 4480,
-            "balance": 60688
+            "volume": 11405,
+            "balance": 53229
           },
           {
             "date": "2026-03-10",
-            "volume": 2017,
-            "balance": 62705
+            "volume": 10646,
+            "balance": 58051
           },
           {
             "date": "2026-03-11",
-            "volume": 388,
-            "balance": 63067
+            "volume": 8561,
+            "balance": 66162
           },
           {
             "date": "2026-03-12",
-            "volume": 2335,
-            "balance": 61961
+            "volume": 11938,
+            "balance": 73955
           },
           {
             "date": "2026-03-13",
-            "volume": 2872,
-            "balance": 64600
+            "volume": 12186,
+            "balance": 85271
           }
         ]
       },
@@ -14635,65 +14690,65 @@
       "fundamental": [
         {
           "label": "EPS年增率",
-          "value": "15.9%",
+          "value": "15.5%",
           "pass": true
         },
         {
           "label": "ROE",
-          "value": "11.8%",
+          "value": "14.7%",
           "pass": false
         },
         {
           "label": "負債比",
-          "value": "40.3%",
-          "pass": true
+          "value": "52.9%",
+          "pass": false
         }
       ],
       "chips": [
         {
           "label": "外資",
-          "net": -238,
-          "consecutive": -2,
+          "net": -1082,
+          "consecutive": -8,
           "pass": false
         },
         {
           "label": "投信",
-          "net": -4,
-          "consecutive": -1,
-          "pass": false
+          "net": 533,
+          "consecutive": 2,
+          "pass": true
         },
         {
           "label": "自營商",
-          "net": -41,
-          "consecutive": -2,
-          "pass": false
+          "net": 33,
+          "consecutive": 1,
+          "pass": true
         }
       ],
       "lending_history": [
         {
           "date": "2026-03-09",
-          "volume": 4480,
-          "balance": 60688
+          "volume": 11405,
+          "balance": 53229
         },
         {
           "date": "2026-03-10",
-          "volume": 2017,
-          "balance": 62705
+          "volume": 10646,
+          "balance": 58051
         },
         {
           "date": "2026-03-11",
-          "volume": 388,
-          "balance": 63067
+          "volume": 8561,
+          "balance": 66162
         },
         {
           "date": "2026-03-12",
-          "volume": 2335,
-          "balance": 61961
+          "volume": 11938,
+          "balance": 73955
         },
         {
           "date": "2026-03-13",
-          "volume": 2872,
-          "balance": 64600
+          "volume": 12186,
+          "balance": 85271
         }
       ],
       "score_history": [
@@ -14917,26 +14972,22 @@
       ]
     },
     {
-      "code": "2891",
-      "name": "中信金",
+      "code": "2317",
+      "name": "鴻海",
       "category": "large",
-      "industry": "Banks - Regional",
-      "themes": [],
-      "warnings": [
-        {
-          "type": "chips_sell",
-          "level": "high",
-          "msg": "外資連賣超8日"
-        }
+      "industry": "Electronic Components",
+      "themes": [
+        "AI伺服器"
       ],
-      "price": 51.3,
+      "warnings": [],
+      "price": 214.5,
       "change": 0.0,
       "change_pct": 0.0,
-      "volume": 38360639,
-      "vol_day_ratio": 0.84,
-      "vol_month_ratio": 1.26,
-      "week52_high": 56.4,
-      "week52_low": 33.65,
+      "volume": 36645721,
+      "vol_day_ratio": 0.54,
+      "vol_month_ratio": 1.23,
+      "week52_high": 265.0,
+      "week52_low": 112.5,
       "scores": {
         "chips": 0,
         "fundamental": 50,
@@ -14946,117 +14997,116 @@
         "topic": 30
       },
       "icons": [
-        "💰",
-        "🏦"
+        "💰"
       ],
       "fair_price": {
-        "conservative": 43.5,
-        "fair": 58.0,
-        "optimistic": 72.5,
+        "conservative": 160.2,
+        "fair": 213.5,
+        "optimistic": 266.9,
         "methods": [
           {
             "label": "歷史PE法",
-            "conservative": 38.1,
-            "fair": 42.6,
-            "optimistic": 50.5
+            "conservative": 149.1,
+            "fair": 208.2,
+            "optimistic": 231.0
           },
           {
             "label": "PEG法",
-            "conservative": 43.5,
-            "fair": 58.0,
-            "optimistic": 72.5
+            "conservative": 160.2,
+            "fair": 213.5,
+            "optimistic": 266.9
           },
           {
             "label": "市場PE法",
-            "conservative": 48.6,
-            "fair": 63.6,
-            "optimistic": 82.3
+            "conservative": 174.6,
+            "fair": 228.3,
+            "optimistic": 295.5
           }
         ]
       },
-      "eps_ttm": 3.74,
-      "pe_mid": 11.4,
+      "eps_ttm": 13.43,
+      "pe_mid": 15.5,
       "chips_raw": {
-        "foreign": -1082,
-        "trust": 533,
-        "dealer": 33,
-        "foreign_con": -8,
-        "trust_con": 2,
-        "dealer_con": 1,
-        "foreign_con_sum": -14546,
-        "trust_con_sum": 2848,
-        "dealer_con_sum": 33,
-        "foreign_sum30": -14546,
-        "trust_sum30": 6269,
-        "dealer_sum30": 571,
+        "foreign": -238,
+        "trust": -4,
+        "dealer": -41,
+        "foreign_con": -2,
+        "trust_con": -1,
+        "dealer_con": -2,
+        "foreign_con_sum": -1830,
+        "trust_con_sum": -4,
+        "dealer_con_sum": -156,
+        "foreign_sum30": -8932,
+        "trust_sum30": 548,
+        "dealer_sum30": -158,
         "daily": [
           {
             "date": "2026-03-13",
-            "foreign": -1082,
-            "trust": 533,
-            "dealer": 33,
-            "total": -516
+            "foreign": -238,
+            "trust": -4,
+            "dealer": -41,
+            "total": -283
           },
           {
             "date": "2026-03-12",
-            "foreign": -3674,
-            "trust": 2315,
-            "dealer": -77,
-            "total": -1436
+            "foreign": -1592,
+            "trust": 9,
+            "dealer": -115,
+            "total": -1698
           },
           {
             "date": "2026-03-11",
-            "foreign": -716,
-            "trust": -20,
-            "dealer": -47,
-            "total": -783
+            "foreign": 1833,
+            "trust": 6,
+            "dealer": 226,
+            "total": 2065
           },
           {
             "date": "2026-03-10",
-            "foreign": -2959,
-            "trust": 1431,
-            "dealer": 17,
-            "total": -1511
+            "foreign": -2532,
+            "trust": 48,
+            "dealer": 26,
+            "total": -2458
           },
           {
             "date": "2026-03-09",
-            "foreign": -647,
-            "trust": 976,
-            "dealer": 362,
-            "total": 691
+            "foreign": -3031,
+            "trust": 179,
+            "dealer": -182,
+            "total": -3034
           }
         ]
       },
       "holding": null,
       "lending": {
-        "volume": 12186,
-        "balance": 85271,
+        "volume": 2872,
+        "balance": 64600,
         "amount": 0,
         "daily": [
           {
             "date": "2026-03-09",
-            "volume": 11405,
-            "balance": 53229
+            "volume": 4480,
+            "balance": 60688
           },
           {
             "date": "2026-03-10",
-            "volume": 10646,
-            "balance": 58051
+            "volume": 2017,
+            "balance": 62705
           },
           {
             "date": "2026-03-11",
-            "volume": 8561,
-            "balance": 66162
+            "volume": 388,
+            "balance": 63067
           },
           {
             "date": "2026-03-12",
-            "volume": 11938,
-            "balance": 73955
+            "volume": 2335,
+            "balance": 61961
           },
           {
             "date": "2026-03-13",
-            "volume": 12186,
-            "balance": 85271
+            "volume": 2872,
+            "balance": 64600
           }
         ]
       },
@@ -15066,65 +15116,65 @@
       "fundamental": [
         {
           "label": "EPS年增率",
-          "value": "15.5%",
+          "value": "15.9%",
           "pass": true
         },
         {
           "label": "ROE",
-          "value": "14.7%",
+          "value": "11.8%",
           "pass": false
         },
         {
           "label": "負債比",
-          "value": "52.9%",
-          "pass": false
+          "value": "40.3%",
+          "pass": true
         }
       ],
       "chips": [
         {
           "label": "外資",
-          "net": -1082,
-          "consecutive": -8,
+          "net": -238,
+          "consecutive": -2,
           "pass": false
         },
         {
           "label": "投信",
-          "net": 533,
-          "consecutive": 2,
-          "pass": true
+          "net": -4,
+          "consecutive": -1,
+          "pass": false
         },
         {
           "label": "自營商",
-          "net": 33,
-          "consecutive": 1,
-          "pass": true
+          "net": -41,
+          "consecutive": -2,
+          "pass": false
         }
       ],
       "lending_history": [
         {
           "date": "2026-03-09",
-          "volume": 11405,
-          "balance": 53229
+          "volume": 4480,
+          "balance": 60688
         },
         {
           "date": "2026-03-10",
-          "volume": 10646,
-          "balance": 58051
+          "volume": 2017,
+          "balance": 62705
         },
         {
           "date": "2026-03-11",
-          "volume": 8561,
-          "balance": 66162
+          "volume": 388,
+          "balance": 63067
         },
         {
           "date": "2026-03-12",
-          "volume": 11938,
-          "balance": 73955
+          "volume": 2335,
+          "balance": 61961
         },
         {
           "date": "2026-03-13",
-          "volume": 12186,
-          "balance": 85271
+          "volume": 2872,
+          "balance": 64600
         }
       ],
       "score_history": [
@@ -15500,7 +15550,9 @@
       "name": "晶豪科",
       "category": "mid_small",
       "industry": "Semiconductors",
-      "themes": [],
+      "themes": [
+        "記憶體"
+      ],
       "warnings": [],
       "price": 161.0,
       "change": -2.5,
@@ -17025,7 +17077,10 @@
       "name": "聯發科",
       "category": "large",
       "industry": "Semiconductors",
-      "themes": [],
+      "themes": [
+        "網通",
+        "AI伺服器"
+      ],
       "warnings": [
         {
           "type": "chips_sell",
@@ -19809,7 +19864,9 @@
       "name": "健鼎",
       "category": "mid_small",
       "industry": "Electronic Components",
-      "themes": [],
+      "themes": [
+        "PCB"
+      ],
       "warnings": [],
       "price": 380.0,
       "change": 21.0,
@@ -21872,6 +21929,221 @@
       ]
     },
     {
+      "code": "8046",
+      "name": "南電",
+      "category": "large",
+      "industry": "Electronic Components",
+      "themes": [
+        "載板",
+        "CoWoS先進封裝"
+      ],
+      "warnings": [],
+      "price": 515.0,
+      "change": 46.5,
+      "change_pct": 9.93,
+      "volume": 3375691,
+      "vol_day_ratio": 0.39,
+      "vol_month_ratio": 0.64,
+      "week52_high": 572.0,
+      "week52_low": 76.2,
+      "scores": {
+        "chips": 0,
+        "fundamental": 65,
+        "volume": 0,
+        "revenue": 0,
+        "rs": 0,
+        "topic": 30
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 67.3,
+        "fair": 89.7,
+        "optimistic": 112.1,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 104.1,
+            "fair": 187.5,
+            "optimistic": 289.4
+          },
+          {
+            "label": "PEG法",
+            "conservative": 67.3,
+            "fair": 89.7,
+            "optimistic": 112.1
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 38.9,
+            "fair": 50.8,
+            "optimistic": 65.8
+          }
+        ]
+      },
+      "eps_ttm": 2.99,
+      "pe_mid": 62.7,
+      "chips_raw": {
+        "foreign": 48,
+        "trust": -20,
+        "dealer": 4,
+        "foreign_con": 1,
+        "trust_con": -2,
+        "dealer_con": 2,
+        "foreign_con_sum": 48,
+        "trust_con_sum": -38,
+        "dealer_con_sum": 9,
+        "foreign_sum30": 269,
+        "trust_sum30": 27,
+        "dealer_sum30": -24,
+        "daily": [
+          {
+            "date": "2026-03-13",
+            "foreign": 48,
+            "trust": -20,
+            "dealer": 4,
+            "total": 32
+          },
+          {
+            "date": "2026-03-12",
+            "foreign": -11,
+            "trust": -18,
+            "dealer": 5,
+            "total": -24
+          },
+          {
+            "date": "2026-03-11",
+            "foreign": 10,
+            "trust": 6,
+            "dealer": -10,
+            "total": 6
+          },
+          {
+            "date": "2026-03-10",
+            "foreign": 11,
+            "trust": 4,
+            "dealer": 11,
+            "total": 26
+          },
+          {
+            "date": "2026-03-09",
+            "foreign": 17,
+            "trust": 0,
+            "dealer": -15,
+            "total": 2
+          }
+        ]
+      },
+      "holding": null,
+      "lending": {
+        "volume": 35,
+        "balance": 3036,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-09",
+            "volume": 0,
+            "balance": 2964
+          },
+          {
+            "date": "2026-03-10",
+            "volume": 0,
+            "balance": 2964
+          },
+          {
+            "date": "2026-03-11",
+            "volume": 1,
+            "balance": 2965
+          },
+          {
+            "date": "2026-03-12",
+            "volume": 36,
+            "balance": 3001
+          },
+          {
+            "date": "2026-03-13",
+            "volume": 35,
+            "balance": 3036
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "572.7%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "4.3%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "2.6%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": 48,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "投信",
+          "net": -20,
+          "consecutive": -2,
+          "pass": false
+        },
+        {
+          "label": "自營商",
+          "net": 4,
+          "consecutive": 2,
+          "pass": true
+        }
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-09",
+          "volume": 0,
+          "balance": 2964
+        },
+        {
+          "date": "2026-03-10",
+          "volume": 0,
+          "balance": 2964
+        },
+        {
+          "date": "2026-03-11",
+          "volume": 1,
+          "balance": 2965
+        },
+        {
+          "date": "2026-03-12",
+          "volume": 36,
+          "balance": 3001
+        },
+        {
+          "date": "2026-03-13",
+          "volume": 35,
+          "balance": 3036
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-14",
+          "score": 20
+        }
+      ]
+    },
+    {
       "code": "2303",
       "name": "聯電",
       "category": "large",
@@ -22074,218 +22346,6 @@
           "date": "2026-03-13",
           "volume": 13944,
           "balance": 471393
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-14",
-          "score": 20
-        }
-      ]
-    },
-    {
-      "code": "8046",
-      "name": "南電",
-      "category": "large",
-      "industry": "Electronic Components",
-      "themes": [],
-      "warnings": [],
-      "price": 515.0,
-      "change": 46.5,
-      "change_pct": 9.93,
-      "volume": 3375691,
-      "vol_day_ratio": 0.39,
-      "vol_month_ratio": 0.64,
-      "week52_high": 572.0,
-      "week52_low": 76.2,
-      "scores": {
-        "chips": 0,
-        "fundamental": 65,
-        "volume": 0,
-        "revenue": 0,
-        "rs": 0,
-        "topic": 30
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 67.3,
-        "fair": 89.7,
-        "optimistic": 112.1,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 104.1,
-            "fair": 187.5,
-            "optimistic": 289.4
-          },
-          {
-            "label": "PEG法",
-            "conservative": 67.3,
-            "fair": 89.7,
-            "optimistic": 112.1
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 38.9,
-            "fair": 50.8,
-            "optimistic": 65.8
-          }
-        ]
-      },
-      "eps_ttm": 2.99,
-      "pe_mid": 62.7,
-      "chips_raw": {
-        "foreign": 48,
-        "trust": -20,
-        "dealer": 4,
-        "foreign_con": 1,
-        "trust_con": -2,
-        "dealer_con": 2,
-        "foreign_con_sum": 48,
-        "trust_con_sum": -38,
-        "dealer_con_sum": 9,
-        "foreign_sum30": 269,
-        "trust_sum30": 27,
-        "dealer_sum30": -24,
-        "daily": [
-          {
-            "date": "2026-03-13",
-            "foreign": 48,
-            "trust": -20,
-            "dealer": 4,
-            "total": 32
-          },
-          {
-            "date": "2026-03-12",
-            "foreign": -11,
-            "trust": -18,
-            "dealer": 5,
-            "total": -24
-          },
-          {
-            "date": "2026-03-11",
-            "foreign": 10,
-            "trust": 6,
-            "dealer": -10,
-            "total": 6
-          },
-          {
-            "date": "2026-03-10",
-            "foreign": 11,
-            "trust": 4,
-            "dealer": 11,
-            "total": 26
-          },
-          {
-            "date": "2026-03-09",
-            "foreign": 17,
-            "trust": 0,
-            "dealer": -15,
-            "total": 2
-          }
-        ]
-      },
-      "holding": null,
-      "lending": {
-        "volume": 35,
-        "balance": 3036,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-09",
-            "volume": 0,
-            "balance": 2964
-          },
-          {
-            "date": "2026-03-10",
-            "volume": 0,
-            "balance": 2964
-          },
-          {
-            "date": "2026-03-11",
-            "volume": 1,
-            "balance": 2965
-          },
-          {
-            "date": "2026-03-12",
-            "volume": 36,
-            "balance": 3001
-          },
-          {
-            "date": "2026-03-13",
-            "volume": 35,
-            "balance": 3036
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "572.7%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "4.3%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "2.6%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": 48,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "投信",
-          "net": -20,
-          "consecutive": -2,
-          "pass": false
-        },
-        {
-          "label": "自營商",
-          "net": 4,
-          "consecutive": 2,
-          "pass": true
-        }
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-09",
-          "volume": 0,
-          "balance": 2964
-        },
-        {
-          "date": "2026-03-10",
-          "volume": 0,
-          "balance": 2964
-        },
-        {
-          "date": "2026-03-11",
-          "volume": 1,
-          "balance": 2965
-        },
-        {
-          "date": "2026-03-12",
-          "volume": 36,
-          "balance": 3001
-        },
-        {
-          "date": "2026-03-13",
-          "volume": 35,
-          "balance": 3036
         }
       ],
       "score_history": [
@@ -23127,7 +23187,9 @@
       "name": "晟銘電",
       "category": "mid_small",
       "industry": "Computer Hardware",
-      "themes": [],
+      "themes": [
+        "伺服器機殼"
+      ],
       "warnings": [],
       "price": 100.5,
       "change": 8.9,
@@ -24505,6 +24567,218 @@
       ]
     },
     {
+      "code": "2884",
+      "name": "玉山金",
+      "category": "large",
+      "industry": "Banks - Regional",
+      "themes": [],
+      "warnings": [],
+      "price": 33.05,
+      "change": 0.0,
+      "change_pct": 0.0,
+      "volume": 27523131,
+      "vol_day_ratio": 0.74,
+      "vol_month_ratio": 0.79,
+      "week52_high": 35.5,
+      "week52_low": 25.247147,
+      "scores": {
+        "chips": 0,
+        "fundamental": 52,
+        "volume": 0,
+        "revenue": 0,
+        "rs": 0,
+        "topic": 30
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 28.5,
+        "fair": 33.0,
+        "optimistic": 42.7,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 28.5,
+            "fair": 32.4,
+            "optimistic": 33.8
+          },
+          {
+            "label": "PEG法",
+            "conservative": 43.6,
+            "fair": 58.2,
+            "optimistic": 72.8
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 25.2,
+            "fair": 33.0,
+            "optimistic": 42.7
+          }
+        ]
+      },
+      "eps_ttm": 1.94,
+      "pe_mid": 16.7,
+      "chips_raw": {
+        "foreign": 477,
+        "trust": -84,
+        "dealer": -42,
+        "foreign_con": 1,
+        "trust_con": -4,
+        "dealer_con": -3,
+        "foreign_con_sum": 477,
+        "trust_con_sum": -628,
+        "dealer_con_sum": -151,
+        "foreign_sum30": -5773,
+        "trust_sum30": -95,
+        "dealer_sum30": 296,
+        "daily": [
+          {
+            "date": "2026-03-13",
+            "foreign": 477,
+            "trust": -84,
+            "dealer": -42,
+            "total": 351
+          },
+          {
+            "date": "2026-03-12",
+            "foreign": -1467,
+            "trust": -516,
+            "dealer": -41,
+            "total": -2024
+          },
+          {
+            "date": "2026-03-11",
+            "foreign": -614,
+            "trust": -23,
+            "dealer": -68,
+            "total": -705
+          },
+          {
+            "date": "2026-03-10",
+            "foreign": -613,
+            "trust": -5,
+            "dealer": 58,
+            "total": -560
+          },
+          {
+            "date": "2026-03-09",
+            "foreign": -860,
+            "trust": 107,
+            "dealer": 277,
+            "total": -476
+          }
+        ]
+      },
+      "holding": null,
+      "lending": {
+        "volume": 780,
+        "balance": 256132,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-09",
+            "volume": 1902,
+            "balance": 266749
+          },
+          {
+            "date": "2026-03-10",
+            "volume": 1172,
+            "balance": 267921
+          },
+          {
+            "date": "2026-03-11",
+            "volume": 2331,
+            "balance": 252611
+          },
+          {
+            "date": "2026-03-12",
+            "volume": 3634,
+            "balance": 255352
+          },
+          {
+            "date": "2026-03-13",
+            "volume": 780,
+            "balance": 256132
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "54.3%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "13.0%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "None%",
+          "pass": false
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": 477,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "投信",
+          "net": -84,
+          "consecutive": -4,
+          "pass": false
+        },
+        {
+          "label": "自營商",
+          "net": -42,
+          "consecutive": -3,
+          "pass": false
+        }
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-09",
+          "volume": 1902,
+          "balance": 266749
+        },
+        {
+          "date": "2026-03-10",
+          "volume": 1172,
+          "balance": 267921
+        },
+        {
+          "date": "2026-03-11",
+          "volume": 2331,
+          "balance": 252611
+        },
+        {
+          "date": "2026-03-12",
+          "volume": 3634,
+          "balance": 255352
+        },
+        {
+          "date": "2026-03-13",
+          "volume": 780,
+          "balance": 256132
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-14",
+          "score": 16
+        }
+      ]
+    },
+    {
       "code": "3008",
       "name": "大立光",
       "category": "large",
@@ -24916,218 +25190,6 @@
           "date": "2026-03-13",
           "volume": 394,
           "balance": 3645
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-14",
-          "score": 16
-        }
-      ]
-    },
-    {
-      "code": "2884",
-      "name": "玉山金",
-      "category": "large",
-      "industry": "Banks - Regional",
-      "themes": [],
-      "warnings": [],
-      "price": 33.05,
-      "change": 0.0,
-      "change_pct": 0.0,
-      "volume": 27523131,
-      "vol_day_ratio": 0.74,
-      "vol_month_ratio": 0.79,
-      "week52_high": 35.5,
-      "week52_low": 25.247147,
-      "scores": {
-        "chips": 0,
-        "fundamental": 52,
-        "volume": 0,
-        "revenue": 0,
-        "rs": 0,
-        "topic": 30
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 28.5,
-        "fair": 33.0,
-        "optimistic": 42.7,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 28.5,
-            "fair": 32.4,
-            "optimistic": 33.8
-          },
-          {
-            "label": "PEG法",
-            "conservative": 43.6,
-            "fair": 58.2,
-            "optimistic": 72.8
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 25.2,
-            "fair": 33.0,
-            "optimistic": 42.7
-          }
-        ]
-      },
-      "eps_ttm": 1.94,
-      "pe_mid": 16.7,
-      "chips_raw": {
-        "foreign": 477,
-        "trust": -84,
-        "dealer": -42,
-        "foreign_con": 1,
-        "trust_con": -4,
-        "dealer_con": -3,
-        "foreign_con_sum": 477,
-        "trust_con_sum": -628,
-        "dealer_con_sum": -151,
-        "foreign_sum30": -5773,
-        "trust_sum30": -95,
-        "dealer_sum30": 296,
-        "daily": [
-          {
-            "date": "2026-03-13",
-            "foreign": 477,
-            "trust": -84,
-            "dealer": -42,
-            "total": 351
-          },
-          {
-            "date": "2026-03-12",
-            "foreign": -1467,
-            "trust": -516,
-            "dealer": -41,
-            "total": -2024
-          },
-          {
-            "date": "2026-03-11",
-            "foreign": -614,
-            "trust": -23,
-            "dealer": -68,
-            "total": -705
-          },
-          {
-            "date": "2026-03-10",
-            "foreign": -613,
-            "trust": -5,
-            "dealer": 58,
-            "total": -560
-          },
-          {
-            "date": "2026-03-09",
-            "foreign": -860,
-            "trust": 107,
-            "dealer": 277,
-            "total": -476
-          }
-        ]
-      },
-      "holding": null,
-      "lending": {
-        "volume": 780,
-        "balance": 256132,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-09",
-            "volume": 1902,
-            "balance": 266749
-          },
-          {
-            "date": "2026-03-10",
-            "volume": 1172,
-            "balance": 267921
-          },
-          {
-            "date": "2026-03-11",
-            "volume": 2331,
-            "balance": 252611
-          },
-          {
-            "date": "2026-03-12",
-            "volume": 3634,
-            "balance": 255352
-          },
-          {
-            "date": "2026-03-13",
-            "volume": 780,
-            "balance": 256132
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "54.3%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "13.0%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "None%",
-          "pass": false
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": 477,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "投信",
-          "net": -84,
-          "consecutive": -4,
-          "pass": false
-        },
-        {
-          "label": "自營商",
-          "net": -42,
-          "consecutive": -3,
-          "pass": false
-        }
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-09",
-          "volume": 1902,
-          "balance": 266749
-        },
-        {
-          "date": "2026-03-10",
-          "volume": 1172,
-          "balance": 267921
-        },
-        {
-          "date": "2026-03-11",
-          "volume": 2331,
-          "balance": 252611
-        },
-        {
-          "date": "2026-03-12",
-          "volume": 3634,
-          "balance": 255352
-        },
-        {
-          "date": "2026-03-13",
-          "volume": 780,
-          "balance": 256132
         }
       ],
       "score_history": [
@@ -27003,7 +27065,9 @@
       "name": "偉訓",
       "category": "mid_small",
       "industry": "Computer Hardware",
-      "themes": [],
+      "themes": [
+        "伺服器機殼"
+      ],
       "warnings": [],
       "price": 68.0,
       "change": 6.1,
@@ -27945,7 +28009,10 @@
       "name": "南亞科",
       "category": "large",
       "industry": "Semiconductors",
-      "themes": [],
+      "themes": [
+        "記憶體",
+        "HBM"
+      ],
       "warnings": [],
       "price": 238.0,
       "change": -1.5,
@@ -28703,217 +28770,6 @@
       ]
     },
     {
-      "code": "3045",
-      "name": "台灣大",
-      "category": "large",
-      "industry": "Specialty Retail",
-      "themes": [],
-      "warnings": [
-        {
-          "type": "eps_decline",
-          "level": "mid",
-          "msg": "EPS年增率-14.3%（衰退）"
-        }
-      ],
-      "price": 106.5,
-      "change": 0.5,
-      "change_pct": 0.47,
-      "volume": 8752511,
-      "vol_day_ratio": 1.03,
-      "vol_month_ratio": 0.87,
-      "week52_high": 120.5,
-      "week52_low": 104.0,
-      "scores": {
-        "chips": 0,
-        "fundamental": 23,
-        "volume": 10,
-        "revenue": 0,
-        "rs": 0,
-        "topic": 30
-      },
-      "icons": [
-        "💰"
-      ],
-      "fair_price": {
-        "conservative": 105.8,
-        "fair": 108.1,
-        "optimistic": 111.3,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 105.8,
-            "fair": 108.1,
-            "optimistic": 111.3
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 59.5,
-            "fair": 77.9,
-            "optimistic": 100.8
-          }
-        ]
-      },
-      "eps_ttm": 4.58,
-      "pe_mid": 23.6,
-      "chips_raw": {
-        "foreign": -89,
-        "trust": -2,
-        "dealer": -8,
-        "foreign_con": -4,
-        "trust_con": -2,
-        "dealer_con": -3,
-        "foreign_con_sum": -444,
-        "trust_con_sum": -137,
-        "dealer_con_sum": -29,
-        "foreign_sum30": -3,
-        "trust_sum30": -241,
-        "dealer_sum30": 78,
-        "daily": [
-          {
-            "date": "2026-03-13",
-            "foreign": -89,
-            "trust": -2,
-            "dealer": -8,
-            "total": -99
-          },
-          {
-            "date": "2026-03-12",
-            "foreign": -48,
-            "trust": -135,
-            "dealer": -9,
-            "total": -192
-          },
-          {
-            "date": "2026-03-11",
-            "foreign": -280,
-            "trust": 0,
-            "dealer": -12,
-            "total": -292
-          },
-          {
-            "date": "2026-03-10",
-            "foreign": -27,
-            "trust": 7,
-            "dealer": 11,
-            "total": -9
-          },
-          {
-            "date": "2026-03-09",
-            "foreign": 423,
-            "trust": 17,
-            "dealer": 76,
-            "total": 516
-          }
-        ]
-      },
-      "holding": null,
-      "lending": {
-        "volume": 1124,
-        "balance": 66056,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-09",
-            "volume": 91,
-            "balance": 62707
-          },
-          {
-            "date": "2026-03-10",
-            "volume": 612,
-            "balance": 63210
-          },
-          {
-            "date": "2026-03-11",
-            "volume": 2205,
-            "balance": 65314
-          },
-          {
-            "date": "2026-03-12",
-            "volume": 760,
-            "balance": 65607
-          },
-          {
-            "date": "2026-03-13",
-            "volume": 1124,
-            "balance": 66056
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "-14.3%",
-          "pass": false
-        },
-        {
-          "label": "ROE",
-          "value": "17.6%",
-          "pass": true
-        },
-        {
-          "label": "負債比",
-          "value": "53.2%",
-          "pass": false
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -89,
-          "consecutive": -4,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": -2,
-          "consecutive": -2,
-          "pass": false
-        },
-        {
-          "label": "自營商",
-          "net": -8,
-          "consecutive": -3,
-          "pass": false
-        }
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-09",
-          "volume": 91,
-          "balance": 62707
-        },
-        {
-          "date": "2026-03-10",
-          "volume": 612,
-          "balance": 63210
-        },
-        {
-          "date": "2026-03-11",
-          "volume": 2205,
-          "balance": 65314
-        },
-        {
-          "date": "2026-03-12",
-          "volume": 760,
-          "balance": 65607
-        },
-        {
-          "date": "2026-03-13",
-          "volume": 1124,
-          "balance": 66056
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-14",
-          "score": 9
-        }
-      ]
-    },
-    {
       "code": "5871",
       "name": "中租-KY",
       "category": "large",
@@ -29116,6 +28972,217 @@
           "date": "2026-03-13",
           "volume": 431,
           "balance": 27008
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-14",
+          "score": 9
+        }
+      ]
+    },
+    {
+      "code": "3045",
+      "name": "台灣大",
+      "category": "large",
+      "industry": "Specialty Retail",
+      "themes": [],
+      "warnings": [
+        {
+          "type": "eps_decline",
+          "level": "mid",
+          "msg": "EPS年增率-14.3%（衰退）"
+        }
+      ],
+      "price": 106.5,
+      "change": 0.5,
+      "change_pct": 0.47,
+      "volume": 8752511,
+      "vol_day_ratio": 1.03,
+      "vol_month_ratio": 0.87,
+      "week52_high": 120.5,
+      "week52_low": 104.0,
+      "scores": {
+        "chips": 0,
+        "fundamental": 23,
+        "volume": 10,
+        "revenue": 0,
+        "rs": 0,
+        "topic": 30
+      },
+      "icons": [
+        "💰"
+      ],
+      "fair_price": {
+        "conservative": 105.8,
+        "fair": 108.1,
+        "optimistic": 111.3,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 105.8,
+            "fair": 108.1,
+            "optimistic": 111.3
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 59.5,
+            "fair": 77.9,
+            "optimistic": 100.8
+          }
+        ]
+      },
+      "eps_ttm": 4.58,
+      "pe_mid": 23.6,
+      "chips_raw": {
+        "foreign": -89,
+        "trust": -2,
+        "dealer": -8,
+        "foreign_con": -4,
+        "trust_con": -2,
+        "dealer_con": -3,
+        "foreign_con_sum": -444,
+        "trust_con_sum": -137,
+        "dealer_con_sum": -29,
+        "foreign_sum30": -3,
+        "trust_sum30": -241,
+        "dealer_sum30": 78,
+        "daily": [
+          {
+            "date": "2026-03-13",
+            "foreign": -89,
+            "trust": -2,
+            "dealer": -8,
+            "total": -99
+          },
+          {
+            "date": "2026-03-12",
+            "foreign": -48,
+            "trust": -135,
+            "dealer": -9,
+            "total": -192
+          },
+          {
+            "date": "2026-03-11",
+            "foreign": -280,
+            "trust": 0,
+            "dealer": -12,
+            "total": -292
+          },
+          {
+            "date": "2026-03-10",
+            "foreign": -27,
+            "trust": 7,
+            "dealer": 11,
+            "total": -9
+          },
+          {
+            "date": "2026-03-09",
+            "foreign": 423,
+            "trust": 17,
+            "dealer": 76,
+            "total": 516
+          }
+        ]
+      },
+      "holding": null,
+      "lending": {
+        "volume": 1124,
+        "balance": 66056,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-09",
+            "volume": 91,
+            "balance": 62707
+          },
+          {
+            "date": "2026-03-10",
+            "volume": 612,
+            "balance": 63210
+          },
+          {
+            "date": "2026-03-11",
+            "volume": 2205,
+            "balance": 65314
+          },
+          {
+            "date": "2026-03-12",
+            "volume": 760,
+            "balance": 65607
+          },
+          {
+            "date": "2026-03-13",
+            "volume": 1124,
+            "balance": 66056
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "-14.3%",
+          "pass": false
+        },
+        {
+          "label": "ROE",
+          "value": "17.6%",
+          "pass": true
+        },
+        {
+          "label": "負債比",
+          "value": "53.2%",
+          "pass": false
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -89,
+          "consecutive": -4,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": -2,
+          "consecutive": -2,
+          "pass": false
+        },
+        {
+          "label": "自營商",
+          "net": -8,
+          "consecutive": -3,
+          "pass": false
+        }
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-09",
+          "volume": 91,
+          "balance": 62707
+        },
+        {
+          "date": "2026-03-10",
+          "volume": 612,
+          "balance": 63210
+        },
+        {
+          "date": "2026-03-11",
+          "volume": 2205,
+          "balance": 65314
+        },
+        {
+          "date": "2026-03-12",
+          "volume": 760,
+          "balance": 65607
+        },
+        {
+          "date": "2026-03-13",
+          "volume": 1124,
+          "balance": 66056
         }
       ],
       "score_history": [
@@ -32103,7 +32170,9 @@
       "name": "華邦電",
       "category": "mid_small",
       "industry": "Semiconductors",
-      "themes": [],
+      "themes": [
+        "記憶體"
+      ],
       "warnings": [],
       "price": 109.0,
       "change": 0.0,
@@ -32680,7 +32749,9 @@
       "name": "台玻",
       "category": "mid_small",
       "industry": "Building Materials",
-      "themes": [],
+      "themes": [
+        "玻璃基板"
+      ],
       "warnings": [],
       "price": 57.7,
       "change": 2.7,
