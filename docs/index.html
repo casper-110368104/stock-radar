@@ -1371,20 +1371,20 @@ async function fetchBizCycle(){
 }
 
 async function loadData(){
+  var _step='init';
   try{
+    _step='fetch:'+stocksUrl();
     var res=await fetch(stocksUrl());
-    if(!res.ok)throw new Error('無法載入數據');
+    _step='http-check('+res.status+')';
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    _step='json-parse';
     var data=await res.json();
-    // 分離 ETF（00開頭）和個股
+    _step='process';
     var allStocks=data.stocks||[];
-    // 產業輪動資料
     sectorData=data.sector_rotation||{};
-    etfs    = allStocks.filter(function(s){return s.code.startsWith('00');});
-    stocks  = allStocks.filter(function(s){return !s.code.startsWith('00');});
-
-    // 期貨外資
+    etfs  =allStocks.filter(function(s){return s.code.startsWith('00');});
+    stocks=allStocks.filter(function(s){return !s.code.startsWith('00');});
     document.getElementById('upd').innerHTML='更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔';
-    // 外資期貨 OI
     var foi=data.futures_oi;
     if(foi){window._foiData=foi;
       var bar=document.getElementById('foiBar');
@@ -1393,18 +1393,15 @@ async function loadData(){
       document.getElementById('foiNet').innerHTML='<span class="'+cls+'">'+(net>0?'+':'')+net.toLocaleString()+'口 '+(net>0?'▲偏多':'▼偏空')+'</span>';
       if(bar)bar.style.display='';
     }
-    // 景氣燈號（背景抓，不阻塞）
     fetchBizCycle().then(function(){
       renderMacroPreview();
-      // 若已在 macro 頁則重新渲染
       if(curView==='macro') renderMacroFull();
     });
-
-    // 初始化：顯示主頁
+    _step='render';
     goView('home');
     render();
   }catch(err){
-    document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:12px">'+err.message+'</span></div>';
+    document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:11px;word-break:break-all">['+_step+'] '+err.message+'</span></div>';
   }
 }
 loadData();
