@@ -599,7 +599,7 @@ function renderMacroFull(){
     var groups={leading:[],improving:[],weakening:[],lagging:[]};
     sdKeys.forEach(function(name){
       var d=sectorData[name];
-      if(d&&d.phase&&groups[d.phase]) groups[d.phase].push({name:name,rs:d.rs,rs_mom:d.rs_mom,vector:d.vector||{},trend:d.trend||[]});
+      if(d&&d.phase&&groups[d.phase]) groups[d.phase].push({name:name,rs:d.rs,rs_mom:d.rs_mom,sub_phase:d.sub_phase||'',acceleration:d.acceleration||0,rs_up_days:d.rs_up_days||0,vector:d.vector||{},trend:d.trend||[]});
     });
     h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
       '<div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
@@ -611,14 +611,26 @@ function renderMacroFull(){
         '<div style="color:'+p.color+';font-weight:700;font-size:12px;margin-bottom:2px">'+p.label+'</div>'+
         '<div style="font-size:10px;color:var(--text3);margin-bottom:7px">'+p.desc+'</div>';
       list.forEach(function(s,idx){
-        var dy=s.vector.dy||0;
-        var arr=dy>0.5?'↗':dy<-0.5?'↘':'→';
-        var ac=dy>0.5?'#22c55e':dy<-0.5?'#ef4444':'#9ca3af';
+        var accel=s.acceleration||0;
+        // ▲ = 正在變強（加速度>0）  ▼ = 正在轉弱（加速度<0）
+        var accArr=accel>0.05?'▲':accel<-0.05?'▼':'─';
+        var accColor=accel>0.05?'#22c55e':accel<-0.05?'#ef4444':'#9ca3af';
+        var spLabel=s.sub_phase||'';
+        var spColors={
+          '潛伏期':'rgba(59,130,246,.15)',
+          '爆發期':'rgba(34,197,94,.15)',
+          '高檔震盪':'rgba(245,158,11,.15)',
+          '資金衰退':'rgba(239,68,68,.15)'
+        };
+        var spBg=spColors[spLabel]||'rgba(100,100,100,.1)';
+        var upTag=s.rs_up_days>=3?'<span style="font-size:9px;color:#f59e0b;margin-left:2px">↑'+s.rs_up_days+'d</span>':'';
         var tid='sqc'+ph+idx;
         h+='<div style="background:var(--bg2);border-radius:8px;margin-bottom:4px;overflow:hidden">'+
           '<div data-tid="'+tid+'" onclick="togSector(this)" style="display:flex;align-items:center;gap:5px;padding:5px 8px;cursor:pointer;font-size:11px">'+
             '<span style="flex:1;font-weight:600">'+s.name+'</span>'+
-            '<span style="color:'+ac+';font-weight:800">'+arr+'</span>'+
+            (spLabel?'<span style="font-size:9px;background:'+spBg+';padding:1px 5px;border-radius:4px;white-space:nowrap">'+spLabel+'</span>':'')+
+            upTag+
+            '<span style="color:'+accColor+';font-weight:800;font-size:12px;min-width:12px;text-align:center">'+accArr+'</span>'+
             '<span style="color:var(--text3);font-size:10px">'+s.rs.toFixed(1)+'</span>'+
             '<span style="color:'+p.color+';font-weight:700;font-size:10px;min-width:42px;text-align:right">M '+s.rs_mom.toFixed(1)+'</span>'+
           '</div>'+
@@ -629,7 +641,7 @@ function renderMacroFull(){
       h+='</div>';
     });
     h+='</div>'+
-      '<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">RS=產業指數/大盤×100，Mom=RS/10日均RS×100 | TWSE</div>'+
+      '<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">RS=產業指數/大盤×100 ｜ Mom=RS/10日均RS×100 ｜ <span style="color:#22c55e">▲</span>正在變強 <span style="color:#ef4444">▼</span>正在轉弱 ｜ TWSE</div>'+
     '</div>';
   }
 
@@ -801,6 +813,20 @@ function rCard(s){
     rankHtml='<span class="ind-rank '+rc+'">'+short+' #'+ri.rank+'/'+ri.total+'</span>';
   }
 
+  // sector rotation phase badge
+  var sectorPhaseHtml='';
+  var _sd=s.sector_key&&sectorData[s.sector_key];
+  if(_sd){
+    var _sp=_sd.sub_phase||'';
+    var _ac=_sd.acceleration||0;
+    var _arr=_ac>0.05?'▲':_ac<-0.05?'▼':'─';
+    var _arc=_ac>0.05?'#22c55e':_ac<-0.05?'#ef4444':'#9ca3af';
+    var _spbg={'潛伏期':'rgba(59,130,246,.18)','爆發期':'rgba(34,197,94,.18)','高檔震盪':'rgba(245,158,11,.18)','資金衰退':'rgba(239,68,68,.18)'}[_sp]||'rgba(100,100,100,.12)';
+    sectorPhaseHtml='<span style="display:inline-block;margin-top:3px;font-size:9px;background:'+_spbg+';padding:1px 6px;border-radius:4px;white-space:nowrap">'+
+      _sp+' <span style="color:'+_arc+';font-weight:700">'+_arr+'</span>'+
+    '</span>';
+  }
+
   var detail='';
   if(isOpen){
     var ti=cardTabs[s.code]||0;
@@ -933,6 +959,7 @@ function rCard(s){
           '<div class="sc-bar"><div class="sc-bar-fill" style="width:'+ws+'%;background:'+col+'"></div></div>'+
         '</div>'+
         rankHtml+
+        sectorPhaseHtml+
       '</div>'+
       '<div class="card-right">'+
         '<span class="price-num '+cls+'">$'+Number(s.price).toLocaleString()+'</span>'+
@@ -1371,20 +1398,20 @@ async function fetchBizCycle(){
 }
 
 async function loadData(){
+  var _step='init';
   try{
+    _step='fetch:'+stocksUrl();
     var res=await fetch(stocksUrl());
-    if(!res.ok)throw new Error('無法載入數據');
+    _step='http-check('+res.status+')';
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    _step='json-parse';
     var data=await res.json();
-    // 分離 ETF（00開頭）和個股
+    _step='process';
     var allStocks=data.stocks||[];
-    // 產業輪動資料
     sectorData=data.sector_rotation||{};
-    etfs    = allStocks.filter(function(s){return s.code.startsWith('00');});
-    stocks  = allStocks.filter(function(s){return !s.code.startsWith('00');});
-
-    // 期貨外資
+    etfs  =allStocks.filter(function(s){return s.code.startsWith('00');});
+    stocks=allStocks.filter(function(s){return !s.code.startsWith('00');});
     document.getElementById('upd').innerHTML='更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔';
-    // 外資期貨 OI
     var foi=data.futures_oi;
     if(foi){window._foiData=foi;
       var bar=document.getElementById('foiBar');
@@ -1393,18 +1420,15 @@ async function loadData(){
       document.getElementById('foiNet').innerHTML='<span class="'+cls+'">'+(net>0?'+':'')+net.toLocaleString()+'口 '+(net>0?'▲偏多':'▼偏空')+'</span>';
       if(bar)bar.style.display='';
     }
-    // 景氣燈號（背景抓，不阻塞）
     fetchBizCycle().then(function(){
       renderMacroPreview();
-      // 若已在 macro 頁則重新渲染
       if(curView==='macro') renderMacroFull();
     });
-
-    // 初始化：顯示主頁
+    _step='render';
     goView('home');
     render();
   }catch(err){
-    document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:12px">'+err.message+'</span></div>';
+    document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:11px;word-break:break-all">['+_step+'] '+err.message+'</span></div>';
   }
 }
 loadData();

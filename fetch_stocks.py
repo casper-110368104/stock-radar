@@ -154,9 +154,35 @@ def fetch_sector_rotation(days=60):
             vector = {"dx": round(today_rs - prev_rs, 4), "dy": round(rs_mom - prev_mom, 4)}
         else:
             vector = {"dx": 0, "dy": 0}
+            prev_mom = rs_mom
+
+        # 加速度：Momentum今日 - Momentum昨日
+        acceleration = round(rs_mom - prev_mom, 4)
+
+        # 連漲天數（RS連續上升），替代量能確認
+        rs_up_days = 0
+        for i in range(len(rs_vals) - 1, 0, -1):
+            if rs_vals[i] > rs_vals[i - 1]:
+                rs_up_days += 1
+            else:
+                break
+
+        # 細分四階段（含加速度判斷）
+        if phase == "improving":
+            sub_phase = "潛伏期"   # RS剛翻正、動能轉強
+        elif phase == "leading":
+            sub_phase = "爆發期" if acceleration >= 0 else "高檔震盪"
+        elif phase == "weakening":
+            sub_phase = "高檔震盪"  # RS高位但動能衰減
+        else:  # lagging
+            sub_phase = "資金衰退"
 
         trend = [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]]
-        result[s] = {"rs": round(today_rs, 2), "rs_mom": rs_mom, "phase": phase, "vector": vector, "trend": trend}
+        result[s] = {
+            "rs": round(today_rs, 2), "rs_mom": rs_mom, "phase": phase,
+            "sub_phase": sub_phase, "acceleration": acceleration,
+            "rs_up_days": rs_up_days, "vector": vector, "trend": trend,
+        }
 
     improving = sum(1 for v in result.values() if v["phase"] == "improving")
     leading   = sum(1 for v in result.values() if v["phase"] == "leading")
@@ -800,6 +826,42 @@ INDUSTRY_MAP = {
     "Staffing & Employment Services": "其他",
     "Security & Protection Services": "其他",
     "Waste Management": "其他",
+}
+
+# 中文產業 → sector_rotation key（供前端查詢輪動階段用）
+SECTOR_KEY_MAP = {
+    "半導體":    "半導體", "半導體設備":  "半導體",
+    "電子工業":  "電子工業", "消費性電子": "電子工業", "電子設備": "電子工業",
+    "電腦及週邊":"電腦週邊", "電腦週邊":   "電腦週邊",
+    "通信網路":  "通信網路", "電信服務":   "通信網路",
+    "電子零組件":"電子零組件",
+    "電子通路":  "電子通路",
+    "資訊服務":  "資訊服務", "軟體": "資訊服務", "數位雲端": "數位雲端",
+    "其他電子":  "其他電子",
+    "金融保險":  "金融保險", "金融控股": "金融保險", "銀行": "金融保險",
+    "壽險": "金融保險", "保險": "金融保險", "證券": "金融保險", "金融": "金融保險",
+    "建材營造":  "建材營造", "建材": "建材營造",
+    "航運":      "航運",     "航空": "航運",
+    "觀光餐旅":  "觀光餐旅", "觀光": "觀光餐旅", "觀光飯店": "觀光餐旅", "餐飲": "觀光餐旅",
+    "貿易百貨":  "貿易百貨", "零售百貨": "貿易百貨", "百貨": "貿易百貨", "零售": "貿易百貨",
+    "油電燃氣":  "油電燃氣",
+    "綠能環保":  "綠能環保", "太陽能": "綠能環保", "綠能": "綠能環保",
+    "電機機械":  "電機機械",
+    "生技醫療":  "生技醫療", "生技": "生技醫療", "醫療器材": "生技醫療",
+    "鋼鐵":      "鋼鐵",
+    "汽車":      "汽車",     "汽車零組件": "汽車",
+    "食品":      "食品",
+    "紡織":      "紡織",
+    "水泥":      "水泥",
+    "塑膠":      "塑膠",     "橡膠塑膠": "橡膠",
+    "電器電纜":  "電器電纜",
+    "化學工業":  "化學",     "化學": "化學", "化學生技": "化學生技",
+    "玻璃陶瓷":  "玻璃陶瓷",
+    "造紙":      "造紙",
+    "橡膠":      "橡膠",
+    "運動休閒":  "運動休閒",
+    "居家生活":  "居家生活",
+    "其他":      "其他",
 }
 
 TW_INDUSTRIES = list(set(INDUSTRY_MAP.values()))
@@ -1623,6 +1685,7 @@ def process_stock(sid, category):
         "name":            yahoo.get("name", sid),
         "category":        category,
         "industry":        yahoo.get("industry", "其他"),
+        "sector_key":      SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""),
         "themes":          themes,
         "warnings":        warnings,
         "price":           yahoo.get("price"),
