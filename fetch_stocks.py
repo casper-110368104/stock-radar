@@ -464,37 +464,95 @@ _benchmark_closes      = {}  # {large/mid/small: [收盤價...]}
 _revenue_map           = {}  # {sid: 月營收YoY%}
 
 def fetch_mops_revenue():
-    """從 MOPS 一次抓全市場月營收YoY，回傳 {sid: yoy%}，不消耗 FinMind 額度"""
+    """
+    抓全市場月營收 YoY，回傳 {sid: yoy%}，不消耗 FinMind 額度。
+    主力：TWSE / TPEx OpenData JSON API（穩定）
+    備用：MOPS 舊靜態 HTML（若 OpenData 失效）
+    """
     from datetime import datetime
     from html.parser import HTMLParser
     now = datetime.now()
-    year = now.year - 1911
-    month = now.month - 1
+    # 上個月
+    year_ad = now.year
+    month   = now.month - 1
     if month == 0:
-        month = 12; year -= 1
+        month = 12; year_ad -= 1
+    year_roc = year_ad - 1911  # 民國年
+
+    result = {}
+
+    # ── 主力：TWSE / TPEx OpenData JSON ───────────────────────────
+    HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+    apis = [
+        # 上市 (SII)
+        (f"https://opendata.twse.com.tw/v1/opendata/t187ap03_L", "上市"),
+        # 上櫃 (OTC) — TPEx open data
+        (f"https://opendata.tpex.org.tw/api/tpex_mainboard_monthly_revenue?"
+         f"d={year_roc:03d}/{month:02d}", "上櫃"),
+    ]
+    for url, mkt in apis:
+        try:
+            res = requests.get(url, headers=HEADERS, timeout=20)
+            if res.status_code != 200:
+                print(f"  [月營收] {mkt} OpenData HTTP {res.status_code}，略過")
+                continue
+            rows = res.json()
+            if not isinstance(rows, list):
+                rows = rows.get("data", rows.get("Data", []))
+            ok = 0
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                # 欄位名稱可能是中文或英文
+                code = (row.get("公司代號") or row.get("Code") or "").strip()
+                if not (code.isdigit() and len(code) == 4):
+                    continue
+                yoy_raw = (row.get("去年同月增減(%)") or row.get("YoY(%)") or
+                           row.get("yoy") or row.get("MoM%") or "")
+                try:
+                    yoy = round(float(str(yoy_raw).replace(",", "").replace("+", "").strip()), 1)
+                    result[code] = yoy
+                    ok += 1
+                except (ValueError, TypeError):
+                    continue
+            print(f"  [月營收] {mkt} OpenData {year_roc}/{month} → {ok} 檔")
+        except Exception as e:
+            print(f"  [月營收] {mkt} OpenData 失敗：{e}")
+
+    if result:
+        return result
+
+    # ── 備用：MOPS 靜態 HTML（舊路徑）────────────────────────────
+    print("  [月營收] OpenData 全部失敗，改用 MOPS 靜態 HTML 備援...")
 
     class RevParser(HTMLParser):
         def __init__(self):
             super().__init__()
-            self.in_td = False; self.row = []; self.cells = []
+            self.in_td = False; self.cur = []; self.row = []; self.cells = []
         def handle_starttag(self, tag, attrs):
-            if tag == "tr": self.row = []
-            if tag == "td": self.in_td = True
+            if tag == "tr":  self.row = []; self.cur = []
+            if tag == "td":  self.in_td = True; self.cur = []
         def handle_endtag(self, tag):
-            if tag == "td": self.in_td = False
+            if tag == "td":
+                self.in_td = False
+                self.row.append(" ".join(self.cur).strip())
             if tag == "tr" and len(self.row) >= 7:
                 self.cells.append(self.row[:])
         def handle_data(self, data):
-            if self.in_td: self.row.append(data.strip())
+            if self.in_td: self.cur.append(data.strip())
 
-    result = {}
     for typek in ["sii", "otc"]:
         try:
-            url = f"https://mops.twse.com.tw/nas/t21/{typek}/t21sc03_{year}_{month}_0.html"
+            url = (f"https://mops.twse.com.tw/nas/t21/{typek}/"
+                   f"t21sc03_{year_roc}_{month}_0.html")
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
-            res.encoding = "big5"
+            # 嘗試自動偵測或 big5
+            try:
+                text = res.content.decode("utf-8")
+            except UnicodeDecodeError:
+                text = res.content.decode("big5", errors="replace")
             parser = RevParser()
-            parser.feed(res.text)
+            parser.feed(text)
             ok = 0
             for row in parser.cells:
                 try:
@@ -504,9 +562,9 @@ def fetch_mops_revenue():
                     result[code] = round(float(yoy_str), 1)
                     ok += 1
                 except: continue
-            print(f"  [月營收] {typek} {year}/{month} → {ok} 檔")
+            print(f"  [月營收] MOPS {typek} {year_roc}/{month} → {ok} 檔")
         except Exception as e:
-            print(f"  [月營收] {typek} 失敗：{e}")
+            print(f"  [月營收] MOPS {typek} 失敗：{e}")
     return result
 
 
