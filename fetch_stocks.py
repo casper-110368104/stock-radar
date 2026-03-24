@@ -154,9 +154,35 @@ def fetch_sector_rotation(days=60):
             vector = {"dx": round(today_rs - prev_rs, 4), "dy": round(rs_mom - prev_mom, 4)}
         else:
             vector = {"dx": 0, "dy": 0}
+            prev_mom = rs_mom
+
+        # 加速度：Momentum今日 - Momentum昨日
+        acceleration = round(rs_mom - prev_mom, 4)
+
+        # 連漲天數（RS連續上升），替代量能確認
+        rs_up_days = 0
+        for i in range(len(rs_vals) - 1, 0, -1):
+            if rs_vals[i] > rs_vals[i - 1]:
+                rs_up_days += 1
+            else:
+                break
+
+        # 細分四階段（含加速度判斷）
+        if phase == "improving":
+            sub_phase = "潛伏期"   # RS剛翻正、動能轉強
+        elif phase == "leading":
+            sub_phase = "爆發期" if acceleration >= 0 else "高檔震盪"
+        elif phase == "weakening":
+            sub_phase = "高檔震盪"  # RS高位但動能衰減
+        else:  # lagging
+            sub_phase = "資金衰退"
 
         trend = [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]]
-        result[s] = {"rs": round(today_rs, 2), "rs_mom": rs_mom, "phase": phase, "vector": vector, "trend": trend}
+        result[s] = {
+            "rs": round(today_rs, 2), "rs_mom": rs_mom, "phase": phase,
+            "sub_phase": sub_phase, "acceleration": acceleration,
+            "rs_up_days": rs_up_days, "vector": vector, "trend": trend,
+        }
 
     improving = sum(1 for v in result.values() if v["phase"] == "improving")
     leading   = sum(1 for v in result.values() if v["phase"] == "leading")
