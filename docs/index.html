@@ -142,6 +142,21 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .dtab.active{color:var(--text);border-bottom-color:var(--green)}
 .dpage{display:none;padding:13px}
 .dpage.active{display:block}
+.sig-list{display:flex;flex-direction:column;gap:10px}
+.sig-card{border-radius:10px;padding:11px 13px;border-left:4px solid}
+.sig-card.strong{background:rgba(0,200,150,.08);border-color:var(--green)}
+.sig-card.medium{background:rgba(255,159,67,.08);border-color:var(--orange)}
+.sig-card.weak{background:rgba(100,149,237,.08);border-color:var(--blue)}
+.sig-head{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.sig-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.3px}
+.sig-badge.strong{background:rgba(0,200,150,.18);color:var(--green)}
+.sig-badge.medium{background:rgba(255,159,67,.18);color:var(--orange)}
+.sig-badge.weak{background:rgba(100,149,237,.18);color:var(--blue)}
+.sig-label{font-size:13px;font-weight:700;color:var(--text)}
+.sig-reason{font-size:11px;color:var(--text3);margin-bottom:8px}
+.sig-prices{display:flex;gap:8px;flex-wrap:wrap}
+.sig-px{font-size:10.5px;padding:3px 8px;border-radius:6px;background:var(--bg3)}
+.sig-px span{font-weight:700;color:var(--text)}
 
 /* ─ Chips ─ */
 .chip-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid var(--border)}
@@ -467,9 +482,12 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 var stocks=[],etfs=[],curSort='score',curTab='all',curInd='all',curThm='all',
     curFMode='ind',curW='default',openCards={},cardTabs={};
 var curView='home';  // home / macro / etf / stocks
-var bizCycle={};     // 景氣燈號資料
+var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預設值防止 undefined）
 var sectorData={};   // 產業輪動資料
 var wl=[];try{wl=JSON.parse(localStorage.getItem('wl')||'[]');}catch(e){}
+// iOS Safari PWA 相對 URL 需轉成絕對路徑，否則拋出 "The string did not match the expected pattern."
+var _pageBase=(function(){var h=location.href.split('?')[0];return h.endsWith('/')?h:h.replace(/\/[^/]*$/,'/');}());
+function stocksUrl(){return _pageBase+'stocks.json?t='+Date.now();}
 
 var IND_S={'半導體業':'半導體','電腦及週邊設備業':'電腦週邊','光電業':'光電','其他電子業':'其他電子',
   '電子零組件業':'電子零組件','通信網路業':'通訊網路','電子通路業':'電子通路','資訊服務業':'資訊服務',
@@ -691,7 +709,7 @@ function toggleLend(el,e){
   var exp=el.querySelector('.lend-expand');
   if(exp) exp.classList.toggle('open');
 }
-function sc(s){var w=WS[curW],r=s.scores||{};return Math.round((r.chips||0)*w.c+(r.fundamental||0)*w.f+(r.technical||0)*(w.tech||0)+(r.revenue||0)*(w.r||0)+(r.volume||0)*w.v+(r.rs||0)*(w.s||0));}
+function sc(s){var w=WS[curW],r=s.scores||{};return Math.round((r.chips||0)*w.c+(r.fundamental||0)*w.f+(r.technical||0)*(w.tech||0)+(r.revenue||0)*(w.r||0)+(r.volume||0)*w.v+(r.rs||0)*(w.s||0)+(r.topic||0)*(w.t||0));}
 function scCol(v){return v>=70?'var(--green)':v>=45?'var(--orange)':'var(--red)';}
 function sgn(v){return v>0?'+':'';}
 function nc(v){return v>0?'nup':v<0?'ndn':'nfl';}
@@ -771,7 +789,6 @@ function rCard(s){
   var up=s.change_pct>=0,sg=up?'+':'',cls=up?'up':'dn';
   var ws=sc(s),col=scCol(ws);
   var icons=(s.icons||[]).map(function(i){return '<span class="icon">'+i+'</span>';}).join('');
-            s.scores&&s.scores.rs>=70&&s.chips_raw&&(s.chips_raw.foreign_con||0)>=3;
   var isRes=isResonance(s);
   var hasHighWarn=s.warnings&&s.warnings.some(function(w){return w.level==='high';});
 
@@ -891,13 +908,14 @@ function rCard(s){
       '</div>'+
       thbar+
       '<div class="dtabs">'+
-        mTab(s.code,0,ti,'🏦 籌碼')+mTab(s.code,1,ti,'💰 基本')+mTab(s.code,2,ti,'📊 量能')+mTab(s.code,3,ti,'📰 新聞')+
+        mTab(s.code,0,ti,'🏦 籌碼')+mTab(s.code,1,ti,'💰 基本')+mTab(s.code,2,ti,'📊 量能')+mTab(s.code,3,ti,'📰 新聞')+mTab(s.code,4,ti,'📈 訊號')+
       '</div>'+
       '<div id="dp-'+s.code+'">'+
         '<div class="dpage'+(ti===0?' active':'')+'">'+rChips(s)+'</div>'+
         '<div class="dpage'+(ti===1?' active':'')+'">'+rFund(s)+'</div>'+
         '<div class="dpage'+(ti===2?' active':'')+'">'+rVol(s)+'</div>'+
         '<div class="dpage'+(ti===3?' active':'')+'">'+rNews(s.topic&&s.topic.news)+'</div>'+
+        '<div class="dpage'+(ti===4?' active':'')+'">'+rSignals(s)+'</div>'+
       '</div>'+
     '</div>';
   }
@@ -1092,6 +1110,30 @@ function rNews(news){
   return sm+it;
 }
 
+function rSignals(s){
+  var sigs=s.signals||[];
+  if(!sigs.length)return '<div style="font-size:13px;color:var(--text3);text-align:center;padding:18px 0">目前無符合條件的買點訊號</div>';
+  var LABELS={'strong':'強','medium':'中','weak':'弱'};
+  var cards=sigs.map(function(sg){
+    var st=sg.strength||'medium';
+    var stLbl=LABELS[st]||st;
+    return '<div class="sig-card '+st+'">'+
+      '<div class="sig-head">'+
+        '<span class="sig-badge '+st+'">'+stLbl+'</span>'+
+        '<span class="sig-label">'+sg.label+'</span>'+
+      '</div>'+
+      '<div class="sig-reason">'+sg.reason+'</div>'+
+      '<div class="sig-prices">'+
+        '<div class="sig-px">進場 <span>$'+sg.entry+'</span></div>'+
+        '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
+        '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
+        '<div class="sig-px">RR <span>1:'+sg.rr+'</span></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  return '<div class="sig-list">'+cards+'</div>';
+}
+
 // ─ Filter ─
 function openFilter(mode){
   var dd=document.getElementById('fdd'),ov=document.getElementById('fov');
@@ -1142,11 +1184,14 @@ function doRefresh(){
   var btn=document.getElementById('refreshBtn');
   btn.classList.add('spinning');
   // 強制重新載入 stocks.json（加時間戳破快取）
-  fetch('stocks.json?t='+Date.now())
+  fetch(stocksUrl())
     .then(function(r){return r.json();})
     .then(function(d){
-      stocks=d.stocks||[];
-      document.getElementById('upd').innerHTML='更新：'+d.updated_at+'<br>共 '+d.total+' 檔';
+      var all=d.stocks||[];
+      etfs  =all.filter(function(s){return s.code.startsWith('00');});
+      stocks=all.filter(function(s){return !s.code.startsWith('00');});
+      sectorData=d.sector_rotation||{};
+      document.getElementById('upd').innerHTML='更新：'+d.updated_at+'<br>共 '+(d.total||stocks.length)+' 檔';
       render();
       btn.classList.remove('spinning');
     })
@@ -1327,7 +1372,7 @@ async function fetchBizCycle(){
 
 async function loadData(){
   try{
-    var res=await fetch('stocks.json?t='+Date.now());
+    var res=await fetch(stocksUrl());
     if(!res.ok)throw new Error('無法載入數據');
     var data=await res.json();
     // 分離 ETF（00開頭）和個股

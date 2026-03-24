@@ -117,10 +117,6 @@ def fetch_sector_rotation(days=60):
         print("  [產業輪動] 無資料，跳過")
         return {}
 
-    if not daily_data:
-        print("  [產業輪動] 無資料")
-        return {}
-
     dates = sorted(daily_data.keys())
     sectors = [v for v in SECTOR_MAP.values() if v != "_benchmark"]
     rs_history = {s: [] for s in sectors}
@@ -262,6 +258,10 @@ def fetch_yahoo(sid):
         "ma60": None, "above_ma60": None, "rs": None,
         "size_cat": "mid", "market_cap_b": 0,
         "vol20_avg": None, "vol60_avg": None, "shares_outstanding": 0,
+        "open": None, "high": None, "low": None,
+        "prev_close": None, "prev_high": None, "prev_low": None,
+        "ma5": None, "ma10": None, "ma20": None, "ma_bullish": None,
+        "high20": None, "low20": None, "prev_low20": None,
     }
     try:
         ticker = yf.Ticker(f"{sid}.TW")
@@ -349,6 +349,31 @@ def fetch_yahoo(sid):
             if len(vols) >= 60:
                 result["vol20_avg"] = sum(vols[-20:]) / 20
                 result["vol60_avg"] = sum(vols[-60:]) / 60
+
+            # OHLC + prev_close（供訊號計算用）
+            highs  = hist["High"].tolist()
+            lows   = hist["Low"].tolist()
+            opens  = hist["Open"].tolist()
+            if len(closes) >= 2:
+                result["open"]       = round(opens[-1],  2)
+                result["high"]       = round(highs[-1],  2)
+                result["low"]        = round(lows[-1],   2)
+                result["prev_close"] = round(closes[-2], 2)
+                result["prev_high"]  = round(highs[-2],  2)
+                result["prev_low"]   = round(lows[-2],   2)
+
+            # MA5, MA10, MA20
+            if len(closes) >= 20:
+                result["ma5"]  = round(sum(closes[-5:])  / 5,  2)
+                result["ma10"] = round(sum(closes[-10:]) / 10, 2)
+                result["ma20"] = round(sum(closes[-20:]) / 20, 2)
+                result["ma_bullish"] = (result["ma5"] > result["ma10"] > result["ma20"])
+
+            # 20日高低點（不含當日，供突破/假跌破訊號用）
+            if len(closes) >= 21:
+                result["high20"]     = round(max(highs[-21:-1]), 2)
+                result["low20"]      = round(min(lows[-21:-1]),  2)
+                result["prev_low20"] = round(min(lows[-22:-2]),  2) if len(lows) >= 22 else result["low20"]
 
             # MA60
             if len(closes) >= 60:
@@ -439,37 +464,95 @@ _benchmark_closes      = {}  # {large/mid/small: [收盤價...]}
 _revenue_map           = {}  # {sid: 月營收YoY%}
 
 def fetch_mops_revenue():
-    """從 MOPS 一次抓全市場月營收YoY，回傳 {sid: yoy%}，不消耗 FinMind 額度"""
+    """
+    抓全市場月營收 YoY，回傳 {sid: yoy%}，不消耗 FinMind 額度。
+    主力：TWSE / TPEx OpenData JSON API（穩定）
+    備用：MOPS 舊靜態 HTML（若 OpenData 失效）
+    """
     from datetime import datetime
     from html.parser import HTMLParser
     now = datetime.now()
-    year = now.year - 1911
-    month = now.month - 1
+    # 上個月
+    year_ad = now.year
+    month   = now.month - 1
     if month == 0:
-        month = 12; year -= 1
+        month = 12; year_ad -= 1
+    year_roc = year_ad - 1911  # 民國年
+
+    result = {}
+
+    # ── 主力：TWSE / TPEx OpenData JSON ───────────────────────────
+    HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+    apis = [
+        # 上市 (SII)
+        (f"https://opendata.twse.com.tw/v1/opendata/t187ap03_L", "上市"),
+        # 上櫃 (OTC) — TPEx open data
+        (f"https://opendata.tpex.org.tw/api/tpex_mainboard_monthly_revenue?"
+         f"d={year_roc:03d}/{month:02d}", "上櫃"),
+    ]
+    for url, mkt in apis:
+        try:
+            res = requests.get(url, headers=HEADERS, timeout=20)
+            if res.status_code != 200:
+                print(f"  [月營收] {mkt} OpenData HTTP {res.status_code}，略過")
+                continue
+            rows = res.json()
+            if not isinstance(rows, list):
+                rows = rows.get("data", rows.get("Data", []))
+            ok = 0
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                # 欄位名稱可能是中文或英文
+                code = (row.get("公司代號") or row.get("Code") or "").strip()
+                if not (code.isdigit() and len(code) == 4):
+                    continue
+                yoy_raw = (row.get("去年同月增減(%)") or row.get("YoY(%)") or
+                           row.get("yoy") or row.get("MoM%") or "")
+                try:
+                    yoy = round(float(str(yoy_raw).replace(",", "").replace("+", "").strip()), 1)
+                    result[code] = yoy
+                    ok += 1
+                except (ValueError, TypeError):
+                    continue
+            print(f"  [月營收] {mkt} OpenData {year_roc}/{month} → {ok} 檔")
+        except Exception as e:
+            print(f"  [月營收] {mkt} OpenData 失敗：{e}")
+
+    if result:
+        return result
+
+    # ── 備用：MOPS 靜態 HTML（舊路徑）────────────────────────────
+    print("  [月營收] OpenData 全部失敗，改用 MOPS 靜態 HTML 備援...")
 
     class RevParser(HTMLParser):
         def __init__(self):
             super().__init__()
-            self.in_td = False; self.row = []; self.cells = []
+            self.in_td = False; self.cur = []; self.row = []; self.cells = []
         def handle_starttag(self, tag, attrs):
-            if tag == "tr": self.row = []
-            if tag == "td": self.in_td = True
+            if tag == "tr":  self.row = []; self.cur = []
+            if tag == "td":  self.in_td = True; self.cur = []
         def handle_endtag(self, tag):
-            if tag == "td": self.in_td = False
+            if tag == "td":
+                self.in_td = False
+                self.row.append(" ".join(self.cur).strip())
             if tag == "tr" and len(self.row) >= 7:
                 self.cells.append(self.row[:])
         def handle_data(self, data):
-            if self.in_td: self.row.append(data.strip())
+            if self.in_td: self.cur.append(data.strip())
 
-    result = {}
     for typek in ["sii", "otc"]:
         try:
-            url = f"https://mops.twse.com.tw/nas/t21/{typek}/t21sc03_{year}_{month}_0.html"
+            url = (f"https://mops.twse.com.tw/nas/t21/{typek}/"
+                   f"t21sc03_{year_roc}_{month}_0.html")
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
-            res.encoding = "big5"
+            # 嘗試自動偵測或 big5
+            try:
+                text = res.content.decode("utf-8")
+            except UnicodeDecodeError:
+                text = res.content.decode("big5", errors="replace")
             parser = RevParser()
-            parser.feed(res.text)
+            parser.feed(text)
             ok = 0
             for row in parser.cells:
                 try:
@@ -479,9 +562,9 @@ def fetch_mops_revenue():
                     result[code] = round(float(yoy_str), 1)
                     ok += 1
                 except: continue
-            print(f"  [月營收] {typek} {year}/{month} → {ok} 檔")
+            print(f"  [月營收] MOPS {typek} {year_roc}/{month} → {ok} 檔")
         except Exception as e:
-            print(f"  [月營收] {typek} 失敗：{e}")
+            print(f"  [月營收] MOPS {typek} 失敗：{e}")
     return result
 
 
@@ -1079,6 +1162,94 @@ def calc_warnings(chips, yahoo, vol_month_ratio):
     return warnings
 
 
+# ── 5b. 買點訊號偵測 ──────────────────────────────────────────────
+
+def calc_signals(yahoo, chips, rs_pct=50):
+    """
+    偵測 6 種技術面買點訊號，回傳 list of dict。
+    每個訊號：{type, label, strength, entry, stop_loss, target, risk, rr, reason}
+    strength: 'strong' | 'medium' | 'weak'
+    """
+    signals = []
+
+    price     = yahoo.get("price")     or 0
+    high20    = yahoo.get("high20")
+    low20     = yahoo.get("low20")
+    prev_low20= yahoo.get("prev_low20")
+    prev_close= yahoo.get("prev_close")
+    ma5       = yahoo.get("ma5")
+    ma10      = yahoo.get("ma10")
+    ma20      = yahoo.get("ma20")
+    ma60      = yahoo.get("ma60")
+    vol_day   = yahoo.get("vol_day_ratio") or 1.0
+
+    if not price:
+        return []
+
+    def _sig(type_, label, strength, entry, stop, reason):
+        risk = round(entry - stop, 2) if stop else 0
+        if risk <= 0:
+            return None
+        target = round(entry + risk * 2, 2)
+        return {
+            "type":      type_,
+            "label":     label,
+            "strength":  strength,
+            "entry":     round(entry, 2),
+            "stop_loss": round(stop,  2),
+            "target":    target,
+            "risk":      risk,
+            "rr":        2.0,
+            "reason":    reason,
+        }
+
+    # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70
+    if high20 and price > high20 and vol_day >= 1.5 and rs_pct >= 70:
+        s = _sig("breakout", "突破", "strong", price, low20 or price * 0.95,
+                 f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，RS百分位{rs_pct}")
+        if s: signals.append(s)
+
+    # 2. 假跌破（False Breakdown）：昨收 < prev_low20 且今收 > low20
+    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20:
+        s = _sig("false_breakdown", "假跌破", "strong", price, low20 * 0.98,
+                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復")
+        if s: signals.append(s)
+
+    # 3. 均線回測（MA Pullback）：多頭排列 + 收盤距MA20在3%以內
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
+        dist_ma20 = (price - ma20) / ma20
+        if 0 <= dist_ma20 <= 0.03:
+            s = _sig("ma_pullback", "均線回測", "medium", price, ma20,
+                     f"均線多頭排列，收盤({price})回測MA20({ma20})")
+            if s: signals.append(s)
+
+    # 4. 強整再突（High Base Breakout）：收盤距20日高≤5% + 收盤>MA5 + RS百分位≥70
+    if high20 and ma5 and price > ma5 and rs_pct >= 70:
+        dist_high20 = (high20 - price) / high20
+        if 0 <= dist_high20 <= 0.05:
+            s = _sig("high_base", "強整再突", "medium", price, ma10 or price * 0.95,
+                     f"緊貼20日高({high20})整理，RS百分位{rs_pct}")
+            if s: signals.append(s)
+
+    # 5. 回測（Retest）：收盤距MA10在2%以內 + 量比<1 + 收盤>MA20（縮量回測均線）
+    if ma10 and ma20 and price > ma20:
+        dist_ma10 = abs(price - ma10) / ma10
+        if dist_ma10 <= 0.02 and vol_day < 1.0:
+            s = _sig("retest", "回測", "medium", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10({ma10})")
+            if s: signals.append(s)
+
+    # 6. MA60支撐（MA60 Support）：收盤距MA60在2%以內 + RS百分位≥50
+    if ma60 and rs_pct >= 50:
+        dist_ma60 = (price - ma60) / ma60
+        if 0 <= dist_ma60 <= 0.02:
+            s = _sig("ma60_support", "MA60支撐", "weak", price, ma60 * 0.97,
+                     f"收盤({price})貼近MA60({ma60})，RS百分位{rs_pct}")
+            if s: signals.append(s)
+
+    return signals
+
+
 # ── 6. 評分（各項 0~100）─────────────────────────────────────────
 
 def calc_score(chips, yahoo, vol_month_ratio, news_list, lending=None, rs_val=None, rs_pct=None, revenue_yoy=None):
@@ -1477,6 +1648,18 @@ def process_stock(sid, category):
         "ma60":            yahoo.get("ma60"),
         "above_ma60":      yahoo.get("above_ma60"),
         "revenue_yoy":     revenue_yoy,
+        # 技術面欄位（供訊號計算 + 前端顯示用）
+        "open":            yahoo.get("open"),
+        "high":            yahoo.get("high"),
+        "low":             yahoo.get("low"),
+        "prev_close":      yahoo.get("prev_close"),
+        "ma5":             yahoo.get("ma5"),
+        "ma10":            yahoo.get("ma10"),
+        "ma20":            yahoo.get("ma20"),
+        "ma_bullish":      yahoo.get("ma_bullish"),
+        "high20":          yahoo.get("high20"),
+        "low20":           yahoo.get("low20"),
+        "signals":         [],  # 在 main() RS 百分位確定後填入
     }
 
 
@@ -1608,6 +1791,12 @@ def main():
             elif pct >= 70: r["scores"]["rs"] = 60
             elif pct >= 50: r["scores"]["rs"] = 40
             else:           r["scores"]["rs"] = max(0, int(pct * 0.6))
+            # 計算買點訊號（RS百分位確定後）
+            r["signals"] = calc_signals(r, r.get("chips_raw", {}), int(pct))
+    # 其餘無 RS 值的股票以預設百分位 50 計算訊號
+    for r in results:
+        if not r.get("signals") and r.get("price"):
+            r["signals"] = calc_signals(r, r.get("chips_raw", {}), 50)
 
     # 補完 Gemini 後重新排序
     results.sort(key=total_score, reverse=True)
