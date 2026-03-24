@@ -813,6 +813,20 @@ function rCard(s){
     rankHtml='<span class="ind-rank '+rc+'">'+short+' #'+ri.rank+'/'+ri.total+'</span>';
   }
 
+  // sector rotation phase badge
+  var sectorPhaseHtml='';
+  var _sd=s.sector_key&&sectorData[s.sector_key];
+  if(_sd){
+    var _sp=_sd.sub_phase||'';
+    var _ac=_sd.acceleration||0;
+    var _arr=_ac>0.05?'▲':_ac<-0.05?'▼':'─';
+    var _arc=_ac>0.05?'#22c55e':_ac<-0.05?'#ef4444':'#9ca3af';
+    var _spbg={'潛伏期':'rgba(59,130,246,.18)','爆發期':'rgba(34,197,94,.18)','高檔震盪':'rgba(245,158,11,.18)','資金衰退':'rgba(239,68,68,.18)'}[_sp]||'rgba(100,100,100,.12)';
+    sectorPhaseHtml='<span style="display:inline-block;margin-top:3px;font-size:9px;background:'+_spbg+';padding:1px 6px;border-radius:4px;white-space:nowrap">'+
+      _sp+' <span style="color:'+_arc+';font-weight:700">'+_arr+'</span>'+
+    '</span>';
+  }
+
   var detail='';
   if(isOpen){
     var ti=cardTabs[s.code]||0;
@@ -945,6 +959,7 @@ function rCard(s){
           '<div class="sc-bar"><div class="sc-bar-fill" style="width:'+ws+'%;background:'+col+'"></div></div>'+
         '</div>'+
         rankHtml+
+        sectorPhaseHtml+
       '</div>'+
       '<div class="card-right">'+
         '<span class="price-num '+cls+'">$'+Number(s.price).toLocaleString()+'</span>'+
