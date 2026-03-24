@@ -60,7 +60,11 @@ _sector_rotation = {}  # 產業輪動四象限資料
 
 
 def fetch_sector_rotation(days=60):
-    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/RS_Mom，回傳四象限資料
+    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/RS_trend，回傳四象限資料
+    RS = 產業漲幅 - 大盤漲幅（日報酬差，%）
+    M  = RS / max(|RS_MA10|, 1)（動能，短期相對強弱）
+    A  = M差值的3日平均（加速度）
+    RS_trend = RS的5日線性斜率
     每次完整重算，確保資料為最新60交易日
     """
     from datetime import datetime, timedelta
@@ -68,13 +72,13 @@ def fetch_sector_rotation(days=60):
     days_back = 0
     collected = 0
     today = datetime.now()
-    empty_streak = 0  # 連續空資料計數，太多就停止
+    empty_streak = 0
 
     print(f"  [產業輪動] 開始抓取近 {days} 個交易日...")
     while collected < days and days_back < days * 2 and empty_streak < 10:
         days_back += 1
         d = today - timedelta(days=days_back)
-        if d.weekday() >= 5:  # 跳過週末
+        if d.weekday() >= 5:
             continue
         date_str = d.strftime("%Y%m%d")
         try:
@@ -84,7 +88,6 @@ def fetch_sector_rotation(days=60):
             if data.get("stat") != "OK":
                 empty_streak += 1
                 continue
-            # 取第一個有資料的 table（價格指數 TWSE）
             table = next((t for t in data.get("tables", []) if t.get("data")), None)
             if not table:
                 empty_streak += 1
@@ -101,7 +104,7 @@ def fetch_sector_rotation(days=60):
             if "_benchmark" in day_dict and len(day_dict) > 10:
                 daily_data[d.strftime("%Y-%m-%d")] = day_dict
                 collected += 1
-                empty_streak = 0  # 重置
+                empty_streak = 0
                 if collected % 10 == 0:
                     print(f"  [產業輪動] 已收集 {collected}/{days} 天")
             else:
@@ -121,45 +124,89 @@ def fetch_sector_rotation(days=60):
     sectors = [v for v in SECTOR_MAP.values() if v != "_benchmark"]
     rs_history = {s: [] for s in sectors}
 
-    for date in dates:
+    # RS = 產業日漲幅 - 大盤日漲幅（需要相鄰兩日）
+    for i in range(1, len(dates)):
+        date = dates[i]
+        prev_date = dates[i - 1]
         day = daily_data[date]
+        prev_day = daily_data.get(prev_date, {})
         bm = day.get("_benchmark", 0)
-        if bm <= 0:
+        prev_bm = prev_day.get("_benchmark", 0)
+        if bm <= 0 or prev_bm <= 0:
             continue
+        bm_ret = (bm / prev_bm - 1) * 100
         for s in sectors:
-            if s in day:
-                rs = day[s] / bm * 100
-                rs_history[s].append({"date": date[5:], "rs": round(rs, 4)})
+            if s in day and s in prev_day and prev_day[s] > 0:
+                sector_ret = (day[s] / prev_day[s] - 1) * 100
+                rs = round(sector_ret - bm_ret, 4)
+                rs_history[s].append({"date": date[5:], "rs": rs})
 
-    mom_period = 10
+    def linear_slope(vals):
+        n = len(vals)
+        if n < 2:
+            return 0.0
+        x_mean = (n - 1) / 2
+        y_mean = sum(vals) / n
+        num = sum((i - x_mean) * (vals[i] - y_mean) for i in range(n))
+        den = sum((i - x_mean) ** 2 for i in range(n))
+        return num / den if den else 0.0
+
+    min_required = 13  # 需要 10(MA) + 3(A平滑) 天
     result = {}
     for s in sectors:
         hist = rs_history[s]
-        if len(hist) < mom_period + 1:
+        if len(hist) < min_required:
             continue
         rs_vals = [h["rs"] for h in hist]
-        today_rs = rs_vals[-1]
-        ma_rs = sum(rs_vals[-mom_period:]) / mom_period
-        rs_mom = round((today_rs / ma_rs * 100) if ma_rs > 0 else 100, 2)
 
-        if   today_rs > 100 and rs_mom > 100: phase = "leading"
-        elif today_rs > 100 and rs_mom < 100: phase = "weakening"
-        elif today_rs < 100 and rs_mom < 100: phase = "lagging"
-        else:                                  phase = "improving"
+        # RS_MA10 序列
+        rs_ma10_series = [None] * len(rs_vals)
+        for i in range(9, len(rs_vals)):
+            rs_ma10_series[i] = sum(rs_vals[i-9:i+1]) / 10
 
-        if len(hist) >= 2:
-            prev_rs = rs_vals[-2]
-            prev_ma = sum(rs_vals[-(mom_period+1):-1]) / mom_period if len(rs_vals) >= mom_period+1 else ma_rs
-            prev_mom = round((prev_rs / prev_ma * 100) if prev_ma > 0 else 100, 2)
-            vector = {"dx": round(today_rs - prev_rs, 4), "dy": round(rs_mom - prev_mom, 4)}
+        # M 序列
+        m_series = [None] * len(rs_vals)
+        for i in range(len(rs_vals)):
+            if rs_ma10_series[i] is not None:
+                m_series[i] = rs_vals[i] / max(abs(rs_ma10_series[i]), 1)
+
+        # A_raw = M今 - M昨
+        a_raw_series = [None] * len(m_series)
+        for i in range(1, len(m_series)):
+            if m_series[i] is not None and m_series[i-1] is not None:
+                a_raw_series[i] = m_series[i] - m_series[i-1]
+
+        # A = A_raw 的3日平均
+        a_series = [None] * len(a_raw_series)
+        for i in range(len(a_raw_series)):
+            if a_raw_series[i] is None:
+                continue
+            window = [a_raw_series[j] for j in range(max(0, i-2), i+1) if a_raw_series[j] is not None]
+            if window:
+                a_series[i] = sum(window) / len(window)
+
+        today_rs  = rs_vals[-1]
+        today_m   = m_series[-1]
+        today_a   = a_series[-1]
+        if today_m is None or today_a is None:
+            continue
+
+        # RS_trend：最近5日RS線性斜率
+        rs_trend = round(linear_slope(rs_vals[-5:]), 4)
+
+        # 四象限分類
+        if today_rs > 0 and today_m > 1.2 and today_a >= 0 and rs_trend > 0:
+            sub_phase = "主升段"
+        elif today_rs > 0 and today_m > 1 and today_a > 0 and rs_trend > 0:
+            sub_phase = "準備噴"
+        elif today_m < 1 and today_a < 0:
+            sub_phase = "高檔震盪" if today_rs > 0 else "空頭"
+        elif today_rs < 0:
+            sub_phase = "空頭"
         else:
-            vector = {"dx": 0, "dy": 0}
-            prev_mom = rs_mom
+            sub_phase = "高檔震盪"
 
-        # 加速度：Momentum今日 - Momentum昨日
-        acceleration = round(rs_mom - prev_mom, 4)
-
-        # 連漲天數（RS連續上升），替代量能確認
+        # 連漲天數（RS連續上升）
         rs_up_days = 0
         for i in range(len(rs_vals) - 1, 0, -1):
             if rs_vals[i] > rs_vals[i - 1]:
@@ -167,26 +214,27 @@ def fetch_sector_rotation(days=60):
             else:
                 break
 
-        # 細分四階段（含加速度判斷）
-        if phase == "improving":
-            sub_phase = "潛伏期"   # RS剛翻正、動能轉強
-        elif phase == "leading":
-            sub_phase = "爆發期" if acceleration >= 0 else "高檔震盪"
-        elif phase == "weakening":
-            sub_phase = "高檔震盪"  # RS高位但動能衰減
-        else:  # lagging
-            sub_phase = "資金衰退"
+        prev_rs = rs_vals[-2] if len(rs_vals) >= 2 else today_rs
+        prev_m  = m_series[-2] if m_series[-2] is not None else today_m
+        vector  = {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)}
 
         trend = [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]]
         result[s] = {
-            "rs": round(today_rs, 2), "rs_mom": rs_mom, "phase": phase,
-            "sub_phase": sub_phase, "acceleration": acceleration,
-            "rs_up_days": rs_up_days, "vector": vector, "trend": trend,
+            "rs":           round(today_rs, 2),
+            "rs_mom":       round(today_m, 4),   # M 值（前端仍用 rs_mom 鍵）
+            "acceleration": round(today_a, 4),
+            "rs_trend":     rs_trend,
+            "sub_phase":    sub_phase,
+            "rs_up_days":   rs_up_days,
+            "vector":       vector,
+            "trend":        trend,
         }
 
-    improving = sum(1 for v in result.values() if v["phase"] == "improving")
-    leading   = sum(1 for v in result.values() if v["phase"] == "leading")
-    print(f"  [產業輪動] {len(result)} 個產業 | 領先:{leading} 轉強:{improving}")
+    phase_counts = {}
+    for v in result.values():
+        phase_counts[v["sub_phase"]] = phase_counts.get(v["sub_phase"], 0) + 1
+    summary = " | ".join(f"{k}:{v}" for k, v in sorted(phase_counts.items()))
+    print(f"  [產業輪動] {len(result)} 個產業 | {summary}")
     return result
 
 
@@ -865,6 +913,185 @@ SECTOR_KEY_MAP = {
 }
 
 TW_INDUSTRIES = list(set(INDUSTRY_MAP.values()))
+
+# 股票代號 → sector_rotation key 靜態對照表（比 yfinance industry 更可靠）
+# 覆蓋 yfinance 的錯誤分類（台灣大→通信網路、山隆→航運、中纖→紡織 等）
+STOCK_SECTOR_MAP = {
+    "1101": "建材營造",  # 台泥
+    "1213": "食品",      # 大飲
+    "1235": "食品",      # 興泰
+    "1301": "化學",      # 台塑
+    "1303": "化學",      # 南亞
+    "1304": "化學",      # 台聚
+    "1305": "化學",      # 華夏
+    "1307": "紡織",      # 三芳
+    "1308": "化學",      # 亞聚
+    "1309": "化學",      # 台達化
+    "1310": "化學",      # 台苯
+    "1312": "化學",      # 國喬
+    "1313": "化學",      # 聯成
+    "1314": "化學",      # 中石化
+    "1326": "化學",      # 台化
+    "1402": "紡織",      # 遠東新
+    "1466": "紡織",      # 聚隆
+    "1536": "汽車",      # 和大
+    "1589": "電機機械",  # 永冠-KY
+    "1597": "電機機械",  # 直得
+    "1605": "鋼鐵",      # 華新
+    "1708": "化學",      # 東鹼
+    "1710": "化學",      # 東聯
+    "1711": "化學",      # 永光
+    "1717": "化學",      # 長興
+    "1718": "紡織",      # 中纖（yfinance 誤標為銀行）
+    "1723": "化學",      # 中碳
+    "1732": "居家生活",  # 毛寶
+    "1736": "運動休閒",  # 喬山（健身器材，yfinance 誤標為觀光）
+    "1760": "生技醫療",  # 寶齡富錦
+    "1802": "建材營造",  # 台玻
+    "1904": "造紙",      # 正隆
+    "1905": "造紙",      # 華紙
+    "2002": "鋼鐵",      # 中鋼
+    "2013": "鋼鐵",      # 中鋼構
+    "2014": "鋼鐵",      # 中鴻
+    "2027": "鋼鐵",      # 大成鋼
+    "2032": "鋼鐵",      # 新鋼
+    "2038": "鋼鐵",      # 海光
+    "2059": "居家生活",  # 川湖
+    "2207": "汽車",      # 和泰車
+    "2303": "半導體",    # 聯電
+    "2308": "電子零組件",# 台達電
+    "2313": "電子零組件",# 華通
+    "2317": "電子零組件",# 鴻海
+    "2323": "電腦週邊",  # 中環
+    "2324": "電腦週邊",  # 仁寶
+    "2327": "電子零組件",# 國巨
+    "2329": "半導體",    # 華泰
+    "2330": "半導體",    # 台積電
+    "2337": "半導體",    # 旺宏
+    "2344": "半導體",    # 華邦電
+    "2349": "電腦週邊",  # 錸德
+    "2351": "半導體",    # 順德
+    "2353": "電腦週邊",  # 宏碁
+    "2357": "電腦週邊",  # 華碩
+    "2367": "電子零組件",# 燿華
+    "2369": "半導體",    # 菱生
+    "2371": "電機機械",  # 大同（yfinance 誤標為其他）
+    "2382": "電腦週邊",  # 廣達
+    "2388": "半導體",    # 威盛
+    "2395": "電腦週邊",  # 研華
+    "2406": "綠能環保",  # 國碩
+    "2408": "半導體",    # 南亞科
+    "2409": "電子零組件",# 友達
+    "2412": "通信網路",  # 中華電
+    "2424": "通信網路",  # 隴華（與兆赫同類）
+    "2425": "電腦週邊",  # 承啟
+    "2431": "電子零組件",# 聯昌
+    "2449": "半導體",    # 京元電子
+    "2454": "半導體",    # 聯發科
+    "2455": "半導體",    # 全新
+    "2474": "電機機械",  # 可成
+    "2485": "通信網路",  # 兆赫
+    "2489": "電機機械",  # 瑞軒
+    "2603": "航運",      # 長榮
+    "2605": "航運",      # 新興
+    "2609": "航運",      # 陽明
+    "2610": "航運",      # 華航
+    "2615": "航運",      # 萬海
+    "2616": "航運",      # 山隆（yfinance 誤標為零售百貨）
+    "2618": "航運",      # 長榮航
+    "2801": "金融保險",  # 彰銀
+    "2834": "金融保險",  # 臺企銀
+    "2867": "金融保險",  # 三商壽
+    "2880": "金融保險",  # 華南金
+    "2881": "金融保險",  # 富邦金
+    "2882": "金融保險",  # 國泰金
+    "2883": "金融保險",  # 凱基金
+    "2884": "金融保險",  # 玉山金
+    "2885": "金融保險",  # 元大金
+    "2886": "金融保險",  # 兆豐金
+    "2887": "金融保險",  # 台新新光金
+    "2890": "金融保險",  # 永豐金
+    "2891": "金融保險",  # 中信金
+    "2892": "金融保險",  # 第一金
+    "3008": "電子零組件",# 大立光
+    "3026": "電子零組件",# 禾伸堂
+    "3034": "半導體",    # 聯詠
+    "3041": "半導體",    # 揚智
+    "3045": "通信網路",  # 台灣大（yfinance 誤標為零售百貨）
+    "3049": "電子零組件",# 精金
+    "3167": "電機機械",  # 大量
+    "3231": "電腦週邊",  # 緯創
+    "3450": "半導體",    # 聯鈞
+    "3481": "電子零組件",# 群創
+    "3530": "半導體",    # 晶相光
+    "3576": "綠能環保",  # 聯合再生
+    "3583": "半導體",    # 辛耘
+    "3653": "電子零組件",# 健策
+    "3702": "電子通路",  # 大聯大
+    "3711": "半導體",    # 日月光投控
+    "3715": "電子零組件",# 定穎投控
+    "3717": "電子零組件",# 聯嘉投控
+    "4148": "化學",      # 全宇生技-KY（化學原料）
+    "4526": "電機機械",  # 東台
+    "4551": "汽車",      # 智伸科
+    "4566": "電機機械",  # 時碩工業
+    "4576": "電機機械",  # 大銀微系統
+    "4739": "化學",      # 康普
+    "4746": "生技醫療",  # 台耀
+    "4755": "化學",      # 三福化
+    "4766": "化學",      # 南寶
+    "4906": "通信網路",  # 正文
+    "4919": "半導體",    # 新唐
+    "4927": "電子零組件",# 泰鼎-KY
+    "4938": "電腦週邊",  # 和碩
+    "4956": "電子零組件",# 光鋐
+    "4958": "電子零組件",# 臻鼎-KY
+    "4967": "電腦週邊",  # 十銓
+    "4977": "電腦週邊",  # 眾達-KY
+    "4989": "鋼鐵",      # 榮科
+    "5521": "建材營造",  # 工信
+    "5871": "金融保險",  # 中租-KY
+    "5880": "金融保險",  # 合庫金
+    "5906": "紡織",      # 台南-KY
+    "6116": "電子零組件",# 彩晶
+    "6155": "電子零組件",# 鈞寶
+    "6209": "電子零組件",# 今國光
+    "6225": "電子工業",  # 天瀚
+    "6226": "電子零組件",# 光鼎
+    "6269": "電子零組件",# 台郡
+    "6282": "電機機械",  # 康舒
+    "6415": "半導體",    # 矽力-KY
+    "6438": "電機機械",  # 迅得
+    "6443": "綠能環保",  # 元晶
+    "6451": "半導體",    # 訊芯-KY
+    "6505": "油電燃氣",  # 台塑化
+    "6550": "生技醫療",  # 北極星藥業-KY
+    "6585": "化學",      # 鼎基
+    "6669": "電腦週邊",  # 緯穎
+    "6672": "電子零組件",# 騰輝電子-KY
+    "6689": "數位雲端",  # 伊雲谷
+    "6722": "汽車",      # 輝創
+    "6770": "半導體",    # 力積電
+    "6789": "半導體",    # 采鈺
+    "6830": "半導體",    # 汎銓
+    "6890": "紡織",      # 來億-KY
+    "6919": "生技醫療",  # 康霈
+    "7610": "鋼鐵",      # 聯友金屬-創
+    "7711": "電腦週邊",  # 永擎
+    "7722": "資訊服務",  # LINEPAY
+    "7730": "電機機械",  # 暉盛-創
+    "7750": "電機機械",  # 新代
+    "7780": "食品",      # 大研生醫（保健食品）
+    "8021": "電機機械",  # 尖點
+    "8046": "電子零組件",# 南電
+    "8110": "半導體",    # 華東
+    "8112": "半導體",    # 至上
+    "8215": "電子零組件",# 明基材
+    "8422": "綠能環保",  # 可寧衛（廢棄物處理，yfinance 誤標為其他）
+    "8940": "觀光餐旅",  # 新天地
+    "9919": "居家生活",  # 康那香
+    "9929": "其他",      # 秋雨（待確認）
+}
 
 def fetch_all_industries(sids):
     """用靜態對照表把 Yahoo 英文產業轉成中文，不消耗任何 API quota"""
@@ -1685,7 +1912,7 @@ def process_stock(sid, category):
         "name":            yahoo.get("name", sid),
         "category":        category,
         "industry":        yahoo.get("industry", "其他"),
-        "sector_key":      SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""),
+        "sector_key":      STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""),
         "themes":          themes,
         "warnings":        warnings,
         "price":           yahoo.get("price"),
