@@ -591,12 +591,12 @@ function renderMacroFull(){
   var sdKeys=Object.keys(sectorData);
   if(sdKeys.length){
     var phases={
-      '潛伏期':{label:'潛伏期 🔵',color:'#3b82f6',bg:'rgba(59,130,246,.07)',border:'rgba(59,130,246,.25)',desc:'RS<100 動能轉強 ⚡'},
-      '爆發期':{label:'爆發期 🟢',color:'#22c55e',bg:'rgba(34,197,94,.07)',border:'rgba(34,197,94,.25)',desc:'RS>100 動能強 加速上升'},
-      '高檔震盪':{label:'高檔震盪 🟡',color:'#f59e0b',bg:'rgba(245,158,11,.07)',border:'rgba(245,158,11,.25)',desc:'RS高位 動能減弱'},
-      '資金衰退':{label:'資金衰退 🔴',color:'#ef4444',bg:'rgba(239,68,68,.07)',border:'rgba(239,68,68,.25)',desc:'RS<100 動能弱'}
+      '準備噴':{label:'準備噴 🔵',color:'#3b82f6',bg:'rgba(59,130,246,.07)',border:'rgba(59,130,246,.25)',desc:'RS>0 M>1 A>0 剛翻強'},
+      '主升段':{label:'主升段 🟢',color:'#22c55e',bg:'rgba(34,197,94,.07)',border:'rgba(34,197,94,.25)',desc:'RS高 M>1.2 A≥0 強趨勢'},
+      '高檔震盪':{label:'高檔震盪 🟡',color:'#f59e0b',bg:'rgba(245,158,11,.07)',border:'rgba(245,158,11,.25)',desc:'RS高但不創高 M<1 A<0'},
+      '空頭':{label:'空頭 🔴',color:'#ef4444',bg:'rgba(239,68,68,.07)',border:'rgba(239,68,68,.25)',desc:'RS<0 M<1 A<0'}
     };
-    var groups={'潛伏期':[],'爆發期':[],'高檔震盪':[],'資金衰退':[]};
+    var groups={'準備噴':[],'主升段':[],'高檔震盪':[],'空頭':[]};
     sdKeys.forEach(function(name){
       var d=sectorData[name];
       var sp=d&&d.sub_phase;
@@ -605,7 +605,7 @@ function renderMacroFull(){
     h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
       '<div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-    ['潛伏期','爆發期','高檔震盪','資金衰退'].forEach(function(ph){
+    ['準備噴','主升段','高檔震盪','空頭'].forEach(function(ph){
       var p=phases[ph],list=groups[ph]||[];
       list.sort(function(a,b){return b.rs_mom-a.rs_mom;});
       h+='<div style="background:'+p.bg+';border:1px solid '+p.border+';border-radius:12px;padding:10px">'+
@@ -618,10 +618,10 @@ function renderMacroFull(){
         var accColor=accel>0.05?'#22c55e':accel<-0.05?'#ef4444':'#9ca3af';
         var spLabel=s.sub_phase||'';
         var spColors={
-          '潛伏期':'rgba(59,130,246,.15)',
-          '爆發期':'rgba(34,197,94,.15)',
+          '準備噴':'rgba(59,130,246,.15)',
+          '主升段':'rgba(34,197,94,.15)',
           '高檔震盪':'rgba(245,158,11,.15)',
-          '資金衰退':'rgba(239,68,68,.15)'
+          '空頭':'rgba(239,68,68,.15)'
         };
         var spBg=spColors[spLabel]||'rgba(100,100,100,.1)';
         var upTag=s.rs_up_days>=3?'<span style="font-size:9px;color:#f59e0b;margin-left:2px">↑'+s.rs_up_days+'d</span>':'';
@@ -641,7 +641,7 @@ function renderMacroFull(){
       h+='</div>';
     });
     h+='</div>'+
-      '<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">RS=產業指數/大盤×100 ｜ Mom=RS/10日均RS×100 ｜ <span style="color:#22c55e">▲</span>正在變強 <span style="color:#ef4444">▼</span>正在轉弱 ｜ TWSE</div>'+
+      '<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">RS=產業漲幅-大盤漲幅 ｜ M=RS/MA10 ｜ A=加速度3日均 ｜ <span style="color:#22c55e">▲</span>加速 <span style="color:#ef4444">▼</span>減速 ｜ TWSE</div>'+
     '</div>';
   }
 
@@ -821,7 +821,7 @@ function rCard(s){
     var _ac=_sd.acceleration||0;
     var _arr=_ac>0.05?'▲':_ac<-0.05?'▼':'─';
     var _arc=_ac>0.05?'#22c55e':_ac<-0.05?'#ef4444':'#9ca3af';
-    var _spbg={'潛伏期':'rgba(59,130,246,.18)','爆發期':'rgba(34,197,94,.18)','高檔震盪':'rgba(245,158,11,.18)','資金衰退':'rgba(239,68,68,.18)'}[_sp]||'rgba(100,100,100,.12)';
+    var _spbg={'準備噴':'rgba(59,130,246,.18)','主升段':'rgba(34,197,94,.18)','高檔震盪':'rgba(245,158,11,.18)','空頭':'rgba(239,68,68,.18)'}[_sp]||'rgba(100,100,100,.12)';
     sectorPhaseHtml='<span style="display:inline-block;margin-top:3px;font-size:9px;background:'+_spbg+';padding:1px 6px;border-radius:4px;white-space:nowrap">'+
       _sp+' <span style="color:'+_arc+';font-weight:700">'+_arr+'</span>'+
     '</span>';

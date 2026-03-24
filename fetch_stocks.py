@@ -60,7 +60,11 @@ _sector_rotation = {}  # 產業輪動四象限資料
 
 
 def fetch_sector_rotation(days=60):
-    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/RS_Mom，回傳四象限資料
+    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/RS_trend，回傳四象限資料
+    RS = 產業漲幅 - 大盤漲幅（日報酬差，%）
+    M  = RS / max(|RS_MA10|, 1)（動能，短期相對強弱）
+    A  = M差值的3日平均（加速度）
+    RS_trend = RS的5日線性斜率
     每次完整重算，確保資料為最新60交易日
     """
     from datetime import datetime, timedelta
@@ -68,13 +72,13 @@ def fetch_sector_rotation(days=60):
     days_back = 0
     collected = 0
     today = datetime.now()
-    empty_streak = 0  # 連續空資料計數，太多就停止
+    empty_streak = 0
 
     print(f"  [產業輪動] 開始抓取近 {days} 個交易日...")
     while collected < days and days_back < days * 2 and empty_streak < 10:
         days_back += 1
         d = today - timedelta(days=days_back)
-        if d.weekday() >= 5:  # 跳過週末
+        if d.weekday() >= 5:
             continue
         date_str = d.strftime("%Y%m%d")
         try:
@@ -84,7 +88,6 @@ def fetch_sector_rotation(days=60):
             if data.get("stat") != "OK":
                 empty_streak += 1
                 continue
-            # 取第一個有資料的 table（價格指數 TWSE）
             table = next((t for t in data.get("tables", []) if t.get("data")), None)
             if not table:
                 empty_streak += 1
@@ -101,7 +104,7 @@ def fetch_sector_rotation(days=60):
             if "_benchmark" in day_dict and len(day_dict) > 10:
                 daily_data[d.strftime("%Y-%m-%d")] = day_dict
                 collected += 1
-                empty_streak = 0  # 重置
+                empty_streak = 0
                 if collected % 10 == 0:
                     print(f"  [產業輪動] 已收集 {collected}/{days} 天")
             else:
@@ -121,45 +124,89 @@ def fetch_sector_rotation(days=60):
     sectors = [v for v in SECTOR_MAP.values() if v != "_benchmark"]
     rs_history = {s: [] for s in sectors}
 
-    for date in dates:
+    # RS = 產業日漲幅 - 大盤日漲幅（需要相鄰兩日）
+    for i in range(1, len(dates)):
+        date = dates[i]
+        prev_date = dates[i - 1]
         day = daily_data[date]
+        prev_day = daily_data.get(prev_date, {})
         bm = day.get("_benchmark", 0)
-        if bm <= 0:
+        prev_bm = prev_day.get("_benchmark", 0)
+        if bm <= 0 or prev_bm <= 0:
             continue
+        bm_ret = (bm / prev_bm - 1) * 100
         for s in sectors:
-            if s in day:
-                rs = day[s] / bm * 100
-                rs_history[s].append({"date": date[5:], "rs": round(rs, 4)})
+            if s in day and s in prev_day and prev_day[s] > 0:
+                sector_ret = (day[s] / prev_day[s] - 1) * 100
+                rs = round(sector_ret - bm_ret, 4)
+                rs_history[s].append({"date": date[5:], "rs": rs})
 
-    mom_period = 10
+    def linear_slope(vals):
+        n = len(vals)
+        if n < 2:
+            return 0.0
+        x_mean = (n - 1) / 2
+        y_mean = sum(vals) / n
+        num = sum((i - x_mean) * (vals[i] - y_mean) for i in range(n))
+        den = sum((i - x_mean) ** 2 for i in range(n))
+        return num / den if den else 0.0
+
+    min_required = 13  # 需要 10(MA) + 3(A平滑) 天
     result = {}
     for s in sectors:
         hist = rs_history[s]
-        if len(hist) < mom_period + 1:
+        if len(hist) < min_required:
             continue
         rs_vals = [h["rs"] for h in hist]
-        today_rs = rs_vals[-1]
-        ma_rs = sum(rs_vals[-mom_period:]) / mom_period
-        rs_mom = round((today_rs / ma_rs * 100) if ma_rs > 0 else 100, 2)
 
-        if   today_rs > 100 and rs_mom > 100: phase = "leading"
-        elif today_rs > 100 and rs_mom < 100: phase = "weakening"
-        elif today_rs < 100 and rs_mom < 100: phase = "lagging"
-        else:                                  phase = "improving"
+        # RS_MA10 序列
+        rs_ma10_series = [None] * len(rs_vals)
+        for i in range(9, len(rs_vals)):
+            rs_ma10_series[i] = sum(rs_vals[i-9:i+1]) / 10
 
-        if len(hist) >= 2:
-            prev_rs = rs_vals[-2]
-            prev_ma = sum(rs_vals[-(mom_period+1):-1]) / mom_period if len(rs_vals) >= mom_period+1 else ma_rs
-            prev_mom = round((prev_rs / prev_ma * 100) if prev_ma > 0 else 100, 2)
-            vector = {"dx": round(today_rs - prev_rs, 4), "dy": round(rs_mom - prev_mom, 4)}
+        # M 序列
+        m_series = [None] * len(rs_vals)
+        for i in range(len(rs_vals)):
+            if rs_ma10_series[i] is not None:
+                m_series[i] = rs_vals[i] / max(abs(rs_ma10_series[i]), 1)
+
+        # A_raw = M今 - M昨
+        a_raw_series = [None] * len(m_series)
+        for i in range(1, len(m_series)):
+            if m_series[i] is not None and m_series[i-1] is not None:
+                a_raw_series[i] = m_series[i] - m_series[i-1]
+
+        # A = A_raw 的3日平均
+        a_series = [None] * len(a_raw_series)
+        for i in range(len(a_raw_series)):
+            if a_raw_series[i] is None:
+                continue
+            window = [a_raw_series[j] for j in range(max(0, i-2), i+1) if a_raw_series[j] is not None]
+            if window:
+                a_series[i] = sum(window) / len(window)
+
+        today_rs  = rs_vals[-1]
+        today_m   = m_series[-1]
+        today_a   = a_series[-1]
+        if today_m is None or today_a is None:
+            continue
+
+        # RS_trend：最近5日RS線性斜率
+        rs_trend = round(linear_slope(rs_vals[-5:]), 4)
+
+        # 四象限分類
+        if today_rs > 0 and today_m > 1.2 and today_a >= 0 and rs_trend > 0:
+            sub_phase = "主升段"
+        elif today_rs > 0 and today_m > 1 and today_a > 0 and rs_trend > 0:
+            sub_phase = "準備噴"
+        elif today_m < 1 and today_a < 0:
+            sub_phase = "高檔震盪" if today_rs > 0 else "空頭"
+        elif today_rs < 0:
+            sub_phase = "空頭"
         else:
-            vector = {"dx": 0, "dy": 0}
-            prev_mom = rs_mom
+            sub_phase = "高檔震盪"
 
-        # 加速度：Momentum今日 - Momentum昨日
-        acceleration = round(rs_mom - prev_mom, 4)
-
-        # 連漲天數（RS連續上升），替代量能確認
+        # 連漲天數（RS連續上升）
         rs_up_days = 0
         for i in range(len(rs_vals) - 1, 0, -1):
             if rs_vals[i] > rs_vals[i - 1]:
@@ -167,26 +214,27 @@ def fetch_sector_rotation(days=60):
             else:
                 break
 
-        # 細分四階段（含加速度判斷）
-        if phase == "improving":
-            sub_phase = "潛伏期"   # RS剛翻正、動能轉強
-        elif phase == "leading":
-            sub_phase = "爆發期" if acceleration >= 0 else "高檔震盪"
-        elif phase == "weakening":
-            sub_phase = "高檔震盪"  # RS高位但動能衰減
-        else:  # lagging
-            sub_phase = "資金衰退"
+        prev_rs = rs_vals[-2] if len(rs_vals) >= 2 else today_rs
+        prev_m  = m_series[-2] if m_series[-2] is not None else today_m
+        vector  = {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)}
 
         trend = [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]]
         result[s] = {
-            "rs": round(today_rs, 2), "rs_mom": rs_mom, "phase": phase,
-            "sub_phase": sub_phase, "acceleration": acceleration,
-            "rs_up_days": rs_up_days, "vector": vector, "trend": trend,
+            "rs":           round(today_rs, 2),
+            "rs_mom":       round(today_m, 4),   # M 值（前端仍用 rs_mom 鍵）
+            "acceleration": round(today_a, 4),
+            "rs_trend":     rs_trend,
+            "sub_phase":    sub_phase,
+            "rs_up_days":   rs_up_days,
+            "vector":       vector,
+            "trend":        trend,
         }
 
-    improving = sum(1 for v in result.values() if v["phase"] == "improving")
-    leading   = sum(1 for v in result.values() if v["phase"] == "leading")
-    print(f"  [產業輪動] {len(result)} 個產業 | 領先:{leading} 轉強:{improving}")
+    phase_counts = {}
+    for v in result.values():
+        phase_counts[v["sub_phase"]] = phase_counts.get(v["sub_phase"], 0) + 1
+    summary = " | ".join(f"{k}:{v}" for k, v in sorted(phase_counts.items()))
+    print(f"  [產業輪動] {len(result)} 個產業 | {summary}")
     return result
 
 
