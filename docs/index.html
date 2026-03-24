@@ -604,41 +604,35 @@ function renderMacroFull(){
     });
     h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
       '<div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      '<div style="display:flex;flex-direction:column;gap:8px">';
     ['準備噴','主升段','高檔震盪','空頭'].forEach(function(ph){
       var p=phases[ph],list=groups[ph]||[];
       list.sort(function(a,b){return b.rs_mom-a.rs_mom;});
-      h+='<div style="background:'+p.bg+';border:1px solid '+p.border+';border-radius:12px;padding:10px">'+
-        '<div style="color:'+p.color+';font-weight:700;font-size:12px;margin-bottom:2px">'+p.label+'</div>'+
-        '<div style="font-size:10px;color:var(--text3);margin-bottom:7px">'+p.desc+'</div>';
+      // 每個象限：左側標籤 + 右側產業小卡片橫向排列
+      h+='<div style="display:flex;align-items:flex-start;gap:8px">'+
+        '<div style="flex-shrink:0;width:52px;background:'+p.bg+';border:1px solid '+p.border+';border-radius:8px;padding:6px 4px;text-align:center;align-self:flex-start">'+
+          '<div style="color:'+p.color+';font-weight:700;font-size:11px;line-height:1.3">'+ph+'</div>'+
+        '</div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">';
       list.forEach(function(s,idx){
         var accel=s.acceleration||0;
-        // ▲ = 正在變強（加速度>0）  ▼ = 正在轉弱（加速度<0）
         var accArr=accel>0.05?'▲':accel<-0.05?'▼':'─';
         var accColor=accel>0.05?'#22c55e':accel<-0.05?'#ef4444':'#9ca3af';
-        var spLabel=s.sub_phase||'';
-        var spColors={
-          '準備噴':'rgba(59,130,246,.15)',
-          '主升段':'rgba(34,197,94,.15)',
-          '高檔震盪':'rgba(245,158,11,.15)',
-          '空頭':'rgba(239,68,68,.15)'
-        };
-        var spBg=spColors[spLabel]||'rgba(100,100,100,.1)';
-        var upTag=s.rs_up_days>=3?'<span style="font-size:9px;color:#f59e0b;margin-left:2px">↑'+s.rs_up_days+'d</span>':'';
         var tid='sqc'+ph+idx;
-        h+='<div style="background:var(--bg2);border-radius:8px;margin-bottom:4px;overflow:hidden">'+
-          '<div data-tid="'+tid+'" onclick="togSector(this)" style="display:flex;align-items:center;gap:5px;padding:5px 8px;cursor:pointer;font-size:11px">'+
-            '<span style="flex:1;font-weight:600">'+s.name+'</span>'+
-            upTag+
-            '<span style="color:'+accColor+';font-weight:800;font-size:12px;min-width:12px;text-align:center">'+accArr+'</span>'+
-            '<span style="color:var(--text3);font-size:10px">'+s.rs.toFixed(1)+'</span>'+
-            '<span style="color:'+p.color+';font-weight:700;font-size:10px;min-width:42px;text-align:right">M '+s.rs_mom.toFixed(1)+'</span>'+
+        // 固定寬度小卡片：產業名（截短）+ M值 + 加速箭頭
+        h+='<div style="width:66px;flex-shrink:0;background:var(--bg);border:1px solid '+p.border+';border-radius:7px;overflow:hidden">'+
+          '<div data-tid="'+tid+'" onclick="togSector(this)" style="cursor:pointer;padding:4px 5px">'+
+            '<div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">'+s.name+'</div>'+
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">'+
+              '<span style="font-size:9px;color:'+p.color+';font-weight:700">M '+s.rs_mom.toFixed(2)+'</span>'+
+              '<span style="color:'+accColor+';font-weight:800;font-size:10px">'+accArr+'</span>'+
+            '</div>'+
           '</div>'+
-          '<div id="'+tid+'" style="display:none;padding:2px 8px 8px" data-trend="'+encodeURIComponent(JSON.stringify(s.trend))+'" data-color="'+p.color+'"></div>'+
+          '<div id="'+tid+'" style="display:none;padding:2px 5px 5px" data-trend="'+encodeURIComponent(JSON.stringify(s.trend))+'" data-color="'+p.color+'"></div>'+
         '</div>';
       });
-      if(!list.length) h+='<div style="color:#6b7280;font-size:11px;padding:4px">無資料</div>';
-      h+='</div>';
+      if(!list.length) h+='<div style="color:#6b7280;font-size:11px;padding:4px 0">無資料</div>';
+      h+='</div></div>';
     });
     h+='</div>'+
       '<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">RS=產業漲幅-大盤漲幅 ｜ M=RS/MA10 ｜ A=加速度3日均 ｜ <span style="color:#22c55e">▲</span>加速 <span style="color:#ef4444">▼</span>減速 ｜ TWSE</div>'+
