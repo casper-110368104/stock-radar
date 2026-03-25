@@ -575,7 +575,8 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 var stocks=[],etfs=[],curSort='score',curTab='all',curInd='all',curThm='all',curSectorKey='all',
     curFMode='ind',curW='default',openCards={},cardTabs={};
 var curView='home';  // home / macro / etf / stocks / expansion / sector
-var navStack=[];     // 返回堆疊 [{view, title, sectorKey}]
+var navStack=[];     // 返回堆疊 [{view, title, sectorKey, modalCtx}]
+var _scmCtx={};      // 目前開啟的 sector modal context
 var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預設值防止 undefined）
 var sectorData={};   // 產業輪動資料
 var expansionData={updated_at:'',signal_count:0,stocks:[]};
@@ -606,25 +607,16 @@ var WS={
 // ── 導航返回堆疊 ─────────────────────────────────────────
 function pushNav(){
   var titleEl=document.getElementById('hdr-title');
-  navStack.push({view:curView,title:titleEl?titleEl.textContent:'',sectorKey:curSectorViewKey});
+  navStack.push({view:curView,title:titleEl?titleEl.textContent:'',sectorKey:curSectorViewKey,modalCtx:null});
 }
 function goBack(){
   if(!navStack.length){goView('home');return;}
   var prev=navStack.pop();
-  if(prev.view==='sector'){
-    // sector-view 的 DOM 內容都還在，直接切回去
-    curView='sector';
-    var views=['home','macro','etf','stocks','expansion','sector'];
-    views.forEach(function(id){
-      var el=document.getElementById(id+'-view');
-      if(el) el.style.display=(id==='sector')?'':'none';
-    });
-    var hdr=document.getElementById('hdr-back');
-    if(hdr) hdr.style.display='';
-    var titleEl=document.getElementById('hdr-title');
-    if(titleEl) titleEl.textContent=prev.title||prev.sectorKey+' 產業綜覽';
-  } else {
-    goView(prev.view);
+  goView(prev.view);
+  // 如果是從 sector modal 跳出去的，返回後重開 modal
+  if(prev.modalCtx){
+    var ctx=prev.modalCtx;
+    setTimeout(function(){openSCM(ctx.sector,ctx.trend,ctx.color);},120);
   }
 }
 
@@ -975,25 +967,109 @@ function togSector(row){
   try{trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));}catch(e){}
   var color=el.getAttribute('data-color')||'#22c55e';
   var sector=el.getAttribute('data-sector')||'';
-  openSectorView(sector,trend,color);
+  openSCM(sector,trend,color);
 }
+
 function openSCM(sector,trend,color){
-  document.getElementById('scm-title').textContent=sector?sector+' 產業 RS 走勢':'RS 走勢';
-  document.getElementById('scm-sub').textContent='RS = 產業漲幅 - 大盤漲幅　共 '+(trend.length||0)+' 日資料';
-  var body=document.getElementById('scm-body');
-  body.innerHTML=drawSparklineLarge(trend,color)+
-    (sector?
-      '<button onclick="jumpToSector(\''+sector+'\');closeSCM()" style="width:100%;padding:12px;background:rgba(74,158,255,.1);border:.5px solid var(--blue);color:var(--blue);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">📈 查看 '+sector+' 個股</button>'+
-      '<button onclick="goView(\'expansion\');closeSCM()" style="width:100%;padding:12px;background:rgba(245,197,24,.07);border:.5px solid rgba(245,197,24,.3);color:var(--gold);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">🎲 查看隨機500股訊號</button>'
-    :'');
+  _scmCtx={sector:sector,trend:trend,color:color};
+  var sd=sectorData[sector]||{};
+  var phase=sd.sub_phase||'';
+  var phaseBg={'準備噴':'rgba(59,130,246,.15)','主升段':'rgba(34,197,94,.15)','主升回檔':'rgba(249,115,22,.15)','高檔震盪':'rgba(245,158,11,.15)','空頭':'rgba(239,68,68,.15)','整理觀察':'rgba(107,114,128,.15)'}[phase]||'rgba(100,100,100,.1)';
+
+  var title=document.getElementById('scm-title');
+  var sub=document.getElementById('scm-sub');
+  if(title) title.innerHTML=sector+
+    (phase?'<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;background:'+phaseBg+';margin-left:8px">'+phase+'</span>':'');
+  if(sub) sub.textContent='RS = 產業漲幅 - 大盤漲幅　共 '+(trend.length||0)+' 日資料';
+
+  var h=drawSparklineLarge(trend,color);
+
+  // ── 個股清單 ──────────────────────────────────────────
+  var sectorStocks=stocks.filter(function(s){return s.sector_key===sector;});
+  sectorStocks.sort(function(a,b){return sc(b)-sc(a);});
+  h+='<div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin:14px 0 8px;padding-bottom:5px;border-bottom:.5px solid var(--border)">📈 個股（'+sectorStocks.length+' 檔）</div>';
+  if(sectorStocks.length){
+    h+=sectorStocks.map(function(s){
+      var ws=sc(s),col2=scCol(ws);
+      var up=s.change_pct>=0;
+      var sigB='';
+      if(s.signals&&s.signals.length){
+        var hs=s.signals.some(function(sg){return sg.strength==='strong';});
+        sigB='<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;'+(hs?'background:rgba(0,200,150,.12);color:var(--green)':'background:rgba(255,159,67,.12);color:var(--orange)')+'">📈'+s.signals.length+'</span>';
+      }
+      return '<div onclick="_jumpFromModal(\''+s.code+'\')" style="display:flex;align-items:center;gap:8px;padding:10px 11px;background:var(--bg3);border-radius:10px;margin-bottom:5px;cursor:pointer;-webkit-tap-highlight-color:transparent">'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">'+
+            '<span style="font-size:10px;color:var(--text3);background:var(--bg4);padding:2px 5px;border-radius:4px;flex-shrink:0">'+s.code+'</span>'+
+            '<span style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</span>'+
+            sigB+
+          '</div>'+
+          '<span style="font-size:11px;font-weight:700;color:'+col2+'">'+ws+'分</span>'+
+        '</div>'+
+        '<div style="text-align:right;flex-shrink:0">'+
+          '<div style="font-size:14px;font-weight:700">$'+Number(s.price).toLocaleString()+'</div>'+
+          '<div style="font-size:11px;color:'+(up?'var(--green)':'var(--red)')+'">'+(up?'+':'')+s.change_pct+'%</div>'+
+        '</div>'+
+        '<span style="font-size:12px;color:var(--text3);flex-shrink:0">›</span>'+
+      '</div>';
+    }).join('');
+  } else {
+    h+='<div style="font-size:12px;color:var(--text3);padding:8px 0">此產業無個股資料</div>';
+  }
+
+  // ── 隨機500股 ────────────────────────────────────────
+  var expAll=expansionData.stocks||[];
+  var matchedInds=Object.keys(IND_S).filter(function(k){return IND_S[k]===sector;});
+  var expMatched=expAll.filter(function(s){
+    if(!s.industry) return false;
+    return matchedInds.some(function(ind){return s.industry.indexOf(ind)>=0;}) || s.industry.indexOf(sector)>=0;
+  });
+  h+='<div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin:16px 0 8px;padding-bottom:5px;border-bottom:.5px solid var(--border)">🎲 隨機500股（'+expMatched.length+' 檔）</div>';
+  if(expMatched.length){
+    var SORD2={'strong':0,'medium':1,'weak':2};
+    expMatched.sort(function(a,b){
+      return Math.min.apply(null,a.signals.map(function(s){return SORD2[s.strength]||9;}))-
+             Math.min.apply(null,b.signals.map(function(s){return SORD2[s.strength]||9;}));
+    });
+    h+=expMatched.map(function(s){return rExpCard(s,'smxc');}).join('');
+  } else if(expAll.length){
+    h+='<div style="font-size:12px;color:var(--text3);padding:8px 0">此產業在本次批次未掃到訊號股。<button onclick="_goExpFromModal()" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;padding:0 2px">查看全部 →</button></div>';
+  } else {
+    h+='<div style="font-size:12px;color:var(--text3);padding:8px 0">expansion.json 尚未產生，請等待 CI 執行。</div>';
+  }
+
+  document.getElementById('scm-body').innerHTML=h;
   document.getElementById('scov').classList.add('open');
   document.getElementById('scmodal').classList.add('open');
   lockScroll();
 }
+
 function closeSCM(){
+  var m=document.getElementById('scmodal');
   document.getElementById('scov').classList.remove('open');
-  document.getElementById('scmodal').classList.remove('open');
+  m.classList.remove('open');
+  setTimeout(function(){m.style.transform='';m.style.transition='';},50);
   unlockScroll();
+}
+
+// 從 sector modal 跳到個股 → 關 modal → pushNav 含 modal context → 導航
+function _jumpFromModal(code){
+  closeSCM();
+  navStack.push({view:curView,title:'',modalCtx:{sector:_scmCtx.sector,trend:_scmCtx.trend,color:_scmCtx.color}});
+  curSectorKey='all';curInd='all';curThm='all';
+  updFLabel();
+  goView('stocks');
+  setTab('all');
+  openCards={};openCards[code]=true;
+  render();
+  setTimeout(function(){var el=document.getElementById('card-'+code);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},100);
+}
+
+// 從 sector modal 跳到 expansion view
+function _goExpFromModal(){
+  closeSCM();
+  navStack.push({view:curView,title:'',modalCtx:{sector:_scmCtx.sector,trend:_scmCtx.trend,color:_scmCtx.color}});
+  goView('expansion');
 }
 function drawSparklineLarge(trend,color){
   if(!trend||trend.length<2) return '<div style="font-size:13px;color:var(--text3);padding:20px;text-align:center">資料不足</div>';
