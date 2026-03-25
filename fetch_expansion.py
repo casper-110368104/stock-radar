@@ -301,6 +301,30 @@ def calc_signals(yahoo):
     return signals
 
 
+# ── 掃描失敗時保留舊資料並標記 ──────────────────────────────
+def _write_scan_failed(reason):
+    """保留現有 expansion.json 內的 stocks，但標記 scan_failed 供前端顯示警告"""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    existing = {}
+    try:
+        with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+            existing = json.load(f)
+    except Exception:
+        pass
+
+    existing["scan_failed"]    = True
+    existing["scan_failed_at"] = now
+    existing["scan_failed_reason"] = reason
+    # 確保 updated_at 保留舊值（不覆蓋），讓前端知道資料是舊的
+    if "updated_at" not in existing:
+        existing["updated_at"] = now
+
+    os.makedirs("docs", exist_ok=True)
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(existing, f, ensure_ascii=False, separators=(",", ":"))
+    print(f"  [scan_failed] 已寫入失敗狀態：{reason}（{now}）")
+
+
 # ── 主程式 ──────────────────────────────────────────────────
 def main():
     print("=" * 50)
@@ -311,7 +335,8 @@ def main():
     print("\n[1] 抓取 TWSE 全市場資料...")
     all_stocks = fetch_all_twse_stocks()
     if not all_stocks:
-        print("  無法取得市場資料，保留現有 expansion.json，跳過本次掃描。")
+        print("  無法取得市場資料，寫入失敗狀態，保留舊資料。")
+        _write_scan_failed("TWSE API 無回應或回傳非 JSON 資料")
         sys.exit(0)
 
     # Step 1b: 產業對照表
@@ -328,7 +353,8 @@ def main():
     print(f"  候選池：{len(candidates)} 檔")
 
     if not candidates:
-        print("  候選池為空，保留現有 expansion.json，跳過本次掃描。")
+        print("  候選池為空，寫入失敗狀態，保留舊資料。")
+        _write_scan_failed("TWSE 篩選後候選池為空")
         sys.exit(0)
 
     # Step 3: 隨機抽樣
@@ -387,6 +413,7 @@ def main():
 
     output = {
         "updated_at":   datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "scan_failed":  False,
         "sample_size":  sample_n,
         "signal_count": len(results),
         "stocks":       results,
