@@ -457,41 +457,51 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
 
         updated.append(rec)
 
-    # 加入今日新訊號（去重：同代號同類型已有 open 記錄則略過）
+    # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
+    # expansion 每日新增上限：取最強前 20 筆（strong > medium > weak）
+    _STRENGTH_ORD = {"strong": 0, "medium": 1, "weak": 2}
     open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+
+    new_candidates = []
     for stock in today_results:
         code = stock["code"]
         name = stock["name"]
         for sig in stock.get("signals", []):
-            if (code, sig["type"]) in open_keys:
-                continue
-            open_keys.add((code, sig["type"]))
-            entry_price = today_price_map.get(code, sig["entry"])
-            updated.append({
-                "code":         code,
-                "name":         name,
-                "type":         sig["type"],
-                "label":        sig["label"],
-                "strength":     sig["strength"],
-                "trigger_date": today_str,
-                "entry":        sig["entry"],
-                "stop_loss":    sig["stop_loss"],
-                "target":       sig["target"],
-                "status":       "open",
-                "current_price": round(entry_price, 2),
-                "days_held":    0,
-                "gain_pct":     0.0,
-                "resolved_date": None,
-            })
+            new_candidates.append((stock, sig, (code, sig["type"]) in open_keys))
 
-    # open 排前面，已結算的依結算日降序，合計最多保留 60 筆
+    new_candidates.sort(key=lambda x: _STRENGTH_ORD.get(x[1].get("strength", "weak"), 2))
+    new_candidates = new_candidates[:20]   # 每日新增上限 20 筆
+
+    for stock, sig, is_repeat in new_candidates:
+        code        = stock["code"]
+        name        = stock["name"]
+        entry_price = today_price_map.get(code, sig["entry"])
+        updated.append({
+            "code":          code,
+            "name":          name,
+            "type":          sig["type"],
+            "label":         sig["label"],
+            "strength":      sig["strength"],
+            "trigger_date":  today_str,
+            "entry":         sig["entry"],
+            "stop_loss":     sig["stop_loss"],
+            "target":        sig["target"],
+            "status":        "open",
+            "repeat":        is_repeat,
+            "current_price": round(entry_price, 2),
+            "days_held":     0,
+            "gain_pct":      0.0,
+            "resolved_date": None,
+        })
+
+    # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
     open_recs   = [r for r in updated if r.get("status") == "open"]
     closed_recs = sorted(
         [r for r in updated if r.get("status") != "open"],
         key=lambda x: x.get("resolved_date") or "",
         reverse=True,
     )
-    return (open_recs + closed_recs)[:60]
+    return open_recs + closed_recs[:60]
 
 
 # ── 掃描失敗時保留舊資料並標記 ──────────────────────────────
