@@ -2014,6 +2014,9 @@ def main():
     # 動態名單（TWSE）+ 固定大型股
     print("  抓取 TWSE 動態名單...")
     dynamic = fetch_twse_dynamic()
+    twse_dynamic_failed = len(dynamic) == 0
+    if twse_dynamic_failed:
+        print("  ⚠ TWSE 動態名單失敗，僅掃描固定大型股")
     time.sleep(1)
 
     all_ids = list(dict.fromkeys(list(LARGE_CAP) + dynamic))
@@ -2162,11 +2165,12 @@ def main():
     os.makedirs("docs", exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump({
-            "updated_at":     datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "sector_rotation":  _sector_rotation,
-            "total":          len(results),
-            "futures_oi":     futures_oi,
-            "stocks":         results
+            "updated_at":          datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "twse_dynamic_failed": twse_dynamic_failed,
+            "sector_rotation":     _sector_rotation,
+            "total":               len(results),
+            "futures_oi":          futures_oi,
+            "stocks":              results
         }, f, ensure_ascii=False, indent=2)
     print(f"\n✅ 完成！共{len(results)}檔 → {OUTPUT_PATH}")
 

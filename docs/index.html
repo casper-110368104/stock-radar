@@ -1910,7 +1910,10 @@ async function loadData(){
     sectorData=data.sector_rotation||{};
     etfs  =allStocks.filter(function(s){return s.code.startsWith('00');});
     stocks=allStocks.filter(function(s){return !s.code.startsWith('00');});
-    document.getElementById('upd').innerHTML='更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔';
+    var updNote = data.twse_dynamic_failed
+      ? '更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔　<span style="color:#f5844a">⚠ TWSE 動態名單失敗，僅含固定大型股</span>'
+      : '更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔';
+    document.getElementById('upd').innerHTML=updNote;
     var foi=data.futures_oi;
     if(foi){window._foiData=foi;
       var bar=document.getElementById('foiBar');
