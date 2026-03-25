@@ -10,6 +10,26 @@ import requests, json, time, os, random, sys
 import yfinance as yf
 from datetime import datetime
 
+
+def get_json_with_retry(url, headers, timeout=20, retries=4, backoff=5):
+    """帶重試的 GET JSON，記錄狀態供診斷"""
+    for attempt in range(1, retries + 1):
+        try:
+            res = requests.get(url, headers=headers, timeout=timeout)
+            print(f"  [HTTP] status={res.status_code} len={len(res.content)} bytes (attempt {attempt})")
+            if res.status_code != 200:
+                raise ValueError(f"HTTP {res.status_code}")
+            if not res.content:
+                raise ValueError("empty response body")
+            return res.json()
+        except Exception as e:
+            print(f"  [retry {attempt}/{retries}] {e}")
+            if attempt < retries:
+                wait = backoff * attempt
+                print(f"  等待 {wait}s 後重試...")
+                time.sleep(wait)
+    return None
+
 OUTPUT_PATH  = "docs/expansion.json"
 HEADERS      = {"User-Agent": "Mozilla/5.0 (compatible; stock-radar-bot/1.0)"}
 MIN_PRICE    = 15          # 最低股價（排除低價股）
@@ -22,8 +42,10 @@ def fetch_all_twse_stocks():
     """抓 TWSE STOCK_DAY_ALL，回傳流動性足夠的所有股票"""
     url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json"
     try:
-        res = requests.get(url, headers=HEADERS, timeout=15)
-        d   = res.json()
+        d = get_json_with_retry(url, HEADERS, timeout=20, retries=4, backoff=5)
+        if d is None:
+            print("  [TWSE] 多次重試後仍失敗")
+            return []
         if d.get("stat") != "OK":
             print(f"  [TWSE] 狀態異常: {d.get('stat')}")
             return []
@@ -86,7 +108,7 @@ def fetch_all_twse_stocks():
         return result
 
     except Exception as e:
-        print(f"  [TWSE] 失敗：{e}")
+        print(f"  [TWSE] 例外：{e}")
         return []
 
 
@@ -136,8 +158,10 @@ def fetch_twse_industry_map_isin():
     """
     url = "https://opendata.twse.com.tw/v1/opendata/t187ap03_L"
     try:
-        res = requests.get(url, headers=HEADERS, timeout=20)
-        rows = res.json()   # list of dicts
+        rows = get_json_with_retry(url, HEADERS, timeout=20, retries=3, backoff=5)
+        if rows is None:
+            return {}
+        # rows is list of dicts
         ind_map = {}
         for r in rows:
             code = str(r.get("公司代號", "")).strip()
@@ -287,8 +311,8 @@ def main():
     print("\n[1] 抓取 TWSE 全市場資料...")
     all_stocks = fetch_all_twse_stocks()
     if not all_stocks:
-        print("  無法取得市場資料，終止。")
-        sys.exit(1)
+        print("  無法取得市場資料，保留現有 expansion.json，跳過本次掃描。")
+        sys.exit(0)
 
     # Step 1b: 產業對照表
     print("\n[1b] 抓取產業分類對照表...")
@@ -304,8 +328,8 @@ def main():
     print(f"  候選池：{len(candidates)} 檔")
 
     if not candidates:
-        print("  候選池為空，終止。")
-        sys.exit(1)
+        print("  候選池為空，保留現有 expansion.json，跳過本次掃描。")
+        sys.exit(0)
 
     # Step 3: 隨機抽樣
     sample_n = min(SAMPLE_SIZE, len(candidates))
