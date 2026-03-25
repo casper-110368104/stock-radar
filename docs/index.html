@@ -475,6 +475,16 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <div class="ec-arr">›</div>
       </div>
     </div>
+    <div class="entry-card" onclick="goView('backtest')">
+      <div class="ec-hdr">
+        <div class="ec-icon">📋</div>
+        <div class="ec-info">
+          <div class="ec-title">訊號回測記錄</div>
+          <div class="ec-sub" id="backtest-sub">歷史勝率 &amp; 追蹤</div>
+        </div>
+        <div class="ec-arr">›</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -507,6 +517,11 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <button class="exp-sbtn" data-esort="chg_dn" onclick="setExpSort('chg_dn',this)">跌幅↓</button>
   </div>
   <div id="exp-app" style="padding:4px 12px 24px"></div>
+</div>
+
+<!-- 訊號回測記錄頁 -->
+<div id="backtest-view" style="display:none">
+  <div id="bt-app" style="padding:8px 12px 80px"></div>
 </div>
 
 <!-- 個股頁 -->
@@ -542,7 +557,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
       <div class="fgrid" id="fgrid"></div>
     </div>
   </div>
-  <div id="stocks-bt-panel" style="padding:0 12px 8px"></div>
   <div class="card-list" id="app"></div>
 </div>
 
@@ -646,20 +660,21 @@ function goBack(){
 function goView(v){
   if(v==='home') navStack=[];  // 回到首頁清空堆疊
   curView=v;
-  var views=['home','macro','etf','stocks','expansion','sector'];
+  var views=['home','macro','etf','stocks','expansion','sector','backtest'];
   views.forEach(function(id){
     var el=document.getElementById(id+'-view');
     if(el) el.style.display=(id===v)?'':'none';
   });
   var hdr=document.getElementById('hdr-back');
   if(hdr) hdr.style.display=(v==='home')?'none':'';
-  var titles={home:'選股雷達 📡',macro:'整體經濟',etf:'ETF 防禦參考',stocks:'個股選股雷達',expansion:'隨機500股 訊號掃描',sector:'產業詳細'};
+  var titles={home:'選股雷達 📡',macro:'整體經濟',etf:'ETF 防禦參考',stocks:'個股選股雷達',expansion:'隨機500股 訊號掃描',sector:'產業詳細',backtest:'訊號回測記錄'};
   var title=document.getElementById('hdr-title');
   if(title) title.textContent=titles[v]||'選股雷達 📡';
   if(v==='home')      renderHomeCards();
   if(v==='etf')       renderETF();
   if(v==='macro')     renderMacroFull();
   if(v==='expansion') renderExpansion();
+  if(v==='backtest')  renderBacktest();
 }
 
 // 目前顯示的產業 key（供 sector-view 使用）
@@ -765,6 +780,26 @@ function renderHomeCards(){
   // 景氣燈號顯示在入口卡片副標
   var msub=document.getElementById('macro-ec-sub');
   if(msub&&bizCycle.label) msub.textContent=bizCycle.label+' | 外資期貨'+(window._foiData?(window._foiData.net>0?' 偏多':' 偏空'):'');
+  // 回測記錄卡片：顯示 open 追蹤筆數
+  var bsub=document.getElementById('backtest-sub');
+  if(bsub){
+    var openCnt=(stocksBtTracking.filter(function(r){return r.status==='open';}).length)+
+                ((expansionData.signal_tracking||[]).filter(function(r){return r.status==='open';}).length);
+    bsub.textContent='追蹤中 '+openCnt+' 筆';
+  }
+}
+
+function renderBacktest(){
+  var app=document.getElementById('bt-app');
+  if(!app) return;
+  var secStyle='font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:8px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px';
+  var stocksHtml=_renderBtStats(stocksBtStats)+_renderBtTracking(stocksBtTracking);
+  var expHtml=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking);
+  app.innerHTML=
+    '<div style="'+secStyle+'">📈 個股選股雷達</div>'+
+    (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無個股回測資料</div>')+
+    '<div style="'+secStyle+';margin-top:16px">🎲 隨機500股掃描</div>'+
+    (expHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無隨機500股回測資料</div>');
 }
 
 // ── 隨機500股 ──────────────────────────────────────────────
@@ -877,7 +912,7 @@ function _renderBtTracking(tracking){
       '<span class="bt-ti-icon">'+(SI[t.status]||'⚪')+'</span>'+
       '<span class="bt-ti-code">'+t.code+'</span>'+
       '<span class="bt-ti-name">'+t.name+'</span>'+
-      '<span class="bt-ti-sig">'+t.label+'</span>'+
+      '<span class="bt-ti-sig">'+(t.repeat?'🔁 ':'')+t.label+'</span>'+
       '<span class="bt-ti-gain" style="color:'+gc+'">'+gs+'</span>'+
       '<span class="bt-ti-days">'+dayStr+'</span>'+
     '</div>';
@@ -898,10 +933,8 @@ function renderExpansion(){
   var failBanner = expansionData.scan_failed
     ? '<div style="background:rgba(245,132,74,.12);border:.5px solid rgba(245,132,74,.4);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#f5844a">⚠ 上次掃描失敗（'+(expansionData.scan_failed_at||'')+'）：'+(expansionData.scan_failed_reason||'')+'<br><span style="color:var(--text3)">以下顯示前次成功資料（'+expansionData.updated_at+'）</span></div>'
     : '';
-  var btPanel=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking);
   app.innerHTML=failBanner+'<div style="font-size:10px;color:var(--text3);padding:2px 0 8px">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
-    list.map(rExpCard).join('')+
-    (btPanel?'<div style="margin-top:16px">'+btPanel+'</div>':'');
+    list.map(rExpCard).join('');
 }
 
 function renderExpansionInApp(){
@@ -1964,13 +1997,6 @@ async function fetchBizCycle(){
   }
 }
 
-function renderStocksBtPanel(){
-  var panel=document.getElementById('stocks-bt-panel');
-  if(!panel) return;
-  var html=_renderBtStats(stocksBtStats)+_renderBtTracking(stocksBtTracking);
-  panel.innerHTML=html||'';
-}
-
 async function loadData(){
   var _step='init';
   try{
@@ -2003,7 +2029,6 @@ async function loadData(){
     _step='render';
     goView('home');
     render();
-    renderStocksBtPanel();
   }catch(err){
     document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:11px;word-break:break-all">['+_step+'] '+err.message+'</span></div>';
   }

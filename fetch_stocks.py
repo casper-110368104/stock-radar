@@ -1582,14 +1582,13 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str)
         elif days_held >= 20:
             rec["status"] = "expired"; rec["resolved_date"] = today_str
         updated.append(rec)
+    # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
     open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
     for stock in today_results:
         code = stock["code"]
         for sig in stock.get("signals", []):
-            if (code, sig["type"]) in open_keys:
-                continue
-            open_keys.add((code, sig["type"]))
-            ep = today_price_map.get(code, sig["entry"])
+            ep        = today_price_map.get(code, sig["entry"])
+            is_repeat = (code, sig["type"]) in open_keys
             updated.append({
                 "code":          code,
                 "name":          stock.get("name", code),
@@ -1601,18 +1600,20 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str)
                 "stop_loss":     sig["stop_loss"],
                 "target":        sig["target"],
                 "status":        "open",
+                "repeat":        is_repeat,
                 "current_price": round(ep, 2),
                 "days_held":     0,
                 "gain_pct":      0.0,
                 "resolved_date": None,
             })
+    # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
     open_recs   = [r for r in updated if r.get("status") == "open"]
     closed_recs = sorted(
         [r for r in updated if r.get("status") != "open"],
         key=lambda x: x.get("resolved_date") or "",
         reverse=True,
     )
-    return (open_recs + closed_recs)[:60]
+    return open_recs + closed_recs[:60]
 
 
 # ── 5b. 警示訊號 ──────────────────────────────────────────────────
