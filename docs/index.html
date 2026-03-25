@@ -526,6 +526,11 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
   <div class="card-list" id="app"></div>
 </div>
 
+<!-- 產業詳細頁 -->
+<div id="sector-view" style="display:none">
+  <div id="sector-view-content" style="padding:12px 12px calc(env(safe-area-inset-bottom,0px)+40px)"></div>
+</div>
+
 <!-- Settings -->
 <div class="pov" id="pov" onclick="closeCfg()"></div>
 <div class="panel" id="panel">
@@ -600,20 +605,113 @@ var WS={
 // ── View 切換 ────────────────────────────────────────────
 function goView(v){
   curView=v;
-  var views=['home','macro','etf','stocks','expansion'];
+  var views=['home','macro','etf','stocks','expansion','sector'];
   views.forEach(function(id){
     var el=document.getElementById(id+'-view');
     if(el) el.style.display=(id===v)?'':'none';
   });
   var hdr=document.getElementById('hdr-back');
   if(hdr) hdr.style.display=(v==='home')?'none':'';
+  var titles={home:'選股雷達 📡',macro:'整體經濟',etf:'ETF 防禦參考',stocks:'個股選股雷達',expansion:'隨機500股 訊號掃描',sector:'產業詳細'};
   var title=document.getElementById('hdr-title');
-  var titles={home:'選股雷達 📡',macro:'整體經濟',etf:'ETF 防禦參考',stocks:'個股選股雷達',expansion:'隨機500股 訊號掃描'};
   if(title) title.textContent=titles[v]||'選股雷達 📡';
   if(v==='home')      renderHomeCards();
   if(v==='etf')       renderETF();
   if(v==='macro')     renderMacroFull();
   if(v==='expansion') renderExpansion();
+}
+
+// 目前顯示的產業 key（供 sector-view 使用）
+var curSectorViewKey='';
+
+function openSectorView(sector, trend, color){
+  curSectorViewKey=sector;
+  var title=document.getElementById('hdr-title');
+  if(title) title.textContent=sector+' 產業綜覽';
+  goView('sector');
+  renderSectorView(sector, trend, color);
+}
+
+function renderSectorView(sector, trend, color){
+  var el=document.getElementById('sector-view-content');
+  if(!el) return;
+
+  // ── RS 走勢圖 ────────────────────────────────────────
+  var h=drawSparklineLarge(trend, color);
+
+  // ── 個股（stocks.json 依 sector_key 篩選）────────────
+  var sectorStocks=stocks.filter(function(s){return s.sector_key===sector;});
+  sectorStocks.sort(function(a,b){return sc(b)-sc(a);});
+
+  h+='<div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin:14px 0 8px;padding-bottom:6px;border-bottom:.5px solid var(--border)">📈 個股選股雷達（'+sectorStocks.length+' 檔）</div>';
+  if(sectorStocks.length){
+    // 精簡列表卡（點擊跳到個股頁）
+    h+=sectorStocks.map(function(s){
+      var ws=sc(s),col2=scCol(ws);
+      var up=s.change_pct>=0,cls=up?'var(--green)':'var(--red)';
+      var sp2=s.scores||{};
+      var sigB='';
+      if(s.signals&&s.signals.length){
+        var hs=s.signals.some(function(sg){return sg.strength==='strong';});
+        sigB='<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;'+(hs?'background:rgba(0,200,150,.12);color:var(--green)':'background:rgba(255,159,67,.12);color:var(--orange)')+'">📈'+s.signals.length+'</span>';
+      }
+      // phase badge
+      var phB='';
+      var _sd2=sectorData[sector];
+      if(_sd2){
+        var _sp=_sd2.sub_phase||'';
+        var _spbg={'準備噴':'rgba(59,130,246,.15)','主升段':'rgba(34,197,94,.15)','高檔震盪':'rgba(245,158,11,.15)','空頭':'rgba(239,68,68,.15)'}[_sp]||'rgba(100,100,100,.1)';
+        phB='<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:'+_spbg+'">'+_sp+'</span>';
+      }
+      return '<div onclick="jumpToCard(\''+s.code+'\',\'sector\')" style="display:flex;align-items:center;gap:8px;padding:10px 11px;background:var(--bg2);border:.5px solid var(--border);border-radius:11px;margin-bottom:6px;cursor:pointer">'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+
+            '<span style="font-size:10px;color:var(--text3);background:var(--bg4);padding:2px 5px;border-radius:4px;flex-shrink:0">'+s.code+'</span>'+
+            '<span style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</span>'+
+            sigB+
+          '</div>'+
+          '<div style="display:flex;align-items:center;gap:5px">'+
+            '<span style="font-size:11px;font-weight:700;color:'+col2+'">'+ws+'分</span>'+
+            phB+
+          '</div>'+
+        '</div>'+
+        '<div style="text-align:right;flex-shrink:0">'+
+          '<div style="font-size:14px;font-weight:700">$'+Number(s.price).toLocaleString()+'</div>'+
+          '<div style="font-size:11px;color:'+cls+'">'+(up?'+':'')+s.change_pct+'%</div>'+
+        '</div>'+
+        '<span style="font-size:9px;color:var(--text3)">›</span>'+
+      '</div>';
+    }).join('');
+  } else {
+    h+='<div style="font-size:13px;color:var(--text3);padding:16px 0">目前此產業無個股資料</div>';
+  }
+
+  // ── 隨機500股（依 industry 欄位篩選）───────────────────
+  var expAll=expansionData.stocks||[];
+  // 用 IND_S 反查：sector key → 可能對應的完整產業名稱（多對一）
+  var matchedInds=Object.keys(IND_S).filter(function(k){return IND_S[k]===sector;});
+  var expMatched=expAll.filter(function(s){
+    if(!s.industry) return false;
+    // 模糊比對：產業欄位包含 sector key 或完整名稱
+    return matchedInds.some(function(ind){return s.industry.indexOf(ind)>=0||s.industry.indexOf(sector)>=0;})
+      || s.industry.indexOf(sector)>=0;
+  });
+  // 沒有比對到時顯示提示（不顯示全部）
+  h+='<div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin:18px 0 8px;padding-bottom:6px;border-bottom:.5px solid var(--border)">🎲 隨機500股訊號（'+expMatched.length+' 檔）'+(expAll.length&&!expMatched.length?'<span style="font-weight:400;margin-left:4px;font-size:10px">—目前批次未掃到此產業</span>':'')+'</div>';
+  if(expMatched.length){
+    var SORD={'strong':0,'medium':1,'weak':2};
+    expMatched.sort(function(a,b){
+      return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-
+             Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));
+    });
+    h+=expMatched.map(function(s){return rExpCard(s,'sxc');}).join('');
+  } else if(expAll.length){
+    h+='<div style="font-size:12px;color:var(--text3);padding:12px 0;line-height:1.8">此產業在本次掃描批次中無訊號股，可至<button onclick="goView(\'expansion\')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;padding:0 2px">🎲 隨機500股</button>查看全部訊號。</div>';
+  } else {
+    h+='<div style="font-size:12px;color:var(--text3);padding:12px 0">expansion.json 尚未產生，請等待 CI 執行。</div>';
+  }
+
+  el.innerHTML=h;
 }
 
 function renderHomeCards(){
@@ -636,18 +734,21 @@ function setExpSort(s,btn){
   renderExpansion();
 }
 
-function togExpCard(code){
-  var card=document.getElementById('xc-'+code);
+function togExpCard(pfx,code){
+  var card=document.getElementById(pfx+'-'+code);
   if(!card) return;
   var wasOpen=card.classList.contains('open');
-  document.querySelectorAll('.exp-card.open').forEach(function(c){c.classList.remove('open');});
+  // close all cards in the same container
+  var container=card.closest('#exp-app,#app,#sector-view-content');
+  if(container) container.querySelectorAll('.exp-card.open').forEach(function(c){c.classList.remove('open');});
   if(!wasOpen){
     card.classList.add('open');
     setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
   }
 }
 
-function rExpCard(s){
+function rExpCard(s,pfx){
+  pfx=pfx||'xc';
   var pc=s.chg_pct>=0?'var(--green)':'var(--red)';
   var sigs=s.signals||[];
   var hasStrong=sigs.some(function(sg){return sg.strength==='strong';});
@@ -671,8 +772,8 @@ function rExpCard(s){
     '</div>';
   }).join('');
   var volTag=s.vol_ratio>=2?'<span style="color:var(--orange);font-weight:700">量比 '+s.vol_ratio+'x 🔥</span>':'量比 '+(s.vol_ratio||'-')+'x';
-  return '<div class="exp-card" id="xc-'+s.code+'">'+
-    '<div class="exp-hdr" onclick="togExpCard(\''+s.code+'\')" style="cursor:pointer">'+
+  return '<div class="exp-card" id="'+pfx+'-'+s.code+'">'+
+    '<div class="exp-hdr" onclick="togExpCard(\''+pfx+'\',\''+s.code+'\')" style="cursor:pointer">'+
       '<div class="exp-meta">'+
         '<span class="exp-code">'+s.code+'</span>'+
         '<span class="exp-name">'+s.name+'</span>'+
@@ -847,7 +948,7 @@ function togSector(row){
   try{trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));}catch(e){}
   var color=el.getAttribute('data-color')||'#22c55e';
   var sector=el.getAttribute('data-sector')||'';
-  openSCM(sector,trend,color);
+  openSectorView(sector,trend,color);
 }
 function openSCM(sector,trend,color){
   document.getElementById('scm-title').textContent=sector?sector+' 產業 RS 走勢':'RS 走勢';
@@ -918,6 +1019,21 @@ function jumpToSector(key){
     var el=document.querySelector('.tabs');
     if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
   },80);
+}
+
+function jumpToCard(code, fromView){
+  // 從 sector-view 跳到個股並展開該卡
+  curSectorKey='all'; curInd='all'; curThm='all';
+  updFLabel();
+  goView('stocks');
+  setTab('all');
+  openCards={};
+  openCards[code]=true;
+  render();
+  setTimeout(function(){
+    var el=document.getElementById('card-'+code);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
 }
 
 function drawSparkline(trend,color){
