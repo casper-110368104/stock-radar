@@ -101,7 +101,7 @@ def fetch_all_twse_stocks():
                     "price": cls,
                     "chg_pct": chg_pct,
                 })
-            except:
+            except Exception:
                 continue
 
         print(f"  [TWSE] 流動性篩選後：{len(result)} 檔")
@@ -216,7 +216,7 @@ def fetch_yahoo_data(code):
             "prev_low20":    prev_low20,
             "vol_day_ratio": vol_day_ratio,
         }
-    except:
+    except Exception:
         return None
 
 

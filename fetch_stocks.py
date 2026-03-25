@@ -101,7 +101,7 @@ def fetch_sector_rotation(days=60):
                     try:
                         close = float(row[1].replace(",", ""))
                         day_dict[SECTOR_MAP[name]] = close
-                    except:
+                    except Exception:
                         pass
             if "_benchmark" in day_dict and len(day_dict) > 10:
                 daily_data[d.strftime("%Y-%m-%d")] = day_dict
@@ -313,7 +313,7 @@ def fetch_twse_dynamic():
                 if name and code not in _name_cache:
                     _name_cache[code] = (name, "其他")
                 stocks.append({"code": code, "vol": vol, "chg": chg})
-            except:
+            except Exception:
                 continue
 
         if not stocks:
@@ -576,7 +576,6 @@ def fetch_mops_revenue():
     result = {}
 
     # ── 主力：TWSE / TPEx OpenData JSON ───────────────────────────
-    HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
     apis = [
         # 上市 (SII)
         (f"https://opendata.twse.com.tw/v1/opendata/t187ap03_L", "上市"),
@@ -655,7 +654,7 @@ def fetch_mops_revenue():
                     yoy_str = row[6].replace(",", "").replace("+", "").strip()
                     result[code] = round(float(yoy_str), 1)
                     ok += 1
-                except: continue
+                except Exception: continue
             print(f"  [月營收] MOPS {typek} {year_roc}/{month} → {ok} 檔")
         except Exception as e:
             print(f"  [月營收] MOPS {typek} 失敗：{e}")
@@ -683,10 +682,10 @@ def fetch_lending_one_day(date_str):
                 sell = round(int(r[9].replace(",","") or 0) / 1000)
                 bal  = round(int(r[12].replace(",","") or 0) / 1000)
                 result[code] = {"volume": sell, "balance": bal}
-            except:
+            except Exception:
                 continue
         return result if result else None
-    except:
+    except Exception:
         return None
 
 
@@ -765,7 +764,7 @@ def fetch_twse_name_lending():
                             "return":  round(ret  / 1000)
                         }
                         cnt_lend += 1
-                except:
+                except Exception:
                     continue
             print(f"  [TWSE借券] 名稱{cnt_name}檔 借券{cnt_lend}檔")
             break  # 成功就跳出
@@ -1900,7 +1899,7 @@ def process_stock(sid, category):
             n = min(len(stock_closes), len(bm_closes))
             rs_val = round(calc_rs_fn(stock_closes[-n:], bm_closes[-n:]), 4)
             yahoo["rs"] = rs_val
-        except:
+        except Exception:
             pass
 
     revenue_yoy = _revenue_map.get(sid)
