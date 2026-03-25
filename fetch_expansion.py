@@ -12,7 +12,6 @@ from datetime import datetime
 
 OUTPUT_PATH  = "docs/expansion.json"
 HEADERS      = {"User-Agent": "Mozilla/5.0 (compatible; stock-radar-bot/1.0)"}
-MIN_VOLUME   = 2_000_000   # 最低成交股數（流動性門檻，約 200 張以上）
 MIN_PRICE    = 15          # 最低股價（排除低價股）
 SAMPLE_SIZE  = 500         # 每次隨機抽取數量
 ETF_PREFIXES = ("00",)
@@ -31,15 +30,27 @@ def fetch_all_twse_stocks():
 
         fields = d.get("fields", [])
         rows   = d.get("data", [])
+        print(f"  [TWSE] fields: {fields}")   # 診斷用：確認欄位名稱
 
-        try:
-            i_code = fields.index("證券代號")
-            i_name = fields.index("證券名稱")
-            i_vol  = fields.index("成交股數")
-            i_cls  = fields.index("收盤價")
-            i_open = fields.index("開盤價")
-        except ValueError:
-            i_code, i_name, i_vol, i_open, i_cls = 0, 1, 2, 5, 8
+        # 嘗試定位各欄索引，相容新舊欄位名
+        def find(candidates, fallback):
+            for c in candidates:
+                if c in fields:
+                    return fields.index(c)
+            return fallback
+
+        i_code = find(["證券代號", "股票代號"], 0)
+        i_name = find(["證券名稱", "股票名稱"], 1)
+        i_vol  = find(["成交股數", "成交張數", "成交量"], 2)
+        i_open = find(["開盤價"], 5)
+        i_cls  = find(["收盤價"], 8)
+
+        # 判斷成交量單位（張 vs 股）：欄位含「張」或「量」視為以張計
+        vol_field = fields[i_vol] if i_vol < len(fields) else ""
+        is_lots   = "張" in vol_field or vol_field == "成交量"
+        # 門檻：股 ≥ 500,000（約 500 張）；張 ≥ 500
+        MIN_VOL = 500 if is_lots else 500_000
+        print(f"  [TWSE] 成交量欄位='{vol_field}'，單位={'張' if is_lots else '股'}，門檻={MIN_VOL:,}")
 
         result = []
         for r in rows:
@@ -58,7 +69,7 @@ def fetch_all_twse_stocks():
                 chg_pct = round((cls - opn) / opn * 100, 2) if opn > 0 else 0
                 name = r[i_name].strip()
 
-                if vol < MIN_VOLUME or cls < MIN_PRICE:
+                if vol < MIN_VOL or cls < MIN_PRICE:
                     continue
 
                 result.append({
@@ -79,7 +90,7 @@ def fetch_all_twse_stocks():
         return []
 
 
-# ── 2. 讀現有股票代碼（排除用）──────────────────────────────
+# ── 2. 讀現有股票代碼（排除用）+ 抓 TWSE 產業分類 ──────────
 def load_existing_codes():
     try:
         with open("docs/stocks.json", "r", encoding="utf-8") as f:
@@ -90,6 +101,54 @@ def load_existing_codes():
     except Exception as e:
         print(f"  [existing] 讀取失敗：{e}，不排除任何代碼")
         return set()
+
+
+def fetch_twse_industry_map():
+    """抓 TWSE 本益比表（BWIBBU_ALL），取得全市場股票的產業類別對照表"""
+    url = "https://www.twse.com.tw/rwd/zh/afterTrading/BWIBBU_ALL?response=json"
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=15)
+        d   = res.json()
+        fields = d.get("fields", [])
+        rows   = d.get("data", [])
+        # fields 通常是 ['代號','名稱','殖利率(%)','股利年度','本益比','股價淨值比','財報年/季']
+        # 但有些版本沒有產業欄位，改用 BWIBBU_DAY or SFI
+        # 嘗試找代號欄位
+        try:
+            i_code = fields.index("代號")
+        except ValueError:
+            i_code = 0
+        ind_map = {}
+        for r in rows:
+            if len(r) > i_code:
+                ind_map[r[i_code].strip()] = None
+        print(f"  [BWIBBU] 取得 {len(ind_map)} 檔代號（無產業欄位，改用備援）")
+        return {}   # BWIBBU_ALL 沒有產業欄，回傳空，觸發備援
+    except Exception as e:
+        print(f"  [BWIBBU] 失敗：{e}")
+        return {}
+
+
+def fetch_twse_industry_map_isin():
+    """備援：從 TWSE 上市公司基本資料 API 取得代號→產業對照表
+    endpoint: https://opendata.twse.com.tw/v1/opendata/t187ap03_L
+    fields 包含 公司代號, 產業類別
+    """
+    url = "https://opendata.twse.com.tw/v1/opendata/t187ap03_L"
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=20)
+        rows = res.json()   # list of dicts
+        ind_map = {}
+        for r in rows:
+            code = str(r.get("公司代號", "")).strip()
+            ind  = str(r.get("產業類別", "")).strip()
+            if code and ind:
+                ind_map[code] = ind
+        print(f"  [ISIN-opendata] 取得 {len(ind_map)} 檔產業對照")
+        return ind_map
+    except Exception as e:
+        print(f"  [ISIN-opendata] 失敗：{e}")
+        return {}
 
 
 # ── 3. yfinance 歷史資料 + 均線計算 ─────────────────────────
@@ -231,10 +290,17 @@ def main():
         print("  無法取得市場資料，終止。")
         sys.exit(1)
 
+    # Step 1b: 產業對照表
+    print("\n[1b] 抓取產業分類對照表...")
+    industry_map = fetch_twse_industry_map_isin()
+
     # Step 2: 排除現有股票
     print("\n[2] 排除現有股票...")
     existing   = load_existing_codes()
     candidates = [s for s in all_stocks if s["code"] not in existing]
+    # 補上產業欄位
+    for s in candidates:
+        s["industry"] = industry_map.get(s["code"], "")
     print(f"  候選池：{len(candidates)} 檔")
 
     if not candidates:
@@ -283,6 +349,7 @@ def main():
             "ma5":       yahoo["ma5"],
             "ma20":      yahoo["ma20"],
             "ma60":      yahoo["ma60"],
+            "industry":  s.get("industry", ""),
             "signals":   signals,
         })
 
