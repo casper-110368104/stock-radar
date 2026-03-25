@@ -479,7 +479,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 </div>
 
 <script>
-var stocks=[],etfs=[],curSort='score',curTab='all',curInd='all',curThm='all',
+var stocks=[],etfs=[],curSort='score',curTab='all',curInd='all',curThm='all',curSectorKey='all',
     curFMode='ind',curW='default',openCards={},cardTabs={};
 var curView='home';  // home / macro / etf / stocks
 var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預設值防止 undefined）
@@ -603,7 +603,10 @@ function renderMacroFull(){
       if(sp&&groups[sp]) groups[sp].push({name:name,rs:d.rs,rs_mom:d.rs_mom,sub_phase:sp,acceleration:d.acceleration||0,rs_up_days:d.rs_up_days||0,vector:d.vector||{},trend:d.trend||[]});
     });
     h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
-      '<div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
+        '<button id="sector-togall-btn" onclick="togAllSectors(this)" style="background:var(--bg4);border:.5px solid var(--border2);color:var(--text2);font-size:10px;padding:3px 9px;border-radius:8px;cursor:pointer">展開全部</button>'+
+      '</div>'+
       '<div style="display:flex;flex-direction:column;gap:8px">';
     ['準備噴','主升段','高檔震盪','空頭'].forEach(function(ph){
       var p=phases[ph],list=groups[ph]||[];
@@ -628,7 +631,7 @@ function renderMacroFull(){
               '<span style="color:'+accColor+';font-weight:800;font-size:10px">'+accArr+'</span>'+
             '</div>'+
           '</div>'+
-          '<div id="'+tid+'" style="display:none;padding:2px 5px 5px" data-trend="'+encodeURIComponent(JSON.stringify(s.trend))+'" data-color="'+p.color+'"></div>'+
+          '<div id="'+tid+'" style="display:none;padding:2px 5px 5px" data-trend="'+encodeURIComponent(JSON.stringify(s.trend))+'" data-color="'+p.color+'" data-sector="'+s.name+'"></div>'+
         '</div>';
       });
       if(!list.length) h+='<div style="color:#6b7280;font-size:11px;padding:4px 0">無資料</div>';
@@ -642,20 +645,49 @@ function renderMacroFull(){
   el.innerHTML=h;
 }
 
+function _renderSectorChart(el){
+  if(el.dataset.rendered) return;
+  try{
+    var trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));
+    var color=el.getAttribute('data-color')||'#22c55e';
+    el.innerHTML=drawSparkline(trend,color);
+    var sk=el.getAttribute('data-sector')||'';
+    if(sk){
+      el.innerHTML+='<div style="font-size:9px;color:var(--blue);text-align:center;padding:1px 0 3px;cursor:pointer">→ 點此查看'+sk+'個股</div>';
+      el.style.cursor='pointer';
+      el.onclick=function(e){e.stopPropagation();jumpToSector(sk);};
+    }
+    el.dataset.rendered='1';
+  }catch(e){}
+}
 function togSector(row){
   var tid=row.getAttribute('data-tid');
   var el=document.getElementById(tid);
   if(!el)return;
   var open=el.style.display==='block';
   el.style.display=open?'none':'block';
-  if(!open&&!el.dataset.rendered){
-    try{
-      var trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));
-      var color=el.getAttribute('data-color')||'#22c55e';
-      el.innerHTML=drawSparkline(trend,color);
-      el.dataset.rendered='1';
-    }catch(e){}
-  }
+  if(!open) _renderSectorChart(el);
+}
+function togAllSectors(btn){
+  var charts=document.querySelectorAll('[id^="sqc"]');
+  var anyOpen=false;
+  charts.forEach(function(el){if(el.style.display==='block')anyOpen=true;});
+  var toOpen=!anyOpen;
+  charts.forEach(function(el){
+    el.style.display=toOpen?'block':'none';
+    if(toOpen) _renderSectorChart(el);
+  });
+  if(btn) btn.textContent=toOpen?'收合全部':'展開全部';
+}
+function jumpToSector(key){
+  curSectorKey=key; curInd='all'; curThm='all';
+  updFLabel();
+  goView('stocks');
+  setTab('all');
+  setTimeout(function(){
+    var el=document.querySelector('.tabs');
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  },80);
 }
 
 function drawSparkline(trend,color){
@@ -769,6 +801,7 @@ function render(){
   else if(curTab==='mid_small') list=list.filter(function(s){return s.category==='mid_small';});
   else if(curTab==='watch') list=list.filter(function(s){return wl.indexOf(s.code)>=0;});
   if(curInd!=='all') list=list.filter(function(s){return s.industry===curInd;});
+  if(curSectorKey!=='all') list=list.filter(function(s){return s.sector_key===curSectorKey;});
   if(curThm!=='all') list=list.filter(function(s){return(s.themes||[]).indexOf(curThm)>=0;});
   if(filterMA60) list=list.filter(function(s){return s.above_ma60===true;});
   if(q) list=list.filter(function(s){return s.code.indexOf(q)>=0||s.name.indexOf(q)>=0;});
@@ -1190,13 +1223,14 @@ function buildFGrid(mode){
 }
 function setInd(v){curInd=v;updFLabel();closeFilter();render();}
 function setThm(v){curThm=v;updFLabel();closeFilter();render();}
-function clearFilter(){curInd='all';curThm='all';updFLabel();render();}
+function clearFilter(){curInd='all';curThm='all';curSectorKey='all';updFLabel();render();}
 function updFLabel(){
   var lb=document.getElementById('fclr');
-  document.getElementById('ind-btn').classList.toggle('on',curInd!=='all');
+  document.getElementById('ind-btn').classList.toggle('on',curInd!=='all'||curSectorKey!=='all');
   document.getElementById('thm-btn').classList.toggle('ton',curThm!=='all');
   if(curThm!=='all'){lb.textContent=curThm+' ✕';lb.style.display='inline';}
   else if(curInd!=='all'){lb.textContent=(IND_S[curInd]||curInd.replace('業',''))+' ✕';lb.style.display='inline';}
+  else if(curSectorKey!=='all'){lb.textContent=curSectorKey+' ✕';lb.style.display='inline';}
   else lb.style.display='none';
 }
 
