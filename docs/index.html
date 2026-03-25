@@ -575,6 +575,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 var stocks=[],etfs=[],curSort='score',curTab='all',curInd='all',curThm='all',curSectorKey='all',
     curFMode='ind',curW='default',openCards={},cardTabs={};
 var curView='home';  // home / macro / etf / stocks / expansion / sector
+var _stocksUpdText='載入中...';  // stocks.json 頁首文字，切換回個股頁時還原
 var navStack=[];     // 返回堆疊 [{view, title, sectorKey, modalCtx}]
 var _scmCtx={};      // 目前開啟的 sector modal context
 var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預設值防止 undefined）
@@ -634,6 +635,8 @@ function goView(v){
   var titles={home:'選股雷達 📡',macro:'整體經濟',etf:'ETF 防禦參考',stocks:'個股選股雷達',expansion:'隨機500股 訊號掃描',sector:'產業詳細'};
   var title=document.getElementById('hdr-title');
   if(title) title.textContent=titles[v]||'選股雷達 📡';
+  // 非 expansion view 時還原 stocks 頁首時間
+  if(v!=='expansion'){var upd=document.getElementById('upd');if(upd)upd.innerHTML=_stocksUpdText;}
   if(v==='home')      renderHomeCards();
   if(v==='etf')       renderETF();
   if(v==='macro')     renderMacroFull();
@@ -824,6 +827,14 @@ function _sortExpList(list){
 function renderExpansion(){
   var app=document.getElementById('exp-app');
   if(!app) return;
+  // 更新頁首時間戳，顯示 expansion 資料的時間
+  var upd=document.getElementById('upd');
+  if(upd){
+    var expUpdLine = expansionData.scan_failed
+      ? '資料：'+expansionData.updated_at+'　<span style="color:#f5844a">⚠ 掃描失敗</span>'
+      : '更新：'+expansionData.updated_at+'　有訊號 '+(expansionData.signal_count||0)+' 檔';
+    upd.innerHTML=expUpdLine;
+  }
   var list=_sortExpList((expansionData.stocks||[]).slice());
   if(!list.length){
     app.innerHTML='<div class="exp-empty">📭 尚無資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
@@ -832,8 +843,7 @@ function renderExpansion(){
   var failBanner = expansionData.scan_failed
     ? '<div style="background:rgba(245,132,74,.12);border:.5px solid rgba(245,132,74,.4);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#f5844a">⚠ 上次掃描失敗（'+(expansionData.scan_failed_at||'')+'）：'+(expansionData.scan_failed_reason||'')+'<br><span style="color:var(--text3)">以下顯示前次成功資料（'+expansionData.updated_at+'）</span></div>'
     : '';
-  app.innerHTML=failBanner+'<div style="font-size:10px;color:var(--text3);padding:2px 0 8px">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
-    list.map(rExpCard).join('');
+  app.innerHTML=failBanner+list.map(rExpCard).join('');
 }
 
 function renderExpansionInApp(){
@@ -1913,6 +1923,7 @@ async function loadData(){
     var updNote = data.twse_dynamic_failed
       ? '更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔　<span style="color:#f5844a">⚠ TWSE 動態名單失敗，僅含固定大型股</span>'
       : '更新：'+(data.updated_at||'')+'<br>共 '+(data.total||stocks.length)+' 檔';
+    _stocksUpdText=updNote;
     document.getElementById('upd').innerHTML=updNote;
     var foi=data.futures_oi;
     if(foi){window._foiData=foi;
