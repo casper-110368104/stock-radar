@@ -829,7 +829,10 @@ function renderExpansion(){
     app.innerHTML='<div class="exp-empty">📭 尚無資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
     return;
   }
-  app.innerHTML='<div style="font-size:10px;color:var(--text3);padding:2px 0 8px">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
+  var failBanner = expansionData.scan_failed
+    ? '<div style="background:rgba(245,132,74,.12);border:.5px solid rgba(245,132,74,.4);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#f5844a">⚠ 上次掃描失敗（'+(expansionData.scan_failed_at||'')+'）：'+(expansionData.scan_failed_reason||'')+'<br><span style="color:var(--text3)">以下顯示前次成功資料（'+expansionData.updated_at+'）</span></div>'
+    : '';
+  app.innerHTML=failBanner+'<div style="font-size:10px;color:var(--text3);padding:2px 0 8px">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
     list.map(rExpCard).join('');
 }
 
@@ -1934,7 +1937,11 @@ async function loadExpansion(){
     var data=await res.json();
     expansionData=data;
     var sub=document.getElementById('expansion-sub');
-    if(sub) sub.textContent='有訊號 '+(data.signal_count||0)+' 檔 / 掃描 '+(data.sample_size||0)+' 檔 · '+(data.updated_at||'');
+    if(data.scan_failed){
+      if(sub) sub.innerHTML='<span style="color:#f5844a">⚠ 上次掃描失敗</span>　舊資料：'+(data.updated_at||'')+'　原因：'+(data.scan_failed_reason||'');
+    } else {
+      if(sub) sub.textContent='有訊號 '+(data.signal_count||0)+' 檔 / 掃描 '+(data.sample_size||0)+' 檔 · '+(data.updated_at||'');
+    }
     if(curView==='expansion') renderExpansion();
   }catch(e){}
 }
