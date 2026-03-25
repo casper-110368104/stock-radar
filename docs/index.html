@@ -390,6 +390,25 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 /* ─ Signal badge on stock card ─ */
 .sig-dot{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(0,200,150,.12);color:var(--green);flex-shrink:0}
 .sig-dot.sd-med{background:rgba(255,159,67,.12);color:var(--orange)}
+/* ─ 回測面板 ─ */
+.bt-card{background:var(--bg2);border:.5px solid var(--border);border-radius:14px;padding:12px 13px;margin-bottom:8px}
+.bt-title{font-size:13px;font-weight:700;margin-bottom:10px}
+.bt-sub{font-size:10px;font-weight:400;color:var(--text3)}
+.bt-row{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:.5px solid var(--border)}
+.bt-row:last-child{border-bottom:none}
+.bt-sig-label{font-size:12px;font-weight:600;width:60px;flex-shrink:0}
+.bt-bar-wrap{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;min-width:40px}
+.bt-bar{height:100%;border-radius:3px}
+.bt-pct{font-size:12px;font-weight:700;width:34px;text-align:right;flex-shrink:0}
+.bt-count{font-size:10px;color:var(--text3);width:46px;text-align:right;flex-shrink:0}
+.bt-track-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.bt-track-item:last-child{border-bottom:none}
+.bt-ti-icon{font-size:13px;flex-shrink:0;width:18px}
+.bt-ti-code{font-size:10px;font-weight:600;color:var(--text3);background:var(--bg4);padding:1px 5px;border-radius:4px;flex-shrink:0}
+.bt-ti-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt-ti-sig{font-size:10px;color:var(--text3);flex-shrink:0}
+.bt-ti-gain{font-weight:700;font-size:12px;flex-shrink:0;width:50px;text-align:right}
+.bt-ti-days{font-size:10px;color:var(--text3);flex-shrink:0;width:54px;text-align:right}
 </style>
 </head>
 <body>
@@ -821,6 +840,50 @@ function _sortExpList(list){
   return list;
 }
 
+function _renderBtStats(stats){
+  var keys=Object.keys(stats||{});
+  if(!keys.length) return '';
+  keys.sort(function(a,b){return (stats[b].win_rate||0)-(stats[a].win_rate||0);});
+  var rows=keys.map(function(k){
+    var s=stats[k];
+    var pct=Math.round((s.win_rate||0)*100);
+    var barW=Math.round(pct*0.72);
+    var c=pct>=60?'var(--green)':pct>=50?'var(--orange)':'var(--red)';
+    return '<div class="bt-row">'+
+      '<div class="bt-sig-label">'+(s.label||k)+'</div>'+
+      '<div class="bt-bar-wrap"><div class="bt-bar" style="width:'+barW+'px;background:'+c+'"></div></div>'+
+      '<div class="bt-pct" style="color:'+c+'">'+pct+'%</div>'+
+      '<div class="bt-count">樣本 '+(s.count||0)+'</div>'+
+    '</div>';
+  }).join('');
+  return '<div class="bt-card">'+
+    '<div class="bt-title">📊 訊號歷史勝率 <span class="bt-sub">（近6個月歷史回測，第5～15日判定，RR=2:1）</span></div>'+
+    rows+'</div>';
+}
+
+function _renderBtTracking(tracking){
+  if(!tracking||!tracking.length) return '';
+  var SI={open:'⏳',win:'✅',loss:'🔴',expired:'⚪'};
+  var SL={open:'追蹤中',win:'達標',loss:'停損',expired:'超時'};
+  var items=tracking.map(function(t){
+    var g=t.gain_pct||0;
+    var gs=(g>=0?'+':'')+g.toFixed(1)+'%';
+    var gc=g>0?'var(--green)':g<0?'var(--red)':'var(--text3)';
+    var dayStr=t.status==='open'?'第'+(t.days_held||0)+'日':(SL[t.status]||t.status)+((t.resolved_date)?' '+t.resolved_date.slice(5):'');
+    return '<div class="bt-track-item">'+
+      '<span class="bt-ti-icon">'+(SI[t.status]||'⚪')+'</span>'+
+      '<span class="bt-ti-code">'+t.code+'</span>'+
+      '<span class="bt-ti-name">'+t.name+'</span>'+
+      '<span class="bt-ti-sig">'+t.label+'</span>'+
+      '<span class="bt-ti-gain" style="color:'+gc+'">'+gs+'</span>'+
+      '<span class="bt-ti-days">'+dayStr+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div class="bt-card" style="margin-top:12px">'+
+    '<div class="bt-title">🎯 信號追蹤 <span class="bt-sub">（近'+tracking.length+'筆，追蹤期最長20日）</span></div>'+
+    items+'</div>';
+}
+
 function renderExpansion(){
   var app=document.getElementById('exp-app');
   if(!app) return;
@@ -832,8 +895,10 @@ function renderExpansion(){
   var failBanner = expansionData.scan_failed
     ? '<div style="background:rgba(245,132,74,.12);border:.5px solid rgba(245,132,74,.4);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#f5844a">⚠ 上次掃描失敗（'+(expansionData.scan_failed_at||'')+'）：'+(expansionData.scan_failed_reason||'')+'<br><span style="color:var(--text3)">以下顯示前次成功資料（'+expansionData.updated_at+'）</span></div>'
     : '';
+  var btPanel=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking);
   app.innerHTML=failBanner+'<div style="font-size:10px;color:var(--text3);padding:2px 0 8px">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
-    list.map(rExpCard).join('');
+    list.map(rExpCard).join('')+
+    (btPanel?'<div style="margin-top:16px">'+btPanel+'</div>':'');
 }
 
 function renderExpansionInApp(){
