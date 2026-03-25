@@ -12,7 +12,6 @@ from datetime import datetime
 
 OUTPUT_PATH  = "docs/expansion.json"
 HEADERS      = {"User-Agent": "Mozilla/5.0 (compatible; stock-radar-bot/1.0)"}
-MIN_VOLUME   = 2_000_000   # 最低成交股數（流動性門檻，約 200 張以上）
 MIN_PRICE    = 15          # 最低股價（排除低價股）
 SAMPLE_SIZE  = 500         # 每次隨機抽取數量
 ETF_PREFIXES = ("00",)
@@ -31,15 +30,27 @@ def fetch_all_twse_stocks():
 
         fields = d.get("fields", [])
         rows   = d.get("data", [])
+        print(f"  [TWSE] fields: {fields}")   # 診斷用：確認欄位名稱
 
-        try:
-            i_code = fields.index("證券代號")
-            i_name = fields.index("證券名稱")
-            i_vol  = fields.index("成交股數")
-            i_cls  = fields.index("收盤價")
-            i_open = fields.index("開盤價")
-        except ValueError:
-            i_code, i_name, i_vol, i_open, i_cls = 0, 1, 2, 5, 8
+        # 嘗試定位各欄索引，相容新舊欄位名
+        def find(candidates, fallback):
+            for c in candidates:
+                if c in fields:
+                    return fields.index(c)
+            return fallback
+
+        i_code = find(["證券代號", "股票代號"], 0)
+        i_name = find(["證券名稱", "股票名稱"], 1)
+        i_vol  = find(["成交股數", "成交張數", "成交量"], 2)
+        i_open = find(["開盤價"], 5)
+        i_cls  = find(["收盤價"], 8)
+
+        # 判斷成交量單位（張 vs 股）：欄位含「張」或「量」視為以張計
+        vol_field = fields[i_vol] if i_vol < len(fields) else ""
+        is_lots   = "張" in vol_field or vol_field == "成交量"
+        # 門檻：股 ≥ 500,000（約 500 張）；張 ≥ 500
+        MIN_VOL = 500 if is_lots else 500_000
+        print(f"  [TWSE] 成交量欄位='{vol_field}'，單位={'張' if is_lots else '股'}，門檻={MIN_VOL:,}")
 
         result = []
         for r in rows:
@@ -58,7 +69,7 @@ def fetch_all_twse_stocks():
                 chg_pct = round((cls - opn) / opn * 100, 2) if opn > 0 else 0
                 name = r[i_name].strip()
 
-                if vol < MIN_VOLUME or cls < MIN_PRICE:
+                if vol < MIN_VOL or cls < MIN_PRICE:
                     continue
 
                 result.append({
