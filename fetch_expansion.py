@@ -6,7 +6,7 @@
 不使用 FinMind / Gemini，完全不消耗付費 API 額度。
 """
 
-import requests, json, time, os, random
+import requests, json, time, os, random, sys
 import yfinance as yf
 from datetime import datetime
 
@@ -229,7 +229,7 @@ def main():
     all_stocks = fetch_all_twse_stocks()
     if not all_stocks:
         print("  無法取得市場資料，終止。")
-        return
+        sys.exit(1)
 
     # Step 2: 排除現有股票
     print("\n[2] 排除現有股票...")
@@ -239,7 +239,7 @@ def main():
 
     if not candidates:
         print("  候選池為空，終止。")
-        return
+        sys.exit(1)
 
     # Step 3: 隨機抽樣
     sample_n = min(SAMPLE_SIZE, len(candidates))
