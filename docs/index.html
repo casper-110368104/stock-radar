@@ -368,6 +368,28 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 /* ─ 共振預警 ─ */
 .res-badge{display:inline-block;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:10px;margin-left:4px;animation:rpulse 1.5s infinite;vertical-align:middle}
 @keyframes rpulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ─ Sector chart modal ─ */
+.scov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;backdrop-filter:blur(4px)}
+.scov.open{display:block}
+.scmodal{position:fixed;bottom:-100%;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;z-index:301;
+  padding:0 16px calc(env(safe-area-inset-bottom,0px) + 24px);transition:bottom .3s cubic-bezier(.4,0,.2,1);max-height:82vh;overflow-y:auto}
+.scmodal.open{bottom:0}
+
+/* ─ Expansion collapsible ─ */
+.exp-card.open{border-color:var(--border2)}
+.exp-signals{display:none;flex-direction:column;gap:7px}
+.exp-card.open .exp-signals{display:flex}
+.exp-vol{display:none}
+.exp-card.open .exp-vol{display:block}
+.exp-chevron{font-size:9px;color:var(--text3);transition:transform .25s;flex-shrink:0;margin-left:6px}
+.exp-card.open .exp-chevron{transform:rotate(180deg)}
+.exp-sig-count{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--text3);flex-shrink:0}
+.exp-sig-count.sc-strong{background:rgba(0,200,150,.15);color:var(--green)}
+.exp-sig-count.sc-medium{background:rgba(255,159,67,.15);color:var(--orange)}
+/* ─ Signal badge on stock card ─ */
+.sig-dot{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(0,200,150,.12);color:var(--green);flex-shrink:0}
+.sig-dot.sd-med{background:rgba(255,159,67,.12);color:var(--orange)}
 </style>
 </head>
 <body>
@@ -404,16 +426,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <div class="ec-arr">›</div>
       </div>
     </div>
-    <div class="entry-card ec-etf" onclick="goView('etf')">
-      <div class="ec-hdr">
-        <div class="ec-icon">📊</div>
-        <div class="ec-info">
-          <div class="ec-title">ETF</div>
-          <div class="ec-sub" id="etf-sub">防禦參考・資產配置</div>
-        </div>
-        <div class="ec-arr">›</div>
-      </div>
-    </div>
     <div class="entry-card ec-stocks" onclick="goView('stocks')">
       <div class="ec-hdr">
         <div class="ec-icon">📈</div>
@@ -430,6 +442,16 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <div class="ec-info">
           <div class="ec-title">隨機500股</div>
           <div class="ec-sub" id="expansion-sub">訊號掃描・每日更新</div>
+        </div>
+        <div class="ec-arr">›</div>
+      </div>
+    </div>
+    <div class="entry-card ec-etf" onclick="goView('etf')">
+      <div class="ec-hdr">
+        <div class="ec-icon">📊</div>
+        <div class="ec-info">
+          <div class="ec-title">ETF</div>
+          <div class="ec-sub" id="etf-sub">防禦參考・資產配置</div>
         </div>
         <div class="ec-arr">›</div>
       </div>
@@ -482,7 +504,9 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <button class="tab"        id="tab-large"    onclick="setTab('large')">🏢 大型</button>
     <button class="tab"        id="tab-mid_small" onclick="setTab('mid_small')">🚀 中小型</button>
     <button class="tab"        id="tab-watch"    onclick="setTab('watch')">⭐ 自選</button>
+    <button class="tab"        id="tab-exp"      onclick="setTab('exp')">🎲 隨機</button>
     <button class="tab" id="tab-ma60" onclick="toggleMA60()" style="margin-left:8px;border:1px solid #666;">📈 MA60</button>
+    <button class="tab" id="tab-signal" onclick="toggleSignalFilter()" style="border:1px solid #666;">🔔 訊號</button>
   </div>
   <div class="search-wrap">
     <input class="search-input" id="search" placeholder="搜尋股票名稱或代碼..." oninput="render()">
@@ -531,6 +555,15 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
   <div class="mtitle" id="mtitle"></div>
   <div class="msub" id="msub"></div>
   <div id="mbody"></div>
+</div>
+
+<!-- Sector Chart Modal -->
+<div class="scov" id="scov" onclick="closeSCM()"></div>
+<div class="scmodal" id="scmodal">
+  <div class="mdrag"></div>
+  <div class="mtitle" id="scm-title" style="margin-bottom:3px"></div>
+  <div style="font-size:11px;color:var(--text3);margin-bottom:14px" id="scm-sub"></div>
+  <div id="scm-body"></div>
 </div>
 
 <script>
@@ -602,56 +635,96 @@ function setExpSort(s,btn){
   if(btn) btn.classList.add('active');
   renderExpansion();
 }
-function renderExpansion(){
-  var app=document.getElementById('exp-app');
-  if(!app) return;
-  var list=(expansionData.stocks||[]).slice();
-  if(!list.length){
-    app.innerHTML='<div class="exp-empty">📭 尚無資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
-    return;
+
+function togExpCard(code){
+  var card=document.getElementById('xc-'+code);
+  if(!card) return;
+  var wasOpen=card.classList.contains('open');
+  document.querySelectorAll('.exp-card.open').forEach(function(c){c.classList.remove('open');});
+  if(!wasOpen){
+    card.classList.add('open');
+    setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
   }
+}
+
+function rExpCard(s){
+  var pc=s.chg_pct>=0?'var(--green)':'var(--red)';
+  var sigs=s.signals||[];
+  var hasStrong=sigs.some(function(sg){return sg.strength==='strong';});
+  var hasMed=sigs.some(function(sg){return sg.strength==='medium';});
+  var cntCls=hasStrong?'sc-strong':hasMed?'sc-medium':'';
+  var SLBL={'strong':'強','medium':'中','weak':'弱'};
+  var sigsHtml=sigs.map(function(sg){
+    var st=sg.strength;
+    return '<div class="exp-sig '+st+'">'+
+      '<div class="exp-sig-head">'+
+        '<span class="exp-sig-badge '+st+'">'+(SLBL[st]||st)+'</span>'+
+        '<span class="exp-sig-label">'+sg.label+'</span>'+
+      '</div>'+
+      '<div class="exp-sig-reason">'+sg.reason+'</div>'+
+      '<div class="exp-sig-prices">'+
+        '<div class="exp-sig-px">進場 <span>$'+sg.entry+'</span></div>'+
+        '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
+        '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
+        '<div class="exp-sig-px">RR <span>1:'+sg.rr+'</span></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  var volTag=s.vol_ratio>=2?'<span style="color:var(--orange);font-weight:700">量比 '+s.vol_ratio+'x 🔥</span>':'量比 '+(s.vol_ratio||'-')+'x';
+  return '<div class="exp-card" id="xc-'+s.code+'">'+
+    '<div class="exp-hdr" onclick="togExpCard(\''+s.code+'\')" style="cursor:pointer">'+
+      '<div class="exp-meta">'+
+        '<span class="exp-code">'+s.code+'</span>'+
+        '<span class="exp-name">'+s.name+'</span>'+
+        '<span class="exp-sig-count '+cntCls+'">📈 '+sigs.length+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:6px">'+
+        '<div class="exp-right">'+
+          '<div class="exp-price">$'+s.price+'</div>'+
+          '<div class="exp-chg" style="color:'+pc+'">'+(s.chg_pct>=0?'+':'')+s.chg_pct+'%</div>'+
+        '</div>'+
+        '<span class="exp-chevron">▼</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="exp-signals">'+sigsHtml+'</div>'+
+    '<div class="exp-vol">'+volTag+'　MA5 '+(s.ma5||'-')+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+'</div>'+
+  '</div>';
+}
+
+function _sortExpList(list){
   var SORD={'strong':0,'medium':1,'weak':2};
   if(curExpSort==='strength')    list.sort(function(a,b){return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));});
   else if(curExpSort==='sig_count') list.sort(function(a,b){return b.signals.length-a.signals.length;});
   else if(curExpSort==='vol_ratio')  list.sort(function(a,b){return (b.vol_ratio||0)-(a.vol_ratio||0);});
   else if(curExpSort==='chg_up')     list.sort(function(a,b){return (b.chg_pct||0)-(a.chg_pct||0);});
   else if(curExpSort==='chg_dn')     list.sort(function(a,b){return (a.chg_pct||0)-(b.chg_pct||0);});
-  var SLBL={'strong':'強','medium':'中','weak':'弱'};
+  return list;
+}
+
+function renderExpansion(){
+  var app=document.getElementById('exp-app');
+  if(!app) return;
+  var list=_sortExpList((expansionData.stocks||[]).slice());
+  if(!list.length){
+    app.innerHTML='<div class="exp-empty">📭 尚無資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
+    return;
+  }
   app.innerHTML='<div style="font-size:10px;color:var(--text3);padding:2px 0 8px">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
-    list.map(function(s){
-      var pc=s.chg_pct>=0?'var(--green)':'var(--red)';
-      var sigs=s.signals.map(function(sg){
-        var st=sg.strength;
-        return '<div class="exp-sig '+st+'">'+
-          '<div class="exp-sig-head">'+
-            '<span class="exp-sig-badge '+st+'">'+(SLBL[st]||st)+'</span>'+
-            '<span class="exp-sig-label">'+sg.label+'</span>'+
-          '</div>'+
-          '<div class="exp-sig-reason">'+sg.reason+'</div>'+
-          '<div class="exp-sig-prices">'+
-            '<div class="exp-sig-px">進場 <span>$'+sg.entry+'</span></div>'+
-            '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
-            '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
-            '<div class="exp-sig-px">RR <span>1:'+sg.rr+'</span></div>'+
-          '</div>'+
-        '</div>';
-      }).join('');
-      var volTag=s.vol_ratio>=2?'<span style="color:var(--orange);font-weight:700">量比 '+s.vol_ratio+'x 🔥</span>':'量比 '+(s.vol_ratio||'-')+'x';
-      return '<div class="exp-card">'+
-        '<div class="exp-hdr">'+
-          '<div class="exp-meta">'+
-            '<span class="exp-code">'+s.code+'</span>'+
-            '<span class="exp-name">'+s.name+'</span>'+
-          '</div>'+
-          '<div class="exp-right">'+
-            '<div class="exp-price">$'+s.price+'</div>'+
-            '<div class="exp-chg" style="color:'+pc+'">'+(s.chg_pct>=0?'+':'')+s.chg_pct+'%</div>'+
-          '</div>'+
-        '</div>'+
-        '<div class="exp-signals">'+sigs+'</div>'+
-        '<div class="exp-vol">'+volTag+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+'</div>'+
-      '</div>';
-    }).join('');
+    list.map(rExpCard).join('');
+}
+
+function renderExpansionInApp(){
+  var app=document.getElementById('app');
+  if(!app) return;
+  var list=(expansionData.stocks||[]).slice();
+  if(!list.length){
+    app.innerHTML='<div class="empty">📭 尚無隨機500股資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
+    return;
+  }
+  var SORD={'strong':0,'medium':1,'weak':2};
+  list.sort(function(a,b){return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));});
+  app.innerHTML='<div style="font-size:10px;color:var(--text3);padding:8px 0">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
+    list.map(rExpCard).join('');
 }
 
 function renderMacroPreview(){
@@ -725,7 +798,7 @@ function renderMacroFull(){
     h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
         '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
-        '<button id="sector-togall-btn" onclick="togAllSectors(this)" style="background:var(--bg4);border:.5px solid var(--border2);color:var(--text2);font-size:10px;padding:3px 9px;border-radius:8px;cursor:pointer">展開全部</button>'+
+        '<button onclick="goView(\'expansion\')" style="background:rgba(245,197,24,.08);border:.5px solid rgba(245,197,24,.3);color:var(--gold);font-size:10px;padding:3px 9px;border-radius:8px;cursor:pointer;font-weight:600">🎲 隨機500</button>'+
       '</div>'+
       '<div style="display:flex;flex-direction:column;gap:8px">';
     ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
@@ -766,53 +839,75 @@ function renderMacroFull(){
   el.innerHTML=h;
 }
 
-function _renderSectorChart(el){
-  if(el.dataset.rendered) return;
-  try{
-    var trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));
-    var color=el.getAttribute('data-color')||'#22c55e';
-    el.innerHTML=drawSparkline(trend,color);
-    var sk=el.getAttribute('data-sector')||'';
-    if(sk){
-      el.innerHTML+='<div style="font-size:9px;color:var(--blue);text-align:center;padding:1px 0 3px;cursor:pointer">→ 點此查看'+sk+'個股</div>';
-      el.style.cursor='pointer';
-      el.onclick=function(e){e.stopPropagation();jumpToSector(sk);};
-    }
-    el.dataset.rendered='1';
-  }catch(e){}
-}
 function togSector(row){
   var tid=row.getAttribute('data-tid');
   var el=document.getElementById(tid);
-  if(!el)return;
-  var open=el.style.display==='block';
-  el.style.display=open?'none':'block';
-  if(!open) _renderSectorChart(el);
+  if(!el) return;
+  var trend=[];
+  try{trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));}catch(e){}
+  var color=el.getAttribute('data-color')||'#22c55e';
+  var sector=el.getAttribute('data-sector')||'';
+  openSCM(sector,trend,color);
 }
-function togRowSectors(phaseLabel){
-  var row=phaseLabel.parentElement;
-  var charts=row.querySelectorAll('[id^="sqc"]');
-  var anyOpen=false;
-  charts.forEach(function(el){if(el.style.display==='block')anyOpen=true;});
-  var toOpen=!anyOpen;
-  charts.forEach(function(el){
-    el.style.display=toOpen?'block':'none';
-    if(toOpen) _renderSectorChart(el);
-  });
-  var arrow=phaseLabel.querySelector('.phase-arr');
-  if(arrow) arrow.textContent=toOpen?'▲':'▼';
+function openSCM(sector,trend,color){
+  document.getElementById('scm-title').textContent=sector?sector+' 產業 RS 走勢':'RS 走勢';
+  document.getElementById('scm-sub').textContent='RS = 產業漲幅 - 大盤漲幅　共 '+(trend.length||0)+' 日資料';
+  var body=document.getElementById('scm-body');
+  body.innerHTML=drawSparklineLarge(trend,color)+
+    (sector?
+      '<button onclick="jumpToSector(\''+sector+'\');closeSCM()" style="width:100%;padding:12px;background:rgba(74,158,255,.1);border:.5px solid var(--blue);color:var(--blue);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">📈 查看 '+sector+' 個股</button>'+
+      '<button onclick="goView(\'expansion\');closeSCM()" style="width:100%;padding:12px;background:rgba(245,197,24,.07);border:.5px solid rgba(245,197,24,.3);color:var(--gold);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">🎲 查看隨機500股訊號</button>'
+    :'');
+  document.getElementById('scov').classList.add('open');
+  document.getElementById('scmodal').classList.add('open');
+  lockScroll();
 }
-function togAllSectors(btn){
-  var charts=document.querySelectorAll('[id^="sqc"]');
-  var anyOpen=false;
-  charts.forEach(function(el){if(el.style.display==='block')anyOpen=true;});
-  var toOpen=!anyOpen;
-  charts.forEach(function(el){
-    el.style.display=toOpen?'block':'none';
-    if(toOpen) _renderSectorChart(el);
+function closeSCM(){
+  document.getElementById('scov').classList.remove('open');
+  document.getElementById('scmodal').classList.remove('open');
+  unlockScroll();
+}
+function drawSparklineLarge(trend,color){
+  if(!trend||trend.length<2) return '<div style="font-size:13px;color:var(--text3);padding:20px;text-align:center">資料不足</div>';
+  var vals=trend.map(function(t){return t.rs;});
+  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),range=mx-mn||0.1;
+  var W=340,H=170,PX=20,PY=16;
+  var pts=vals.map(function(v,i){
+    return (PX+(W-PX*2)/(vals.length-1)*i).toFixed(1)+','+(PY+(H-PY*2-20)*(1-(v-mn)/range)).toFixed(1);
+  }).join(' ');
+  var last=vals[vals.length-1],first=vals[0];
+  var chgAbs=(last-first).toFixed(2);
+  var cc=last>=first?'#22c55e':'#ef4444';
+  var y0=(mn<=0&&mx>=0)?(PY+(H-PY*2-20)*(1-(0-mn)/range)).toFixed(1):null;
+  var base=y0?'<line x1="'+PX+'" y1="'+y0+'" x2="'+(W-PX)+'" y2="'+y0+'" stroke="#ffffff28" stroke-width="1" stroke-dasharray="4,3"/>':'';
+  var grid='';
+  for(var g=1;g<4;g++){
+    var gy=(PY+(H-PY*2-20)/4*g).toFixed(1);
+    grid+='<line x1="'+PX+'" y1="'+gy+'" x2="'+(W-PX)+'" y2="'+gy+'" stroke="#ffffff08" stroke-width="1"/>';
+  }
+  var step=Math.ceil(vals.length/5);
+  var dates='';
+  trend.forEach(function(t,i){
+    if(i%step===0||i===trend.length-1){
+      var dx=(PX+(W-PX*2)/(vals.length-1)*i).toFixed(1);
+      dates+='<text x="'+dx+'" y="'+(H-5)+'" text-anchor="middle" font-size="8.5" fill="#6b7280">'+t.date+'</text>';
+    }
   });
-  if(btn) btn.textContent=toOpen?'收合全部':'展開全部';
-  document.querySelectorAll('.phase-arr').forEach(function(a){a.textContent=toOpen?'▲':'▼';});
+  var lx=(PX+(W-PX*2)/(vals.length-1)*(vals.length-1)).toFixed(1);
+  var ly=(PY+(H-PY*2-20)*(1-(last-mn)/range)).toFixed(1);
+  return '<div style="background:var(--bg3);border-radius:12px;padding:12px;margin-bottom:14px">'+
+    '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:160px;display:block">'+
+      grid+base+
+      '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'+
+      '<circle cx="'+lx+'" cy="'+ly+'" r="4.5" fill="'+color+'" stroke="var(--bg3)" stroke-width="2"/>'+
+      dates+
+    '</svg>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text3);padding:4px 0 0">'+
+      '<span>起始 RS <strong style="color:'+( first>=0?'#22c55e':'#ef4444')+'">'+(first>=0?'+':'')+first.toFixed(2)+'</strong></span>'+
+      '<span style="color:'+cc+';font-weight:700">期間變化 '+(parseFloat(chgAbs)>=0?'+':'')+chgAbs+'</span>'+
+      '<span>最新 RS <strong style="color:'+(last>=0?'#22c55e':'#ef4444')+'">'+(last>=0?'+':'')+last.toFixed(2)+'</strong></span>'+
+    '</div>'+
+  '</div>';
 }
 function jumpToSector(key){
   curSectorKey=key; curInd='all'; curThm='all';
@@ -906,7 +1001,8 @@ function setTab(t){
   curTab=t;
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   var el=document.getElementById('tab-'+t);if(el)el.classList.add('active');
-  render();
+  if(t==='exp') renderExpansionInApp();
+  else render();
 }
 function setW(w){
   curW=w;
@@ -929,7 +1025,16 @@ function calcRanks(){
   });
 }
 
+var filterSignal=false;
+function toggleSignalFilter(){
+  filterSignal=!filterSignal;
+  var btn=document.getElementById('tab-signal');
+  if(btn){btn.style.background=filterSignal?'#2a6':'';btn.style.color=filterSignal?'#fff':'';}
+  render();
+}
+
 function render(){
+  if(curTab==='exp'){renderExpansionInApp();return;}
   var q=(document.getElementById('search')||{}).value||'';
   var list=stocks.slice();
   if(curTab==='large')     list=list.filter(function(s){return s.category==='large';});
@@ -939,6 +1044,7 @@ function render(){
   if(curSectorKey!=='all') list=list.filter(function(s){return s.sector_key===curSectorKey;});
   if(curThm!=='all') list=list.filter(function(s){return(s.themes||[]).indexOf(curThm)>=0;});
   if(filterMA60) list=list.filter(function(s){return s.above_ma60===true;});
+  if(filterSignal) list=list.filter(function(s){return s.signals&&s.signals.length>0;});
   if(q) list=list.filter(function(s){return s.code.indexOf(q)>=0||s.name.indexOf(q)>=0;});
 
   calcRanks();
@@ -965,6 +1071,11 @@ function rCard(s){
   var icons=(s.icons||[]).map(function(i){return '<span class="icon">'+i+'</span>';}).join('');
   var isRes=isResonance(s);
   var hasHighWarn=s.warnings&&s.warnings.some(function(w){return w.level==='high';});
+  var sigBadge='';
+  if(s.signals&&s.signals.length){
+    var hasStrongSig=s.signals.some(function(sg){return sg.strength==='strong';});
+    sigBadge='<span class="sig-dot'+(hasStrongSig?'':' sd-med')+'">📈'+s.signals.length+'</span>';
+  }
 
   // ind rank badge
   var ri=rankMap[s.code];
@@ -1115,6 +1226,7 @@ function rCard(s){
           '<span class="code-badge">'+s.code+'</span>'+
           '<span class="sname">'+s.name+'</span>'+
           '<div class="icons">'+icons+'</div>'+
+          sigBadge+
         '</div>'+
         '<div class="score-row">'+
           '<span class="sc-chip" style="color:'+col+'">'+ws+'分</span>'+
@@ -1541,6 +1653,7 @@ function makeSheet(sheetId, closeFn){
 document.addEventListener('DOMContentLoaded',function(){
   makeSheet('modal', closeCM);
   makeSheet('panel', closeCfg);
+  makeSheet('scmodal', closeSCM);
 });
 
 // ─ Load ─
