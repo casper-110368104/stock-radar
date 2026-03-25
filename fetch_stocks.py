@@ -16,6 +16,26 @@ OUTPUT_PATH    = "docs/stocks.json"
 FINMIND_URL    = "https://api.finmindtrade.com/api/v4/data"
 HEADERS        = {"User-Agent": "Mozilla/5.0"}
 
+
+def get_json_with_retry(url, headers, timeout=20, retries=4, backoff=5):
+    """帶重試的 GET JSON，記錄 HTTP 狀態供診斷"""
+    for attempt in range(1, retries + 1):
+        try:
+            res = requests.get(url, headers=headers, timeout=timeout)
+            print(f"  [HTTP] status={res.status_code} len={len(res.content)} bytes (attempt {attempt})")
+            if res.status_code != 200:
+                raise ValueError(f"HTTP {res.status_code}")
+            if not res.content:
+                raise ValueError("empty response body")
+            return res.json()
+        except Exception as e:
+            print(f"  [retry {attempt}/{retries}] {e}")
+            if attempt < retries:
+                wait = backoff * attempt
+                print(f"  等待 {wait}s 後重試...")
+                time.sleep(wait)
+    return None
+
 # 固定必追蹤大型股
 # ── 產業輪動：TWSE 類股指數對照表 ────────────────────────
 SECTOR_MAP = {
@@ -278,63 +298,63 @@ def get_twse_date(days_ago=0):
 def fetch_twse_dynamic():
     """用 TWSE 公開 API 抓全市場當日資料，取量能/漲跌幅前N名"""
     url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json"
-    try:
-        res = requests.get(url, headers=HEADERS, timeout=15)
-        d = res.json()
-        if d.get("stat") != "OK":
-            print(f"  [TWSE] 狀態異常: {d.get('stat')}")
-            return []
-
-        fields = d.get("fields", [])
-        rows   = d.get("data", [])
-
-        # 欄位索引：證券代號/名稱/成交股數/收盤/漲跌
-        # 通常欄位：['證券代號','證券名稱','成交股數','成交筆數','成交金額','開盤價','最高價','最低價','收盤價','漲跌(+/-)','漲跌價差','最後揭示買價','最後揭示買量','最後揭示賣價','最後揭示賣量','本益比']
-        try:
-            i_code = fields.index("證券代號")
-            i_name = fields.index("證券名稱")
-            i_vol  = fields.index("成交股數")
-            i_cls  = fields.index("收盤價")
-            i_open = fields.index("開盤價")
-        except ValueError:
-            i_code, i_name, i_vol, i_open, i_cls = 0, 1, 2, 5, 8
-
-        stocks = []
-        for r in rows:
-            try:
-                code = r[i_code].strip()
-                if not (code.isdigit() and len(code) == 4):
-                    continue
-                vol  = int(r[i_vol].replace(",",""))
-                cls  = float(r[i_cls].replace(",","")) if r[i_cls] not in ("--","") else 0
-                opn  = float(r[i_open].replace(",","")) if r[i_open] not in ("--","") else cls
-                chg  = (cls - opn) / opn * 100 if opn > 0 else 0
-                name = r[i_name].strip() if i_name < len(r) else ""
-                if name and code not in _name_cache:
-                    _name_cache[code] = (name, "其他")
-                stocks.append({"code": code, "vol": vol, "chg": chg})
-            except:
-                continue
-
-        if not stocks:
-            print("  [TWSE] 解析後無資料")
-            return []
-
-        by_vol  = sorted(stocks, key=lambda x: x["vol"], reverse=True)
-        by_rise = sorted(stocks, key=lambda x: x["chg"], reverse=True)
-        by_fall = sorted(stocks, key=lambda x: x["chg"])
-
-        top_vol  = [s["code"] for s in by_vol[:100]]
-        top_rise = [s["code"] for s in by_rise[:50]]
-        top_fall = [s["code"] for s in by_fall[:30]]
-
-        merged = list(dict.fromkeys(top_vol + top_rise + top_fall))
-        print(f"  [TWSE] 量能{len(top_vol)} 漲幅{len(top_rise)} 跌幅{len(top_fall)} → {len(merged)} 檔，名稱快取{len(_name_cache)}檔")
-        return merged
-
-    except Exception as e:
-        print(f"  [TWSE] 失敗：{e}")
+    d = get_json_with_retry(url, HEADERS, timeout=20, retries=4, backoff=5)
+    if d is None:
+        print("  [TWSE] 多次重試後仍失敗，跳過動態名單")
         return []
+    if d.get("stat") != "OK":
+        print(f"  [TWSE] 狀態異常: {d.get('stat')}")
+        return []
+
+    fields = d.get("fields", [])
+    rows   = d.get("data", [])
+    print(f"  [TWSE] fields: {fields}")  # 診斷用
+
+    # 自適應欄位定位，相容新舊欄位名稱
+    def find(candidates, fallback):
+        for c in candidates:
+            if c in fields:
+                return fields.index(c)
+        return fallback
+
+    i_code = find(["證券代號", "股票代號"], 0)
+    i_name = find(["證券名稱", "股票名稱"], 1)
+    i_vol  = find(["成交股數", "成交張數", "成交量"], 2)
+    i_open = find(["開盤價"], 5)
+    i_cls  = find(["收盤價"], 8)
+
+    stocks = []
+    for r in rows:
+        try:
+            code = r[i_code].strip()
+            if not (code.isdigit() and len(code) == 4):
+                continue
+            vol  = int(r[i_vol].replace(",", ""))
+            cls  = float(r[i_cls].replace(",", "")) if r[i_cls] not in ("--", "") else 0
+            opn  = float(r[i_open].replace(",", "")) if r[i_open] not in ("--", "") else cls
+            chg  = (cls - opn) / opn * 100 if opn > 0 else 0
+            name = r[i_name].strip() if i_name < len(r) else ""
+            if name and code not in _name_cache:
+                _name_cache[code] = (name, "其他")
+            stocks.append({"code": code, "vol": vol, "chg": chg})
+        except:
+            continue
+
+    if not stocks:
+        print("  [TWSE] 解析後無資料")
+        return []
+
+    by_vol  = sorted(stocks, key=lambda x: x["vol"], reverse=True)
+    by_rise = sorted(stocks, key=lambda x: x["chg"], reverse=True)
+    by_fall = sorted(stocks, key=lambda x: x["chg"])
+
+    top_vol  = [s["code"] for s in by_vol[:100]]
+    top_rise = [s["code"] for s in by_rise[:50]]
+    top_fall = [s["code"] for s in by_fall[:30]]
+
+    merged = list(dict.fromkeys(top_vol + top_rise + top_fall))
+    print(f"  [TWSE] 量能{len(top_vol)} 漲幅{len(top_rise)} 跌幅{len(top_fall)} → {len(merged)} 檔，名稱快取{len(_name_cache)}檔")
+    return merged
 
 
 # ── 2. Yahoo Finance：股價 + 基本面 + 歷史價量 ────────────────────
@@ -585,33 +605,29 @@ def fetch_mops_revenue():
          f"d={year_roc:03d}/{month:02d}", "上櫃"),
     ]
     for url, mkt in apis:
-        try:
-            res = requests.get(url, headers=HEADERS, timeout=20)
-            if res.status_code != 200:
-                print(f"  [月營收] {mkt} OpenData HTTP {res.status_code}，略過")
+        rows = get_json_with_retry(url, HEADERS, timeout=20, retries=3, backoff=5)
+        if rows is None:
+            print(f"  [月營收] {mkt} OpenData 多次重試失敗，略過")
+            continue
+        if not isinstance(rows, list):
+            rows = rows.get("data", rows.get("Data", []))
+        ok = 0
+        for row in rows:
+            if not isinstance(row, dict):
                 continue
-            rows = res.json()
-            if not isinstance(rows, list):
-                rows = rows.get("data", rows.get("Data", []))
-            ok = 0
-            for row in rows:
-                if not isinstance(row, dict):
-                    continue
-                # 欄位名稱可能是中文或英文
-                code = (row.get("公司代號") or row.get("Code") or "").strip()
-                if not (code.isdigit() and len(code) == 4):
-                    continue
-                yoy_raw = (row.get("去年同月增減(%)") or row.get("YoY(%)") or
-                           row.get("yoy") or row.get("MoM%") or "")
-                try:
-                    yoy = round(float(str(yoy_raw).replace(",", "").replace("+", "").strip()), 1)
-                    result[code] = yoy
-                    ok += 1
-                except (ValueError, TypeError):
-                    continue
-            print(f"  [月營收] {mkt} OpenData {year_roc}/{month} → {ok} 檔")
-        except Exception as e:
-            print(f"  [月營收] {mkt} OpenData 失敗：{e}")
+            # 欄位名稱可能是中文或英文
+            code = (row.get("公司代號") or row.get("Code") or "").strip()
+            if not (code.isdigit() and len(code) == 4):
+                continue
+            yoy_raw = (row.get("去年同月增減(%)") or row.get("YoY(%)") or
+                       row.get("yoy") or row.get("MoM%") or "")
+            try:
+                yoy = round(float(str(yoy_raw).replace(",", "").replace("+", "").strip()), 1)
+                result[code] = yoy
+                ok += 1
+            except (ValueError, TypeError):
+                continue
+        print(f"  [月營收] {mkt} OpenData {year_roc}/{month} → {ok} 檔")
 
     if result:
         return result

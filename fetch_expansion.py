@@ -125,32 +125,6 @@ def load_existing_codes():
         return set()
 
 
-def fetch_twse_industry_map():
-    """抓 TWSE 本益比表（BWIBBU_ALL），取得全市場股票的產業類別對照表"""
-    url = "https://www.twse.com.tw/rwd/zh/afterTrading/BWIBBU_ALL?response=json"
-    try:
-        res = requests.get(url, headers=HEADERS, timeout=15)
-        d   = res.json()
-        fields = d.get("fields", [])
-        rows   = d.get("data", [])
-        # fields 通常是 ['代號','名稱','殖利率(%)','股利年度','本益比','股價淨值比','財報年/季']
-        # 但有些版本沒有產業欄位，改用 BWIBBU_DAY or SFI
-        # 嘗試找代號欄位
-        try:
-            i_code = fields.index("代號")
-        except ValueError:
-            i_code = 0
-        ind_map = {}
-        for r in rows:
-            if len(r) > i_code:
-                ind_map[r[i_code].strip()] = None
-        print(f"  [BWIBBU] 取得 {len(ind_map)} 檔代號（無產業欄位，改用備援）")
-        return {}   # BWIBBU_ALL 沒有產業欄，回傳空，觸發備援
-    except Exception as e:
-        print(f"  [BWIBBU] 失敗：{e}")
-        return {}
-
-
 def fetch_twse_industry_map_isin():
     """備援：從 TWSE 上市公司基本資料 API 取得代號→產業對照表
     endpoint: https://opendata.twse.com.tw/v1/opendata/t187ap03_L
