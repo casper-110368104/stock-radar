@@ -396,7 +396,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 
 <div class="hdr">
   <div class="hdr-top">
-    <button id="hdr-back" onclick="goView('home')" style="display:none;background:none;border:none;color:var(--text);font-size:18px;cursor:pointer;padding:0 8px 0 0">‹</button>
+    <button id="hdr-back" onclick="goBack()" style="display:none;background:none;border:none;color:var(--text);font-size:18px;cursor:pointer;padding:0 8px 0 0">‹</button>
     <h1 id="hdr-title">選股雷達 📡</h1>
     <div class="hdr-right">
       <span class="upd" id="upd">載入中...</span>
@@ -574,7 +574,8 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 <script>
 var stocks=[],etfs=[],curSort='score',curTab='all',curInd='all',curThm='all',curSectorKey='all',
     curFMode='ind',curW='default',openCards={},cardTabs={};
-var curView='home';  // home / macro / etf / stocks
+var curView='home';  // home / macro / etf / stocks / expansion / sector
+var navStack=[];     // 返回堆疊 [{view, title, sectorKey}]
 var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預設值防止 undefined）
 var sectorData={};   // 產業輪動資料
 var expansionData={updated_at:'',signal_count:0,stocks:[]};
@@ -602,8 +603,34 @@ var WS={
   'pure-vol'  :{c:0,f:0,tech:0,r:0,v:1,s:0,t:0}
 };
 
+// ── 導航返回堆疊 ─────────────────────────────────────────
+function pushNav(){
+  var titleEl=document.getElementById('hdr-title');
+  navStack.push({view:curView,title:titleEl?titleEl.textContent:'',sectorKey:curSectorViewKey});
+}
+function goBack(){
+  if(!navStack.length){goView('home');return;}
+  var prev=navStack.pop();
+  if(prev.view==='sector'){
+    // sector-view 的 DOM 內容都還在，直接切回去
+    curView='sector';
+    var views=['home','macro','etf','stocks','expansion','sector'];
+    views.forEach(function(id){
+      var el=document.getElementById(id+'-view');
+      if(el) el.style.display=(id==='sector')?'':'none';
+    });
+    var hdr=document.getElementById('hdr-back');
+    if(hdr) hdr.style.display='';
+    var titleEl=document.getElementById('hdr-title');
+    if(titleEl) titleEl.textContent=prev.title||prev.sectorKey+' 產業綜覽';
+  } else {
+    goView(prev.view);
+  }
+}
+
 // ── View 切換 ────────────────────────────────────────────
 function goView(v){
+  if(v==='home') navStack=[];  // 回到首頁清空堆疊
   curView=v;
   var views=['home','macro','etf','stocks','expansion','sector'];
   views.forEach(function(id){
@@ -706,7 +733,7 @@ function renderSectorView(sector, trend, color){
     });
     h+=expMatched.map(function(s){return rExpCard(s,'sxc');}).join('');
   } else if(expAll.length){
-    h+='<div style="font-size:12px;color:var(--text3);padding:12px 0;line-height:1.8">此產業在本次掃描批次中無訊號股，可至<button onclick="goView(\'expansion\')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;padding:0 2px">🎲 隨機500股</button>查看全部訊號。</div>';
+    h+='<div style="font-size:12px;color:var(--text3);padding:12px 0;line-height:1.8">此產業在本次掃描批次中無訊號股，可至<button onclick="pushNav();goView(\'expansion\')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;padding:0 2px">🎲 隨機500股</button>查看全部訊號。</div>';
   } else {
     h+='<div style="font-size:12px;color:var(--text3);padding:12px 0">expansion.json 尚未產生，請等待 CI 執行。</div>';
   }
@@ -1023,6 +1050,7 @@ function jumpToSector(key){
 
 function jumpToCard(code, fromView){
   // 從 sector-view 跳到個股並展開該卡
+  pushNav();  // 記住來源，讓返回鍵可回 sector-view
   curSectorKey='all'; curInd='all'; curThm='all';
   updFLabel();
   goView('stocks');
