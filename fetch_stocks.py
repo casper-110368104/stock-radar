@@ -475,8 +475,11 @@ def fetch_yahoo(sid):
                 result["ma60"] = round(ma60, 2)
                 result["above_ma60"] = (closes[-1] >= ma60)
 
-            # 暫存收盤序列供 RS 計算
-            result["_closes"] = closes
+            # 暫存收盤序列供 RS 計算 + 回測
+            result["_closes"]  = closes
+            result["_highs"]   = highs
+            result["_lows"]    = lows
+            result["_volumes"] = vols
 
             # 歷史PE分位數（近1年收盤/EPS TTM）
             if result["eps_ttm"] and result["eps_ttm"] > 0:
@@ -1446,7 +1449,173 @@ def fetch_news(name, sid):
             continue
     return [], []
 
-# ── 5. 警示訊號 ───────────────────────────────────────────────────
+# ── 5. 歷史回測工具函式 ───────────────────────────────────────────
+
+_SIGNAL_LABELS_BT = {
+    "breakout":        "突破",
+    "false_breakdown": "假跌破",
+    "ma_pullback":     "均線回測",
+    "high_base":       "強整再突",
+    "retest":          "縮量回測",
+    "ma60_support":    "MA60支撐",
+}
+
+
+def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
+    """計算歷史第 i 日的技術指標快照"""
+    if i < 20:
+        return None
+    price      = closes[i]
+    prev_close = closes[i - 1]
+
+    def ma(n):
+        if i + 1 < n:
+            return None
+        return round(sum(closes[i - n + 1:i + 1]) / n, 2)
+
+    start  = max(0, i - 19)
+    high20 = round(max(highs[start:i + 1]), 2)
+    low20  = round(min(lows[start:i + 1]),  2)
+    prev_low20 = round(min(lows[i - 20:i]), 2) if i >= 21 else low20
+
+    vol_window    = volumes[start:i + 1]
+    vol_20avg     = sum(vol_window) / len(vol_window) if vol_window else 1
+    vol_day_ratio = round(volumes[i] / vol_20avg, 2) if vol_20avg > 0 else 1.0
+
+    return {
+        "price":         round(price, 2),
+        "prev_close":    round(prev_close, 2),
+        "ma5":           ma(5),
+        "ma10":          ma(10),
+        "ma20":          ma(20),
+        "ma60":          ma(60),
+        "high20":        high20,
+        "low20":         low20,
+        "prev_low20":    prev_low20,
+        "vol_day_ratio": vol_day_ratio,
+    }
+
+
+def bt_backtest_one_stock(closes, highs, lows, volumes):
+    """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單"""
+    n = len(closes)
+    if n < 77:
+        return []
+    results = []
+    for i in range(62, n - 15):
+        snapshot = _bt_yahoo_snapshot(closes, highs, lows, volumes, i)
+        if not snapshot:
+            continue
+        for sig in calc_signals(snapshot, {}, 50):
+            entry  = sig["entry"]
+            stop   = sig["stop_loss"]
+            target = sig["target"]
+            if target <= entry or entry <= stop:
+                continue
+            outcome   = "inconclusive"
+            final_idx = min(i + 15, n - 1)
+            for d in range(1, final_idx - i + 1):
+                future = closes[i + d]
+                if future >= target:
+                    outcome = "win";  break
+                if future <= stop:
+                    outcome = "loss"; break
+            day5_close = closes[min(i + 5, n - 1)]
+            results.append({
+                "type":     sig["type"],
+                "outcome":  outcome,
+                "gain_pct": round((day5_close - entry) / entry * 100, 2),
+            })
+    return results
+
+
+def bt_aggregate_stats(all_results):
+    """彙整回測結果，回傳各訊號類型的勝率統計"""
+    from collections import defaultdict
+    buckets = defaultdict(lambda: {
+        "wins": 0, "losses": 0, "inconclusive": 0,
+        "gain_sum": 0.0, "loss_sum": 0.0,
+    })
+    for r in all_results:
+        t = r["type"]
+        buckets[t][r["outcome"] + "s"] = buckets[t].get(r["outcome"] + "s", 0) + 1
+        if r["outcome"] == "win":
+            buckets[t]["gain_sum"] += r["gain_pct"]
+        elif r["outcome"] == "loss":
+            buckets[t]["loss_sum"] += r["gain_pct"]
+    stats = {}
+    for t, b in buckets.items():
+        decided = b["wins"] + b["losses"]
+        total   = decided + b["inconclusive"]
+        if total < 5:
+            continue
+        stats[t] = {
+            "label":             _SIGNAL_LABELS_BT.get(t, t),
+            "count":             total,
+            "win_rate":          round(b["wins"] / decided, 3) if decided > 0 else 0.5,
+            "avg_gain_pct":      round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0,
+            "avg_loss_pct":      round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0,
+            "inconclusive_rate": round(b["inconclusive"] / total,   3) if total > 0 else 0.0,
+        }
+    return stats
+
+
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str):
+    """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
+    import copy
+    updated = []
+    for rec in prev_tracking:
+        rec = copy.copy(rec)
+        if rec.get("status") != "open":
+            updated.append(rec); continue
+        code          = rec["code"]
+        current_price = today_price_map.get(code)
+        days_held     = rec.get("days_held", 0) + 1
+        if current_price is not None:
+            rec["current_price"] = current_price
+            rec["gain_pct"]      = round((current_price - rec["entry"]) / rec["entry"] * 100, 2)
+        rec["days_held"] = days_held
+        if current_price is not None and current_price >= rec["target"]:
+            rec["status"] = "win";     rec["resolved_date"] = today_str
+        elif current_price is not None and current_price <= rec["stop_loss"]:
+            rec["status"] = "loss";    rec["resolved_date"] = today_str
+        elif days_held >= 20:
+            rec["status"] = "expired"; rec["resolved_date"] = today_str
+        updated.append(rec)
+    open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    for stock in today_results:
+        code = stock["code"]
+        for sig in stock.get("signals", []):
+            if (code, sig["type"]) in open_keys:
+                continue
+            open_keys.add((code, sig["type"]))
+            ep = today_price_map.get(code, sig["entry"])
+            updated.append({
+                "code":          code,
+                "name":          stock.get("name", code),
+                "type":          sig["type"],
+                "label":         sig["label"],
+                "strength":      sig["strength"],
+                "trigger_date":  today_str,
+                "entry":         sig["entry"],
+                "stop_loss":     sig["stop_loss"],
+                "target":        sig["target"],
+                "status":        "open",
+                "current_price": round(ep, 2),
+                "days_held":     0,
+                "gain_pct":      0.0,
+                "resolved_date": None,
+            })
+    open_recs   = [r for r in updated if r.get("status") == "open"]
+    closed_recs = sorted(
+        [r for r in updated if r.get("status") != "open"],
+        key=lambda x: x.get("resolved_date") or "",
+        reverse=True,
+    )
+    return (open_recs + closed_recs)[:60]
+
+
+# ── 5b. 警示訊號 ──────────────────────────────────────────────────
 
 def calc_warnings(chips, yahoo, vol_month_ratio):
     warnings = []
@@ -1886,7 +2055,10 @@ def process_stock(sid, category):
 
     # 計算 RS
     rs_val = None
-    stock_closes = yahoo.pop("_closes", [])
+    stock_closes  = yahoo.pop("_closes",  [])
+    stock_highs   = yahoo.pop("_highs",   [])
+    stock_lows    = yahoo.pop("_lows",    [])
+    stock_volumes = yahoo.pop("_volumes", [])
     size_cat  = yahoo.get("size_cat", "mid")
     bm_closes = _benchmark_closes.get(size_cat) or _benchmark_closes.get("mid", [])
     if stock_closes and len(bm_closes) >= 240 and len(stock_closes) >= 240:
@@ -1969,6 +2141,11 @@ def process_stock(sid, category):
         "high20":          yahoo.get("high20"),
         "low20":           yahoo.get("low20"),
         "signals":         [],  # 在 main() RS 百分位確定後填入
+        # 私有欄位供回測用，寫 JSON 前會移除
+        "_closes":  stock_closes,
+        "_highs":   stock_highs,
+        "_lows":    stock_lows,
+        "_volumes": stock_volumes,
     }
 
 
@@ -2107,6 +2284,40 @@ def main():
         if not r.get("signals") and r.get("price"):
             r["signals"] = calc_signals(r, r.get("chips_raw", {}), 50)
 
+    # ── 提取原始歷史序列供回測，同時從 results 移除（避免寫入 JSON）
+    raw_histories = {}
+    for r in results:
+        cls = r.pop("_closes",  None)
+        hgh = r.pop("_highs",   None)
+        lws = r.pop("_lows",    None)
+        vls = r.pop("_volumes", None)
+        if cls and hgh and lws and vls:
+            raw_histories[r["code"]] = (cls, hgh, lws, vls)
+
+    # ── 歷史勝率回測
+    print(f"\n  [回測] 計算歷史訊號勝率（{len(raw_histories)} 支股票）...")
+    all_bt = []
+    for code, (cls, hgh, lws, vls) in raw_histories.items():
+        all_bt.extend(bt_backtest_one_stock(cls, hgh, lws, vls))
+    backtest_stats = bt_aggregate_stats(all_bt)
+    print(f"  [回測] 樣本：{len(all_bt)} 筆，有效類型：{len(backtest_stats)} 種")
+
+    # ── 信號追蹤更新
+    today_str  = datetime.now().strftime("%Y-%m-%d")
+    prev_tracking = []
+    try:
+        if os.path.exists(OUTPUT_PATH):
+            with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+                _old = json.load(f)
+            prev_tracking = _old.get("signal_tracking", [])
+            print(f"  [tracking] 舊追蹤：{len(prev_tracking)} 筆")
+    except Exception:
+        pass
+    today_price_map = {r["code"]: r.get("price") for r in results if r.get("price")}
+    signal_tracking = bt_update_tracking(prev_tracking, today_price_map, results, today_str)
+    open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
+    print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
+
     # 補完 Gemini 後重新排序
     results.sort(key=total_score, reverse=True)
 
@@ -2145,11 +2356,13 @@ def main():
     os.makedirs("docs", exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump({
-            "updated_at":     datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "sector_rotation":  _sector_rotation,
-            "total":          len(results),
-            "futures_oi":     futures_oi,
-            "stocks":         results
+            "updated_at":      datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "sector_rotation": _sector_rotation,
+            "total":           len(results),
+            "futures_oi":      futures_oi,
+            "backtest_stats":  backtest_stats,
+            "signal_tracking": signal_tracking,
+            "stocks":          results
         }, f, ensure_ascii=False, indent=2)
     print(f"\n✅ 完成！共{len(results)}檔 → {OUTPUT_PATH}")
 
