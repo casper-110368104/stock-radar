@@ -60,11 +60,13 @@ _sector_rotation = {}  # 產業輪動四象限資料
 
 
 def fetch_sector_rotation(days=60):
-    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/RS_trend，回傳四象限資料
-    RS = 產業漲幅 - 大盤漲幅（日報酬差，%）
-    M  = RS / max(|RS_MA10|, 1)（動能，短期相對強弱）
-    A  = M差值的3日平均（加速度）
-    RS_trend = RS的5日線性斜率
+    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/RS_trend，回傳六象限資料
+    RS           = 產業漲幅 - 大盤漲幅（日報酬差，%）
+    M            = RS / max(|RS_MA10|, 1)（動能，短期相對強弱）
+    A            = M差值的3日平均（加速度）
+    RS_trend     = RS的5日線性斜率
+    Trend_struct = 1 if price > MA60 else -1（多/空頭結構）
+    六象限：準備噴 / 主升段 / 主升回檔 / 高檔震盪 / 空頭 / 整理觀察
     每次完整重算，確保資料為最新60交易日
     """
     from datetime import datetime, timedelta
@@ -123,6 +125,14 @@ def fetch_sector_rotation(days=60):
     dates = sorted(daily_data.keys())
     sectors = [v for v in SECTOR_MAP.values() if v != "_benchmark"]
     rs_history = {s: [] for s in sectors}
+    price_history = {s: [] for s in sectors}
+
+    # 收集原始價格序列（供 MA60 / Trend_structure 使用）
+    for date in dates:
+        day = daily_data[date]
+        for s in sectors:
+            if s in day:
+                price_history[s].append(day[s])
 
     # RS = 產業日漲幅 - 大盤日漲幅（需要相鄰兩日）
     for i in range(1, len(dates)):
@@ -194,17 +204,27 @@ def fetch_sector_rotation(days=60):
         # RS_trend：最近5日RS線性斜率
         rs_trend = round(linear_slope(rs_vals[-5:]), 4)
 
-        # 四象限分類
-        if today_rs > 0 and today_m > 1.2 and today_a >= 0 and rs_trend > 0:
-            sub_phase = "主升段"
-        elif today_rs > 0 and today_m > 1 and today_a > 0 and rs_trend > 0:
-            sub_phase = "準備噴"
-        elif today_m < 1 and today_a < 0:
-            sub_phase = "高檔震盪" if today_rs > 0 else "空頭"
-        elif today_rs < 0:
-            sub_phase = "空頭"
+        # Trend_structure：價格 vs MA60
+        prices = price_history[s]
+        if len(prices) >= 2:
+            ma60 = sum(prices) / len(prices)
+            trend_struct = 1 if prices[-1] > ma60 else -1
         else:
-            sub_phase = "高檔震盪"
+            trend_struct = 0
+
+        # 六象限分類
+        if trend_struct < 0 and today_rs > 0 and today_m > 1 and today_a > 0 and rs_trend > 0:
+            sub_phase = "準備噴"        # 空頭結構，RS 剛翻強，底部轉強訊號
+        elif trend_struct > 0 and today_rs > 0 and today_m > 1.2 and today_a >= 0 and rs_trend > 0:
+            sub_phase = "主升段"        # 多頭結構，動能強勁
+        elif trend_struct > 0 and today_m < 1 and today_a < 0 and rs_trend > 0:
+            sub_phase = "主升回檔"      # 多頭結構，短暫回檔，趨勢仍向上
+        elif trend_struct > 0 and today_rs > 0 and today_m < 1 and today_a < 0 and rs_trend <= 0:
+            sub_phase = "高檔震盪"      # 多頭結構，漲多整理，趨勢轉弱
+        elif trend_struct < 0 and today_rs < 0 and today_m < 1 and today_a < 0:
+            sub_phase = "空頭"          # 空頭結構，全面弱勢
+        else:
+            sub_phase = "整理觀察"      # 過渡中性，條件不符任一明確象限
 
         # 連漲天數（RS連續上升）
         rs_up_days = 0
