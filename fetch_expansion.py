@@ -151,10 +151,10 @@ def fetch_twse_industry_map_isin():
 
 # ── 3. yfinance 歷史資料 + 均線計算 ─────────────────────────
 def fetch_yahoo_data(code):
-    """抓 6 個月 OHLCV，計算 MA5/10/20/60 及量比"""
+    """抓 1 年 OHLCV，計算 MA5/10/20/60、52W高、MA20斜率、量比"""
     ticker = yf.Ticker(f"{code}.TW")
     try:
-        hist = ticker.history(period="6mo")
+        hist = ticker.history(period="1y")
         if hist.empty or len(hist) < 20:
             return None
 
@@ -175,6 +175,14 @@ def fetch_yahoo_data(code):
         low20      = round(min(lows[-20:]),   2)
         prev_low20 = round(min(lows[-21:-1]), 2) if len(lows) >= 21 else low20
 
+        # 52 週高點（取全部可用資料的最高價）
+        high52w = round(max(highs), 2)
+
+        # MA20 斜率：今日 MA20 vs 5 個交易日前的 MA20（正值 = 上彎）
+        ma20_now  = sum(closes[-20:]) / 20 if len(closes) >= 20 else None
+        ma20_5d   = sum(closes[-25:-5]) / 20 if len(closes) >= 25 else None
+        ma20_rising = (ma20_now > ma20_5d) if (ma20_now and ma20_5d) else None
+
         vol_20avg     = sum(volumes[-20:]) / 20 if len(volumes) >= 20 else (volumes[-1] or 1)
         vol_day_ratio = round(volumes[-1] / vol_20avg, 2) if vol_20avg > 0 else 1.0
 
@@ -188,6 +196,8 @@ def fetch_yahoo_data(code):
             "high20":        high20,
             "low20":         low20,
             "prev_low20":    prev_low20,
+            "high52w":       high52w,
+            "ma20_rising":   ma20_rising,
             "vol_day_ratio": vol_day_ratio,
         }
     except:
@@ -196,17 +206,19 @@ def fetch_yahoo_data(code):
 
 # ── 4. 訊號偵測（純技術面，不依賴籌碼）─────────────────────
 def calc_signals(yahoo):
-    signals   = []
-    price     = yahoo.get("price")     or 0
-    high20    = yahoo.get("high20")
-    low20     = yahoo.get("low20")
-    prev_low20= yahoo.get("prev_low20")
-    prev_close= yahoo.get("prev_close")
-    ma5       = yahoo.get("ma5")
-    ma10      = yahoo.get("ma10")
-    ma20      = yahoo.get("ma20")
-    ma60      = yahoo.get("ma60")
-    vol_day   = yahoo.get("vol_day_ratio") or 1.0
+    signals    = []
+    price      = yahoo.get("price")     or 0
+    high20     = yahoo.get("high20")
+    low20      = yahoo.get("low20")
+    prev_low20 = yahoo.get("prev_low20")
+    prev_close = yahoo.get("prev_close")
+    ma5        = yahoo.get("ma5")
+    ma10       = yahoo.get("ma10")
+    ma20       = yahoo.get("ma20")
+    ma60       = yahoo.get("ma60")
+    high52w    = yahoo.get("high52w")
+    ma20_rising= yahoo.get("ma20_rising")
+    vol_day    = yahoo.get("vol_day_ratio") or 1.0
 
     if not price:
         return []
@@ -227,44 +239,58 @@ def calc_signals(yahoo):
             "reason":    reason,
         }
 
-    # 1. 突破：收盤突破20日高 + 量比≥1.5
-    if high20 and price > high20 and vol_day >= 1.5:
-        s = _sig("breakout", "突破", "strong", price, low20 or price * 0.95,
-                 f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x")
+    # ── 第一層結構過濾（強勢續漲訊號必須通過）────────────────
+    # 趨勢：price > MA20 > MA60，且 MA20 上彎
+    bullish_struct = (
+        ma20 and ma60 and
+        price > ma20 > ma60 and
+        ma20_rising is True
+    )
+    # 強勢區間：距 52W 高點 -10% ~ 0%（不包含已大幅拉回的股票）
+    near_52w_high = (
+        high52w and
+        -0.10 <= (price - high52w) / high52w <= 0.00
+    )
+    strong_filter = bullish_struct and near_52w_high
+
+    # 1. 突破：收盤突破20日高 + 量比≥1.5 ＋ 結構過濾
+    if strong_filter and high20 and price > high20 and vol_day >= 1.5:
+        reason = f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，距52W高{((price-high52w)/high52w*100):.1f}%"
+        s = _sig("breakout", "突破", "strong", price, low20 or price * 0.95, reason)
         if s: signals.append(s)
 
-    # 2. 假跌破：昨收 < prev_low20 且今收 > low20
+    # 2. 假跌破：反轉訊號，不套用結構過濾（股價可能仍在均線下方）
     if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20:
         s = _sig("false_breakdown", "假跌破", "strong", price, round(low20 * 0.98, 2),
                  f"昨收({prev_close})跌破前20日低，今收({price})強力收復")
         if s: signals.append(s)
 
-    # 3. 均線回測：多頭排列 + 收盤距MA20在3%以內
-    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20:
+    # 3. 均線回測：多頭排列 + 收盤距MA20在3%以內 ＋ 結構過濾
+    if strong_filter and ma5 and ma10 and ma20 and ma5 > ma10 > ma20:
         dist = (price - ma20) / ma20
         if 0 <= dist <= 0.03:
             s = _sig("ma_pullback", "均線回測", "medium", price, ma20,
-                     f"均線多頭排列，收盤({price})回測MA20({ma20})")
+                     f"均線多頭排列，收盤({price})回測MA20({ma20})，MA20上彎")
             if s: signals.append(s)
 
-    # 4. 強整再突：緊貼20日高（距離≤5%）+ 收盤 > MA5
-    if high20 and ma5 and price > ma5:
+    # 4. 強整再突：緊貼20日高（距離≤5%）＋ 結構過濾
+    if strong_filter and high20 and ma5 and price > ma5:
         dist = (high20 - price) / high20
         if 0 <= dist <= 0.05:
             s = _sig("high_base", "強整再突", "medium", price,
                      ma10 or round(price * 0.95, 2),
-                     f"緊貼20日高({high20})整理，量比{vol_day:.1f}x")
+                     f"緊貼20日高({high20})整理，量比{vol_day:.1f}x，MA20上彎")
             if s: signals.append(s)
 
-    # 5. 縮量回測：收盤距MA10在2%以內 + 量比<1 + 收盤>MA20
-    if ma10 and ma20 and price > ma20:
+    # 5. 縮量回測：收盤距MA10在2%以內 + 量比<1 ＋ 結構過濾
+    if strong_filter and ma10 and ma20:
         dist = abs(price - ma10) / ma10
         if dist <= 0.02 and vol_day < 1.0:
             s = _sig("retest", "縮量回測", "medium", price, ma20,
-                     f"縮量({vol_day:.1f}x)回測MA10({ma10})")
+                     f"縮量({vol_day:.1f}x)回測MA10({ma10})，MA20上彎")
             if s: signals.append(s)
 
-    # 6. MA60支撐：收盤距MA60在2%以內
+    # 6. MA60支撐：反轉/守撐訊號，不套用強勢區間過濾
     if ma60:
         dist = (price - ma60) / ma60
         if 0 <= dist <= 0.02:
