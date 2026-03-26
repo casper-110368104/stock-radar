@@ -546,9 +546,26 @@ def main():
         _write_scan_failed("TWSE API 無回應或回傳非 JSON 資料")
         sys.exit(0)
 
-    # Step 1b: 產業對照表
+    # Step 1b: 產業對照表（先從 stocks.json 建 fallback，再嘗試 opendata API）
     print("\n[1b] 抓取產業分類對照表...")
-    industry_map = fetch_twse_industry_map_isin()
+    industry_map = {}
+    try:
+        with open("docs/stocks.json", encoding="utf-8") as _f:
+            _sj = json.load(_f)
+        for _s in _sj.get("stocks", []):
+            if _s.get("sector_key"):
+                industry_map[_s["code"]] = _s["sector_key"]
+        print(f"  [industry] stocks.json fallback：{len(industry_map)} 檔")
+    except Exception:
+        pass
+    # 嘗試從 opendata API 補齊其餘股票
+    api_map = fetch_twse_industry_map_isin()
+    if api_map:
+        before = len(industry_map)
+        for code, ind in api_map.items():
+            if code not in industry_map:
+                industry_map[code] = ind
+        print(f"  [industry] opendata API 補充：+{len(industry_map)-before} 檔，共 {len(industry_map)} 檔")
 
     # Step 2: 補上產業欄位（不排除個股雷達已有的股票，以確保抽樣母體足夠大）
     print("\n[2] 建立候選池...")
