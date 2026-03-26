@@ -873,7 +873,15 @@ function rExpCard(s,pfx){
       '</div>'+
     '</div>'+
     '<div class="exp-signals">'+sigsHtml+'</div>'+
-    '<div class="exp-vol">'+volTag+'　MA5 '+(s.ma5||'-')+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+'</div>'+
+    '<div class="exp-vol">'+volTag+'　MA5 '+(s.ma5||'-')+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+
+    (function(){
+      var av=[];var p=s.price;
+      if(s.avwap_swing!=null) av.push('起漲 <span style="color:'+(p>=s.avwap_swing?'var(--green)':'var(--red)')+'">$'+s.avwap_swing+'</span>');
+      if(s.avwap_vol  !=null) av.push('主力 <span style="color:'+(p>=s.avwap_vol  ?'var(--green)':'var(--red)')+'">$'+s.avwap_vol  +'</span>');
+      if(s.avwap_short!=null) av.push('短線 <span style="color:'+(p>=s.avwap_short?'var(--green)':'var(--red)')+'">$'+s.avwap_short+'</span>');
+      return av.length?'<br><span style="font-size:10px;color:var(--text3)">AVWAP　</span>'+av.join('　'):'';
+    }())+
+    '</div>'+
   '</div>';
 }
 
