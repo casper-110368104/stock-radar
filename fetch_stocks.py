@@ -1560,7 +1560,7 @@ def bt_aggregate_stats(all_results):
     return stats
 
 
-def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None):
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -1575,9 +1575,11 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
             rec["current_price"] = current_price
             rec["gain_pct"]      = round((current_price - rec["entry"]) / rec["entry"] * 100, 2)
         rec["days_held"] = days_held
-        if current_price is not None and current_price >= rec["target"]:
+        today_high = (today_high_map or {}).get(code, current_price)
+        today_low  = (today_low_map  or {}).get(code, current_price)
+        if today_high is not None and today_high >= rec["target"]:
             rec["status"] = "win";     rec["resolved_date"] = today_str
-        elif current_price is not None and current_price <= rec["stop_loss"]:
+        elif today_low is not None and today_low <= rec["stop_loss"]:
             rec["status"] = "loss";    rec["resolved_date"] = today_str
         elif days_held >= 20:
             rec["status"] = "expired"; rec["resolved_date"] = today_str
@@ -2319,8 +2321,12 @@ def main():
     except Exception:
         pass
     today_price_map = {r["code"]: r.get("price") for r in results if r.get("price")}
+    today_high_map  = {r["code"]: r.get("high")  for r in results if r.get("high")}
+    today_low_map   = {r["code"]: r.get("low")   for r in results if r.get("low")}
     signal_tracking = bt_update_tracking(prev_tracking, today_price_map, results, today_str,
-                                          sector_rotation=_sector_rotation)
+                                          sector_rotation=_sector_rotation,
+                                          today_high_map=today_high_map,
+                                          today_low_map=today_low_map)
     open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
 
