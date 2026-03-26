@@ -339,6 +339,18 @@ def fetch_twse_dynamic():
 
 # ── 2. Yahoo Finance：股價 + 基本面 + 歷史價量 ────────────────────
 
+def calc_avwap(closes, highs, lows, volumes, anchor_idx):
+    """從 anchor_idx 起累積計算 AVWAP（typical price × volume 加權）"""
+    if anchor_idx < 0 or anchor_idx >= len(closes):
+        return None
+    cum_tv, cum_v = 0.0, 0.0
+    for i in range(anchor_idx, len(closes)):
+        tp = (highs[i] + lows[i] + closes[i]) / 3.0
+        cum_tv += tp * volumes[i]
+        cum_v  += volumes[i]
+    return round(cum_tv / cum_v, 2) if cum_v > 0 else None
+
+
 def fetch_yahoo(sid):
     """用 yfinance 抓單股資料，回傳 dict"""
     result = {
@@ -481,6 +493,45 @@ def fetch_yahoo(sid):
             result["_lows"]    = lows
             result["_volumes"] = vols
             result["_opens"]   = opens
+
+            # ── Anchored VWAP 三線 ─────────────────────────
+            _n = len(closes)
+
+            # avwap_swing：60日最低點，需後續有結構轉強（price>MA20 或量比>1）
+            _base60   = max(0, _n - 60)
+            _idx_swng = _base60 + lows[_base60:].index(min(lows[_base60:]))
+            _avwap_swing = None
+            for _j in range(_idx_swng + 1, _n):
+                _win  = closes[max(0, _j-19):_j+1]
+                _ma20 = sum(_win) / len(_win)
+                _vwin = vols[max(0, _j-19):_j+1]
+                _v20  = sum(_vwin) / len(_vwin) if _vwin else 1
+                if closes[_j] > _ma20 or vols[_j] / _v20 > 1:
+                    _avwap_swing = calc_avwap(closes, highs, lows, vols, _idx_swng)
+                    break
+
+            # avwap_vol：20日最大量那天，需收盤>MA20（排除出貨）
+            _base20  = max(0, _n - 20)
+            _idx_vol = _base20 + vols[_base20:].index(max(vols[_base20:]))
+            _vwin20  = closes[max(0, _idx_vol-19):_idx_vol+1]
+            _ma20_v  = sum(_vwin20) / len(_vwin20)
+            _avwap_vol = calc_avwap(closes, highs, lows, vols, _idx_vol) if closes[_idx_vol] > _ma20_v else None
+
+            # avwap_short：近20日最近一個局部低點+後3日有反彈確認
+            _avwap_short = None
+            for _j in range(_n - 2, _base20 - 1, -1):
+                if _j < 1:
+                    break
+                if lows[_j] > lows[_j-1] or lows[_j] > lows[min(_j+1, _n-1)]:
+                    continue
+                _ahead = closes[_j+1:min(_j+4, _n)]
+                if len(_ahead) >= 2 and sum(1 for c in _ahead if c > lows[_j]) >= 2:
+                    _avwap_short = calc_avwap(closes, highs, lows, vols, _j)
+                    break
+
+            result["avwap_swing"] = _avwap_swing
+            result["avwap_vol"]   = _avwap_vol
+            result["avwap_short"] = _avwap_short
 
             # 歷史PE分位數（近1年收盤/EPS TTM）
             if result["eps_ttm"] and result["eps_ttm"] > 0:
@@ -1686,12 +1737,29 @@ def calc_signals(yahoo, chips, rs_pct=50):
     ma10      = yahoo.get("ma10")
     ma20      = yahoo.get("ma20")
     ma60      = yahoo.get("ma60")
-    vol_day   = yahoo.get("vol_day_ratio") or 1.0
+    vol_day     = yahoo.get("vol_day_ratio") or 1.0
+    avwap_swing = yahoo.get("avwap_swing")
+    avwap_vol   = yahoo.get("avwap_vol")
+    avwap_short = yahoo.get("avwap_short")
 
     if not price:
         return []
 
+    # AVWAP 狀態標記
+    _trend_ok = avwap_swing is None or price >= avwap_swing
+    _mm_ok    = avwap_vol   is None or price >= avwap_vol
+    _short_ok = avwap_short is None or price >= avwap_short
+
     def _sig(type_, label, strength, entry, stop, reason):
+        _strength = strength
+        _reason   = reason
+        if not _trend_ok:
+            _strength = {"strong": "medium", "medium": "weak"}.get(strength, strength)
+            _reason   = reason + "；⚠️趨勢破 AVWAP"
+        if _mm_ok and avwap_vol:
+            _reason = _reason + "；主力未跑✓"
+        strength = _strength
+        reason   = _reason
         risk = round(entry - stop, 2) if stop else 0
         if risk <= 0:
             return None
@@ -1708,8 +1776,8 @@ def calc_signals(yahoo, chips, rs_pct=50):
             "reason":    reason,
         }
 
-    # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70
-    if high20 and price > high20 and vol_day >= 1.5 and rs_pct >= 70:
+    # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70 + 短線節奏健康
+    if high20 and price > high20 and vol_day >= 1.5 and rs_pct >= 70 and _short_ok:
         s = _sig("breakout", "突破", "strong", price, low20 or price * 0.95,
                  f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，RS百分位{rs_pct}")
         if s: signals.append(s)
@@ -1728,8 +1796,8 @@ def calc_signals(yahoo, chips, rs_pct=50):
                      f"均線多頭排列，收盤({price})回測MA20({ma20})")
             if s: signals.append(s)
 
-    # 4. 強整再突（High Base Breakout）：收盤距20日高≤5% + 收盤>MA5 + RS百分位≥70
-    if high20 and ma5 and price > ma5 and rs_pct >= 70:
+    # 4. 強整再突（High Base Breakout）：收盤距20日高≤5% + 收盤>MA5 + RS百分位≥70 + 短線節奏健康
+    if high20 and ma5 and price > ma5 and rs_pct >= 70 and _short_ok:
         dist_high20 = (high20 - price) / high20
         if 0 <= dist_high20 <= 0.05:
             s = _sig("high_base", "強整再突", "medium", price, ma10 or price * 0.95,
