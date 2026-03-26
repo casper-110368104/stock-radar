@@ -391,6 +391,9 @@ def backtest_one_stock(closes, highs, lows, volumes):
 
             # 記錄第 5 日實際漲跌幅（不管是否解決）
             day5_close = closes[min(i + 5, n - 1)]
+            import math
+            if math.isnan(day5_close) or day5_close <= 0:
+                continue
             gain_pct   = round((day5_close - entry) / entry * 100, 2)
 
             results.append({

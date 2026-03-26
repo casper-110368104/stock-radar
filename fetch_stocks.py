@@ -1521,6 +1521,9 @@ def bt_backtest_one_stock(closes, highs, lows, volumes):
                 if future <= stop:
                     outcome = "loss"; break
             day5_close = closes[min(i + 5, n - 1)]
+            import math
+            if math.isnan(day5_close) or day5_close <= 0:
+                continue
             results.append({
                 "type":     sig["type"],
                 "outcome":  outcome,
