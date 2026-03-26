@@ -387,6 +387,8 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .exp-sig-count{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--text3);flex-shrink:0}
 .exp-sig-count.sc-strong{background:rgba(0,200,150,.15);color:var(--green)}
 .exp-sig-count.sc-medium{background:rgba(255,159,67,.15);color:var(--orange)}
+/* ─ Stock phase badge ─ */
+.phase-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;flex-shrink:0}
 /* ─ Signal badge on stock card ─ */
 .sig-dot{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(0,200,150,.12);color:var(--green);flex-shrink:0}
 .sig-dot.sd-med{background:rgba(255,159,67,.12);color:var(--orange)}
@@ -832,6 +834,19 @@ function togExpCard(pfx,code){
   }
 }
 
+function _phaseBadge(phase){
+  var cfg={
+    'BULL':         {bg:'rgba(0,200,150,.18)', c:'var(--green)',   lbl:'BULL'},
+    'BULL_PULLBACK':{bg:'rgba(0,200,150,.09)', c:'#5cb85c',        lbl:'拉回'},
+    'RANGE':        {bg:'rgba(120,120,120,.15)',c:'var(--text3)',   lbl:'整理'},
+    'BEAR_WEAK':    {bg:'rgba(255,159,67,.15)', c:'var(--orange)',  lbl:'弱多'},
+    'BEAR_STRONG':  {bg:'rgba(255,92,92,.15)',  c:'var(--red)',     lbl:'弱勢'},
+  };
+  var v=cfg[phase];
+  if(!v) return '';
+  return '<span class="phase-badge" style="background:'+v.bg+';color:'+v.c+'">'+v.lbl+'</span>';
+}
+
 function rExpCard(s,pfx){
   pfx=pfx||'xc';
   var pc=s.chg_pct>=0?'var(--green)':'var(--red)';
@@ -862,6 +877,7 @@ function rExpCard(s,pfx){
       '<div class="exp-meta">'+
         '<span class="exp-code">'+s.code+'</span>'+
         '<span class="exp-name">'+s.name+'</span>'+
+        _phaseBadge(s.stock_phase)+
         '<span class="exp-sig-count '+cntCls+'">📈 '+sigs.length+'</span>'+
       '</div>'+
       '<div style="display:flex;align-items:center;gap:6px">'+
@@ -1645,6 +1661,7 @@ function rCard(s){
         '</div>'+
         rankHtml+
         sectorPhaseHtml+
+        (s.stock_phase&&s.stock_phase!=='RANGE'?_phaseBadge(s.stock_phase):'')+
       '</div>'+
       '<div class="card-right">'+
         '<span class="price-num '+cls+'">$'+Number(s.price).toLocaleString()+'</span>'+
