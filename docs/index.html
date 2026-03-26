@@ -401,14 +401,14 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .bt-bar{height:100%;border-radius:3px}
 .bt-pct{font-size:12px;font-weight:700;width:34px;text-align:right;flex-shrink:0}
 .bt-count{font-size:10px;color:var(--text3);width:46px;text-align:right;flex-shrink:0}
-.bt-track-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--border);font-size:12px}
-.bt-track-item:last-child{border-bottom:none}
-.bt-ti-icon{font-size:13px;flex-shrink:0;width:18px}
-.bt-ti-code{font-size:10px;font-weight:600;color:var(--text3);background:var(--bg4);padding:1px 5px;border-radius:4px;flex-shrink:0}
-.bt-ti-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bt-ti-sig{font-size:10px;color:var(--text3);flex-shrink:0}
-.bt-ti-gain{font-weight:700;font-size:12px;flex-shrink:0;width:50px;text-align:right}
-.bt-ti-days{font-size:10px;color:var(--text3);flex-shrink:0;width:54px;text-align:right}
+.bt-track-item{background:var(--bg2);border:.5px solid var(--border);border-radius:10px;padding:9px 11px;margin-bottom:7px}
+.bt-ti-r1{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.bt-ti-r1-right{margin-left:auto;display:flex;align-items:center;gap:5px}
+.bt-ti-r2,.bt-ti-r3{display:flex;margin-bottom:3px}
+.bt-ti-cell{flex:1}
+.bt-ti-cell-label{color:var(--text3);font-size:10px;margin-bottom:1px}
+.bt-ti-cell-val{font-weight:600;font-size:12px}
+.bt-ti-phase{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}
 </style>
 </head>
 <body>
@@ -908,13 +908,29 @@ function _renderBtTracking(tracking){
     var gs=(g>=0?'+':'')+g.toFixed(1)+'%';
     var gc=g>0?'var(--green)':g<0?'var(--red)':'var(--text3)';
     var dayStr=t.status==='open'?'第'+(t.days_held||0)+'日':(SL[t.status]||t.status)+((t.resolved_date)?' '+t.resolved_date.slice(5):'');
+    var phaseOk=/主升|噴/.test(t.sector_phase||'');
+    var phaseBg=phaseOk?'rgba(34,197,94,.15)':'rgba(120,120,120,.15)';
+    var phaseC=phaseOk?'var(--green)':'var(--text3)';
     return '<div class="bt-track-item">'+
-      '<span class="bt-ti-icon">'+(SI[t.status]||'⚪')+'</span>'+
-      '<span class="bt-ti-code">'+t.code+'</span>'+
-      '<span class="bt-ti-name">'+t.name+'</span>'+
-      '<span class="bt-ti-sig">'+(t.repeat?'🔁 ':'')+t.label+'</span>'+
-      '<span class="bt-ti-gain" style="color:'+gc+'">'+gs+'</span>'+
-      '<span class="bt-ti-days">'+dayStr+'</span>'+
+      '<div class="bt-ti-r1">'+
+        '<span style="font-size:13px">'+(SI[t.status]||'⚪')+'</span>'+
+        '<span style="font-size:12px;font-weight:700">'+(t.repeat?'🔁 ':'')+t.label+'</span>'+
+        (t.sector_phase?'<span class="bt-ti-phase" style="background:'+phaseBg+';color:'+phaseC+'">'+t.sector_phase+'</span>':'')+
+        '<span class="bt-ti-r1-right">'+
+          '<span style="font-size:10px;font-weight:600;background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--text3)">'+t.code+'</span>'+
+          '<span style="font-size:12px;font-weight:700">'+t.name+'</span>'+
+        '</span>'+
+      '</div>'+
+      '<div class="bt-ti-r2">'+
+        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">進場</div><div class="bt-ti-cell-val">$'+t.entry+'</div></div>'+
+        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">目標</div><div class="bt-ti-cell-val" style="color:var(--green)">$'+t.target+'</div></div>'+
+        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">停損</div><div class="bt-ti-cell-val" style="color:var(--red)">$'+t.stop_loss+'</div></div>'+
+      '</div>'+
+      '<div class="bt-ti-r3">'+
+        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">現價</div><div class="bt-ti-cell-val">$'+(t.current_price||'-')+'</div></div>'+
+        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">損益</div><div class="bt-ti-cell-val" style="color:'+gc+'">'+gs+'</div></div>'+
+        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">追蹤</div><div class="bt-ti-cell-val">'+dayStr+'</div></div>'+
+      '</div>'+
     '</div>';
   }).join('');
   return '<div class="bt-card" style="margin-top:12px">'+

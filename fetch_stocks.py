@@ -1560,7 +1560,7 @@ def bt_aggregate_stats(all_results):
     return stats
 
 
-def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str):
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -1589,6 +1589,8 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str)
         for sig in stock.get("signals", []):
             ep        = today_price_map.get(code, sig["entry"])
             is_repeat = (code, sig["type"]) in open_keys
+            sk        = stock.get("sector_key", "")
+            sdata     = (sector_rotation or {}).get(sk, {})
             updated.append({
                 "code":          code,
                 "name":          stock.get("name", code),
@@ -1601,6 +1603,8 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str)
                 "target":        sig["target"],
                 "status":        "open",
                 "repeat":        is_repeat,
+                "sector_key":    sk,
+                "sector_phase":  sdata.get("sub_phase", ""),
                 "current_price": round(ep, 2),
                 "days_held":     0,
                 "gain_pct":      0.0,
@@ -2315,7 +2319,8 @@ def main():
     except Exception:
         pass
     today_price_map = {r["code"]: r.get("price") for r in results if r.get("price")}
-    signal_tracking = bt_update_tracking(prev_tracking, today_price_map, results, today_str)
+    signal_tracking = bt_update_tracking(prev_tracking, today_price_map, results, today_str,
+                                          sector_rotation=_sector_rotation)
     open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
 
