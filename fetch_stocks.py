@@ -2366,16 +2366,27 @@ def main():
         r["score_history"] = hist_s
 
     os.makedirs("docs", exist_ok=True)
+    _output = {
+        "updated_at":      datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "sector_rotation": _sector_rotation,
+        "total":           len(results),
+        "futures_oi":      futures_oi,
+        "backtest_stats":  backtest_stats,
+        "signal_tracking": signal_tracking,
+        "stocks":          results
+    }
+    # allow_nan=False 確保 NaN/Inf 不寫入（瀏覽器 JSON.parse 不支援）
+    import math
+    def _clean_nan(obj):
+        if isinstance(obj, float):
+            return 0.0 if (math.isnan(obj) or math.isinf(obj)) else obj
+        if isinstance(obj, dict):
+            return {k: _clean_nan(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_clean_nan(v) for v in obj]
+        return obj
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump({
-            "updated_at":      datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "sector_rotation": _sector_rotation,
-            "total":           len(results),
-            "futures_oi":      futures_oi,
-            "backtest_stats":  backtest_stats,
-            "signal_tracking": signal_tracking,
-            "stocks":          results
-        }, f, ensure_ascii=False, indent=2)
+        json.dump(_clean_nan(_output), f, ensure_ascii=False, indent=2)
     print(f"\n✅ 完成！共{len(results)}檔 → {OUTPUT_PATH}")
 
 

@@ -700,8 +700,23 @@ def main():
     }
 
     os.makedirs("docs", exist_ok=True)
+    # allow_nan=False 確保 NaN/Inf 不寫入 JSON（瀏覽器 JSON.parse 不支援）
+    try:
+        json_str = json.dumps(output, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    except ValueError:
+        # 若仍有 NaN，先用 math.isnan 遞迴清理後重試
+        import math
+        def _clean(obj):
+            if isinstance(obj, float):
+                return 0.0 if (math.isnan(obj) or math.isinf(obj)) else obj
+            if isinstance(obj, dict):
+                return {k: _clean(v) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [_clean(v) for v in obj]
+            return obj
+        json_str = json.dumps(_clean(output), ensure_ascii=False, separators=(",", ":"))
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, separators=(",", ":"))
+        f.write(json_str)
 
     print(f"\n{'='*50}")
     print(f"  完成：掃描 {sample_n} 檔")
