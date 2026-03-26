@@ -409,6 +409,15 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .bt-ti-cell-label{color:var(--text3);font-size:10px;margin-bottom:1px}
 .bt-ti-cell-val{font-weight:600;font-size:12px}
 .bt-ti-phase{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}
+.bt-card-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.bt-card-hdr.open{margin-bottom:10px}
+.bt-toggle-btn{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;line-height:1;padding:0}
+.bt-filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.bt-ftab{font-size:10px;padding:3px 9px;border-radius:12px;background:var(--bg4);color:var(--text3);cursor:pointer;border:.5px solid var(--border);font-weight:600;white-space:nowrap}
+.bt-ftab.active{background:var(--accent,#6366f1);color:#fff;border-color:transparent}
+.bt-search-wrap{display:flex;align-items:center;gap:5px;background:var(--bg4);border-radius:8px;padding:5px 9px;margin-bottom:8px}
+.bt-search-input{background:none;border:none;color:var(--text1);font-size:12px;flex:1;outline:none}
+.bt-no-result{font-size:12px;color:var(--text3);padding:10px 0;text-align:center;display:none}
 </style>
 </head>
 <body>
@@ -864,7 +873,15 @@ function rExpCard(s,pfx){
       '</div>'+
     '</div>'+
     '<div class="exp-signals">'+sigsHtml+'</div>'+
-    '<div class="exp-vol">'+volTag+'　MA5 '+(s.ma5||'-')+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+'</div>'+
+    '<div class="exp-vol">'+volTag+'　MA5 '+(s.ma5||'-')+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+
+    (function(){
+      var av=[];var p=s.price;
+      if(s.avwap_swing!=null) av.push('起漲 <span style="color:'+(p>=s.avwap_swing?'var(--green)':'var(--red)')+'">$'+s.avwap_swing+'</span>');
+      if(s.avwap_vol  !=null) av.push('主力 <span style="color:'+(p>=s.avwap_vol  ?'var(--green)':'var(--red)')+'">$'+s.avwap_vol  +'</span>');
+      if(s.avwap_short!=null) av.push('短線 <span style="color:'+(p>=s.avwap_short?'var(--green)':'var(--red)')+'">$'+s.avwap_short+'</span>');
+      return av.length?'<br><span style="font-size:10px;color:var(--text3)">AVWAP　</span>'+av.join('　'):'';
+    }())+
+    '</div>'+
   '</div>';
 }
 
@@ -876,6 +893,36 @@ function _sortExpList(list){
   else if(curExpSort==='chg_up')     list.sort(function(a,b){return (b.chg_pct||0)-(a.chg_pct||0);});
   else if(curExpSort==='chg_dn')     list.sort(function(a,b){return (a.chg_pct||0)-(b.chg_pct||0);});
   return list;
+}
+
+function _btToggle(btn){
+  var hdr=btn.closest('.bt-card-hdr');
+  var body=hdr.nextElementSibling;
+  var open=body.style.display!=='none';
+  body.style.display=open?'none':'';
+  btn.textContent=open?'▸':'▾';
+  hdr.classList.toggle('open',!open);
+}
+function _btFilter(el){
+  var card=el.closest('.bt-card');
+  card.querySelectorAll('.bt-ftab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  _btApply(card);
+}
+function _btSearch(input){_btApply(input.closest('.bt-card'));}
+function _btApply(card){
+  var status=(card.querySelector('.bt-ftab.active')||{}).dataset&&card.querySelector('.bt-ftab.active').dataset.status||'all';
+  var q=((card.querySelector('.bt-search-input')||{}).value||'').toLowerCase();
+  var items=card.querySelectorAll('.bt-track-item');
+  var vis=0;
+  items.forEach(function(item){
+    var ok=(status==='all'||item.dataset.status===status)&&
+           (!q||item.dataset.code.includes(q)||(item.dataset.name||'').toLowerCase().includes(q));
+    item.style.display=ok?'':'none';
+    if(ok) vis++;
+  });
+  var noRes=card.querySelector('.bt-no-result');
+  if(noRes) noRes.style.display=vis===0?'':'none';
 }
 
 function _renderBtStats(stats){
@@ -895,14 +942,29 @@ function _renderBtStats(stats){
     '</div>';
   }).join('');
   return '<div class="bt-card">'+
-    '<div class="bt-title">📊 訊號歷史勝率 <span class="bt-sub">（近6個月歷史回測，第5～15日判定，RR=2:1）</span></div>'+
-    rows+'</div>';
+    '<div class="bt-card-hdr open">'+
+      '<div class="bt-title" style="margin-bottom:0">📊 訊號歷史勝率 <span class="bt-sub">（近6個月歷史回測，第5～15日判定，RR=2:1）</span></div>'+
+      '<button class="bt-toggle-btn" onclick="_btToggle(this)">▾</button>'+
+    '</div>'+
+    '<div class="bt-card-body">'+rows+'</div>'+
+  '</div>';
 }
 
 function _renderBtTracking(tracking){
   if(!tracking||!tracking.length) return '';
   var SI={open:'⏳',win:'✅',loss:'🔴',expired:'⚪'};
   var SL={open:'追蹤中',win:'達標',loss:'停損',expired:'超時'};
+  var cnt={all:tracking.length,open:0,win:0,loss:0,expired:0};
+  tracking.forEach(function(t){if(cnt[t.status]!==undefined) cnt[t.status]++;});
+  var tabs=[
+    {k:'all',  label:'全部'},
+    {k:'open', label:'⏳追蹤中'},
+    {k:'win',  label:'✅達標'},
+    {k:'loss', label:'🔴停損'},
+    {k:'expired',label:'⚪超時'}
+  ].map(function(tab,i){
+    return '<span class="bt-ftab'+(i===0?' active':'')+'" data-status="'+tab.k+'" onclick="_btFilter(this)">'+tab.label+' '+cnt[tab.k]+'</span>';
+  }).join('');
   var items=tracking.map(function(t){
     var g=t.gain_pct||0;
     var gs=(g>=0?'+':'')+g.toFixed(1)+'%';
@@ -911,7 +973,7 @@ function _renderBtTracking(tracking){
     var phaseOk=/主升|噴/.test(t.sector_phase||'');
     var phaseBg=phaseOk?'rgba(34,197,94,.15)':'rgba(120,120,120,.15)';
     var phaseC=phaseOk?'var(--green)':'var(--text3)';
-    return '<div class="bt-track-item">'+
+    return '<div class="bt-track-item" data-status="'+(t.status||'open')+'" data-code="'+(t.code||'')+'" data-name="'+(t.name||'')+'">'+
       '<div class="bt-ti-r1">'+
         '<span style="font-size:13px">'+(SI[t.status]||'⚪')+'</span>'+
         '<span style="font-size:12px;font-weight:700">'+(t.repeat?'🔁 ':'')+t.label+'</span>'+
@@ -934,8 +996,17 @@ function _renderBtTracking(tracking){
     '</div>';
   }).join('');
   return '<div class="bt-card" style="margin-top:12px">'+
-    '<div class="bt-title">🎯 信號追蹤 <span class="bt-sub">（近'+tracking.length+'筆，追蹤期最長20日）</span></div>'+
-    items+'</div>';
+    '<div class="bt-card-hdr open">'+
+      '<div class="bt-title" style="margin-bottom:0">🎯 信號追蹤 <span class="bt-sub">（近'+tracking.length+'筆，追蹤期最長20日）</span></div>'+
+      '<button class="bt-toggle-btn" onclick="_btToggle(this)">▾</button>'+
+    '</div>'+
+    '<div class="bt-card-body">'+
+      '<div class="bt-filter-bar">'+tabs+'</div>'+
+      '<div class="bt-search-wrap">🔍 <input class="bt-search-input" placeholder="搜尋代號或名稱…" oninput="_btSearch(this)"></div>'+
+      items+
+      '<div class="bt-no-result">沒有符合條件的記錄</div>'+
+    '</div>'+
+  '</div>';
 }
 
 function renderExpansion(){
