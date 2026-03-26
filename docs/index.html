@@ -557,7 +557,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
       <div class="fgrid" id="fgrid"></div>
     </div>
   </div>
-  <div id="stocks-bt-panel" style="padding:0 12px 8px"></div>
   <div class="card-list" id="app"></div>
 </div>
 
@@ -1998,12 +1997,6 @@ async function fetchBizCycle(){
   }
 }
 
-function renderStocksBtPanel(){
-  var panel=document.getElementById('stocks-bt-panel');
-  if(!panel) return;
-  var html=_renderBtStats(stocksBtStats)+_renderBtTracking(stocksBtTracking);
-  panel.innerHTML=html||'';
-}
 
 async function loadData(){
   var _step='init';
@@ -2037,7 +2030,6 @@ async function loadData(){
     _step='render';
     goView('home');
     render();
-    renderStocksBtPanel();
   }catch(err){
     document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:11px;word-break:break-all">['+_step+'] '+err.message+'</span></div>';
   }
