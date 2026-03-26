@@ -427,7 +427,7 @@ def aggregate_backtest_stats(all_results):
     return stats
 
 
-def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str):
+def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -476,6 +476,8 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
         code        = stock["code"]
         name        = stock["name"]
         entry_price = today_price_map.get(code, sig["entry"])
+        sk          = stock.get("industry", "")
+        sdata       = (sector_rotation or {}).get(sk, {})
         updated.append({
             "code":          code,
             "name":          name,
@@ -488,6 +490,8 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             "target":        sig["target"],
             "status":        "open",
             "repeat":        is_repeat,
+            "sector_key":    sk,
+            "sector_phase":  sdata.get("sub_phase", ""),
             "current_price": round(entry_price, 2),
             "days_held":     0,
             "gain_pct":      0.0,
@@ -645,7 +649,15 @@ def main():
     # Step 7: 更新信號追蹤
     today_str       = datetime.now().strftime("%Y-%m-%d")
     today_price_map = {s["code"]: s["price"] for s in all_stocks}
-    signal_tracking = update_signal_tracking(prev_tracking, today_price_map, results, today_str)
+    # 從 stocks.json 借用產業輪動資料（fetch_stocks.py 先於 fetch_expansion.py 執行）
+    _sector_rotation = {}
+    try:
+        with open("docs/stocks.json", encoding="utf-8") as _f:
+            _sector_rotation = json.load(_f).get("sector_rotation", {})
+    except Exception:
+        pass
+    signal_tracking = update_signal_tracking(prev_tracking, today_price_map, results, today_str,
+                                             sector_rotation=_sector_rotation)
     open_cnt   = sum(1 for r in signal_tracking if r.get("status") == "open")
     closed_cnt = len(signal_tracking) - open_cnt
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{closed_cnt} 筆")
