@@ -41,15 +41,23 @@ ETF_PREFIXES = ("00",)
 def fetch_all_twse_stocks():
     """抓 TWSE STOCK_DAY_ALL，回傳流動性足夠的所有股票"""
     url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json"
-    try:
+    # stat 非 OK 時（資料尚未更新）最多等 4 次，每次間隔 30s
+    d = None
+    for stat_attempt in range(1, 5):
         d = get_json_with_retry(url, HEADERS, timeout=20, retries=4, backoff=5)
         if d is None:
             print("  [TWSE] 多次重試後仍失敗")
             return []
-        if d.get("stat") != "OK":
-            print(f"  [TWSE] 狀態異常: {d.get('stat')}")
-            return []
-
+        if d.get("stat") == "OK":
+            break
+        print(f"  [TWSE] 狀態異常: {d.get('stat')} (attempt {stat_attempt}/4)")
+        if stat_attempt < 4:
+            print("  等待 30s 後再次嘗試取得資料...")
+            time.sleep(30)
+    else:
+        print("  [TWSE] 4 次嘗試後 stat 仍非 OK，放棄")
+        return []
+    try:
         fields = d.get("fields", [])
         rows   = d.get("data", [])
         print(f"  [TWSE] fields: {fields}")   # 診斷用：確認欄位名稱
