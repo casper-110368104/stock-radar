@@ -480,6 +480,7 @@ def fetch_yahoo(sid):
             result["_highs"]   = highs
             result["_lows"]    = lows
             result["_volumes"] = vols
+            result["_opens"]   = opens
 
             # 歷史PE分位數（近1年收盤/EPS TTM）
             if result["eps_ttm"] and result["eps_ttm"] > 0:
@@ -1496,7 +1497,7 @@ def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
     }
 
 
-def bt_backtest_one_stock(closes, highs, lows, volumes):
+def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None):
     """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單"""
     n = len(closes)
     if n < 77:
@@ -1515,10 +1516,18 @@ def bt_backtest_one_stock(closes, highs, lows, volumes):
             outcome   = "inconclusive"
             final_idx = min(i + 15, n - 1)
             for d in range(1, final_idx - i + 1):
-                future = closes[i + d]
-                if future >= target:
+                fh = highs[i + d]
+                fl = lows[i + d]
+                fo = opens[i + d] if opens and (i + d) < len(opens) else closes[i + d]
+                hit_t = fh >= target
+                hit_s = fl <= stop
+                if hit_t and hit_s:
+                    mid = (target + stop) / 2
+                    outcome = "win" if fo >= mid else "loss"
+                    break
+                elif hit_t:
                     outcome = "win";  break
-                if future <= stop:
+                elif hit_s:
                     outcome = "loss"; break
             day5_close = closes[min(i + 5, n - 1)]
             import math
@@ -1563,7 +1572,7 @@ def bt_aggregate_stats(all_results):
     return stats
 
 
-def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None):
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -1580,9 +1589,18 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         rec["days_held"] = days_held
         today_high = (today_high_map or {}).get(code, current_price)
         today_low  = (today_low_map  or {}).get(code, current_price)
-        if today_high is not None and today_high >= rec["target"]:
+        today_open = (today_open_map or {}).get(code, current_price)
+        hit_target = today_high is not None and today_high >= rec["target"]
+        hit_stop   = today_low  is not None and today_low  <= rec["stop_loss"]
+        if hit_target and hit_stop:
+            mid = (rec["target"] + rec["stop_loss"]) / 2
+            if today_open is not None and today_open >= mid:
+                rec["status"] = "win";  rec["resolved_date"] = today_str
+            else:
+                rec["status"] = "loss"; rec["resolved_date"] = today_str
+        elif hit_target:
             rec["status"] = "win";     rec["resolved_date"] = today_str
-        elif today_low is not None and today_low <= rec["stop_loss"]:
+        elif hit_stop:
             rec["status"] = "loss";    rec["resolved_date"] = today_str
         elif days_held >= 20:
             rec["status"] = "expired"; rec["resolved_date"] = today_str
@@ -2069,6 +2087,7 @@ def process_stock(sid, category):
     stock_highs   = yahoo.pop("_highs",   [])
     stock_lows    = yahoo.pop("_lows",    [])
     stock_volumes = yahoo.pop("_volumes", [])
+    stock_opens   = yahoo.pop("_opens",   [])
     size_cat  = yahoo.get("size_cat", "mid")
     bm_closes = _benchmark_closes.get(size_cat) or _benchmark_closes.get("mid", [])
     if stock_closes and len(bm_closes) >= 240 and len(stock_closes) >= 240:
@@ -2156,6 +2175,7 @@ def process_stock(sid, category):
         "_highs":   stock_highs,
         "_lows":    stock_lows,
         "_volumes": stock_volumes,
+        "_opens":   stock_opens,
     }
 
 
@@ -2301,14 +2321,15 @@ def main():
         hgh = r.pop("_highs",   None)
         lws = r.pop("_lows",    None)
         vls = r.pop("_volumes", None)
+        opn = r.pop("_opens",   None)
         if cls and hgh and lws and vls:
-            raw_histories[r["code"]] = (cls, hgh, lws, vls)
+            raw_histories[r["code"]] = (cls, hgh, lws, vls, opn)
 
     # ── 歷史勝率回測
     print(f"\n  [回測] 計算歷史訊號勝率（{len(raw_histories)} 支股票）...")
     all_bt = []
-    for code, (cls, hgh, lws, vls) in raw_histories.items():
-        all_bt.extend(bt_backtest_one_stock(cls, hgh, lws, vls))
+    for code, (cls, hgh, lws, vls, opn) in raw_histories.items():
+        all_bt.extend(bt_backtest_one_stock(cls, hgh, lws, vls, opens=opn))
     backtest_stats = bt_aggregate_stats(all_bt)
     print(f"  [回測] 樣本：{len(all_bt)} 筆，有效類型：{len(backtest_stats)} 種")
 
@@ -2326,10 +2347,12 @@ def main():
     today_price_map = {r["code"]: r.get("price") for r in results if r.get("price")}
     today_high_map  = {r["code"]: r.get("high")  for r in results if r.get("high")}
     today_low_map   = {r["code"]: r.get("low")   for r in results if r.get("low")}
+    today_open_map  = {r["code"]: r.get("open")  for r in results if r.get("open")}
     signal_tracking = bt_update_tracking(prev_tracking, today_price_map, results, today_str,
                                           sector_rotation=_sector_rotation,
                                           today_high_map=today_high_map,
-                                          today_low_map=today_low_map)
+                                          today_low_map=today_low_map,
+                                          today_open_map=today_open_map)
     open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
 
