@@ -550,14 +550,12 @@ def main():
     print("\n[1b] 抓取產業分類對照表...")
     industry_map = fetch_twse_industry_map_isin()
 
-    # Step 2: 排除現有股票
-    print("\n[2] 排除現有股票...")
-    existing   = load_existing_codes()
-    candidates = [s for s in all_stocks if s["code"] not in existing]
-    # 補上產業欄位
+    # Step 2: 補上產業欄位（不排除個股雷達已有的股票，以確保抽樣母體足夠大）
+    print("\n[2] 建立候選池...")
+    candidates = all_stocks
     for s in candidates:
         s["industry"] = industry_map.get(s["code"], "")
-    print(f"  候選池：{len(candidates)} 檔")
+    print(f"  候選池：{len(candidates)} 檔（含個股雷達已追蹤股）")
 
     if not candidates:
         print("  候選池為空，寫入失敗狀態，保留舊資料。")
