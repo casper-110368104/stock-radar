@@ -2063,7 +2063,7 @@ async function loadExpansion(){
       if(sub) sub.textContent='有訊號 '+(data.signal_count||0)+' 檔 / 掃描 '+(data.sample_size||0)+' 檔 · '+(data.updated_at||'');
     }
     if(curView==='expansion') renderExpansion();
-  }catch(e){}
+  }catch(e){console.error('[loadExpansion]',e);}
 }
 loadData();
 loadExpansion();

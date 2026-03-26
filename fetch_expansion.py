@@ -65,6 +65,8 @@ def fetch_all_twse_stocks():
         i_name = find(["證券名稱", "股票名稱"], 1)
         i_vol  = find(["成交股數", "成交張數", "成交量"], 2)
         i_open = find(["開盤價"], 5)
+        i_high = find(["最高價"], 6)
+        i_low  = find(["最低價"], 7)
         i_cls  = find(["收盤價"], 8)
 
         # 判斷成交量單位（張 vs 股）：欄位含「張」或「量」視為以張計
@@ -88,6 +90,8 @@ def fetch_all_twse_stocks():
                 vol = int(r[i_vol].replace(",", ""))
                 cls = float(r[i_cls].replace(",", "")) if r[i_cls] not in ("--", "") else 0
                 opn = float(r[i_open].replace(",", "")) if r[i_open] not in ("--", "") else cls
+                high = float(r[i_high].replace(",", "")) if r[i_high] not in ("--", "") else cls
+                low  = float(r[i_low ].replace(",", "")) if r[i_low ] not in ("--", "") else cls
                 chg_pct = round((cls - opn) / opn * 100, 2) if opn > 0 else 0
                 name = r[i_name].strip()
 
@@ -99,6 +103,9 @@ def fetch_all_twse_stocks():
                     "name": name,
                     "vol":  vol,
                     "price": cls,
+                    "open":  opn,
+                    "high":  high,
+                    "low":   low,
                     "chg_pct": chg_pct,
                 })
             except Exception:
@@ -188,6 +195,7 @@ def fetch_yahoo_data(code):
         highs   = hist["High"].tolist()
         lows    = hist["Low"].tolist()
         volumes = hist["Volume"].tolist()
+        opens   = hist["Open"].tolist()
 
         price      = round(closes[-1], 2)
         prev_close = round(closes[-2], 2) if len(closes) >= 2 else price
@@ -220,6 +228,7 @@ def fetch_yahoo_data(code):
             "_highs":        highs,
             "_lows":         lows,
             "_volumes":      volumes,
+            "_opens":        opens,
         }
     except Exception:
         return None
@@ -353,7 +362,7 @@ def calc_yahoo_snapshot(closes, highs, lows, volumes, i):
     }
 
 
-def backtest_one_stock(closes, highs, lows, volumes):
+def backtest_one_stock(closes, highs, lows, volumes, opens=None):
     """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單"""
     n = len(closes)
     if n < 77:   # 62（MA60需求）+ 15（評估窗口）
@@ -372,19 +381,29 @@ def backtest_one_stock(closes, highs, lows, volumes):
                 continue
 
             # 最快第 1 日起，第 5 日先做判斷；5 日未解決繼續等到第 15 日
+            # 同日高觸目標且低觸停損：用開盤價判斷方向（開盤 >= 中點 → 先漲 → win）
             outcome   = "inconclusive"
             final_idx = min(i + 15, n - 1)
             for d in range(1, final_idx - i + 1):
-                future = closes[i + d]
-                if future >= target:
-                    outcome = "win"
+                fh = highs[i + d]
+                fl = lows[i + d]
+                fo = opens[i + d] if opens and (i + d) < len(opens) else closes[i + d]
+                hit_t = fh >= target
+                hit_s = fl <= stop
+                if hit_t and hit_s:
+                    mid = (target + stop) / 2
+                    outcome = "win" if fo >= mid else "loss"
                     break
-                if future <= stop:
-                    outcome = "loss"
-                    break
+                elif hit_t:
+                    outcome = "win";  break
+                elif hit_s:
+                    outcome = "loss"; break
 
             # 記錄第 5 日實際漲跌幅（不管是否解決）
             day5_close = closes[min(i + 5, n - 1)]
+            import math
+            if math.isnan(day5_close) or day5_close <= 0:
+                continue
             gain_pct   = round((day5_close - entry) / entry * 100, 2)
 
             results.append({
@@ -427,7 +446,7 @@ def aggregate_backtest_stats(all_results):
     return stats
 
 
-def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None):
+def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -448,9 +467,20 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
 
         rec["days_held"] = days_held
 
-        if current_price is not None and current_price >= rec["target"]:
+        today_high = (today_high_map or {}).get(code, current_price)
+        today_low  = (today_low_map  or {}).get(code, current_price)
+        today_open = (today_open_map or {}).get(code, current_price)
+        hit_target = today_high is not None and today_high >= rec["target"]
+        hit_stop   = today_low  is not None and today_low  <= rec["stop_loss"]
+        if hit_target and hit_stop:
+            mid = (rec["target"] + rec["stop_loss"]) / 2
+            if today_open is not None and today_open >= mid:
+                rec["status"] = "win";  rec["resolved_date"] = today_str
+            else:
+                rec["status"] = "loss"; rec["resolved_date"] = today_str
+        elif hit_target:
             rec["status"] = "win";  rec["resolved_date"] = today_str
-        elif current_price is not None and current_price <= rec["stop_loss"]:
+        elif hit_stop:
             rec["status"] = "loss"; rec["resolved_date"] = today_str
         elif days_held >= 20:
             rec["status"] = "expired"; rec["resolved_date"] = today_str
@@ -617,8 +647,9 @@ def main():
         raw_highs   = yahoo.pop("_highs",   [])
         raw_lows    = yahoo.pop("_lows",    [])
         raw_volumes = yahoo.pop("_volumes", [])
+        raw_opens   = yahoo.pop("_opens",   [])
         if raw_closes:
-            raw_histories[code] = (raw_closes, raw_highs, raw_lows, raw_volumes)
+            raw_histories[code] = (raw_closes, raw_highs, raw_lows, raw_volumes, raw_opens)
 
         signals = calc_signals(yahoo)
         if not signals:
@@ -655,15 +686,18 @@ def main():
     # Step 6: 歷史勝率回測
     print(f"\n[6] 計算歷史訊號勝率（{len(raw_histories)} 支股票）...")
     all_bt = []
-    for code, (cls, hgh, lws, vols) in raw_histories.items():
-        all_bt.extend(backtest_one_stock(cls, hgh, lws, vols))
+    for code, (cls, hgh, lws, vols, opn) in raw_histories.items():
+        all_bt.extend(backtest_one_stock(cls, hgh, lws, vols, opens=opn))
     backtest_stats = aggregate_backtest_stats(all_bt)
     total_samples  = sum(v["count"] for v in backtest_stats.values())
     print(f"  回測樣本：{len(all_bt)} 筆，有效訊號類型：{len(backtest_stats)} 種，總樣本：{total_samples}")
 
     # Step 7: 更新信號追蹤
     today_str       = datetime.now().strftime("%Y-%m-%d")
-    today_price_map = {s["code"]: s["price"] for s in all_stocks}
+    today_price_map = {s["code"]: s["price"]                for s in all_stocks}
+    today_high_map  = {s["code"]: s.get("high", s["price"])  for s in all_stocks}
+    today_low_map   = {s["code"]: s.get("low",  s["price"])  for s in all_stocks}
+    today_open_map  = {s["code"]: s.get("open", s["price"])  for s in all_stocks}
     # 從 stocks.json 借用產業輪動資料（fetch_stocks.py 先於 fetch_expansion.py 執行）
     _sector_rotation = {}
     try:
@@ -672,7 +706,10 @@ def main():
     except Exception:
         pass
     signal_tracking = update_signal_tracking(prev_tracking, today_price_map, results, today_str,
-                                             sector_rotation=_sector_rotation)
+                                             sector_rotation=_sector_rotation,
+                                             today_high_map=today_high_map,
+                                             today_low_map=today_low_map,
+                                             today_open_map=today_open_map)
     open_cnt   = sum(1 for r in signal_tracking if r.get("status") == "open")
     closed_cnt = len(signal_tracking) - open_cnt
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{closed_cnt} 筆")
@@ -688,8 +725,23 @@ def main():
     }
 
     os.makedirs("docs", exist_ok=True)
+    # allow_nan=False 確保 NaN/Inf 不寫入 JSON（瀏覽器 JSON.parse 不支援）
+    try:
+        json_str = json.dumps(output, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    except ValueError:
+        # 若仍有 NaN，先用 math.isnan 遞迴清理後重試
+        import math
+        def _clean(obj):
+            if isinstance(obj, float):
+                return 0.0 if (math.isnan(obj) or math.isinf(obj)) else obj
+            if isinstance(obj, dict):
+                return {k: _clean(v) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [_clean(v) for v in obj]
+            return obj
+        json_str = json.dumps(_clean(output), ensure_ascii=False, separators=(",", ":"))
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, separators=(",", ":"))
+        f.write(json_str)
 
     print(f"\n{'='*50}")
     print(f"  完成：掃描 {sample_n} 檔")
