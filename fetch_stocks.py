@@ -59,15 +59,32 @@ SECTOR_MAP = {
 _sector_rotation = {}  # 產業輪動四象限資料
 
 
-def fetch_sector_rotation(days=60):
-    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/RS_trend，回傳六象限資料
-    RS           = 產業漲幅 - 大盤漲幅（日報酬差，%）
-    M            = RS / max(|RS_MA10|, 1)（動能，短期相對強弱）
-    A            = M差值的3日平均（加速度）
-    RS_trend     = RS的5日線性斜率
-    Trend_struct = 1 if price > MA60 else -1（多/空頭結構）
-    六象限：準備噴 / 主升段 / 主升回檔 / 高檔震盪 / 空頭 / 整理觀察
-    每次完整重算，確保資料為最新60交易日
+def _compute_sector_breadth(twse_stocks):
+    """從 STOCK_DAY_ALL 資料計算每產業上漲比例 {sector_key: 0~1}
+    只計算 STOCK_SECTOR_MAP 有明確對照的個股（靜態表，覆蓋主要成分股）
+    """
+    from collections import defaultdict
+    totals = defaultdict(int)
+    ups    = defaultdict(int)
+    for s in twse_stocks:
+        sk = STOCK_SECTOR_MAP.get(s["code"], "")
+        if sk:
+            totals[sk] += 1
+            if s["chg"] > 0:
+                ups[sk] += 1
+    return {sk: round(ups[sk] / totals[sk], 3) for sk in totals if totals[sk] >= 5}
+
+
+def fetch_sector_rotation(days=60, breadth_map=None):
+    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/Score，回傳六象限資料
+    RS           = 産業漲幅 - 大盤漲幅（日報酬差，%）
+    M            = RS / RS_MA10（動能，無地板；RS_MA10=0 時為 0）
+    A            = M_today - M_3day_avg（加速度，與個股公式一致）
+    RS_trend     = RS 的5日線性斜率
+    Breadth      = 上漲家數 / 總家數（當日 snapshot，由 breadth_map 傳入）
+    Score        = 0.4*RS_rank + 0.3*M_rank + 0.2*A_rank + 0.1*Breadth（跨産業百分位）
+    Trend_struct = 1 if price > MA60 else -1
+    六象限：主升段 / 準備噴 / 主升回檔 / 高檔震盪 / 空頭 / 整理觀察
     """
     from datetime import datetime, timedelta
     daily_data = {}
@@ -134,7 +151,7 @@ def fetch_sector_rotation(days=60):
             if s in day:
                 price_history[s].append(day[s])
 
-    # RS = 產業日漲幅 - 大盤日漲幅（需要相鄰兩日）
+    # RS = 産業日漲幅 - 大盤日漲幅（需要相鄰兩日）
     for i in range(1, len(dates)):
         date = dates[i]
         prev_date = dates[i - 1]
@@ -161,8 +178,9 @@ def fetch_sector_rotation(days=60):
         den = sum((i - x_mean) ** 2 for i in range(n))
         return num / den if den else 0.0
 
-    min_required = 13  # 需要 10(MA) + 3(A平滑) 天
-    result = {}
+    # ── 第一階段：逐産業計算 RS/M/A/rs_trend/trend_struct ──────────
+    min_required = 13  # 需要 10(RS_MA10) + 3(A計算) 天
+    raw = {}           # sector → 中間資料
     for s in sectors:
         hist = rs_history[s]
         if len(hist) < min_required:
@@ -174,30 +192,18 @@ def fetch_sector_rotation(days=60):
         for i in range(9, len(rs_vals)):
             rs_ma10_series[i] = sum(rs_vals[i-9:i+1]) / 10
 
-        # M 序列
+        # M = RS / RS_MA10（無地板，RS_MA10=0 時設為 0）
         m_series = [None] * len(rs_vals)
         for i in range(len(rs_vals)):
             if rs_ma10_series[i] is not None:
-                m_series[i] = rs_vals[i] / max(abs(rs_ma10_series[i]), 1)
+                m_series[i] = rs_vals[i] / rs_ma10_series[i] if rs_ma10_series[i] != 0 else 0.0
 
-        # A_raw = M今 - M昨
-        a_raw_series = [None] * len(m_series)
-        for i in range(1, len(m_series)):
-            if m_series[i] is not None and m_series[i-1] is not None:
-                a_raw_series[i] = m_series[i] - m_series[i-1]
+        # A = M_today - M_3day_avg（取最後3個有效 M 值）
+        m_tail = [v for v in m_series[-3:] if v is not None]
+        today_a = (m_tail[-1] - sum(m_tail) / len(m_tail)) if len(m_tail) >= 3 else None
 
-        # A = A_raw 的3日平均
-        a_series = [None] * len(a_raw_series)
-        for i in range(len(a_raw_series)):
-            if a_raw_series[i] is None:
-                continue
-            window = [a_raw_series[j] for j in range(max(0, i-2), i+1) if a_raw_series[j] is not None]
-            if window:
-                a_series[i] = sum(window) / len(window)
-
-        today_rs  = rs_vals[-1]
-        today_m   = m_series[-1]
-        today_a   = a_series[-1]
+        today_rs = rs_vals[-1]
+        today_m  = m_series[-1]
         if today_m is None or today_a is None:
             continue
 
@@ -206,25 +212,8 @@ def fetch_sector_rotation(days=60):
 
         # Trend_structure：價格 vs MA60
         prices = price_history[s]
-        if len(prices) >= 2:
-            ma60 = sum(prices) / len(prices)
-            trend_struct = 1 if prices[-1] > ma60 else -1
-        else:
-            trend_struct = 0
-
-        # 六象限分類
-        if trend_struct < 0 and today_rs > 0 and today_m > 1 and today_a > 0 and rs_trend > 0:
-            sub_phase = "準備噴"        # 空頭結構，RS 剛翻強，底部轉強訊號
-        elif trend_struct > 0 and today_rs > 0 and today_m > 1.2 and today_a >= 0 and rs_trend > 0:
-            sub_phase = "主升段"        # 多頭結構，動能強勁
-        elif trend_struct > 0 and today_m < 1 and today_a < 0 and rs_trend > 0:
-            sub_phase = "主升回檔"      # 多頭結構，短暫回檔，趨勢仍向上
-        elif trend_struct > 0 and today_rs > 0 and today_m < 1 and today_a < 0 and rs_trend <= 0:
-            sub_phase = "高檔震盪"      # 多頭結構，漲多整理，趨勢轉弱
-        elif trend_struct < 0 and today_rs < 0 and today_m < 1 and today_a < 0:
-            sub_phase = "空頭"          # 空頭結構，全面弱勢
-        else:
-            sub_phase = "整理觀察"      # 過渡中性，條件不符任一明確象限
+        ma60 = sum(prices) / len(prices) if prices else None
+        trend_struct = (1 if prices[-1] > ma60 else -1) if (ma60 and prices) else 0
 
         # 連漲天數（RS連續上升）
         rs_up_days = 0
@@ -235,19 +224,66 @@ def fetch_sector_rotation(days=60):
                 break
 
         prev_rs = rs_vals[-2] if len(rs_vals) >= 2 else today_rs
-        prev_m  = m_series[-2] if m_series[-2] is not None else today_m
-        vector  = {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)}
+        prev_m  = m_series[-2] if (len(m_series) >= 2 and m_series[-2] is not None) else today_m
+        raw[s] = {
+            "rs":          today_rs,
+            "m":           today_m,
+            "a":           today_a,
+            "rs_trend":    rs_trend,
+            "trend_struct": trend_struct,
+            "rs_up_days":  rs_up_days,
+            "vector":      {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)},
+            "trend":       [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]],
+        }
 
-        trend = [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]]
+    # ── 第二階段：跨産業 rank → Score → 六象限 ────────────────────
+    def _cross_rank(items):
+        """items = [(sector, value), ...]，回傳 {sector: 0~1 百分位}"""
+        n = len(items)
+        if n == 0:
+            return {}
+        sorted_items = sorted(items, key=lambda x: x[1])
+        return {s: round(i / (n - 1), 4) if n > 1 else 0.5
+                for i, (s, _) in enumerate(sorted_items)}
+
+    valid_sectors = list(raw.keys())
+    rs_rank = _cross_rank([(s, raw[s]["rs"]) for s in valid_sectors])
+    m_rank  = _cross_rank([(s, raw[s]["m"])  for s in valid_sectors])
+    a_rank  = _cross_rank([(s, raw[s]["a"])  for s in valid_sectors])
+
+    result = {}
+    for s in valid_sectors:
+        d        = raw[s]
+        breadth  = (breadth_map or {}).get(s)          # None 若無資料
+        b_val    = breadth if breadth is not None else 0.5  # 無資料時用中性值
+        score    = round(0.4 * rs_rank[s] + 0.3 * m_rank[s] + 0.2 * a_rank[s] + 0.1 * b_val, 3)
+
+        # 六象限：以 Score + trend_struct + rs_trend 決定
+        sc = score; ts = d["trend_struct"]; rt = d["rs_trend"]
+        if   sc >= 0.7 and ts > 0 and rt > 0:
+            sub_phase = "主升段"      # 高分 + 多頭 + 趨勢向上
+        elif sc >= 0.6 and ts < 0 and rt > 0:
+            sub_phase = "準備噴"      # 高分 + 空頭結構 + RS剛翻升（底部轉強）
+        elif 0.4 <= sc < 0.7 and ts > 0 and rt > 0:
+            sub_phase = "主升回檔"    # 中分 + 多頭 + 趨勢仍上
+        elif 0.4 <= sc < 0.7 and ts > 0 and rt <= 0:
+            sub_phase = "高檔震盪"    # 中分 + 多頭 + 趨勢轉弱
+        elif sc < 0.3 and ts < 0:
+            sub_phase = "空頭"        # 低分 + 空頭結構
+        else:
+            sub_phase = "整理觀察"    # 過渡中性
+
         result[s] = {
-            "rs":           round(today_rs, 2),
-            "rs_mom":       round(today_m, 4),   # M 值（前端仍用 rs_mom 鍵）
-            "acceleration": round(today_a, 4),
-            "rs_trend":     rs_trend,
+            "rs":           round(d["rs"], 4),
+            "rs_mom":       round(d["m"],  4),   # key 保持 rs_mom（前端相容）
+            "acceleration": round(d["a"],  4),
+            "rs_trend":     d["rs_trend"],
+            "breadth":      breadth,              # None 若無法計算
+            "score":        score,
             "sub_phase":    sub_phase,
-            "rs_up_days":   rs_up_days,
-            "vector":       vector,
-            "trend":        trend,
+            "rs_up_days":   d["rs_up_days"],
+            "vector":       d["vector"],
+            "trend":        d["trend"],
         }
 
     phase_counts = {}
@@ -276,14 +312,18 @@ def get_twse_date(days_ago=0):
 # ── 1. TWSE 動態名單（量能前100 + 漲幅前50 + 跌幅前30）──────────
 
 def fetch_twse_dynamic():
-    """用 TWSE 公開 API 抓全市場當日資料，取量能/漲跌幅前N名"""
+    """用 TWSE 公開 API 抓全市場當日資料，取量能/漲跌幅前N名
+    回傳 (merged_codes, all_stocks)：
+      merged_codes = 量能/漲跌幅精選代碼清單
+      all_stocks   = 全市場 [{code, vol, chg}, ...] 供 breadth 計算
+    """
     url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json"
     try:
         res = requests.get(url, headers=HEADERS, timeout=15)
         d = res.json()
         if d.get("stat") != "OK":
             print(f"  [TWSE] 狀態異常: {d.get('stat')}")
-            return []
+            return [], []
 
         fields = d.get("fields", [])
         rows   = d.get("data", [])
@@ -318,7 +358,7 @@ def fetch_twse_dynamic():
 
         if not stocks:
             print("  [TWSE] 解析後無資料")
-            return []
+            return [], []
 
         by_vol  = sorted(stocks, key=lambda x: x["vol"], reverse=True)
         by_rise = sorted(stocks, key=lambda x: x["chg"], reverse=True)
@@ -330,11 +370,11 @@ def fetch_twse_dynamic():
 
         merged = list(dict.fromkeys(top_vol + top_rise + top_fall))
         print(f"  [TWSE] 量能{len(top_vol)} 漲幅{len(top_rise)} 跌幅{len(top_fall)} → {len(merged)} 檔，名稱快取{len(_name_cache)}檔")
-        return merged
+        return merged, stocks
 
     except Exception as e:
         print(f"  [TWSE] 失敗：{e}")
-        return []
+        return [], []
 
 
 # ── 2. Yahoo Finance：股價 + 基本面 + 歷史價量 ────────────────────
@@ -2413,7 +2453,7 @@ def main():
 
     # 動態名單（TWSE）+ 固定大型股
     print("  抓取 TWSE 動態名單...")
-    dynamic = fetch_twse_dynamic()
+    dynamic, twse_stocks = fetch_twse_dynamic()
     time.sleep(1)
 
     all_ids = list(dict.fromkeys(list(LARGE_CAP) + dynamic))
@@ -2440,7 +2480,8 @@ def main():
     # 產業輪動（TWSE 類股指數，60天歷史）
     print("  抓取產業輪動資料...")
     global _sector_rotation
-    _sector_rotation = fetch_sector_rotation(60)
+    breadth_map = _compute_sector_breadth(twse_stocks)
+    _sector_rotation = fetch_sector_rotation(60, breadth_map=breadth_map)
     time.sleep(1)
 
     # 月營收 YoY（MOPS，不消耗 FinMind 額度）
