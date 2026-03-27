@@ -389,6 +389,11 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .exp-sig-count.sc-medium{background:rgba(255,159,67,.15);color:var(--orange)}
 /* ─ Stock phase badge ─ */
 .phase-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;flex-shrink:0}
+/* ─ Structure badge ─ */
+.struct-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;flex-shrink:0;margin-left:2px}
+/* ─ Market regime bar ─ */
+.mkt-bar{padding:5px 14px;border-bottom:.5px solid var(--border);font-size:11px;font-weight:600;display:flex;align-items:center;gap:8px}
+.mkt-bull{color:var(--green)}.mkt-pullback{color:var(--orange)}.mkt-range{color:var(--text3)}.mkt-bear{color:var(--red)}
 /* ─ Signal badge on stock card ─ */
 .sig-dot{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(0,200,150,.12);color:var(--green);flex-shrink:0}
 .sig-dot.sd-med{background:rgba(255,159,67,.12);color:var(--orange)}
@@ -544,6 +549,10 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
       <span class="foi-net" id="foiNet2"></span>
     </div>
   </div>
+  <div class="mkt-bar" id="mktBar" style="display:none">
+    大盤：<span id="mktLabel">─</span>
+    <span id="mktDetail" style="font-size:10px;color:var(--text3);font-weight:400"></span>
+  </div>
   <div class="tabs">
     <button class="tab active" id="tab-all"      onclick="setTab('all')">全部</button>
     <button class="tab"        id="tab-large"    onclick="setTab('large')">🏢 大型</button>
@@ -681,6 +690,9 @@ function goView(v){
   var titles={home:'選股雷達 📡',macro:'整體經濟',etf:'ETF 防禦參考',stocks:'個股選股雷達',expansion:'隨機500股 訊號掃描',sector:'產業詳細',backtest:'訊號回測記錄'};
   var title=document.getElementById('hdr-title');
   if(title) title.textContent=titles[v]||'選股雷達 📡';
+  // 大盤狀態列：僅在個股頁顯示
+  var mktB=document.getElementById('mktBar');
+  if(mktB) mktB.style.display=(v==='stocks'&&mktB._hasData)?'flex':'none';
   if(v==='home')      renderHomeCards();
   if(v==='etf')       renderETF();
   if(v==='macro')     renderMacroFull();
@@ -845,6 +857,42 @@ function _phaseBadge(phase){
   var v=cfg[phase];
   if(!v) return '';
   return '<span class="phase-badge" style="background:'+v.bg+';color:'+v.c+'">'+v.lbl+'</span>';
+}
+
+function _structBadge(struct){
+  var cfg={
+    '主升段':    {bg:'rgba(0,200,150,.15)',  c:'var(--green)',  icon:'↑'},
+    '主升段✓':   {bg:'rgba(0,200,150,.28)',  c:'var(--green)',  icon:'↑'},
+    '突破準備':  {bg:'rgba(74,158,255,.15)', c:'var(--blue)',   icon:'⬆'},
+    '突破準備✓': {bg:'rgba(74,158,255,.28)', c:'var(--blue)',   icon:'⬆'},
+    '回檔':      {bg:'rgba(255,159,67,.12)', c:'var(--orange)', icon:'↘'},
+    '盤整':      {bg:'rgba(120,120,120,.12)',c:'var(--text3)',  icon:'─'},
+    '弱勢':      {bg:'rgba(255,92,92,.15)',  c:'var(--red)',    icon:'↓'},
+  };
+  var v=cfg[struct];
+  if(!v) return '';
+  return '<span class="struct-badge" style="background:'+v.bg+';color:'+v.c+'">'+v.icon+' '+struct+'</span>';
+}
+
+function renderMarketBar(data){
+  var bar=document.getElementById('mktBar');
+  if(!bar||!data) return;
+  var mr=data.market_regime||{};
+  if(!mr.regime) return;
+  var MAP={
+    bull:          {lbl:'多頭',    cls:'mkt-bull',     icon:'▲'},
+    bull_pullback: {lbl:'回檔整理',cls:'mkt-pullback',  icon:'↗'},
+    range:         {lbl:'盤整',    cls:'mkt-range',    icon:'─'},
+    bear:          {lbl:'空頭',    cls:'mkt-bear',     icon:'▼'},
+  };
+  var cfg=MAP[mr.regime]||MAP.range;
+  bar._hasData=true;
+  document.getElementById('mktLabel').innerHTML='<span class="'+cfg.cls+'">'+cfg.icon+' '+cfg.lbl+'</span>';
+  var det='';
+  if(mr.taiex) det='加權 '+mr.taiex.toLocaleString();
+  if(mr.ma20)  det+='　MA20 '+mr.ma20.toLocaleString();
+  if(mr.ma60)  det+='　MA60 '+mr.ma60.toLocaleString();
+  document.getElementById('mktDetail').textContent=det;
 }
 
 function rExpCard(s,pfx){
@@ -1662,6 +1710,7 @@ function rCard(s){
         rankHtml+
         sectorPhaseHtml+
         (s.stock_phase&&s.stock_phase!=='RANGE'?_phaseBadge(s.stock_phase):'')+
+        (s.structure?_structBadge(s.structure):'')+
       '</div>'+
       '<div class="card-right">'+
         '<span class="price-num '+cls+'">$'+Number(s.price).toLocaleString()+'</span>'+
@@ -1846,6 +1895,19 @@ function rSignals(s){
   var cards=sigs.map(function(sg){
     var st=sg.strength||'medium';
     var stLbl=LABELS[st]||st;
+    // 確認數（●●●○○）
+    var confHtml='';
+    if(sg.confirmations!=null){
+      var dots='';
+      for(var ci=0;ci<sg.confirmations;ci++) dots+='●';
+      for(var ci=sg.confirmations;ci<5;ci++) dots+='○';
+      confHtml='<div style="font-size:10px;color:var(--text3);margin-top:5px">確認 <span style="letter-spacing:1px">'+dots+'</span></div>';
+    }
+    // ATR 動態停損
+    var atrHtml='';
+    if(sg.atr_stop!=null){
+      atrHtml='<div class="sig-px" style="margin-top:4px">ATR停損 <span style="color:var(--red);opacity:.75">$'+sg.atr_stop+'</span></div>';
+    }
     return '<div class="sig-card '+st+'">'+
       '<div class="sig-head">'+
         '<span class="sig-badge '+st+'">'+stLbl+'</span>'+
@@ -1857,7 +1919,9 @@ function rSignals(s){
         '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
         '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
         '<div class="sig-px">RR <span>1:'+sg.rr+'</span></div>'+
+        atrHtml+
       '</div>'+
+      confHtml+
     '</div>';
   }).join('');
   return '<div class="sig-list">'+cards+'</div>';
@@ -2127,6 +2191,7 @@ async function loadData(){
       document.getElementById('foiNet').innerHTML='<span class="'+cls+'">'+(net>0?'+':'')+net.toLocaleString()+'口 '+(net>0?'▲偏多':'▼偏空')+'</span>';
       if(bar)bar.style.display='';
     }
+    renderMarketBar(data);
     fetchBizCycle().then(function(){
       renderMacroPreview();
       if(curView==='macro') renderMacroFull();
