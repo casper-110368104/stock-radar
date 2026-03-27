@@ -59,15 +59,32 @@ SECTOR_MAP = {
 _sector_rotation = {}  # 產業輪動四象限資料
 
 
-def fetch_sector_rotation(days=60):
-    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/RS_trend，回傳六象限資料
-    RS           = 產業漲幅 - 大盤漲幅（日報酬差，%）
-    M            = RS / max(|RS_MA10|, 1)（動能，短期相對強弱）
-    A            = M差值的3日平均（加速度）
-    RS_trend     = RS的5日線性斜率
-    Trend_struct = 1 if price > MA60 else -1（多/空頭結構）
-    六象限：準備噴 / 主升段 / 主升回檔 / 高檔震盪 / 空頭 / 整理觀察
-    每次完整重算，確保資料為最新60交易日
+def _compute_sector_breadth(twse_stocks):
+    """從 STOCK_DAY_ALL 資料計算每產業上漲比例 {sector_key: 0~1}
+    只計算 STOCK_SECTOR_MAP 有明確對照的個股（靜態表，覆蓋主要成分股）
+    """
+    from collections import defaultdict
+    totals = defaultdict(int)
+    ups    = defaultdict(int)
+    for s in twse_stocks:
+        sk = STOCK_SECTOR_MAP.get(s["code"], "")
+        if sk:
+            totals[sk] += 1
+            if s["chg"] > 0:
+                ups[sk] += 1
+    return {sk: round(ups[sk] / totals[sk], 3) for sk in totals if totals[sk] >= 5}
+
+
+def fetch_sector_rotation(days=60, breadth_map=None):
+    """從 TWSE MI_INDEX API 抓類股指數歷史，計算 RS/M/A/Score，回傳六象限資料
+    RS           = 産業漲幅 - 大盤漲幅（日報酬差，%）
+    M            = RS / RS_MA10（動能，無地板；RS_MA10=0 時為 0）
+    A            = M_today - M_3day_avg（加速度，與個股公式一致）
+    RS_trend     = RS 的5日線性斜率
+    Breadth      = 上漲家數 / 總家數（當日 snapshot，由 breadth_map 傳入）
+    Score        = 0.4*RS_rank + 0.3*M_rank + 0.2*A_rank + 0.1*Breadth（跨産業百分位）
+    Trend_struct = 1 if price > MA60 else -1
+    六象限：主升段 / 準備噴 / 主升回檔 / 高檔震盪 / 空頭 / 整理觀察
     """
     from datetime import datetime, timedelta
     daily_data = {}
@@ -134,7 +151,7 @@ def fetch_sector_rotation(days=60):
             if s in day:
                 price_history[s].append(day[s])
 
-    # RS = 產業日漲幅 - 大盤日漲幅（需要相鄰兩日）
+    # RS = 産業日漲幅 - 大盤日漲幅（需要相鄰兩日）
     for i in range(1, len(dates)):
         date = dates[i]
         prev_date = dates[i - 1]
@@ -161,8 +178,9 @@ def fetch_sector_rotation(days=60):
         den = sum((i - x_mean) ** 2 for i in range(n))
         return num / den if den else 0.0
 
-    min_required = 13  # 需要 10(MA) + 3(A平滑) 天
-    result = {}
+    # ── 第一階段：逐産業計算 RS/M/A/rs_trend/trend_struct ──────────
+    min_required = 13  # 需要 10(RS_MA10) + 3(A計算) 天
+    raw = {}           # sector → 中間資料
     for s in sectors:
         hist = rs_history[s]
         if len(hist) < min_required:
@@ -174,30 +192,18 @@ def fetch_sector_rotation(days=60):
         for i in range(9, len(rs_vals)):
             rs_ma10_series[i] = sum(rs_vals[i-9:i+1]) / 10
 
-        # M 序列
+        # M = RS / RS_MA10（無地板，RS_MA10=0 時設為 0）
         m_series = [None] * len(rs_vals)
         for i in range(len(rs_vals)):
             if rs_ma10_series[i] is not None:
-                m_series[i] = rs_vals[i] / max(abs(rs_ma10_series[i]), 1)
+                m_series[i] = rs_vals[i] / rs_ma10_series[i] if rs_ma10_series[i] != 0 else 0.0
 
-        # A_raw = M今 - M昨
-        a_raw_series = [None] * len(m_series)
-        for i in range(1, len(m_series)):
-            if m_series[i] is not None and m_series[i-1] is not None:
-                a_raw_series[i] = m_series[i] - m_series[i-1]
+        # A = M_today - M_3day_avg（取最後3個有效 M 值）
+        m_tail = [v for v in m_series[-3:] if v is not None]
+        today_a = (m_tail[-1] - sum(m_tail) / len(m_tail)) if len(m_tail) >= 3 else None
 
-        # A = A_raw 的3日平均
-        a_series = [None] * len(a_raw_series)
-        for i in range(len(a_raw_series)):
-            if a_raw_series[i] is None:
-                continue
-            window = [a_raw_series[j] for j in range(max(0, i-2), i+1) if a_raw_series[j] is not None]
-            if window:
-                a_series[i] = sum(window) / len(window)
-
-        today_rs  = rs_vals[-1]
-        today_m   = m_series[-1]
-        today_a   = a_series[-1]
+        today_rs = rs_vals[-1]
+        today_m  = m_series[-1]
         if today_m is None or today_a is None:
             continue
 
@@ -206,25 +212,8 @@ def fetch_sector_rotation(days=60):
 
         # Trend_structure：價格 vs MA60
         prices = price_history[s]
-        if len(prices) >= 2:
-            ma60 = sum(prices) / len(prices)
-            trend_struct = 1 if prices[-1] > ma60 else -1
-        else:
-            trend_struct = 0
-
-        # 六象限分類
-        if trend_struct < 0 and today_rs > 0 and today_m > 1 and today_a > 0 and rs_trend > 0:
-            sub_phase = "準備噴"        # 空頭結構，RS 剛翻強，底部轉強訊號
-        elif trend_struct > 0 and today_rs > 0 and today_m > 1.2 and today_a >= 0 and rs_trend > 0:
-            sub_phase = "主升段"        # 多頭結構，動能強勁
-        elif trend_struct > 0 and today_m < 1 and today_a < 0 and rs_trend > 0:
-            sub_phase = "主升回檔"      # 多頭結構，短暫回檔，趨勢仍向上
-        elif trend_struct > 0 and today_rs > 0 and today_m < 1 and today_a < 0 and rs_trend <= 0:
-            sub_phase = "高檔震盪"      # 多頭結構，漲多整理，趨勢轉弱
-        elif trend_struct < 0 and today_rs < 0 and today_m < 1 and today_a < 0:
-            sub_phase = "空頭"          # 空頭結構，全面弱勢
-        else:
-            sub_phase = "整理觀察"      # 過渡中性，條件不符任一明確象限
+        ma60 = sum(prices) / len(prices) if prices else None
+        trend_struct = (1 if prices[-1] > ma60 else -1) if (ma60 and prices) else 0
 
         # 連漲天數（RS連續上升）
         rs_up_days = 0
@@ -235,19 +224,66 @@ def fetch_sector_rotation(days=60):
                 break
 
         prev_rs = rs_vals[-2] if len(rs_vals) >= 2 else today_rs
-        prev_m  = m_series[-2] if m_series[-2] is not None else today_m
-        vector  = {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)}
+        prev_m  = m_series[-2] if (len(m_series) >= 2 and m_series[-2] is not None) else today_m
+        raw[s] = {
+            "rs":          today_rs,
+            "m":           today_m,
+            "a":           today_a,
+            "rs_trend":    rs_trend,
+            "trend_struct": trend_struct,
+            "rs_up_days":  rs_up_days,
+            "vector":      {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)},
+            "trend":       [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]],
+        }
 
-        trend = [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]]
+    # ── 第二階段：跨産業 rank → Score → 六象限 ────────────────────
+    def _cross_rank(items):
+        """items = [(sector, value), ...]，回傳 {sector: 0~1 百分位}"""
+        n = len(items)
+        if n == 0:
+            return {}
+        sorted_items = sorted(items, key=lambda x: x[1])
+        return {s: round(i / (n - 1), 4) if n > 1 else 0.5
+                for i, (s, _) in enumerate(sorted_items)}
+
+    valid_sectors = list(raw.keys())
+    rs_rank = _cross_rank([(s, raw[s]["rs"]) for s in valid_sectors])
+    m_rank  = _cross_rank([(s, raw[s]["m"])  for s in valid_sectors])
+    a_rank  = _cross_rank([(s, raw[s]["a"])  for s in valid_sectors])
+
+    result = {}
+    for s in valid_sectors:
+        d        = raw[s]
+        breadth  = (breadth_map or {}).get(s)          # None 若無資料
+        b_val    = breadth if breadth is not None else 0.5  # 無資料時用中性值
+        score    = round(0.4 * rs_rank[s] + 0.3 * m_rank[s] + 0.2 * a_rank[s] + 0.1 * b_val, 3)
+
+        # 六象限：以 Score + trend_struct + rs_trend 決定
+        sc = score; ts = d["trend_struct"]; rt = d["rs_trend"]
+        if   sc >= 0.7 and ts > 0 and rt > 0:
+            sub_phase = "主升段"      # 高分 + 多頭 + 趨勢向上
+        elif sc >= 0.6 and ts < 0 and rt > 0:
+            sub_phase = "準備噴"      # 高分 + 空頭結構 + RS剛翻升（底部轉強）
+        elif 0.4 <= sc < 0.7 and ts > 0 and rt > 0:
+            sub_phase = "主升回檔"    # 中分 + 多頭 + 趨勢仍上
+        elif 0.4 <= sc < 0.7 and ts > 0 and rt <= 0:
+            sub_phase = "高檔震盪"    # 中分 + 多頭 + 趨勢轉弱
+        elif sc < 0.3 and ts < 0:
+            sub_phase = "空頭"        # 低分 + 空頭結構
+        else:
+            sub_phase = "整理觀察"    # 過渡中性
+
         result[s] = {
-            "rs":           round(today_rs, 2),
-            "rs_mom":       round(today_m, 4),   # M 值（前端仍用 rs_mom 鍵）
-            "acceleration": round(today_a, 4),
-            "rs_trend":     rs_trend,
+            "rs":           round(d["rs"], 4),
+            "rs_mom":       round(d["m"],  4),   # key 保持 rs_mom（前端相容）
+            "acceleration": round(d["a"],  4),
+            "rs_trend":     d["rs_trend"],
+            "breadth":      breadth,              # None 若無法計算
+            "score":        score,
             "sub_phase":    sub_phase,
-            "rs_up_days":   rs_up_days,
-            "vector":       vector,
-            "trend":        trend,
+            "rs_up_days":   d["rs_up_days"],
+            "vector":       d["vector"],
+            "trend":        d["trend"],
         }
 
     phase_counts = {}
@@ -276,14 +312,18 @@ def get_twse_date(days_ago=0):
 # ── 1. TWSE 動態名單（量能前100 + 漲幅前50 + 跌幅前30）──────────
 
 def fetch_twse_dynamic():
-    """用 TWSE 公開 API 抓全市場當日資料，取量能/漲跌幅前N名"""
+    """用 TWSE 公開 API 抓全市場當日資料，取量能/漲跌幅前N名
+    回傳 (merged_codes, all_stocks)：
+      merged_codes = 量能/漲跌幅精選代碼清單
+      all_stocks   = 全市場 [{code, vol, chg}, ...] 供 breadth 計算
+    """
     url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json"
     try:
         res = requests.get(url, headers=HEADERS, timeout=15)
         d = res.json()
         if d.get("stat") != "OK":
             print(f"  [TWSE] 狀態異常: {d.get('stat')}")
-            return []
+            return [], []
 
         fields = d.get("fields", [])
         rows   = d.get("data", [])
@@ -318,7 +358,7 @@ def fetch_twse_dynamic():
 
         if not stocks:
             print("  [TWSE] 解析後無資料")
-            return []
+            return [], []
 
         by_vol  = sorted(stocks, key=lambda x: x["vol"], reverse=True)
         by_rise = sorted(stocks, key=lambda x: x["chg"], reverse=True)
@@ -330,11 +370,11 @@ def fetch_twse_dynamic():
 
         merged = list(dict.fromkeys(top_vol + top_rise + top_fall))
         print(f"  [TWSE] 量能{len(top_vol)} 漲幅{len(top_rise)} 跌幅{len(top_fall)} → {len(merged)} 檔，名稱快取{len(_name_cache)}檔")
-        return merged
+        return merged, stocks
 
     except Exception as e:
         print(f"  [TWSE] 失敗：{e}")
-        return []
+        return [], []
 
 
 # ── 2. Yahoo Finance：股價 + 基本面 + 歷史價量 ────────────────────
@@ -368,23 +408,22 @@ def _compute_rs_layers(sc, bc):
 
 def _compute_m_a(rs_fast):
     """計算 M（RS動能）、A（M加速度）、RS_trend（5日斜率），均以 Z-score 標準化"""
-    if len(rs_fast) < 10:
+    if len(rs_fast) < 12:
         return None, None, None
     rs_ma10 = sum(rs_fast[-10:]) / 10
     m_raw   = rs_fast[-1] - rs_ma10
 
-    a_raw = None
-    if len(rs_fast) >= 13:
-        m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-                  for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
-        if len(m_tail) >= 2:
-            diffs = [m_tail[i]-m_tail[i-1] for i in range(1, len(m_tail))]
-            a_raw = sum(diffs)/len(diffs) if diffs else None
+    # M 序列（近30天）→ 用 M 自己的分布做 Z-score，避免用 RS μ/σ 導致 m_z 永遠負
+    m_series = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
+                for i in range(max(10, len(rs_fast)-30), len(rs_fast)) if i >= 9]
+    mu_m  = sum(m_series)/len(m_series) if m_series else 0.0
+    std_m = (sum((x-mu_m)**2 for x in m_series)/len(m_series))**0.5 if m_series else 0.0
+    m_z   = (m_raw - mu_m) / std_m if std_m > 0 else 0.0
 
-    mu  = sum(rs_fast)/len(rs_fast)
-    std = (sum((x-mu)**2 for x in rs_fast)/len(rs_fast))**0.5
-    m_z = (m_raw - mu) / std if std > 0 else 0.0
-    a_z = ((a_raw - mu) / std if (a_raw is not None and std > 0) else None)
+    # A = M_today - M_3day_avg（直覺：今日動能相對近3日均值的偏離）
+    m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
+              for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
+    a_z = (m_tail[-1] - sum(m_tail)/len(m_tail)) if len(m_tail) >= 3 else None
 
     if len(rs_fast) >= 5:
         vals   = rs_fast[-5:]
@@ -1577,6 +1616,14 @@ _SIGNAL_LABELS_BT = {
 }
 
 
+def _rolling_vwap(c, h, l, v, i, n):
+    """計算第 i 日往前 n 天的滾動 VWAP（作為 AVWAP proxy）"""
+    s = max(0, i - n + 1)
+    ctv = sum((h[j] + l[j] + c[j]) / 3 * v[j] for j in range(s, i + 1))
+    cv  = sum(v[j] for j in range(s, i + 1))
+    return round(ctv / cv, 2) if cv > 0 else c[i]
+
+
 def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
     """計算歷史第 i 日的技術指標快照"""
     if i < 20:
@@ -1609,6 +1656,8 @@ def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
         "low20":         low20,
         "prev_low20":    prev_low20,
         "vol_day_ratio": vol_day_ratio,
+        "avwap_short":   _rolling_vwap(closes, highs, lows, volumes, i, 20),
+        "avwap_swing":   _rolling_vwap(closes, highs, lows, volumes, i, 60),
     }
 
 
@@ -1648,10 +1697,17 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
             import math
             if math.isnan(day5_close) or day5_close <= 0:
                 continue
+            # gain_pct：win/loss 用確定的出場價計算，inconclusive 用第5日收盤
+            if outcome == "win":
+                gain_pct = round((target - entry) / entry * 100, 2)
+            elif outcome == "loss":
+                gain_pct = round((stop   - entry) / entry * 100, 2)
+            else:
+                gain_pct = round((day5_close - entry) / entry * 100, 2)
             results.append({
                 "type":     sig["type"],
                 "outcome":  outcome,
-                "gain_pct": round((day5_close - entry) / entry * 100, 2),
+                "gain_pct": gain_pct,
             })
     return results
 
@@ -1665,11 +1721,14 @@ def bt_aggregate_stats(all_results):
     })
     for r in all_results:
         t = r["type"]
-        buckets[t][r["outcome"] + "s"] = buckets[t].get(r["outcome"] + "s", 0) + 1
         if r["outcome"] == "win":
+            buckets[t]["wins"]     += 1
             buckets[t]["gain_sum"] += r["gain_pct"]
         elif r["outcome"] == "loss":
+            buckets[t]["losses"]   += 1
             buckets[t]["loss_sum"] += r["gain_pct"]
+        else:
+            buckets[t]["inconclusive"] += 1
     stats = {}
     for t, b in buckets.items():
         decided = b["wins"] + b["losses"]
@@ -1710,13 +1769,17 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
-                rec["status"] = "win";  rec["resolved_date"] = today_str
+                rec["status"]   = "win";  rec["resolved_date"] = today_str
+                rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
             else:
-                rec["status"] = "loss"; rec["resolved_date"] = today_str
+                rec["status"]   = "loss"; rec["resolved_date"] = today_str
+                rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
         elif hit_target:
-            rec["status"] = "win";     rec["resolved_date"] = today_str
+            rec["status"]   = "win";     rec["resolved_date"] = today_str
+            rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
         elif hit_stop:
-            rec["status"] = "loss";    rec["resolved_date"] = today_str
+            rec["status"]   = "loss";    rec["resolved_date"] = today_str
+            rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
         elif days_held >= 20:
             rec["status"] = "expired"; rec["resolved_date"] = today_str
         updated.append(rec)
@@ -1822,8 +1885,9 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
     avwap_swing = yahoo.get("avwap_swing")
     avwap_vol   = yahoo.get("avwap_vol")
     avwap_short = yahoo.get("avwap_short")
-    m_z_val     = yahoo.get("m_z")
+    m_z_val      = yahoo.get("m_z")
     rs_trend_val = yahoo.get("rs_trend_stock")
+    sector_rs    = yahoo.get("sector_rs")
 
     if not price:
         return []
@@ -1833,10 +1897,12 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
     _mm_ok    = avwap_vol   is None or price >= avwap_vol
     _short_ok = avwap_short is None or price >= avwap_short
 
-    # BULL 型態動能額外條件（breakout/high_base 需要 m_z>0 且 rs_trend>0）
+    # BULL 型態動能額外條件（Layer 2 嚴格版）：
+    # breakout/high_base 需要 m_z>1（強度超過1σ）且 rs_trend>0 且産業RS>0
     _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 0 and
-        rs_trend_val is not None and rs_trend_val > 0
+        m_z_val is not None and m_z_val > 1 and
+        rs_trend_val is not None and rs_trend_val > 0 and
+        (sector_rs is None or sector_rs > 0)
     )
 
     def _sig(type_, label, strength, entry, stop, reason):
@@ -2308,6 +2374,7 @@ def process_stock(sid, category):
         "category":        category,
         "industry":        yahoo.get("industry", "其他"),
         "sector_key":      STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""),
+        "sector_rs":       _sector_rotation.get(STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""), {}).get("rs", None),
         "themes":          themes,
         "warnings":        warnings,
         "price":           yahoo.get("price"),
@@ -2386,7 +2453,7 @@ def main():
 
     # 動態名單（TWSE）+ 固定大型股
     print("  抓取 TWSE 動態名單...")
-    dynamic = fetch_twse_dynamic()
+    dynamic, twse_stocks = fetch_twse_dynamic()
     time.sleep(1)
 
     all_ids = list(dict.fromkeys(list(LARGE_CAP) + dynamic))
@@ -2413,7 +2480,8 @@ def main():
     # 產業輪動（TWSE 類股指數，60天歷史）
     print("  抓取產業輪動資料...")
     global _sector_rotation
-    _sector_rotation = fetch_sector_rotation(60)
+    breadth_map = _compute_sector_breadth(twse_stocks)
+    _sector_rotation = fetch_sector_rotation(60, breadth_map=breadth_map)
     time.sleep(1)
 
     # 月營收 YoY（MOPS，不消耗 FinMind 額度）
