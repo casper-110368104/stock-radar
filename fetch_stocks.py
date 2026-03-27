@@ -454,6 +454,97 @@ def classify_stock_phase(rs_pct, m_z, a_z, rs_trend, rs_slow_positive=None):
     return "RANGE"
 
 
+# ── 大盤相位 ──────────────────────────────────────────────────────
+
+_market_regime = {}  # 全域：大盤多空狀態
+
+
+def fetch_market_regime():
+    """抓取加權指數(^TWII) 判斷大盤多空相位（bull/bull_pullback/range/bear）"""
+    try:
+        tw   = yf.Ticker("^TWII")
+        hist = tw.history(period="90d")
+        if hist.empty or len(hist) < 60:
+            return {"regime": "range", "taiex": None, "ma20": None, "ma60": None}
+        closes = hist["Close"].tolist()
+        price  = closes[-1]
+        ma20   = round(sum(closes[-20:]) / 20, 1)
+        ma60   = round(sum(closes[-60:]) / 60, 1)
+        if price > ma20 and price > ma60:
+            regime = "bull"
+        elif price > ma60 and price <= ma20:
+            regime = "bull_pullback"
+        elif price < ma60 * 0.97:
+            regime = "bear"
+        else:
+            regime = "range"
+        return {"regime": regime, "taiex": round(price, 1), "ma20": ma20, "ma60": ma60}
+    except Exception as e:
+        print(f"  [大盤相位] 失敗：{e}")
+        return {"regime": "range", "taiex": None, "ma20": None, "ma60": None}
+
+
+def classify_structure(yahoo, stock_phase, sector_phase=""):
+    """
+    根據 MA 排列、價格位置、RS 相位給出人類可讀的結構標籤。
+    返回：'主升段'/'主升段✓' | '突破準備'/'突破準備✓' | '回檔' | '盤整' | '弱勢'
+    sector_phase 若為類股輪動相位（主升段/準備噴/空頭…）可加分或降級。
+    """
+    price  = yahoo.get("price") or 0
+    ma5    = yahoo.get("ma5")
+    ma10   = yahoo.get("ma10")
+    ma20   = yahoo.get("ma20")
+    ma60   = yahoo.get("ma60")
+    high20 = yahoo.get("high20")
+    rs_pct = yahoo.get("rs_pct_val")  # main() 補入
+
+    if not price or not ma20:
+        return "盤整"
+
+    # 弱勢：空頭排列或跌破 MA60
+    if stock_phase in ("BEAR_STRONG", "BEAR_WEAK") or (ma60 and price < ma60 * 0.98):
+        label = "弱勢"
+    # 主升段：多頭排列 + 股價在 MA5 之上
+    elif (stock_phase == "BULL" and ma5 and ma10 and ma20
+          and ma5 > ma10 > ma20 and price >= ma5):
+        label = "主升段"
+    # 突破準備：股價距20日高點在10%以內 + 高於MA20 + RS>=65
+    elif (high20 and ma20 and price >= ma20
+          and 0 <= (high20 - price) / high20 <= 0.10
+          and (rs_pct is None or rs_pct >= 65)):
+        label = "突破準備"
+    # 回檔：多頭排列但股價在 MA20~MA10 之間
+    elif (stock_phase in ("BULL", "BULL_PULLBACK")
+          and ma10 and ma20 and ma20 <= price <= ma10):
+        label = "回檔"
+    else:
+        label = "盤整"
+
+    # 類股相位加分/降級
+    if label in ("主升段", "突破準備"):
+        if sector_phase in ("主升段", "準備噴", "主升回檔"):
+            label = label + "✓"   # 類股確認，加 checkmark
+        elif sector_phase == "空頭":
+            label = "盤整"         # 類股逆風，降級
+
+    return label
+
+
+def calc_atr(highs, lows, closes, period=14):
+    """計算近 period 日 Average True Range"""
+    if len(closes) < period + 1:
+        return None
+    trs = []
+    for i in range(1, len(closes)):
+        tr = max(
+            highs[i] - lows[i],
+            abs(highs[i] - closes[i - 1]),
+            abs(lows[i]  - closes[i - 1]),
+        )
+        trs.append(tr)
+    return round(sum(trs[-period:]) / period, 2)
+
+
 def fetch_yahoo(sid):
     """用 yfinance 抓單股資料，回傳 dict"""
     result = {
@@ -589,6 +680,9 @@ def fetch_yahoo(sid):
                 ma60 = sum(closes[-60:]) / 60
                 result["ma60"] = round(ma60, 2)
                 result["above_ma60"] = (closes[-1] >= ma60)
+
+            # ATR 14日（動態停損參考）
+            result["atr_14"] = calc_atr(highs, lows, closes, 14)
 
             # 暫存收盤序列供 RS 計算 + 回測
             result["_closes"]  = closes
@@ -1864,13 +1958,19 @@ _ALLOWED_SIGNALS = {
 }
 
 
-def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
+def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
+                 market_regime="range", composite_score=0):
     """
     偵測 6 種技術面買點訊號，回傳 list of dict。
-    每個訊號：{type, label, strength, entry, stop_loss, target, risk, rr, reason}
+    每個訊號：{type, label, strength, entry, stop_loss, target, risk, rr, reason,
+               atr_stop, confirmations}
     strength: 'strong' | 'medium' | 'weak'
     """
     signals = []
+
+    # 最低分數門檻：綜合分 < 45 不產生任何訊號（避免在弱股上假訊號）
+    if composite_score > 0 and composite_score < 45:
+        return []
 
     price     = yahoo.get("price")     or 0
     high20    = yahoo.get("high20")
@@ -1905,14 +2005,40 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
         (sector_rs is None or sector_rs > 0)
     )
 
+    # 大盤相位過濾：根據大盤狀態限制允許的訊號類型
+    _market_bear = (market_regime == "bear")
+    _base_allowed = _ALLOWED_SIGNALS.get(stock_phase, _ALLOWED_SIGNALS["RANGE"])
+    _MARKET_ALLOWED = {
+        "bull":          _base_allowed,
+        "bull_pullback": {"ma_pullback", "retest", "false_breakdown", "ma60_support"},
+        "range":         {"ma_pullback", "retest", "false_breakdown", "ma60_support"},
+        "bear":          {"false_breakdown"},
+    }.get(market_regime, _base_allowed)
+
+    # 訊號確認數（0~5，越高越可信）
+    _chips_score = chips.get("chips_score_val", 0) or 0
+    _confirmations = sum([
+        _chips_score > 60,                            # 籌碼分強
+        rs_pct >= 70,                                 # RS 百分位高
+        (yahoo.get("vol_day_ratio") or 1) > 1.3,     # 量比放大
+        stock_phase == "BULL",                        # 個股多頭
+        market_regime == "bull",                      # 大盤多頭
+    ])
+
     def _sig(type_, label, strength, entry, stop, reason):
-        # 型態篩選
+        # 大盤相位篩選（優先）
+        if type_ not in _MARKET_ALLOWED:
+            return None
+        # 個股型態篩選
         if type_ not in _ALLOWED_SIGNALS.get(stock_phase, _ALLOWED_SIGNALS["RANGE"]):
             return None
         _strength = strength
         _reason   = reason
+        # 大盤熊市：訊號強度上限為 weak
+        if _market_bear:
+            _strength = "weak"
         if not _trend_ok:
-            _strength = {"strong": "medium", "medium": "weak"}.get(strength, strength)
+            _strength = {"strong": "medium", "medium": "weak"}.get(_strength, _strength)
             _reason   = reason + "；⚠️趨勢破 AVWAP"
         if _mm_ok and avwap_vol:
             _reason = _reason + "；主力未跑✓"
@@ -1927,16 +2053,21 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
             rr *= 0.7
         rr = round(rr, 2)
         target = round(entry + risk * rr, 2)
+        # ATR 動態停損（2×ATR，提供波動性調整的替代停損）
+        atr = yahoo.get("atr_14")
+        atr_stop = round(entry - 2 * atr, 2) if atr else None
         return {
-            "type":      type_,
-            "label":     label,
-            "strength":  _strength,
-            "entry":     round(entry, 2),
-            "stop_loss": round(stop,  2),
-            "target":    target,
-            "risk":      risk,
-            "rr":        rr,
-            "reason":    _reason,
+            "type":          type_,
+            "label":         label,
+            "strength":      _strength,
+            "entry":         round(entry, 2),
+            "stop_loss":     round(stop,  2),
+            "atr_stop":      atr_stop,
+            "target":        target,
+            "risk":          risk,
+            "rr":            rr,
+            "reason":        _reason,
+            "confirmations": _confirmations,
         }
 
     # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70 + 短線節奏健康 + BULL動能確認
@@ -2373,8 +2504,14 @@ def process_stock(sid, category):
         "name":            yahoo.get("name", sid),
         "category":        category,
         "industry":        yahoo.get("industry", "其他"),
-        "sector_key":      STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""),
-        "sector_rs":       _sector_rotation.get(STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""), {}).get("rs", None),
+        "sector_key":      (STOCK_SECTOR_MAP.get(sid) or
+                            SECTOR_KEY_MAP.get(yahoo.get("industry", ""), "") or
+                            SECTOR_KEY_MAP.get(INDUSTRY_MAP.get(yahoo.get("industry", ""), ""), "")),
+        "sector_rs":       _sector_rotation.get(
+                            STOCK_SECTOR_MAP.get(sid) or
+                            SECTOR_KEY_MAP.get(yahoo.get("industry", ""), "") or
+                            SECTOR_KEY_MAP.get(INDUSTRY_MAP.get(yahoo.get("industry", ""), ""), ""),
+                            {}).get("rs", None),
         "themes":          themes,
         "warnings":        warnings,
         "price":           yahoo.get("price"),
@@ -2484,6 +2621,13 @@ def main():
     _sector_rotation = fetch_sector_rotation(60, breadth_map=breadth_map)
     time.sleep(1)
 
+    # 大盤相位
+    print("  判斷大盤相位...")
+    global _market_regime
+    _market_regime = fetch_market_regime()
+    print(f"  大盤相位：{_market_regime.get('regime')} | 加權 {_market_regime.get('taiex')}")
+    time.sleep(0.5)
+
     # 月營收 YoY（MOPS，不消耗 FinMind 額度）
     print("  抓取月營收...")
     _revenue_map = fetch_mops_revenue()
@@ -2573,14 +2717,32 @@ def main():
             r.get("rs_trend_stock"),
             r.get("rs_slow_positive"),
         )
+        # rs_pct_val 供 classify_structure 內部使用
+        r["rs_pct_val"] = r.get("rs_pct")
+
+    # 個股結構標籤（多頭/突破準備/回檔/盤整/弱勢）
+    for r in results:
+        sk         = r.get("sector_key", "")
+        sect_phase = _sector_rotation.get(sk, {}).get("sub_phase", "")
+        r["structure"] = classify_structure(r, r.get("stock_phase", "RANGE"), sect_phase)
 
     # 計算買點訊號（型態確定後）
     for r in results:
         if r.get("price"):
+            _cs = r.get("scores", {})
+            _ws = round(
+                _cs.get("chips",       0) * .35 +
+                _cs.get("fundamental", 0) * .30 +
+                _cs.get("volume",      0) * .25 +
+                _cs.get("revenue",     0) * .05 +
+                _cs.get("rs",          0) * .05
+            )
             r["signals"] = calc_signals(
                 r, r.get("chips_raw", {}),
                 r.get("rs_pct", 50),
                 stock_phase=r.get("stock_phase", "RANGE"),
+                market_regime=_market_regime.get("regime", "range"),
+                composite_score=_ws,
             )
 
     # ── 提取原始歷史序列供回測，同時從 results 移除（避免寫入 JSON）
@@ -2665,6 +2827,7 @@ def main():
     os.makedirs("docs", exist_ok=True)
     _output = {
         "updated_at":      datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "market_regime":   _market_regime,
         "sector_rotation": _sector_rotation,
         "total":           len(results),
         "futures_oi":      futures_oi,
