@@ -610,12 +610,17 @@ def backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase="RA
                 elif hit_s:
                     outcome = "loss"; break
 
-            # 記錄第 5 日實際漲跌幅（不管是否解決）
             day5_close = closes[min(i + 5, n - 1)]
             import math
             if math.isnan(day5_close) or day5_close <= 0:
                 continue
-            gain_pct   = round((day5_close - entry) / entry * 100, 2)
+            # gain_pct：win/loss 用確定的出場價計算，inconclusive 用第5日收盤
+            if outcome == "win":
+                gain_pct = round((target - entry) / entry * 100, 2)
+            elif outcome == "loss":
+                gain_pct = round((stop   - entry) / entry * 100, 2)
+            else:
+                gain_pct = round((day5_close - entry) / entry * 100, 2)
 
             results.append({
                 "type":     sig["type"],
@@ -634,11 +639,14 @@ def aggregate_backtest_stats(all_results):
     })
     for r in all_results:
         t = r["type"]
-        buckets[t][r["outcome"] + "s"] = buckets[t].get(r["outcome"] + "s", 0) + 1
         if r["outcome"] == "win":
+            buckets[t]["wins"]     += 1
             buckets[t]["gain_sum"] += r["gain_pct"]
         elif r["outcome"] == "loss":
+            buckets[t]["losses"]   += 1
             buckets[t]["loss_sum"] += r["gain_pct"]
+        else:
+            buckets[t]["inconclusive"] += 1
 
     stats = {}
     for t, b in buckets.items():
