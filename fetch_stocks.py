@@ -1729,13 +1729,17 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
-                rec["status"] = "win";  rec["resolved_date"] = today_str
+                rec["status"]   = "win";  rec["resolved_date"] = today_str
+                rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
             else:
-                rec["status"] = "loss"; rec["resolved_date"] = today_str
+                rec["status"]   = "loss"; rec["resolved_date"] = today_str
+                rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
         elif hit_target:
-            rec["status"] = "win";     rec["resolved_date"] = today_str
+            rec["status"]   = "win";     rec["resolved_date"] = today_str
+            rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
         elif hit_stop:
-            rec["status"] = "loss";    rec["resolved_date"] = today_str
+            rec["status"]   = "loss";    rec["resolved_date"] = today_str
+            rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
         elif days_held >= 20:
             rec["status"] = "expired"; rec["resolved_date"] = today_str
         updated.append(rec)
