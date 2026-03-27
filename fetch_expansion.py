@@ -222,23 +222,22 @@ def _compute_rs_layers(sc, bc):
 
 def _compute_m_a(rs_fast):
     """計算 M（RS動能）、A（M加速度）、RS_trend（5日斜率），均以 Z-score 標準化"""
-    if len(rs_fast) < 10:
+    if len(rs_fast) < 12:
         return None, None, None
     rs_ma10 = sum(rs_fast[-10:]) / 10
     m_raw   = rs_fast[-1] - rs_ma10
 
-    a_raw = None
-    if len(rs_fast) >= 13:
-        m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-                  for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
-        if len(m_tail) >= 2:
-            diffs = [m_tail[i]-m_tail[i-1] for i in range(1, len(m_tail))]
-            a_raw = sum(diffs)/len(diffs) if diffs else None
+    # M 序列（近30天）→ 用 M 自己的分布做 Z-score，避免用 RS μ/σ 導致 m_z 永遠負
+    m_series = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
+                for i in range(max(10, len(rs_fast)-30), len(rs_fast)) if i >= 9]
+    mu_m  = sum(m_series)/len(m_series) if m_series else 0.0
+    std_m = (sum((x-mu_m)**2 for x in m_series)/len(m_series))**0.5 if m_series else 0.0
+    m_z   = (m_raw - mu_m) / std_m if std_m > 0 else 0.0
 
-    mu  = sum(rs_fast)/len(rs_fast)
-    std = (sum((x-mu)**2 for x in rs_fast)/len(rs_fast))**0.5
-    m_z = (m_raw - mu) / std if std > 0 else 0.0
-    a_z = ((a_raw - mu) / std if (a_raw is not None and std > 0) else None)
+    # A = M_today - M_3day_avg（直覺：今日動能相對近3日均值的偏離）
+    m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
+              for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
+    a_z = (m_tail[-1] - sum(m_tail)/len(m_tail)) if len(m_tail) >= 3 else None
 
     if len(rs_fast) >= 5:
         vals   = rs_fast[-5:]
@@ -274,7 +273,7 @@ def fetch_yahoo_data(code):
     ticker = yf.Ticker(f"{code}.TW")
     try:
         hist = ticker.history(period="2y")
-        if hist.empty or len(hist) < 20:
+        if hist.empty or len(hist) < 60:
             return None
 
         closes  = hist["Close"].tolist()
@@ -529,6 +528,14 @@ SIGNAL_LABELS = {
 }
 
 
+def _rolling_vwap(c, h, l, v, i, n):
+    """計算第 i 日往前 n 天的滾動 VWAP（作為 AVWAP proxy）"""
+    s = max(0, i - n + 1)
+    ctv = sum((h[j] + l[j] + c[j]) / 3 * v[j] for j in range(s, i + 1))
+    cv  = sum(v[j] for j in range(s, i + 1))
+    return round(ctv / cv, 2) if cv > 0 else c[i]
+
+
 def calc_yahoo_snapshot(closes, highs, lows, volumes, i):
     """計算歷史第 i 日的技術指標快照（與 fetch_yahoo_data 格式一致）"""
     if i < 20:
@@ -561,6 +568,8 @@ def calc_yahoo_snapshot(closes, highs, lows, volumes, i):
         "low20":         low20,
         "prev_low20":    prev_low20,
         "vol_day_ratio": vol_day_ratio,
+        "avwap_short":   _rolling_vwap(closes, highs, lows, volumes, i, 20),
+        "avwap_swing":   _rolling_vwap(closes, highs, lows, volumes, i, 60),
     }
 
 

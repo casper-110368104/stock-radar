@@ -368,23 +368,22 @@ def _compute_rs_layers(sc, bc):
 
 def _compute_m_a(rs_fast):
     """計算 M（RS動能）、A（M加速度）、RS_trend（5日斜率），均以 Z-score 標準化"""
-    if len(rs_fast) < 10:
+    if len(rs_fast) < 12:
         return None, None, None
     rs_ma10 = sum(rs_fast[-10:]) / 10
     m_raw   = rs_fast[-1] - rs_ma10
 
-    a_raw = None
-    if len(rs_fast) >= 13:
-        m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-                  for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
-        if len(m_tail) >= 2:
-            diffs = [m_tail[i]-m_tail[i-1] for i in range(1, len(m_tail))]
-            a_raw = sum(diffs)/len(diffs) if diffs else None
+    # M 序列（近30天）→ 用 M 自己的分布做 Z-score，避免用 RS μ/σ 導致 m_z 永遠負
+    m_series = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
+                for i in range(max(10, len(rs_fast)-30), len(rs_fast)) if i >= 9]
+    mu_m  = sum(m_series)/len(m_series) if m_series else 0.0
+    std_m = (sum((x-mu_m)**2 for x in m_series)/len(m_series))**0.5 if m_series else 0.0
+    m_z   = (m_raw - mu_m) / std_m if std_m > 0 else 0.0
 
-    mu  = sum(rs_fast)/len(rs_fast)
-    std = (sum((x-mu)**2 for x in rs_fast)/len(rs_fast))**0.5
-    m_z = (m_raw - mu) / std if std > 0 else 0.0
-    a_z = ((a_raw - mu) / std if (a_raw is not None and std > 0) else None)
+    # A = M_today - M_3day_avg（直覺：今日動能相對近3日均值的偏離）
+    m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
+              for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
+    a_z = (m_tail[-1] - sum(m_tail)/len(m_tail)) if len(m_tail) >= 3 else None
 
     if len(rs_fast) >= 5:
         vals   = rs_fast[-5:]
@@ -1577,6 +1576,14 @@ _SIGNAL_LABELS_BT = {
 }
 
 
+def _rolling_vwap(c, h, l, v, i, n):
+    """計算第 i 日往前 n 天的滾動 VWAP（作為 AVWAP proxy）"""
+    s = max(0, i - n + 1)
+    ctv = sum((h[j] + l[j] + c[j]) / 3 * v[j] for j in range(s, i + 1))
+    cv  = sum(v[j] for j in range(s, i + 1))
+    return round(ctv / cv, 2) if cv > 0 else c[i]
+
+
 def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
     """計算歷史第 i 日的技術指標快照"""
     if i < 20:
@@ -1609,6 +1616,8 @@ def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
         "low20":         low20,
         "prev_low20":    prev_low20,
         "vol_day_ratio": vol_day_ratio,
+        "avwap_short":   _rolling_vwap(closes, highs, lows, volumes, i, 20),
+        "avwap_swing":   _rolling_vwap(closes, highs, lows, volumes, i, 60),
     }
 
 
@@ -1822,8 +1831,9 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
     avwap_swing = yahoo.get("avwap_swing")
     avwap_vol   = yahoo.get("avwap_vol")
     avwap_short = yahoo.get("avwap_short")
-    m_z_val     = yahoo.get("m_z")
+    m_z_val      = yahoo.get("m_z")
     rs_trend_val = yahoo.get("rs_trend_stock")
+    sector_rs    = yahoo.get("sector_rs")
 
     if not price:
         return []
@@ -1833,10 +1843,12 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE"):
     _mm_ok    = avwap_vol   is None or price >= avwap_vol
     _short_ok = avwap_short is None or price >= avwap_short
 
-    # BULL 型態動能額外條件（breakout/high_base 需要 m_z>0 且 rs_trend>0）
+    # BULL 型態動能額外條件（Layer 2 嚴格版）：
+    # breakout/high_base 需要 m_z>1（強度超過1σ）且 rs_trend>0 且産業RS>0
     _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 0 and
-        rs_trend_val is not None and rs_trend_val > 0
+        m_z_val is not None and m_z_val > 1 and
+        rs_trend_val is not None and rs_trend_val > 0 and
+        (sector_rs is None or sector_rs > 0)
     )
 
     def _sig(type_, label, strength, entry, stop, reason):
@@ -2308,6 +2320,7 @@ def process_stock(sid, category):
         "category":        category,
         "industry":        yahoo.get("industry", "其他"),
         "sector_key":      STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""),
+        "sector_rs":       _sector_rotation.get(STOCK_SECTOR_MAP.get(sid) or SECTOR_KEY_MAP.get(yahoo.get("industry", ""), ""), {}).get("rs", None),
         "themes":          themes,
         "warnings":        warnings,
         "price":           yahoo.get("price"),
