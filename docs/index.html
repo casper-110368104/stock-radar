@@ -1908,14 +1908,19 @@ function rSignals(s){
     if(sg.atr_stop!=null){
       atrHtml='<div class="sig-px" style="margin-top:4px">ATR停損 <span style="color:var(--red);opacity:.75">$'+sg.atr_stop+'</span></div>';
     }
+    // 觸發進場價
+    var triggerHtml='';
+    if(sg.trigger_price!=null){
+      triggerHtml='<div style="margin-bottom:6px;font-size:12px;font-weight:700">觸發進場 <span style="color:var(--blue)">$'+sg.trigger_price+'</span><span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:6px">收盤參考 $'+sg.entry+'</span></div>';
+    }
     return '<div class="sig-card '+st+'">'+
       '<div class="sig-head">'+
         '<span class="sig-badge '+st+'">'+stLbl+'</span>'+
         '<span class="sig-label">'+sg.label+'</span>'+
       '</div>'+
       '<div class="sig-reason">'+sg.reason+'</div>'+
+      triggerHtml+
       '<div class="sig-prices">'+
-        '<div class="sig-px">進場 <span>$'+sg.entry+'</span></div>'+
         '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
         '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
         '<div class="sig-px">RR <span>1:'+sg.rr+'</span></div>'+
