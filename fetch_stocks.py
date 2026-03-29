@@ -2077,15 +2077,17 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
 
     # 訊號確認數（0~6，越高越可信）
     _chips_score = chips.get("chips_score_val", 0) or 0
-    _confirmations = sum([
-        _chips_score > 60,                            # 籌碼分強
-        rs_pct >= 70,                                 # RS 百分位高
-        (yahoo.get("vol_day_ratio") or 1) > 1.3,     # 量比放大
-        stock_phase == "BULL",                        # 個股多頭
-        market_regime == "bull",                      # 大盤多頭
-        bool(avwap_swing and avwap_vol and avwap_short  # 三條 AVWAP 全對齊
-             and price >= avwap_swing and price >= avwap_vol and price >= avwap_short),
-    ])
+    _conf_flags = [
+        {"lbl": "籌碼偏多",   "sub": "主力籌碼分>60",     "ok": _chips_score > 60},
+        {"lbl": "RS強勢",     "sub": "RS百分位≥70",        "ok": rs_pct >= 70},
+        {"lbl": "量能擴張",   "sub": "日量比>1.3×",        "ok": (yahoo.get("vol_day_ratio") or 1) > 1.3},
+        {"lbl": "個股多頭",   "sub": "個股相位=BULL",       "ok": stock_phase == "BULL"},
+        {"lbl": "大盤多頭",   "sub": "大盤相位=多頭",       "ok": market_regime == "bull"},
+        {"lbl": "均量線對齊", "sub": "三條AVWAP均低於現價", "ok": bool(
+            avwap_swing and avwap_vol and avwap_short
+            and price >= avwap_swing and price >= avwap_vol and price >= avwap_short)},
+    ]
+    _confirmations = sum(f["ok"] for f in _conf_flags)
 
     def _sig(type_, label, strength, entry, stop, reason):
         # 大盤相位篩選（優先）
@@ -2143,7 +2145,8 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
             "risk":          risk,
             "rr":            rr,
             "reason":        _reason,
-            "confirmations": _confirmations,
+            "confirmations":      _confirmations,
+            "confirmation_flags": _conf_flags,
         }
 
     # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70 + 短線節奏健康 + BULL動能確認

@@ -610,7 +610,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
   </div>
   <div id="label-guide" style="display:none;font-size:11px;line-height:1.9;color:var(--text2);padding:10px 2px 4px">
     <b style="color:var(--text1)">三個標籤來自不同分析維度，可同時出現於同一張卡：</b><br><br>
-    <b style="color:var(--text1)">🟣 個股相位</b>（BULL / BULL_PULLBACK / RANGE / BEAR）<br>
+    <b style="color:var(--text1)">🟣 個股相位</b>（BULL / BULL拉回 / RANGE / BEAR）<br>
     來源：個股日RS + 動能M + 加速度A 的百分位排名<br>
     意義：這支股票相對大盤是否持續強勢，BULL = RS加速中<br><br>
     <b style="color:var(--text1)">↑ 結構標籤</b>（主升段 / 突破準備 / 盤整 / 回檔 / 弱勢）<br>
@@ -622,7 +622,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <b style="color:var(--text1)">同時出現的常見組合：</b><br>
     <span style="color:var(--green)">BULL + 主升段✓ + 主升回檔</span> = 個股強、結構健康，但類股稍微回檔，是觀察持續力的關鍵點<br>
     <span style="color:var(--green)">BULL + 突破準備 + 準備噴</span> = 類股與個股同步蓄勢，突破機率最高<br>
-    <span style="color:var(--orange)">BULL_PULLBACK + 回檔 + 主升段</span> = 類股仍強，個股短期RS減速回檔，是最佳回測買點型態<br>
+    <span style="color:var(--orange)">BULL拉回 + 回檔 + 主升段</span> = 類股仍強，個股短期RS減速回檔，是最佳回測買點型態<br>
     <span style="color:var(--text3)">RANGE + 盤整 + 整理觀察</span> = 個股與類股均在觀察等待，暫無明確方向
   </div>
 </div>
@@ -1951,23 +1951,43 @@ function rSignals(s){
   var cards=sigs.map(function(sg){
     var st=sg.strength||'medium';
     var stLbl=LABELS[st]||st;
-    // 確認數（●●●○○）
+    // 確認數 + 可展開明細（●●●○○○）
+    var confId='conf-'+Math.random().toString(36).slice(2,7);
     var confHtml='';
     if(sg.confirmations!=null){
       var dots='';
-      for(var ci=0;ci<sg.confirmations;ci++) dots+='●';
-      for(var ci=sg.confirmations;ci<6;ci++) dots+='○';
-      confHtml='<div style="font-size:10px;color:var(--text3);margin-top:5px">確認 <span style="letter-spacing:1px">'+dots+'</span></div>';
+      for(var ci=0;ci<sg.confirmations;ci++) dots+='<span style="color:var(--green)">●</span>';
+      for(var ci=sg.confirmations;ci<6;ci++) dots+='<span style="opacity:.3">○</span>';
+      var detailRows='';
+      if(sg.confirmation_flags&&sg.confirmation_flags.length){
+        detailRows=sg.confirmation_flags.map(function(f){
+          var ic=f.ok?'✓':'✗',c=f.ok?'var(--green)':'var(--red)';
+          return '<div style="display:flex;align-items:center;gap:5px;padding:2px 0">'+
+            '<span style="color:'+c+';font-size:11px;width:12px;flex-shrink:0">'+ic+'</span>'+
+            '<span style="color:var(--text1)">'+f.lbl+'</span>'+
+            '<span style="color:var(--text3);font-size:9px">（'+f.sub+'）</span>'+
+          '</div>';
+        }).join('');
+      }
+      confHtml='<div style="margin-top:6px">'+
+        '<div style="font-size:10px;color:var(--text3);cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px" onclick="var d=document.getElementById(\''+confId+'\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">'+
+          '共振確認 <span style="letter-spacing:2px">'+dots+'</span>'+
+          '<span style="font-size:9px;opacity:.6">▼</span>'+
+        '</div>'+
+        '<div id="'+confId+'" style="display:none;margin-top:4px;padding:4px 6px;background:var(--bg3);border-radius:6px;font-size:11px">'+
+          detailRows+
+        '</div>'+
+      '</div>';
     }
     // ATR 動態停損
     var atrHtml='';
     if(sg.atr_stop!=null){
-      atrHtml='<div class="sig-px" style="margin-top:4px">ATR停損 <span style="color:var(--red);opacity:.75">$'+sg.atr_stop+'</span></div>';
+      atrHtml='<div class="sig-px" style="margin-top:4px">波動停損(ATR) <span style="color:var(--red);opacity:.75">$'+sg.atr_stop+'</span><span style="font-size:9px;color:var(--text3);margin-left:4px">備選</span></div>';
     }
     // 觸發進場價
     var triggerHtml='';
     if(sg.trigger_price!=null){
-      triggerHtml='<div style="margin-bottom:6px;font-size:12px;font-weight:700">觸發進場 <span style="color:var(--blue)">$'+sg.trigger_price+'</span><span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:6px">收盤參考 $'+sg.entry+'</span></div>';
+      triggerHtml='<div style="margin-bottom:6px;font-size:12px;font-weight:700">明日確認進場 <span style="color:var(--blue)">$'+sg.trigger_price+'</span><span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:6px">今收 $'+sg.entry+'</span></div>';
     }
     return '<div class="sig-card '+st+'">'+
       '<div class="sig-head">'+
@@ -1979,7 +1999,7 @@ function rSignals(s){
       '<div class="sig-prices">'+
         '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
         '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
-        '<div class="sig-px">RR <span>1:'+sg.rr+'</span></div>'+
+        '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
         atrHtml+
       '</div>'+
       confHtml+
