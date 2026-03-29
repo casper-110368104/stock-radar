@@ -486,9 +486,11 @@ def fetch_market_regime():
 
 def classify_structure(yahoo, stock_phase, sector_phase=""):
     """
-    根據 MA 排列、價格位置、RS 相位給出人類可讀的結構標籤。
-    返回：'主升段'/'主升段✓' | '突破準備'/'突破準備✓' | '回檔' | '盤整' | '弱勢'
-    sector_phase 若為類股輪動相位（主升段/準備噴/空頭…）可加分或降級。
+    根據 MA 排列、價格位置、RS 相位、AVWAP 位置給出人類可讀的結構標籤。
+    返回：'主升段'/'主升段✓'/'主升段✓✓' | '突破準備'/'突破準備✓'/'突破準備✓✓'
+          | '回檔' | '盤整' | '弱勢'
+    ✓  = 類股同步主升；✓✓ = 類股同步 + 三條 AVWAP 全對齊（最強確認）
+    AVWAP swing 跌破時，主升/突破降為回檔。
     """
     price  = yahoo.get("price") or 0
     ma5    = yahoo.get("ma5")
@@ -497,6 +499,9 @@ def classify_structure(yahoo, stock_phase, sector_phase=""):
     ma60   = yahoo.get("ma60")
     high20 = yahoo.get("high20")
     rs_pct = yahoo.get("rs_pct_val")  # main() 補入
+    avwap_swing = yahoo.get("avwap_swing")
+    avwap_vol   = yahoo.get("avwap_vol")
+    avwap_short = yahoo.get("avwap_short")
 
     if not price or not ma20:
         return "盤整"
@@ -520,12 +525,27 @@ def classify_structure(yahoo, stock_phase, sector_phase=""):
     else:
         label = "盤整"
 
+    # AVWAP 強化：三條全對齊 → 最強確認（加 ✓✓）；swing 跌破 → 主升/突破降為回檔
+    _avwap_all_ok = (
+        avwap_swing and avwap_vol and avwap_short
+        and price >= avwap_swing and price >= avwap_vol and price >= avwap_short
+    )
+    _avwap_broken = avwap_swing and price < avwap_swing
+
+    if _avwap_broken and label in ("主升段", "突破準備"):
+        label = "回檔"   # 趨勢 AVWAP 跌破，結構降級
+
     # 類股相位加分/降級
     if label in ("主升段", "突破準備"):
         if sector_phase in ("主升段", "準備噴", "主升回檔"):
-            label = label + "✓"   # 類股確認，加 checkmark
+            if _avwap_all_ok:
+                label = label + "✓✓"  # 類股 + AVWAP 三線全對齊，最強
+            else:
+                label = label + "✓"   # 類股確認
         elif sector_phase == "空頭":
-            label = "盤整"         # 類股逆風，降級
+            label = "盤整"             # 類股逆風，降級
+        elif _avwap_all_ok:
+            label = label + "✓"        # 無類股確認但 AVWAP 三線對齊，仍值得標記
 
     return label
 
@@ -2015,7 +2035,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
         "bear":          {"false_breakdown"},
     }.get(market_regime, _base_allowed)
 
-    # 訊號確認數（0~5，越高越可信）
+    # 訊號確認數（0~6，越高越可信）
     _chips_score = chips.get("chips_score_val", 0) or 0
     _confirmations = sum([
         _chips_score > 60,                            # 籌碼分強
@@ -2023,6 +2043,8 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
         (yahoo.get("vol_day_ratio") or 1) > 1.3,     # 量比放大
         stock_phase == "BULL",                        # 個股多頭
         market_regime == "bull",                      # 大盤多頭
+        bool(avwap_swing and avwap_vol and avwap_short  # 三條 AVWAP 全對齊
+             and price >= avwap_swing and price >= avwap_vol and price >= avwap_short),
     ])
 
     def _sig(type_, label, strength, entry, stop, reason):
@@ -2085,7 +2107,12 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
 
     # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70 + 短線節奏健康 + BULL動能確認
     if high20 and price > high20 and vol_day >= 1.5 and rs_pct >= 70 and _short_ok and _bull_momentum:
-        s = _sig("breakout", "突破", "strong", price, low20 or price * 0.95,
+        # stop：取 low20 與 avwap_swing*0.99 較高者（主力成本線為首選停損位）
+        _stop_bk = max(
+            low20 or price * 0.95,
+            round(avwap_swing * 0.99, 2) if avwap_swing else 0,
+        )
+        s = _sig("breakout", "突破", "strong", price, _stop_bk,
                  f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，RS百分位{rs_pct}")
         if s: signals.append(s)
 
@@ -2107,7 +2134,9 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
     if high20 and ma5 and price > ma5 and rs_pct >= 70 and _short_ok and _bull_momentum:
         dist_high20 = (high20 - price) / high20
         if 0 <= dist_high20 <= 0.05:
-            s = _sig("high_base", "強整再突", "medium", price, ma10 or price * 0.95,
+            # stop：優先用 avwap_swing（主力成本線），其次 ma10
+            _stop_hb = round(avwap_swing * 0.99, 2) if avwap_swing else (ma10 or price * 0.95)
+            s = _sig("high_base", "強整再突", "medium", price, _stop_hb,
                      f"緊貼20日高({high20})整理，RS百分位{rs_pct}")
             if s: signals.append(s)
 
@@ -2327,6 +2356,18 @@ def calc_score(chips, yahoo, vol_month_ratio, news_list, lending=None, rs_val=No
         else:                scores["rs"] = 10
     else:
         scores["rs"] = 50  # 無資料給中性分
+
+    # ── AVWAP 對齊 0~15（三條 AVWAP 各貢獻 5 分）────────────────
+    _price_s    = yahoo.get("price") or 0
+    _avwap_s    = yahoo.get("avwap_swing")
+    _avwap_v    = yahoo.get("avwap_vol")
+    _avwap_sh   = yahoo.get("avwap_short")
+    _avwap_cnt  = sum([
+        bool(_avwap_s  and _price_s >= _avwap_s),
+        bool(_avwap_v  and _price_s >= _avwap_v),
+        bool(_avwap_sh and _price_s >= _avwap_sh),
+    ])
+    scores["avwap"] = _avwap_cnt * 5   # 0 / 5 / 10 / 15
 
     # ── 話題 0~100 ───────────────────────────────────────────
     bull  = sum(1 for n in news_list if n.get("sentiment") == "bullish")
@@ -2744,11 +2785,12 @@ def main():
         if r.get("price"):
             _cs = r.get("scores", {})
             _ws = round(
-                _cs.get("chips",       0) * .35 +
-                _cs.get("fundamental", 0) * .30 +
-                _cs.get("volume",      0) * .25 +
+                _cs.get("chips",       0) * .33 +
+                _cs.get("fundamental", 0) * .28 +
+                _cs.get("volume",      0) * .23 +
                 _cs.get("revenue",     0) * .05 +
-                _cs.get("rs",          0) * .05
+                _cs.get("rs",          0) * .05 +
+                min(_cs.get("avwap", 0), 15) / 15 * 100 * .06  # avwap 0~15 → 0~100 → 6%
             )
             r["signals"] = calc_signals(
                 r, r.get("chips_raw", {}),
