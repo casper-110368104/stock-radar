@@ -605,6 +605,26 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <button class="ebtn" id="w-pure-tech"   onclick="setW('pure-tech')">純技術面 100%</button>
     <button class="ebtn" id="w-pure-vol"    onclick="setW('pure-vol')">純量能 100%</button>
   </div>
+  <div class="wgt" style="margin-top:18px;cursor:pointer;user-select:none" onclick="var d=document.getElementById('label-guide');d.style.display=d.style.display==='none'?'block':'none'">
+    📖 標籤說明 <span style="font-size:11px;color:var(--text3);font-weight:400">（點擊展開）</span>
+  </div>
+  <div id="label-guide" style="display:none;font-size:11px;line-height:1.9;color:var(--text2);padding:10px 2px 4px">
+    <b style="color:var(--text1)">三個標籤來自不同分析維度，可同時出現於同一張卡：</b><br><br>
+    <b style="color:var(--text1)">🟣 個股相位</b>（BULL / BULL_PULLBACK / RANGE / BEAR）<br>
+    來源：個股日RS + 動能M + 加速度A 的百分位排名<br>
+    意義：這支股票相對大盤是否持續強勢，BULL = RS加速中<br><br>
+    <b style="color:var(--text1)">↑ 結構標籤</b>（主升段 / 突破準備 / 盤整 / 回檔 / 弱勢）<br>
+    來源：MA5 > MA10 > MA20 均線排列 + AVWAP 支撐位置<br>
+    意義：價格結構形態，主升段✓ = 均線多頭且站上所有AVWAP<br><br>
+    <b style="color:var(--text1)">🏷 類股相位</b>（主升段 / 準備噴 / 主升回檔 / 整理觀察 / 空頭）<br>
+    來源：類股輪動分析（RS/M/A 跨類股百分位 + 寬度）<br>
+    意義：所屬類股目前在哪個輪動階段<br><br>
+    <b style="color:var(--text1)">同時出現的常見組合：</b><br>
+    <span style="color:var(--green)">BULL + 主升段✓ + 主升回檔</span> = 個股強、結構健康，但類股稍微回檔，是觀察持續力的關鍵點<br>
+    <span style="color:var(--green)">BULL + 突破準備 + 準備噴</span> = 類股與個股同步蓄勢，突破機率最高<br>
+    <span style="color:var(--orange)">BULL_PULLBACK + 回檔 + 主升段</span> = 類股仍強，個股短期RS減速回檔，是最佳回測買點型態<br>
+    <span style="color:var(--text3)">RANGE + 盤整 + 整理觀察</span> = 個股與類股均在觀察等待，暫無明確方向
+  </div>
 </div>
 
 <!-- Chips Modal -->

@@ -2010,7 +2010,7 @@ _RR_MAP = {
 }
 
 _ALLOWED_SIGNALS = {
-    "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base", "retest", "ma60_support"},
+    "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base", "retest", "ma60_support", "trend_cont"},
     "BULL_PULLBACK": {"ma_pullback", "retest"},
     "RANGE":         {"ma_pullback", "retest", "ma60_support"},
     "BEAR_WEAK":     {"false_breakdown", "retest"},
@@ -2019,9 +2019,9 @@ _ALLOWED_SIGNALS = {
 
 
 def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
-                 market_regime="range", composite_score=0):
+                 market_regime="range", composite_score=0, structure=""):
     """
-    偵測 6 種技術面買點訊號，回傳 list of dict。
+    偵測 7 種技術面買點訊號，回傳 list of dict。
     每個訊號：{type, label, strength, entry, stop_loss, target, risk, rr, reason,
                atr_stop, confirmations}
     strength: 'strong' | 'medium' | 'weak'
@@ -2126,6 +2126,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
             "ma_pullback":     0.005,
             "retest":          0.005,
             "ma60_support":    0.005,
+            "trend_cont":      0.003,
         }
         _today_high = yahoo.get("high") or entry
         _buf = _TRIGGER_BUFFER.get(type_, 0.003)
@@ -2195,6 +2196,28 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
             s = _sig("ma60_support", "MA60支撐", "weak", price, ma60 * 0.97,
                      f"收盤({price})貼近MA60({ma60})，RS百分位{rs_pct}")
             if s: signals.append(s)
+
+    # 7. 趨勢延伸（Trend Continuation）：主升段 BULL 中繼確認
+    # 適用於突破後進入主升段中段、不在任何其他觸發區的強勢股（如連續上漲但量能一般）
+    _already_covered = any(sig.get("type") in ("breakout", "high_base") for sig in signals)
+    if (not _already_covered
+            and structure in ("主升段", "主升段✓", "主升段✓✓")
+            and stock_phase == "BULL"
+            and rs_pct >= 65
+            and ma5 and ma10 and ma20
+            and ma5 > ma10 > ma20                              # 全均線多頭排列
+            and price > ma5                                    # 站穩 MA5 之上
+            and high20 and price <= high20 * 1.15              # 距20日高不超過15%（避免追高）
+            and (m_z_val is None or m_z_val > 1.0)            # 動能比值 > 1（RS仍高於10日均）
+            and _trend_ok):                                    # AVWAP 趨勢線未跌破
+        _stop_tc = max(
+            round(ma20, 2),
+            round(avwap_swing * 0.99, 2) if avwap_swing else 0,
+        )
+        _m_str = f"{m_z_val:.2f}" if m_z_val is not None else "N/A"
+        s = _sig("trend_cont", "趨勢延伸", "medium", price, _stop_tc,
+                 f"主升段均線多頭排列，RS百分位{rs_pct}，M={_m_str}，已站上所有均線✓")
+        if s: signals.append(s)
 
     return signals
 
@@ -2839,6 +2862,7 @@ def main():
                 stock_phase=r.get("stock_phase", "RANGE"),
                 market_regime=_market_regime.get("regime", "range"),
                 composite_score=_ws,
+                structure=r.get("structure", ""),
             )
 
     # ── 提取原始歷史序列供回測，同時從 results 移除（避免寫入 JSON）
