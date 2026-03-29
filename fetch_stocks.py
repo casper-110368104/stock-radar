@@ -392,64 +392,86 @@ def calc_avwap(closes, highs, lows, volumes, anchor_idx):
 
 
 def _compute_rs_layers(sc, bc):
-    """計算三層 RS 序列（fast=60日、mid=120日、slow=240日）"""
+    """計算個股日 RS 序列 = 個股日報酬 − 基準日報酬（單位：%）
+    與類股輪動 rs_history[s] 同頻率、同單位，可直接比較 M 值。
+    只需 15 個交易日即可計算（原本需 240 日）。
+    """
     n = min(len(sc), len(bc))
     sc, bc = sc[-n:], bc[-n:]
-    fast, mid, slow = [], [], []
-    for t in range(n):
-        if t >= 60:
-            fast.append((sc[t]/sc[t-60]-1) - (bc[t]/bc[t-60]-1))
-        if t >= 120:
-            mid.append((sc[t]/sc[t-120]-1) - (bc[t]/bc[t-120]-1))
-        if t >= 240:
-            slow.append((sc[t]/sc[t-240]-1) - (bc[t]/bc[t-240]-1))
-    return fast, mid, slow
+    daily_rs = []
+    for t in range(1, n):
+        if sc[t-1] > 0 and bc[t-1] > 0:
+            sr = sc[t] / sc[t-1] - 1
+            br = bc[t] / bc[t-1] - 1
+            daily_rs.append(round((sr - br) * 100, 4))  # % 單位，與類股一致
+    return daily_rs
 
 
-def _compute_m_a(rs_fast):
-    """計算 M（RS動能）、A（M加速度）、RS_trend（5日斜率），均以 Z-score 標準化"""
-    if len(rs_fast) < 12:
+def _compute_m_a(daily_rs):
+    """個股動能計算，公式與類股輪動完全一致：
+    M = 日RS / MA10(日RS)   —  >1 表示 RS 高於10日均（動能加速）
+    A = M今日 - avg(M近3日) —  正值代表動能加速，負值代表動能減速
+    rs_trend = 日RS 的5日線性斜率（偵測真正的近期方向）
+    最低需要 13 筆日 RS（10日MA + 3日A計算）。
+
+    對齊確認（與 fetch_sector_rotation 完全一致）：
+      RS      : 日報酬差（%） ✓
+      M       : RS / MA10(RS) ✓
+      A       : M今日 − avg(M近3日) ✓
+      rs_trend: 5日線性斜率 ✓
+    """
+    if len(daily_rs) < 13:
         return None, None, None
-    rs_ma10 = sum(rs_fast[-10:]) / 10
-    m_raw   = rs_fast[-1] - rs_ma10
 
-    # M 序列（近30天）→ 用 M 自己的分布做 Z-score，避免用 RS μ/σ 導致 m_z 永遠負
-    m_series = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-                for i in range(max(10, len(rs_fast)-30), len(rs_fast)) if i >= 9]
-    mu_m  = sum(m_series)/len(m_series) if m_series else 0.0
-    std_m = (sum((x-mu_m)**2 for x in m_series)/len(m_series))**0.5 if m_series else 0.0
-    m_z   = (m_raw - mu_m) / std_m if std_m > 0 else 0.0
+    # M 序列（與類股 m_series 邏輯相同）
+    m_series = []
+    for i in range(9, len(daily_rs)):
+        rs_ma10 = sum(daily_rs[i-9:i+1]) / 10
+        m = (daily_rs[i] / rs_ma10) if rs_ma10 != 0 else 0.0
+        m = max(-5.0, min(5.0, m))   # RS_MA10 趨近零時截斷，避免極端值
+        m_series.append(m)
 
-    # A = M_today - M_3day_avg（直覺：今日動能相對近3日均值的偏離）
-    m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-              for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
-    a_z = (m_tail[-1] - sum(m_tail)/len(m_tail)) if len(m_tail) >= 3 else None
+    if len(m_series) < 3:
+        return None, None, None
 
-    if len(rs_fast) >= 5:
-        vals   = rs_fast[-5:]
-        mu5    = sum(vals)/5
+    m_today = m_series[-1]
+
+    # A = M今日 - avg(M近3日)（與類股 today_a 公式相同）
+    m_tail = m_series[-3:]
+    a = m_tail[-1] - sum(m_tail) / len(m_tail)
+
+    # rs_trend：日RS 5日線性斜率（真正的近期方向，非原本60日窗口斜率）
+    if len(daily_rs) >= 5:
+        vals   = daily_rs[-5:]
+        mu5    = sum(vals) / 5
         x_mean = 2.0
-        num    = sum((i-x_mean)*(vals[i]-mu5) for i in range(5))
-        den    = sum((i-x_mean)**2 for i in range(5))
-        rs_trend = round(num/den, 4) if den else 0.0
+        num    = sum((i - x_mean) * (vals[i] - mu5) for i in range(5))
+        den    = sum((i - x_mean) ** 2 for i in range(5))
+        rs_trend = round(num / den, 4) if den else 0.0
     else:
         rs_trend = None
 
-    return m_z, a_z, rs_trend
+    return round(m_today, 4), round(a, 4), rs_trend
 
 
 def classify_stock_phase(rs_pct, m_z, a_z, rs_trend, rs_slow_positive=None):
-    """依 RS 百分位、M/A Z-score 和 RS_trend 分類個股型態"""
+    """依 RS 百分位、M 比值和 RS_trend 分類個股型態。
+    m_z 現在是 RS/MA10 比值（M）：M > 1.0 = RS 高於10日均（動能加速），M < 1.0 = 動能減速。
+    """
     if rs_pct is None or m_z is None:
         return "RANGE"
     rs_slow_ok = rs_slow_positive if rs_slow_positive is not None else True
-    if rs_pct >= 70 and m_z > 0 and (a_z is None or a_z >= 0) and rs_slow_ok:
+    # BULL：RS強 + 動能加速（M>1）+ 加速度正 + 慢速趨勢為正
+    if rs_pct >= 70 and m_z > 1.0 and (a_z is None or a_z >= 0) and rs_slow_ok:
         return "RANGE" if (rs_trend is not None and rs_trend < 0) else "BULL"
-    if rs_pct >= 60 and m_z < 0 and (a_z is None or a_z < 0) and (rs_trend is None or rs_trend > 0):
+    # BULL_PULLBACK：RS仍強 + 動能減速（M<1）+ 加速度負 + 趨勢仍向上
+    if rs_pct >= 60 and m_z < 1.0 and (a_z is None or a_z < 0) and (rs_trend is None or rs_trend > 0):
         return "BULL_PULLBACK"
-    if rs_pct < 30 and m_z < 0 and (a_z is None or a_z < 0):
+    # BEAR_STRONG：RS弱 + 動能減速 + 加速度負
+    if rs_pct < 30 and m_z < 1.0 and (a_z is None or a_z < 0):
         return "BEAR_STRONG"
-    if rs_pct < 50 and m_z > 0:
+    # BEAR_WEAK：RS偏弱但動能加速（可能底部轉折）
+    if rs_pct < 50 and m_z > 1.0:
         return "BEAR_WEAK"
     return "RANGE"
 
@@ -1165,6 +1187,24 @@ INDUSTRY_MAP = {
     "Staffing & Employment Services": "其他",
     "Security & Protection Services": "其他",
     "Waste Management": "其他",
+    # 連字號變體（Yahoo Finance 有時用 " - " 取代 "—"）
+    "Insurance - Life":                "壽險",
+    "Insurance - Property & Casualty": "保險",
+    "Banks - Diversified":             "銀行",
+    "Banks - Regional":                "銀行",
+    # 其他缺漏
+    "Electronics & Computer Hardware": "電腦及週邊",
+    "Tools & Accessories":             "其他",
+    "Personal Products":               "其他",
+    "Household & Personal Products":   "其他",
+    "Health Information Services":     "生技",
+    "Electronic Gaming & Multimedia":  "其他電子",
+    "Internet Content & Information":  "其他",
+    "Diversified Industrials":         "電機機械",
+    "Specialty Business Services":     "其他",
+    "Gambling":                        "觀光",
+    "Rental & Leasing Services":       "其他",
+    "Shell Companies":                 "其他",
 }
 
 # 中文產業 → sector_rotation key（供前端查詢輪動階段用）
@@ -1970,7 +2010,7 @@ _RR_MAP = {
 }
 
 _ALLOWED_SIGNALS = {
-    "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base", "retest", "ma60_support"},
+    "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base", "retest", "ma60_support", "trend_cont"},
     "BULL_PULLBACK": {"ma_pullback", "retest"},
     "RANGE":         {"ma_pullback", "retest", "ma60_support"},
     "BEAR_WEAK":     {"false_breakdown", "retest"},
@@ -1979,9 +2019,9 @@ _ALLOWED_SIGNALS = {
 
 
 def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
-                 market_regime="range", composite_score=0):
+                 market_regime="range", composite_score=0, structure=""):
     """
-    偵測 6 種技術面買點訊號，回傳 list of dict。
+    偵測 7 種技術面買點訊號，回傳 list of dict。
     每個訊號：{type, label, strength, entry, stop_loss, target, risk, rr, reason,
                atr_stop, confirmations}
     strength: 'strong' | 'medium' | 'weak'
@@ -2018,9 +2058,9 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
     _short_ok = avwap_short is None or price >= avwap_short
 
     # BULL 型態動能額外條件（Layer 2 嚴格版）：
-    # breakout/high_base 需要 m_z>1（強度超過1σ）且 rs_trend>0 且産業RS>0
+    # breakout/high_base 需要 M>1.2（RS 明顯高於10日均）且 rs_trend>0 且産業RS>0
     _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 1 and
+        m_z_val is not None and m_z_val > 1.2 and
         rs_trend_val is not None and rs_trend_val > 0 and
         (sector_rs is None or sector_rs > 0)
     )
@@ -2086,6 +2126,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
             "ma_pullback":     0.005,
             "retest":          0.005,
             "ma60_support":    0.005,
+            "trend_cont":      0.003,
         }
         _today_high = yahoo.get("high") or entry
         _buf = _TRIGGER_BUFFER.get(type_, 0.003)
@@ -2116,18 +2157,26 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
                  f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，RS百分位{rs_pct}")
         if s: signals.append(s)
 
-    # 2. 假跌破（False Breakdown）：昨收 < prev_low20 且今收 > low20
-    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20:
-        s = _sig("false_breakdown", "假跌破", "strong", price, low20 * 0.98,
-                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復")
+    # 2. 假跌破（False Breakdown）：昨收 < prev_low20 且今收 > low20 + RS≥50
+    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20 and rs_pct >= 50:
+        s = _sig("false_breakdown", "假跌破", "medium", price, low20 * 0.98,
+                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復，RS百分位{rs_pct}")
         if s: signals.append(s)
 
-    # 3. 均線回測（MA Pullback）：多頭排列 + 收盤距MA20在3%以內
-    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
+    # 3. 均線回測 A（起漲型）：RS 40~60 + RS剛翻正 + AVWAP趨勢線守住
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0 and _trend_ok:
         dist_ma20 = (price - ma20) / ma20
-        if 0 <= dist_ma20 <= 0.03:
-            s = _sig("ma_pullback", "均線回測", "medium", price, ma20,
-                     f"均線多頭排列，收盤({price})回測MA20({ma20})")
+        if 0 <= dist_ma20 <= 0.03 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
+            s = _sig("ma_pullback", "均線回測(起漲型)", "weak", price, ma20,
+                     f"均線多頭，RS百分位{rs_pct}(40~60)，RS斜率剛翻正，AVWAP趨勢線守住")
+            if s: signals.append(s)
+
+    # 3b. 均線回測 B（主升型）：RS ≥ 60 + AVWAP趨勢線守住
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0 and _trend_ok:
+        dist_ma20 = (price - ma20) / ma20
+        if 0 <= dist_ma20 <= 0.03 and rs_pct >= 60:
+            s = _sig("ma_pullback", "均線回測(主升型)", "medium", price, ma20,
+                     f"均線多頭，RS百分位{rs_pct}(≥60)，AVWAP趨勢線守住")
             if s: signals.append(s)
 
     # 4. 強整再突（High Base Breakout）：收盤距20日高≤5% + 收盤>MA5 + RS百分位≥70 + 短線節奏健康 + BULL動能確認
@@ -2140,21 +2189,51 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
                      f"緊貼20日高({high20})整理，RS百分位{rs_pct}")
             if s: signals.append(s)
 
-    # 5. 回測（Retest）：收盤距MA10在2%以內 + 量比<1 + 收盤>MA20（縮量回測均線）
-    if ma10 and ma20 and price > ma20:
+    # 5. 縮量回測 A（起漲型）：RS 40~60 + RS剛翻正 + AVWAP趨勢線守住 + 縮量
+    if ma10 and ma20 and price > ma20 and _trend_ok:
         dist_ma10 = abs(price - ma10) / ma10
-        if dist_ma10 <= 0.02 and vol_day < 1.0:
-            s = _sig("retest", "回測", "medium", price, ma20,
-                     f"縮量({vol_day:.1f}x)回測MA10({ma10})")
+        if dist_ma10 <= 0.02 and vol_day < 1.0 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
+            s = _sig("retest", "縮量回測(起漲型)", "weak", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10({ma10})，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
             if s: signals.append(s)
 
-    # 6. MA60支撐（MA60 Support）：收盤距MA60在2%以內 + RS百分位≥50
-    if ma60 and rs_pct >= 50:
+    # 5b. 縮量回測 B（主升型）：RS ≥ 60 + AVWAP趨勢線守住 + 縮量
+    if ma10 and ma20 and price > ma20 and _trend_ok:
+        dist_ma10 = abs(price - ma10) / ma10
+        if dist_ma10 <= 0.02 and vol_day < 1.0 and rs_pct >= 60:
+            s = _sig("retest", "縮量回測(主升型)", "medium", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10({ma10})，RS百分位{rs_pct}(≥60)")
+            if s: signals.append(s)
+
+    # 6. MA60支撐（MA60 Support）：收盤距MA60在2%以內 + RS≥55 + AVWAP趨勢線守住
+    if ma60 and rs_pct >= 55 and _trend_ok:
         dist_ma60 = (price - ma60) / ma60
         if 0 <= dist_ma60 <= 0.02:
             s = _sig("ma60_support", "MA60支撐", "weak", price, ma60 * 0.97,
                      f"收盤({price})貼近MA60({ma60})，RS百分位{rs_pct}")
             if s: signals.append(s)
+
+    # 7. 趨勢延伸（Trend Continuation）：主升段 BULL 中繼確認
+    # 適用於突破後進入主升段中段、不在任何其他觸發區的強勢股（如連續上漲但量能一般）
+    _already_covered = any(sig.get("type") in ("breakout", "high_base") for sig in signals)
+    if (not _already_covered
+            and structure in ("主升段", "主升段✓", "主升段✓✓")
+            and stock_phase == "BULL"
+            and rs_pct >= 65
+            and ma5 and ma10 and ma20
+            and ma5 > ma10 > ma20                              # 全均線多頭排列
+            and price > ma5                                    # 站穩 MA5 之上
+            and high20 and price <= high20 * 1.15              # 距20日高不超過15%（避免追高）
+            and (m_z_val is None or m_z_val > 1.0)            # 動能比值 > 1（RS仍高於10日均）
+            and _trend_ok):                                    # AVWAP 趨勢線未跌破
+        _stop_tc = max(
+            round(ma20, 2),
+            round(avwap_swing * 0.99, 2) if avwap_swing else 0,
+        )
+        _m_str = f"{m_z_val:.2f}" if m_z_val is not None else "N/A"
+        s = _sig("trend_cont", "趨勢延伸", "medium", price, _stop_tc,
+                 f"主升段均線多頭排列，RS百分位{rs_pct}，M={_m_str}，已站上所有均線✓")
+        if s: signals.append(s)
 
     return signals
 
@@ -2520,12 +2599,13 @@ def process_stock(sid, category):
         except Exception:
             pass
 
-    # RS 三層序列 + M/A/RS_trend
+    # RS 日報酬差序列 + M/A/RS_trend（與類股輪動同頻率、同單位）
     if stock_closes and bm_closes:
         try:
-            rs_fast, _rs_mid, rs_slow = _compute_rs_layers(stock_closes, bm_closes)
-            m_z, a_z, rs_trend_stock = _compute_m_a(rs_fast)
-            rs_slow_positive = (rs_slow[-1] > 0) if rs_slow else None
+            daily_rs = _compute_rs_layers(stock_closes, bm_closes)
+            m_z, a_z, rs_trend_stock = _compute_m_a(daily_rs)
+            # 慢速趨勢：近30日日RS均值是否 > 0（對應原來的240日累積方向）
+            rs_slow_positive = (sum(daily_rs[-30:]) / 30 > 0) if len(daily_rs) >= 30 else None
         except Exception:
             pass
 
@@ -2798,6 +2878,7 @@ def main():
                 stock_phase=r.get("stock_phase", "RANGE"),
                 market_regime=_market_regime.get("regime", "range"),
                 composite_score=_ws,
+                structure=r.get("structure", ""),
             )
 
     # ── 提取原始歷史序列供回測，同時從 results 移除（避免寫入 JSON）
