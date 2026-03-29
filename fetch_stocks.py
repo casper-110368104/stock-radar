@@ -392,64 +392,86 @@ def calc_avwap(closes, highs, lows, volumes, anchor_idx):
 
 
 def _compute_rs_layers(sc, bc):
-    """計算三層 RS 序列（fast=60日、mid=120日、slow=240日）"""
+    """計算個股日 RS 序列 = 個股日報酬 − 基準日報酬（單位：%）
+    與類股輪動 rs_history[s] 同頻率、同單位，可直接比較 M 值。
+    只需 15 個交易日即可計算（原本需 240 日）。
+    """
     n = min(len(sc), len(bc))
     sc, bc = sc[-n:], bc[-n:]
-    fast, mid, slow = [], [], []
-    for t in range(n):
-        if t >= 60:
-            fast.append((sc[t]/sc[t-60]-1) - (bc[t]/bc[t-60]-1))
-        if t >= 120:
-            mid.append((sc[t]/sc[t-120]-1) - (bc[t]/bc[t-120]-1))
-        if t >= 240:
-            slow.append((sc[t]/sc[t-240]-1) - (bc[t]/bc[t-240]-1))
-    return fast, mid, slow
+    daily_rs = []
+    for t in range(1, n):
+        if sc[t-1] > 0 and bc[t-1] > 0:
+            sr = sc[t] / sc[t-1] - 1
+            br = bc[t] / bc[t-1] - 1
+            daily_rs.append(round((sr - br) * 100, 4))  # % 單位，與類股一致
+    return daily_rs
 
 
-def _compute_m_a(rs_fast):
-    """計算 M（RS動能）、A（M加速度）、RS_trend（5日斜率），均以 Z-score 標準化"""
-    if len(rs_fast) < 12:
+def _compute_m_a(daily_rs):
+    """個股動能計算，公式與類股輪動完全一致：
+    M = 日RS / MA10(日RS)   —  >1 表示 RS 高於10日均（動能加速）
+    A = M今日 - avg(M近3日) —  正值代表動能加速，負值代表動能減速
+    rs_trend = 日RS 的5日線性斜率（偵測真正的近期方向）
+    最低需要 13 筆日 RS（10日MA + 3日A計算）。
+
+    對齊確認（與 fetch_sector_rotation 完全一致）：
+      RS      : 日報酬差（%） ✓
+      M       : RS / MA10(RS) ✓
+      A       : M今日 − avg(M近3日) ✓
+      rs_trend: 5日線性斜率 ✓
+    """
+    if len(daily_rs) < 13:
         return None, None, None
-    rs_ma10 = sum(rs_fast[-10:]) / 10
-    m_raw   = rs_fast[-1] - rs_ma10
 
-    # M 序列（近30天）→ 用 M 自己的分布做 Z-score，避免用 RS μ/σ 導致 m_z 永遠負
-    m_series = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-                for i in range(max(10, len(rs_fast)-30), len(rs_fast)) if i >= 9]
-    mu_m  = sum(m_series)/len(m_series) if m_series else 0.0
-    std_m = (sum((x-mu_m)**2 for x in m_series)/len(m_series))**0.5 if m_series else 0.0
-    m_z   = (m_raw - mu_m) / std_m if std_m > 0 else 0.0
+    # M 序列（與類股 m_series 邏輯相同）
+    m_series = []
+    for i in range(9, len(daily_rs)):
+        rs_ma10 = sum(daily_rs[i-9:i+1]) / 10
+        m = (daily_rs[i] / rs_ma10) if rs_ma10 != 0 else 0.0
+        m = max(-5.0, min(5.0, m))   # RS_MA10 趨近零時截斷，避免極端值
+        m_series.append(m)
 
-    # A = M_today - M_3day_avg（直覺：今日動能相對近3日均值的偏離）
-    m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-              for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
-    a_z = (m_tail[-1] - sum(m_tail)/len(m_tail)) if len(m_tail) >= 3 else None
+    if len(m_series) < 3:
+        return None, None, None
 
-    if len(rs_fast) >= 5:
-        vals   = rs_fast[-5:]
-        mu5    = sum(vals)/5
+    m_today = m_series[-1]
+
+    # A = M今日 - avg(M近3日)（與類股 today_a 公式相同）
+    m_tail = m_series[-3:]
+    a = m_tail[-1] - sum(m_tail) / len(m_tail)
+
+    # rs_trend：日RS 5日線性斜率（真正的近期方向，非原本60日窗口斜率）
+    if len(daily_rs) >= 5:
+        vals   = daily_rs[-5:]
+        mu5    = sum(vals) / 5
         x_mean = 2.0
-        num    = sum((i-x_mean)*(vals[i]-mu5) for i in range(5))
-        den    = sum((i-x_mean)**2 for i in range(5))
-        rs_trend = round(num/den, 4) if den else 0.0
+        num    = sum((i - x_mean) * (vals[i] - mu5) for i in range(5))
+        den    = sum((i - x_mean) ** 2 for i in range(5))
+        rs_trend = round(num / den, 4) if den else 0.0
     else:
         rs_trend = None
 
-    return m_z, a_z, rs_trend
+    return round(m_today, 4), round(a, 4), rs_trend
 
 
 def classify_stock_phase(rs_pct, m_z, a_z, rs_trend, rs_slow_positive=None):
-    """依 RS 百分位、M/A Z-score 和 RS_trend 分類個股型態"""
+    """依 RS 百分位、M 比值和 RS_trend 分類個股型態。
+    m_z 現在是 RS/MA10 比值（M）：M > 1.0 = RS 高於10日均（動能加速），M < 1.0 = 動能減速。
+    """
     if rs_pct is None or m_z is None:
         return "RANGE"
     rs_slow_ok = rs_slow_positive if rs_slow_positive is not None else True
-    if rs_pct >= 70 and m_z > 0 and (a_z is None or a_z >= 0) and rs_slow_ok:
+    # BULL：RS強 + 動能加速（M>1）+ 加速度正 + 慢速趨勢為正
+    if rs_pct >= 70 and m_z > 1.0 and (a_z is None or a_z >= 0) and rs_slow_ok:
         return "RANGE" if (rs_trend is not None and rs_trend < 0) else "BULL"
-    if rs_pct >= 60 and m_z < 0 and (a_z is None or a_z < 0) and (rs_trend is None or rs_trend > 0):
+    # BULL_PULLBACK：RS仍強 + 動能減速（M<1）+ 加速度負 + 趨勢仍向上
+    if rs_pct >= 60 and m_z < 1.0 and (a_z is None or a_z < 0) and (rs_trend is None or rs_trend > 0):
         return "BULL_PULLBACK"
-    if rs_pct < 30 and m_z < 0 and (a_z is None or a_z < 0):
+    # BEAR_STRONG：RS弱 + 動能減速 + 加速度負
+    if rs_pct < 30 and m_z < 1.0 and (a_z is None or a_z < 0):
         return "BEAR_STRONG"
-    if rs_pct < 50 and m_z > 0:
+    # BEAR_WEAK：RS偏弱但動能加速（可能底部轉折）
+    if rs_pct < 50 and m_z > 1.0:
         return "BEAR_WEAK"
     return "RANGE"
 
@@ -2018,9 +2040,9 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
     _short_ok = avwap_short is None or price >= avwap_short
 
     # BULL 型態動能額外條件（Layer 2 嚴格版）：
-    # breakout/high_base 需要 m_z>1（強度超過1σ）且 rs_trend>0 且産業RS>0
+    # breakout/high_base 需要 M>1.2（RS 明顯高於10日均）且 rs_trend>0 且産業RS>0
     _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 1 and
+        m_z_val is not None and m_z_val > 1.2 and
         rs_trend_val is not None and rs_trend_val > 0 and
         (sector_rs is None or sector_rs > 0)
     )
@@ -2520,12 +2542,13 @@ def process_stock(sid, category):
         except Exception:
             pass
 
-    # RS 三層序列 + M/A/RS_trend
+    # RS 日報酬差序列 + M/A/RS_trend（與類股輪動同頻率、同單位）
     if stock_closes and bm_closes:
         try:
-            rs_fast, _rs_mid, rs_slow = _compute_rs_layers(stock_closes, bm_closes)
-            m_z, a_z, rs_trend_stock = _compute_m_a(rs_fast)
-            rs_slow_positive = (rs_slow[-1] > 0) if rs_slow else None
+            daily_rs = _compute_rs_layers(stock_closes, bm_closes)
+            m_z, a_z, rs_trend_stock = _compute_m_a(daily_rs)
+            # 慢速趨勢：近30日日RS均值是否 > 0（對應原來的240日累積方向）
+            rs_slow_positive = (sum(daily_rs[-30:]) / 30 > 0) if len(daily_rs) >= 30 else None
         except Exception:
             pass
 
