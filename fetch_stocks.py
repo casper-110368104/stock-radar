@@ -2157,18 +2157,26 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
                  f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，RS百分位{rs_pct}")
         if s: signals.append(s)
 
-    # 2. 假跌破（False Breakdown）：昨收 < prev_low20 且今收 > low20
-    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20:
-        s = _sig("false_breakdown", "假跌破", "strong", price, low20 * 0.98,
-                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復")
+    # 2. 假跌破（False Breakdown）：昨收 < prev_low20 且今收 > low20 + RS≥50
+    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20 and rs_pct >= 50:
+        s = _sig("false_breakdown", "假跌破", "medium", price, low20 * 0.98,
+                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復，RS百分位{rs_pct}")
         if s: signals.append(s)
 
-    # 3. 均線回測（MA Pullback）：多頭排列 + 收盤距MA20在3%以內
-    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
+    # 3. 均線回測 A（起漲型）：RS 40~60 + RS剛翻正 + AVWAP趨勢線守住
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0 and _trend_ok:
         dist_ma20 = (price - ma20) / ma20
-        if 0 <= dist_ma20 <= 0.03:
-            s = _sig("ma_pullback", "均線回測", "medium", price, ma20,
-                     f"均線多頭排列，收盤({price})回測MA20({ma20})")
+        if 0 <= dist_ma20 <= 0.03 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
+            s = _sig("ma_pullback", "均線回測(起漲型)", "weak", price, ma20,
+                     f"均線多頭，RS百分位{rs_pct}(40~60)，RS斜率剛翻正，AVWAP趨勢線守住")
+            if s: signals.append(s)
+
+    # 3b. 均線回測 B（主升型）：RS ≥ 60 + AVWAP趨勢線守住
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0 and _trend_ok:
+        dist_ma20 = (price - ma20) / ma20
+        if 0 <= dist_ma20 <= 0.03 and rs_pct >= 60:
+            s = _sig("ma_pullback", "均線回測(主升型)", "medium", price, ma20,
+                     f"均線多頭，RS百分位{rs_pct}(≥60)，AVWAP趨勢線守住")
             if s: signals.append(s)
 
     # 4. 強整再突（High Base Breakout）：收盤距20日高≤5% + 收盤>MA5 + RS百分位≥70 + 短線節奏健康 + BULL動能確認
@@ -2181,16 +2189,24 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
                      f"緊貼20日高({high20})整理，RS百分位{rs_pct}")
             if s: signals.append(s)
 
-    # 5. 回測（Retest）：收盤距MA10在2%以內 + 量比<1 + 收盤>MA20（縮量回測均線）
-    if ma10 and ma20 and price > ma20:
+    # 5. 縮量回測 A（起漲型）：RS 40~60 + RS剛翻正 + AVWAP趨勢線守住 + 縮量
+    if ma10 and ma20 and price > ma20 and _trend_ok:
         dist_ma10 = abs(price - ma10) / ma10
-        if dist_ma10 <= 0.02 and vol_day < 1.0:
-            s = _sig("retest", "回測", "medium", price, ma20,
-                     f"縮量({vol_day:.1f}x)回測MA10({ma10})")
+        if dist_ma10 <= 0.02 and vol_day < 1.0 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
+            s = _sig("retest", "縮量回測(起漲型)", "weak", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10({ma10})，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
             if s: signals.append(s)
 
-    # 6. MA60支撐（MA60 Support）：收盤距MA60在2%以內 + RS百分位≥50
-    if ma60 and rs_pct >= 50:
+    # 5b. 縮量回測 B（主升型）：RS ≥ 60 + AVWAP趨勢線守住 + 縮量
+    if ma10 and ma20 and price > ma20 and _trend_ok:
+        dist_ma10 = abs(price - ma10) / ma10
+        if dist_ma10 <= 0.02 and vol_day < 1.0 and rs_pct >= 60:
+            s = _sig("retest", "縮量回測(主升型)", "medium", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10({ma10})，RS百分位{rs_pct}(≥60)")
+            if s: signals.append(s)
+
+    # 6. MA60支撐（MA60 Support）：收盤距MA60在2%以內 + RS≥55 + AVWAP趨勢線守住
+    if ma60 and rs_pct >= 55 and _trend_ok:
         dist_ma60 = (price - ma60) / ma60
         if 0 <= dist_ma60 <= 0.02:
             s = _sig("ma60_support", "MA60支撐", "weak", price, ma60 * 0.97,
