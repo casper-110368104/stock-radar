@@ -861,12 +861,14 @@ function _phaseBadge(phase){
 
 function _structBadge(struct){
   var cfg={
-    '主升段':    {bg:'rgba(0,200,150,.15)',  c:'var(--green)',  icon:'↑'},
-    '主升段✓':   {bg:'rgba(0,200,150,.28)',  c:'var(--green)',  icon:'↑'},
-    '突破準備':  {bg:'rgba(74,158,255,.15)', c:'var(--blue)',   icon:'⬆'},
-    '突破準備✓': {bg:'rgba(74,158,255,.28)', c:'var(--blue)',   icon:'⬆'},
-    '回檔':      {bg:'rgba(255,159,67,.12)', c:'var(--orange)', icon:'↘'},
-    '盤整':      {bg:'rgba(120,120,120,.12)',c:'var(--text3)',  icon:'─'},
+    '主升段':      {bg:'rgba(0,200,150,.15)',  c:'var(--green)',  icon:'↑'},
+    '主升段✓':     {bg:'rgba(0,200,150,.28)',  c:'var(--green)',  icon:'↑'},
+    '主升段✓✓':    {bg:'rgba(0,200,150,.42)',  c:'var(--green)',  icon:'↑'},
+    '突破準備':    {bg:'rgba(74,158,255,.15)', c:'var(--blue)',   icon:'⬆'},
+    '突破準備✓':   {bg:'rgba(74,158,255,.28)', c:'var(--blue)',   icon:'⬆'},
+    '突破準備✓✓':  {bg:'rgba(74,158,255,.42)', c:'var(--blue)',   icon:'⬆'},
+    '回檔':        {bg:'rgba(255,159,67,.12)', c:'var(--orange)', icon:'↘'},
+    '盤整':        {bg:'rgba(120,120,120,.12)',c:'var(--text3)',  icon:'─'},
     '弱勢':      {bg:'rgba(255,92,92,.15)',  c:'var(--red)',    icon:'↓'},
   };
   var v=cfg[struct];
@@ -1900,7 +1902,7 @@ function rSignals(s){
     if(sg.confirmations!=null){
       var dots='';
       for(var ci=0;ci<sg.confirmations;ci++) dots+='●';
-      for(var ci=sg.confirmations;ci<5;ci++) dots+='○';
+      for(var ci=sg.confirmations;ci<6;ci++) dots+='○';
       confHtml='<div style="font-size:10px;color:var(--text3);margin-top:5px">確認 <span style="letter-spacing:1px">'+dots+'</span></div>';
     }
     // ATR 動態停損
