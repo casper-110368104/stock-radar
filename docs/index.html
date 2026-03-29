@@ -648,6 +648,17 @@ var IND_S={'半導體業':'半導體','電腦及週邊設備業':'電腦週邊',
   '電機機械':'電機','金融業':'金融','銀行業':'銀行','保險業':'保險','證券業':'證券',
   '鋼鐵工業':'鋼鐵','航運業':'航運','塑膠工業':'塑膠','化學工業':'化學','食品工業':'食品',
   '紡織纖維':'紡織','建材營造':'建材','貿易百貨':'貿易','油電燃氣業':'油電','生技醫療業':'生技醫療','觀光餐旅':'觀光'};
+// 補充：INDUSTRY_MAP 翻譯出的中文名稱 → 顯示縮寫（不在 IND_S 的類別）
+var IND_EXTRA={'壽險':'壽險','保險':'保險','銀行':'銀行','金融控股':'金融控股','投信投顧':'投信',
+  '證券':'證券','醫療器材':'醫療器材','生技':'生技','汽車零組件':'汽車','汽車':'汽車',
+  '物流':'物流','電商':'電商','綠能':'綠能','太陽能':'太陽能','電器電纜':'電器電纜',
+  '橡膠塑膠':'橡膠塑膠','零售百貨':'零售百貨','百貨':'百貨','零售':'零售',
+  '餐飲':'餐飲','觀光飯店':'觀光','觀光':'觀光','造紙':'造紙','水泥':'水泥',
+  '建材':'建材','其他電子':'其他電子','電子設備':'電子設備','消費性電子':'消費電子',
+  '媒體':'媒體','娛樂':'娛樂','食品':'食品','化學工業':'化學','軟體':'軟體',
+  '電信服務':'電信','航空':'航空','鋼鐵':'鋼鐵','紡織':'紡織','其他':'其他',
+  '金屬礦業':'礦業','公用事業':'公用','電腦及週邊':'電腦週邊','電機機械':'電機',
+  '電子零組件':'電子零組件','通信網路':'通訊網路','半導體':'半導體','半導體設備':'半導體設備'};
 
 var WS={
   'default'  :{c:.30,f:.25,tech:.15,r:.10,v:.15,s:.05,t:.00},
@@ -942,9 +953,13 @@ function rExpCard(s,pfx){
     '<div class="exp-vol">'+volTag+'　MA5 '+(s.ma5||'-')+'　MA20 '+(s.ma20||'-')+'　MA60 '+(s.ma60||'-')+
     (function(){
       var av=[];var p=s.price;
-      if(s.avwap_swing!=null) av.push('起漲 <span style="color:'+(p>=s.avwap_swing?'var(--green)':'var(--red)')+'">$'+s.avwap_swing+'</span>');
-      if(s.avwap_vol  !=null) av.push('主力 <span style="color:'+(p>=s.avwap_vol  ?'var(--green)':'var(--red)')+'">$'+s.avwap_vol  +'</span>');
-      if(s.avwap_short!=null) av.push('短線 <span style="color:'+(p>=s.avwap_short?'var(--green)':'var(--red)')+'">$'+s.avwap_short+'</span>');
+      function _avItem(lbl,val){
+        var d=(p-val)/val*100,c=d>=0?'var(--green)':'var(--red)',sg=d>=0?'+':'';
+        return lbl+' <span style="color:'+c+'">$'+val+'<span style="font-size:9px;opacity:.8"> ('+sg+d.toFixed(1)+'%)</span></span>';
+      }
+      if(s.avwap_swing!=null) av.push(_avItem('趨勢',s.avwap_swing));
+      if(s.avwap_vol  !=null) av.push(_avItem('主力',s.avwap_vol));
+      if(s.avwap_short!=null) av.push(_avItem('短線',s.avwap_short));
       return av.length?'<br><span style="font-size:10px;color:var(--text3)">AVWAP　</span>'+av.join('　'):'';
     }())+
     '</div>'+
@@ -1868,7 +1883,26 @@ function rVol(s){
       (s.ma60?'<div class="ma60-row"><span class="ma60-lbl">MA60</span><span class="ma60-val">$'+s.ma60.toFixed(1)+'</span><span class="ma60-badge '+(s.above_ma60?'pass':'fail')+'">'+(s.above_ma60?'✅ 站上':'⚠️ 跌破')+'</span></div>':'')+
     '</div>';
   }
-  return vh+rh+th;
+  // AVWAP 支撐位
+  var avwapH='',avArr=[];
+  if(s.avwap_swing!=null){var d=(s.price-s.avwap_swing)/s.avwap_swing*100;avArr.push({lbl:'趨勢AVWAP',sub:'60日低點起錨',val:s.avwap_swing,dist:d});}
+  if(s.avwap_vol  !=null){var d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avArr.push({lbl:'主力AVWAP',sub:'20日最大量起錨',val:s.avwap_vol,  dist:d});}
+  if(s.avwap_short!=null){var d=(s.price-s.avwap_short)/s.avwap_short*100;avArr.push({lbl:'短線AVWAP',sub:'近期低點起錨', val:s.avwap_short,dist:d});}
+  if(avArr.length){
+    var acols=avArr.map(function(a){
+      var ac=a.dist>=0?'var(--green)':'var(--red)',asign=a.dist>=0?'+':'';
+      return '<div class="tech-box">'+
+        '<div class="tech-lbl">'+a.lbl+'</div>'+
+        '<div class="tech-val" style="color:'+ac+'">$'+a.val.toFixed(1)+'</div>'+
+        '<div class="tech-sub" style="color:'+ac+'">'+asign+a.dist.toFixed(1)+'%　'+a.sub+'</div>'+
+      '</div>';
+    }).join('');
+    avwapH='<div class="tech-sec" style="margin-top:10px">'+
+      '<div class="tech-title">📍 AVWAP 支撐位</div>'+
+      '<div class="tech-grid" style="grid-template-columns:repeat('+avArr.length+',1fr)">'+acols+'</div>'+
+    '</div>';
+  }
+  return vh+rh+th+avwapH;
 }
 function rNews(news){
   if(!news||!news.length)return '<div style="font-size:13px;color:var(--text3)">暫無相關新聞</div>';
@@ -1954,7 +1988,8 @@ function buildFGrid(mode){
     var cnt={};stocks.forEach(function(s){var ind=s.industry||'其他';cnt[ind]=(cnt[ind]||0)+1;});
     var sr=Object.entries(cnt).sort(function(a,b){return b[1]-a[1];});
     var h='<button class="fi fi-all'+(curInd==='all'?' active':'')+'" onclick="setInd(\'all\')">全部產業<span class="fi-cnt">'+stocks.length+'</span></button>';
-    sr.forEach(function(e){var ind=e[0],c=e[1],lb=IND_S[ind]||ind.replace('業','').replace('工業','');
+    sr.forEach(function(e){var ind=e[0],c=e[1];
+      var lb=IND_S[ind]||IND_EXTRA[ind]||(ind.length>8?ind.slice(0,6)+'…':ind.replace('業','').replace('工業',''));
       h+='<button class="fi'+(curInd===ind?' active':'')+'" onclick="setInd(\''+ind+'\')">'+lb+'<span class="fi-cnt">'+c+'</span></button>';});
     g.innerHTML=h;
   } else {

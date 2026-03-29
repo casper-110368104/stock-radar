@@ -1187,6 +1187,24 @@ INDUSTRY_MAP = {
     "Staffing & Employment Services": "其他",
     "Security & Protection Services": "其他",
     "Waste Management": "其他",
+    # 連字號變體（Yahoo Finance 有時用 " - " 取代 "—"）
+    "Insurance - Life":                "壽險",
+    "Insurance - Property & Casualty": "保險",
+    "Banks - Diversified":             "銀行",
+    "Banks - Regional":                "銀行",
+    # 其他缺漏
+    "Electronics & Computer Hardware": "電腦及週邊",
+    "Tools & Accessories":             "其他",
+    "Personal Products":               "其他",
+    "Household & Personal Products":   "其他",
+    "Health Information Services":     "生技",
+    "Electronic Gaming & Multimedia":  "其他電子",
+    "Internet Content & Information":  "其他",
+    "Diversified Industrials":         "電機機械",
+    "Specialty Business Services":     "其他",
+    "Gambling":                        "觀光",
+    "Rental & Leasing Services":       "其他",
+    "Shell Companies":                 "其他",
 }
 
 # 中文產業 → sector_rotation key（供前端查詢輪動階段用）
