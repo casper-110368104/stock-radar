@@ -226,7 +226,7 @@ def _compute_m_a(daily_rs):
     m_series = []
     for i in range(9, len(daily_rs)):
         rs_ma10 = sum(daily_rs[i-9:i+1]) / 10
-        m = (daily_rs[i] / rs_ma10) if rs_ma10 != 0 else 0.0
+        m = (daily_rs[i] / rs_ma10) if abs(rs_ma10) >= 0.05 else 0.0
         m = max(-5.0, min(5.0, m))
         m_series.append(m)
 

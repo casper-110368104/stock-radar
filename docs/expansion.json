@@ -3,32 +3,7 @@
   "scan_failed": false,
   "sample_size": 447,
   "signal_count": 110,
-  "backtest_stats": {
-    "retest": {
-      "label": "縮量回測",
-      "count": 28803,
-      "win_rate": 0.417,
-      "avg_gain_pct": 3.39,
-      "avg_loss_pct": -2.2,
-      "inconclusive_rate": 0.052
-    },
-    "ma60_support": {
-      "label": "MA60支撐",
-      "count": 11406,
-      "win_rate": 0.398,
-      "avg_gain_pct": 6.0,
-      "avg_loss_pct": -3.91,
-      "inconclusive_rate": 0.279
-    },
-    "ma_pullback": {
-      "label": "均線回測",
-      "count": 12229,
-      "win_rate": 0.422,
-      "avg_gain_pct": 2.75,
-      "avg_loss_pct": -1.64,
-      "inconclusive_rate": 0.037
-    }
-  },
+  "backtest_stats": {},
   "signal_tracking": [],
   "stocks": [
     {
