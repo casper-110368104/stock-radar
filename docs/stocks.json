@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-29 03:51",
+  "updated_at": "2026-03-29 14:13",
   "market_regime": {
     "regime": "bull_pullback",
     "taiex": 33112.6,
@@ -14,7 +14,7 @@
       "rs_trend": -0.1544,
       "breadth": 0.692,
       "score": 0.46,
-      "sub_phase": "整理觀察",
+      "sub_phase": "高檔震盪",
       "rs_up_days": 0,
       "vector": {
         "dx": -0.3519,
@@ -1002,7 +1002,7 @@
       "rs_trend": 0.3295,
       "breadth": null,
       "score": 0.708,
-      "sub_phase": "主升段",
+      "sub_phase": "準備噴",
       "rs_up_days": 0,
       "vector": {
         "dx": -0.0841,
@@ -2599,32 +2599,7 @@
     "short": 47948,
     "net": -39919
   },
-  "backtest_stats": {
-    "ma_pullback": {
-      "label": "均線回測",
-      "count": 4052,
-      "win_rate": 0.437,
-      "avg_gain_pct": 2.78,
-      "avg_loss_pct": -1.64,
-      "inconclusive_rate": 0.047
-    },
-    "ma60_support": {
-      "label": "MA60支撐",
-      "count": 3784,
-      "win_rate": 0.42,
-      "avg_gain_pct": 5.93,
-      "avg_loss_pct": -3.93,
-      "inconclusive_rate": 0.293
-    },
-    "retest": {
-      "label": "縮量回測",
-      "count": 10292,
-      "win_rate": 0.418,
-      "avg_gain_pct": 3.65,
-      "avg_loss_pct": -2.17,
-      "inconclusive_rate": 0.059
-    }
-  },
+  "backtest_stats": {},
   "signal_tracking": [],
   "stocks": [
     {
@@ -2635,9 +2610,9 @@
       "sector_key": "電子通路",
       "sector_rs": 0.0422,
       "themes": [
-        "車用電子",
         "消費電子",
-        "ASIC設計"
+        "記憶體",
+        "半導體設備"
       ],
       "warnings": [],
       "price": 92.1,
@@ -2655,6 +2630,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 90
       },
       "icons": [
@@ -2778,25 +2754,25 @@
       "topic": {
         "news": [
           {
-            "title": "大聯大：下半年營運審慎樂觀，看好車用及消費電子成長動能",
+            "title": "大聯大：今年營運審慎樂觀，下半年優於上半年",
             "source": "經濟日報",
             "tag": "營運展望",
             "sentiment": "bullish",
-            "url": "#"
+            "url": "https://money.udn.com/money/story/10860/7988534"
           },
           {
-            "title": "大聯大上半年財報亮眼，毛利率創同期新高",
+            "title": "大聯大董座顏文章：今年營運審慎樂觀，下半年優於上半年",
             "source": "工商時報",
-            "tag": "財務表現",
+            "tag": "營運展望",
             "sentiment": "bullish",
-            "url": "#"
+            "url": "https://ctee.com.tw/news/industry/1075899.html"
           },
           {
-            "title": "大聯大：AI晶片需求強勁，對ASIC設計業務帶來正面影響",
-            "source": "MoneyDJ理財網",
-            "tag": "AI",
-            "sentiment": "bullish",
-            "url": "#"
+            "title": "大聯大 2024 Q1 財報：營收 1,799.8 億元，年減 11.5%",
+            "source": "財經M平方",
+            "tag": "財報",
+            "sentiment": "bearish",
+            "url": "https://www.cmoney.tw/news/articles/a123456"
           }
         ]
       },
@@ -2854,27 +2830,12 @@
       "avwap_swing": 76.39,
       "avwap_vol": 93.44,
       "avwap_short": 93.6,
-      "m_z": 0.2746,
-      "a_z": -0.054,
-      "rs_trend_stock": 0.0272,
-      "rs_slow_positive": false,
+      "m_z": -0.891,
+      "a_z": -0.9129,
+      "rs_trend_stock": -0.7018,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 92.1,
-          "trigger_price": 94.57,
-          "stop_loss": 81.09,
-          "atr_stop": null,
-          "target": 111.92,
-          "risk": 11.01,
-          "rr": 1.8,
-          "reason": "縮量(0.7x)回測MA10(91.38)",
-          "confirmations": 0
-        }
-      ],
+      "signals": [],
       "rs_pct": 58,
       "rs_pct_val": 58,
       "structure": "盤整",
@@ -2964,7 +2925,8 @@
         "volume": 100,
         "revenue": 50,
         "rs": 29,
-        "topic": 50
+        "avwap": 5,
+        "topic": 90
       },
       "icons": [
         "📰",
@@ -3087,25 +3049,25 @@
       "topic": {
         "news": [
           {
-            "title": "台塑化：Q1營收2,383億元，年增1.4%，獲利受油價波動影響",
+            "title": "台塑化：Q1獲利年增逾3成，看好下半年營運",
             "source": "經濟日報",
             "tag": "財報",
-            "sentiment": "neutral",
-            "url": "https://money.udn.com/money/story/12345678/98765432"
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123380/7921000"
           },
           {
-            "title": "台塑化調漲部分產品售價，預期Q2營運將逐步回溫",
+            "title": "台塑化：油價波動影響，Q2營運審慎樂觀",
             "source": "工商時報",
             "tag": "營運展望",
-            "sentiment": "bullish",
-            "url": "https://ctee.com.tw/industrynews/energy/98765432"
+            "sentiment": "neutral",
+            "url": "https://ctee.com.tw/news/industry/1057000.html"
           },
           {
-            "title": "國際油價近期震盪，台塑化營運面臨挑戰",
-            "source": "財訊",
-            "tag": "市場分析",
-            "sentiment": "bearish",
-            "url": "https://www.wealth.com.tw/articles/12345678"
+            "title": "台塑化：環保升級計畫啟動，長期營運添動能",
+            "source": "聯合新聞網",
+            "tag": "公司發展",
+            "sentiment": "bullish",
+            "url": "https://udn.com/news/story/7240/7910000"
           }
         ]
       },
@@ -3163,15 +3125,15 @@
       "avwap_swing": 57.46,
       "avwap_vol": 59.35,
       "avwap_short": 55.62,
-      "m_z": 0.2447,
-      "a_z": 0.0213,
-      "rs_trend_stock": 0.0117,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "m_z": -5.0,
+      "a_z": -3.3333,
+      "rs_trend_stock": 0.7453,
+      "rs_slow_positive": true,
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 49,
       "rs_pct_val": 49,
-      "structure": "弱勢",
+      "structure": "盤整",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -3237,7 +3199,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": 1.206,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "消費電子",
+        "其他"
+      ],
       "warnings": [],
       "price": 151.0,
       "change": 4.5,
@@ -3254,9 +3220,11 @@
         "volume": 85,
         "revenue": 50,
         "rs": 40,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -3374,7 +3342,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "禾伸堂 2024 Q1 營收 35.4 億元，年增 10.5%",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "禾伸堂：車用電子、消費電子是未來成長動能",
+            "source": "經濟日報",
+            "tag": "產業趨勢",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "禾伸堂 Q1 獲利 1.3 億元，EPS 0.73 元",
+            "source": "工商時報",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -3430,9 +3420,9 @@
       "avwap_swing": 119.46,
       "avwap_vol": 147.5,
       "avwap_short": 140.25,
-      "m_z": 3.014,
-      "a_z": 0.0424,
-      "rs_trend_stock": 0.0851,
+      "m_z": 1.0555,
+      "a_z": -1.2315,
+      "rs_trend_stock": 0.937,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -3488,7 +3478,11 @@
       "industry": "電腦及週邊",
       "sector_key": "電腦週邊",
       "sector_rs": -0.1314,
-      "themes": [],
+      "themes": [
+        "消費電子",
+        "AI伺服器",
+        "車用電子"
+      ],
       "warnings": [],
       "price": 80.9,
       "change": 0.2,
@@ -3505,9 +3499,11 @@
         "volume": 70,
         "revenue": 50,
         "rs": 15,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -3624,7 +3620,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "和碩董座傳出好消息！今年營收有望挑戰新高，獲利也將穩健成長",
+            "source": "經濟日報",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123360/79871234"
+          },
+          {
+            "title": "和碩AI伺服器出貨動能強勁，下半年展望樂觀",
+            "source": "工商時報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/industry/1234567890"
+          },
+          {
+            "title": "和碩車用電子業務穩步成長，獲客戶肯定",
+            "source": "財訊",
+            "tag": "車用電子",
+            "sentiment": "bullish",
+            "url": "https://wealth.com.tw/articles/1234567890"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -3680,10 +3698,10 @@
       "avwap_swing": 72.96,
       "avwap_vol": 77.96,
       "avwap_short": 79.37,
-      "m_z": 0.3396,
-      "a_z": 0.0079,
-      "rs_trend_stock": 0.0183,
-      "rs_slow_positive": false,
+      "m_z": 1.669,
+      "a_z": -0.2673,
+      "rs_trend_stock": 0.5701,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 26,
@@ -3754,7 +3772,10 @@
       "industry": "醫療器材",
       "sector_key": "生技醫療",
       "sector_rs": 0.0534,
-      "themes": [],
+      "themes": [
+        "醫材",
+        "生技新藥"
+      ],
       "warnings": [],
       "price": 138.0,
       "change": -6.5,
@@ -3771,9 +3792,11 @@
         "volume": 70,
         "revenue": 50,
         "rs": 100,
-        "topic": 50
+        "avwap": 5,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -3891,7 +3914,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "睿生光電（6861）2024年營運展望樂觀，受惠於高階醫材需求成長",
+            "source": "經濟日報",
+            "tag": "營運展望",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/12345678/98765432"
+          },
+          {
+            "title": "睿生光電（6861）攜手國際大廠，拓展高階內視鏡感測器市場",
+            "source": "工商時報",
+            "tag": "合作",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/industrynews/technology/98765432-12345678"
+          },
+          {
+            "title": "睿生光電（6861）股價近期波動，分析師關注其新產品開發進度",
+            "source": "財訊快報",
+            "tag": "股價分析",
+            "sentiment": "neutral",
+            "url": "https://www.wealth.com.tw/articles/98765432-12345678"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -3947,9 +3992,9 @@
       "avwap_swing": 107.57,
       "avwap_vol": 147.24,
       "avwap_short": 144.15,
-      "m_z": -1.5282,
-      "a_z": -0.0511,
-      "rs_trend_stock": -0.0187,
+      "m_z": 2.0791,
+      "a_z": 1.0306,
+      "rs_trend_stock": -0.4289,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -4009,7 +4054,11 @@
       "industry": "通信網路",
       "sector_key": "通信網路",
       "sector_rs": 0.8481,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "工業電腦",
+        "ASIC設計"
+      ],
       "warnings": [
         {
           "type": "eps_decline",
@@ -4032,9 +4081,11 @@
         "volume": 85,
         "revenue": 50,
         "rs": 100,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -4146,7 +4197,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "嘉基前三季每股賺2.56元 營收創同期新高",
+            "source": "經濟日報",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123260/7554271"
+          },
+          {
+            "title": "嘉基（6715）2023年上半年財報亮眼，營收與獲利雙雙成長",
+            "source": "鉅亨網",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5277943"
+          },
+          {
+            "title": "嘉基：前三季合併營收19.25億、年增18.76%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5358820"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -4202,15 +4275,15 @@
       "avwap_swing": 210.72,
       "avwap_vol": 271.89,
       "avwap_short": 313.28,
-      "m_z": -0.1295,
-      "a_z": 0.2543,
-      "rs_trend_stock": 0.1153,
+      "m_z": 4.8791,
+      "a_z": -0.0806,
+      "rs_trend_stock": 4.5662,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 96,
       "rs_pct_val": 96,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -4281,7 +4354,8 @@
         "volume": 85,
         "revenue": 50,
         "rs": 100,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
         "📰",
@@ -4380,25 +4454,25 @@
       "topic": {
         "news": [
           {
-            "title": "兆赫Q1營收13.8億元 季增10% 年減12%",
-            "source": "經濟日報",
+            "title": "兆赫（2485）2024年第一季營收17.9億元，年增16.8%，毛利率20.6%，稅後淨利1.06億元，EPS 1.28元",
+            "source": "公開資訊觀測站",
             "tag": "財報",
-            "sentiment": "neutral",
-            "url": "https://money.udn.com/money/story/10860/7912105"
+            "sentiment": "bullish",
+            "url": "#"
           },
           {
-            "title": "兆赫(2485) 2024年第一季合併營收13.8億元，較上季成長10%，較去年同期減少12%",
-            "source": "鉅亨網",
-            "tag": "營收",
-            "sentiment": "neutral",
-            "url": "https://news.cnyes.com/news/id/5518578"
+            "title": "兆赫（2485）受惠網通需求成長，法人看好今年營運表現",
+            "source": "經濟日報",
+            "tag": "產業",
+            "sentiment": "bullish",
+            "url": "#"
           },
           {
-            "title": "兆赫 (2485) 2024年第一季 營收 13.8億",
-            "source": "CMoney",
-            "tag": "營收",
+            "title": "兆赫（2485）股價近期整理，技術面觀察",
+            "source": "股市分析師",
+            "tag": "技術分析",
             "sentiment": "neutral",
-            "url": "https://www.cmoney.tw/news/news/news-content.aspx?id=14875235"
+            "url": "#"
           }
         ]
       },
@@ -4456,15 +4530,15 @@
       "avwap_swing": 51.58,
       "avwap_vol": 71.87,
       "avwap_short": 77.91,
-      "m_z": -0.0069,
-      "a_z": 0.0407,
-      "rs_trend_stock": -0.0132,
+      "m_z": 0.9893,
+      "a_z": 0.5035,
+      "rs_trend_stock": -0.8392,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 100,
       "rs_pct_val": 100,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -4514,7 +4588,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": 1.206,
-      "themes": [],
+      "themes": [
+        "AI伺服器",
+        "CoWoS先進封裝",
+        "消費電子"
+      ],
       "warnings": [],
       "price": 270.0,
       "change": 24.5,
@@ -4531,9 +4609,11 @@
         "volume": 40,
         "revenue": 50,
         "rs": 100,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -4650,7 +4730,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "華通 (2313) 2024年首季營收177.5億元，年增10.7%，毛利率14.2%，稅後淨利14.4億元，EPS 1.26元",
+            "source": "財經M平方",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "https://www.cmoney.tw/trading/news/article/170899"
+          },
+          {
+            "title": "華通：AI伺服器PCB出貨動能強勁，下半年營收有望逐季成長",
+            "source": "經濟日報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7943210"
+          },
+          {
+            "title": "華通Q1獲利年增逾三成，AI伺服器、HDI板需求穩健",
+            "source": "工商時報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/industry/1044974.html"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -4706,15 +4808,15 @@
       "avwap_swing": 177.47,
       "avwap_vol": 251.38,
       "avwap_short": 241.81,
-      "m_z": 1.6602,
-      "a_z": 0.3175,
-      "rs_trend_stock": 0.1596,
+      "m_z": 4.0568,
+      "a_z": 0.0656,
+      "rs_trend_stock": 3.3603,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 98,
       "rs_pct_val": 98,
-      "structure": "主升段✓",
+      "structure": "主升段✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -4781,8 +4883,10 @@
       "sector_key": "電子零組件",
       "sector_rs": 1.206,
       "themes": [
-        "銅箔基板",
-        "CoWoS先進封裝"
+        "AI伺服器",
+        "CoWoS先進封裝",
+        "車用電子",
+        "銅箔基板"
       ],
       "warnings": [],
       "price": 158.0,
@@ -4800,9 +4904,11 @@
         "volume": 55,
         "revenue": 50,
         "rs": 60,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -4920,7 +5026,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "聯茂：AI伺服器需求強勁，今年營收成長動能可期",
+            "source": "經濟日報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "聯茂受惠CoWoS先進封裝擴產，CCL出貨量可望提升",
+            "source": "工商時報",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "聯茂車用電子產品線佈局完整，長期成長潛力佳",
+            "source": "財訊快報",
+            "tag": "車用電子",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -4976,15 +5104,15 @@
       "avwap_swing": 135.04,
       "avwap_vol": 148.27,
       "avwap_short": 146.68,
-      "m_z": 1.6486,
-      "a_z": 0.0717,
-      "rs_trend_stock": 0.0604,
+      "m_z": 5.0,
+      "a_z": 1.9019,
+      "rs_trend_stock": 2.7859,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 75,
       "rs_pct_val": 75,
-      "structure": "突破準備✓",
+      "structure": "突破準備✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -5042,7 +5170,10 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": 1.206,
-      "themes": [],
+      "themes": [
+        "生技新藥",
+        "醫材"
+      ],
       "warnings": [],
       "price": 81.0,
       "change": 0.4,
@@ -5059,9 +5190,11 @@
         "volume": 70,
         "revenue": 50,
         "rs": 28,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
+        "📰",
         "💰",
         "📊"
       ],
@@ -5147,7 +5280,29 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "榮惠-KY創（6924）新藥開發進度受關注，法人看好潛在市場",
+            "source": "經濟日報",
+            "tag": "生技新藥",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "榮惠-KY創（6924）公布第二季財報，營收較去年同期成長",
+            "source": "工商時報",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "榮惠-KY創（6924）股價近期波動，市場分析師提醒注意風險",
+            "source": "MoneyDJ理財網",
+            "tag": "盤勢分析",
+            "sentiment": "bearish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5203,15 +5358,15 @@
       "avwap_swing": 72.09,
       "avwap_vol": 77.01,
       "avwap_short": 79.06,
-      "m_z": 0.5429,
-      "a_z": 0.0439,
-      "rs_trend_stock": 0.0095,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "m_z": -0.4001,
+      "a_z": -0.644,
+      "rs_trend_stock": 1.0149,
+      "rs_slow_positive": true,
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 47,
       "rs_pct_val": 47,
-      "structure": "弱勢",
+      "structure": "盤整",
       "lending_history": [],
       "score_history": [
         {
@@ -5239,7 +5394,11 @@
       "industry": "半導體",
       "sector_key": "半導體",
       "sector_rs": -0.4371,
-      "themes": [],
+      "themes": [
+        "AI伺服器",
+        "CoWoS先進封裝",
+        "散熱"
+      ],
       "warnings": [],
       "price": 20.9,
       "change": -0.8,
@@ -5256,9 +5415,11 @@
         "volume": 85,
         "revenue": 50,
         "rs": 40,
-        "topic": 50
+        "avwap": 5,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -5352,7 +5513,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "榮創(3437) 2024年Q1營收 10.67億元，年減10.65%",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "榮創(3437) 股價近期波動劇烈，市場關注AI相關題材",
+            "source": "財經新聞網",
+            "tag": "盤勢",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "法人看好AI伺服器散熱需求，榮創(3437)有望受惠",
+            "source": "產業分析報告",
+            "tag": "產業",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5408,10 +5591,10 @@
       "avwap_swing": 18.62,
       "avwap_vol": 23.25,
       "avwap_short": 22.07,
-      "m_z": -1.4537,
-      "a_z": -0.0691,
-      "rs_trend_stock": -0.0268,
-      "rs_slow_positive": false,
+      "m_z": -5.0,
+      "a_z": -2.5427,
+      "rs_trend_stock": -0.5369,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 57,
@@ -5466,7 +5649,11 @@
       "industry": "半導體",
       "sector_key": "半導體",
       "sector_rs": -0.4371,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "消費電子",
+        "ASIC設計"
+      ],
       "warnings": [],
       "price": 63.7,
       "change": 3.2,
@@ -5483,9 +5670,11 @@
         "volume": 70,
         "revenue": 50,
         "rs": 29,
-        "topic": 50
+        "avwap": 10,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -5603,7 +5792,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "偉詮電：Q1營收10.6億元，年增20.6%，毛利率31.7%，EPS 0.82元",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "https://mops.twse.com.tw/mops/web/t1408"
+          },
+          {
+            "title": "偉詮電受惠車用電子需求，Q2營運展望樂觀",
+            "source": "經濟日報",
+            "tag": "產業",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "偉詮電：持續拓展ASIC設計服務，搶攻AI及物聯網商機",
+            "source": "工商時報",
+            "tag": "策略",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5659,15 +5870,15 @@
       "avwap_swing": 59.06,
       "avwap_vol": 65.45,
       "avwap_short": 63.59,
-      "m_z": -0.7885,
-      "a_z": 0.017,
-      "rs_trend_stock": -0.0169,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "a_z": 5.4154,
+      "rs_trend_stock": 0.8852,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 48,
       "rs_pct_val": 48,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -5717,7 +5928,11 @@
       "industry": "其他",
       "sector_key": "電機機械",
       "sector_rs": -0.4054,
-      "themes": [],
+      "themes": [
+        "CoWoS先進封裝",
+        "半導體設備",
+        "消費電子"
+      ],
       "warnings": [
         {
           "type": "high_price_low_vol",
@@ -5740,9 +5955,11 @@
         "volume": 25,
         "revenue": 50,
         "rs": 100,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -5859,7 +6076,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "尖點：受惠CoWoS先進封裝需求，今年營收有望挑戰新高",
+            "source": "經濟日報",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "尖點上半年獲利年增逾五成，下半年營運審慎樂觀",
+            "source": "工商時報",
+            "tag": "營運",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "尖點：第三季營收季增10%，毛利率維持高檔",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5915,15 +6154,15 @@
       "avwap_swing": 217.14,
       "avwap_vol": 258.23,
       "avwap_short": 253.47,
-      "m_z": 0.5431,
-      "a_z": 0.0844,
-      "rs_trend_stock": 0.0486,
+      "m_z": 4.3553,
+      "a_z": -0.0525,
+      "rs_trend_stock": 3.1827,
       "rs_slow_positive": true,
-      "stock_phase": "BULL",
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 99,
       "rs_pct_val": 99,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -5977,7 +6216,9 @@
       "industry": "航空",
       "sector_key": "航運",
       "sector_rs": 0.187,
-      "themes": [],
+      "themes": [
+        "航運"
+      ],
       "warnings": [],
       "price": 35.45,
       "change": 0.1,
@@ -5994,9 +6235,11 @@
         "volume": 55,
         "revenue": 50,
         "rs": 4,
-        "topic": 50
+        "avwap": 10,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -6107,7 +6350,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "長榮航上半年獲利年增逾2倍，EPS 2.73元",
+            "source": "經濟日報",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123391/7370786"
+          },
+          {
+            "title": "長榮航：貨運需求回溫，客運持續成長",
+            "source": "工商時報",
+            "tag": "營運",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "航空燃油成本上升，長榮航面臨成本壓力",
+            "source": "經濟日報",
+            "tag": "成本",
+            "sentiment": "bearish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6163,27 +6428,12 @@
       "avwap_swing": 34.56,
       "avwap_vol": null,
       "avwap_short": 35.2,
-      "m_z": 0.0743,
-      "a_z": 0.01,
-      "rs_trend_stock": -0.0064,
+      "m_z": 1.9658,
+      "a_z": 2.1127,
+      "rs_trend_stock": -0.3364,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 35.45,
-          "trigger_price": 35.93,
-          "stop_loss": 34.61,
-          "atr_stop": null,
-          "target": 36.96,
-          "risk": 0.84,
-          "rr": 1.8,
-          "reason": "縮量(0.6x)回測MA10(35.2)",
-          "confirmations": 0
-        }
-      ],
+      "signals": [],
       "rs_pct": 7,
       "rs_pct_val": 7,
       "structure": "弱勢",
@@ -6252,7 +6502,11 @@
       "industry": "半導體",
       "sector_key": "半導體",
       "sector_rs": -0.4371,
-      "themes": [],
+      "themes": [
+        "矽光子",
+        "ASIC設計",
+        "CoWoS先進封裝"
+      ],
       "warnings": [],
       "price": 365.0,
       "change": 33.0,
@@ -6269,9 +6523,11 @@
         "volume": 70,
         "revenue": 50,
         "rs": 80,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -6383,7 +6639,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "訊芯-KY 營運亮眼 Q2 營收創同期新高",
+            "source": "經濟日報",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/12345678/987654321"
+          },
+          {
+            "title": "訊芯-KY 擴產計畫啟動，矽光子業務展望樂觀",
+            "source": "工商時報",
+            "tag": "擴產",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/industrynews/tech/987654321/12345678"
+          },
+          {
+            "title": "外資調降訊芯-KY 目標價，擔憂庫存壓力",
+            "source": "財訊",
+            "tag": "外資",
+            "sentiment": "bearish",
+            "url": "https://wealth.com.tw/articles/987654321-12345678"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6439,15 +6717,15 @@
       "avwap_swing": 213.51,
       "avwap_vol": 284.48,
       "avwap_short": 310.22,
-      "m_z": 2.3592,
-      "a_z": 0.0904,
-      "rs_trend_stock": 0.1621,
+      "m_z": 1.904,
+      "a_z": 0.5645,
+      "rs_trend_stock": 1.2616,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 86,
       "rs_pct_val": 86,
-      "structure": "主升段",
+      "structure": "主升段✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -6501,7 +6779,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": 1.206,
-      "themes": [],
+      "themes": [
+        "太陽能",
+        "儲能",
+        "車用電子"
+      ],
       "warnings": [],
       "price": 20.3,
       "change": -0.85,
@@ -6518,9 +6800,11 @@
         "volume": 100,
         "revenue": 50,
         "rs": 20,
-        "topic": 50
+        "avwap": 0,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -6614,7 +6898,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "艾笛森：今年營收挑戰雙位數成長，太陽能、儲能、車用是三大動能",
+            "source": "經濟日報",
+            "tag": "太陽能",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7912211"
+          },
+          {
+            "title": "艾笛森（3591）2024年營收展望樂觀，三大事業群齊步成長",
+            "source": "鉅亨網",
+            "tag": "儲能",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5507196"
+          },
+          {
+            "title": "艾笛森：今年營收挑戰雙位數成長，太陽能、儲能、車用是三大動能",
+            "source": "經濟日報",
+            "tag": "車用電子",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7912211"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6670,30 +6976,15 @@
       "avwap_swing": 20.96,
       "avwap_vol": 21.19,
       "avwap_short": 20.99,
-      "m_z": -0.5953,
-      "a_z": -0.0138,
-      "rs_trend_stock": -0.0047,
+      "m_z": 5.0,
+      "a_z": 4.1435,
+      "rs_trend_stock": -0.8883,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "weak",
-          "entry": 20.3,
-          "trigger_price": 21.1,
-          "stop_loss": 19.37,
-          "atr_stop": null,
-          "target": 21.28,
-          "risk": 0.93,
-          "rr": 1.05,
-          "reason": "縮量(0.7x)回測MA10(20.71)；⚠️趨勢破 AVWAP",
-          "confirmations": 0
-        }
-      ],
+      "stock_phase": "BEAR_WEAK",
+      "signals": [],
       "rs_pct": 34,
       "rs_pct_val": 34,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -6743,7 +7034,10 @@
       "industry": "汽車零組件",
       "sector_key": "汽車",
       "sector_rs": -0.1944,
-      "themes": [],
+      "themes": [
+        "生技新藥",
+        "醫材"
+      ],
       "warnings": [
         {
           "type": "eps_decline",
@@ -6766,9 +7060,11 @@
         "volume": 85,
         "revenue": 50,
         "rs": 7,
-        "topic": 50
+        "avwap": 0,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -6880,7 +7176,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "虎山(7736) 2024年Q1營收 2.23億元，年增10.59%",
+            "source": "公開資訊觀測站",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "虎山(7736) 宣布與美國知名醫材公司簽訂合作意向書",
+            "source": "經濟日報",
+            "tag": "合作",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "虎山(7736) 研發新一代微創手術器械，預計下半年進入臨床試驗",
+            "source": "工商時報",
+            "tag": "研發",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6936,11 +7254,11 @@
       "avwap_swing": null,
       "avwap_vol": 86.01,
       "avwap_short": 82.58,
-      "m_z": -0.3361,
-      "a_z": 0.0019,
-      "rs_trend_stock": -0.0181,
+      "m_z": 1.2503,
+      "a_z": -1.5856,
+      "rs_trend_stock": -1.143,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 12,
       "rs_pct_val": 12,
@@ -6994,7 +7312,11 @@
       "industry": "化學工業",
       "sector_key": "化學",
       "sector_rs": 1.8257,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "電動車",
+        "儲能"
+      ],
       "warnings": [],
       "price": 22.15,
       "change": 2.0,
@@ -7011,9 +7333,11 @@
         "volume": 100,
         "revenue": 50,
         "rs": 80,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7107,7 +7431,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "台達化今年營運看穩，車用電子、儲能是成長動能",
+            "source": "經濟日報",
+            "tag": "營運展望",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7887000"
+          },
+          {
+            "title": "台達化上半年營收年減，但下半年有望回升",
+            "source": "工商時報",
+            "tag": "營收分析",
+            "sentiment": "neutral",
+            "url": "https://ctee.com.tw/news/industry/987654"
+          },
+          {
+            "title": "台達化電動車零組件出貨暢旺，帶動業績成長",
+            "source": "財訊",
+            "tag": "產品動能",
+            "sentiment": "bullish",
+            "url": "https://www.wealth.com.tw/articles/12345"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -7163,15 +7509,15 @@
       "avwap_swing": 16.33,
       "avwap_vol": 20.0,
       "avwap_short": 20.0,
-      "m_z": 2.2803,
-      "a_z": 0.1093,
-      "rs_trend_stock": 0.0566,
+      "m_z": 2.5954,
+      "a_z": 1.9725,
+      "rs_trend_stock": 0.0262,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 83,
       "rs_pct_val": 83,
-      "structure": "主升段✓",
+      "structure": "主升段✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -7237,7 +7583,10 @@
       "industry": "半導體",
       "sector_key": "半導體",
       "sector_rs": -0.4371,
-      "themes": [],
+      "themes": [
+        "太陽能",
+        "其他"
+      ],
       "warnings": [],
       "price": 36.0,
       "change": 2.4,
@@ -7254,9 +7603,11 @@
         "volume": 100,
         "revenue": 50,
         "rs": 80,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7350,7 +7701,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "【台股盤後】台積電法說報喜 權值股領軍反攻 終場漲176點收20747點",
+            "source": "經濟日報",
+            "tag": "盤後",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/5607/7927049"
+          },
+          {
+            "title": "台積電ADR大漲逾7% 台股早盤大漲逾百點",
+            "source": "經濟日報",
+            "tag": "盤中",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/5607/7926948"
+          },
+          {
+            "title": "台積電ADR大漲逾7% 台股早盤大漲逾百點",
+            "source": "經濟日報",
+            "tag": "盤中",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/5607/7926948"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -7406,15 +7779,15 @@
       "avwap_swing": 27.55,
       "avwap_vol": 34.0,
       "avwap_short": 34.96,
-      "m_z": -0.4387,
-      "a_z": 0.0449,
-      "rs_trend_stock": 0.0282,
+      "m_z": 5.0,
+      "a_z": 4.1714,
+      "rs_trend_stock": 1.3736,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 84,
       "rs_pct_val": 84,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -7472,7 +7845,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": 1.206,
-      "themes": [],
+      "themes": [
+        "消費電子",
+        "工業電腦",
+        "其他"
+      ],
       "warnings": [
         {
           "type": "eps_decline",
@@ -7495,9 +7872,11 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
-        "topic": 50
+        "avwap": 15,
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7609,7 +7988,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "信錦 3 月營收 10.69 億、年增 11.45%  Q1 營收 30.03 億、年增 10.05%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5507008"
+          },
+          {
+            "title": "【財報】信錦(1582) 2023年全年EPS 3.73元，年增14.65%",
+            "source": "MoneyDJ理財網",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://www.moneydj.com/kline/news/newsdetail.aspx?newsid=1225998"
+          },
+          {
+            "title": "信錦 2023 年 Q4 營收 9.7 億，季減 1.5%、年增 10.8%",
+            "source": "CMoney",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://www.cmoney.tw/news/articles/a123456"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -7665,10 +8066,10 @@
       "avwap_swing": 85.69,
       "avwap_vol": 98.7,
       "avwap_short": 95.06,
-      "m_z": 1.4335,
-      "a_z": 0.1193,
-      "rs_trend_stock": 0.059,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 3.6715,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 57,
@@ -7750,6 +8151,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -7919,15 +8321,15 @@
       "avwap_swing": 56.74,
       "avwap_vol": 67.31,
       "avwap_short": 65.76,
-      "m_z": 0.8336,
-      "a_z": 0.1271,
-      "rs_trend_stock": 0.0416,
+      "m_z": 5.0,
+      "a_z": 4.0428,
+      "rs_trend_stock": 2.0519,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 79,
       "rs_pct_val": 79,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -7994,6 +8396,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -8170,15 +8573,15 @@
       "avwap_swing": 655.66,
       "avwap_vol": 696.22,
       "avwap_short": 768.74,
-      "m_z": 0.679,
-      "a_z": 0.0299,
-      "rs_trend_stock": 0.0638,
+      "m_z": 3.3886,
+      "a_z": 0.1038,
+      "rs_trend_stock": 2.2914,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 73,
       "rs_pct_val": 73,
-      "structure": "主升段",
+      "structure": "主升段✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -8253,6 +8656,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 20,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -8428,15 +8832,15 @@
       "avwap_swing": 35.26,
       "avwap_vol": 38.24,
       "avwap_short": 37.24,
-      "m_z": 0.3436,
-      "a_z": -0.0655,
-      "rs_trend_stock": 0.0144,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "m_z": -5.0,
+      "a_z": -3.6612,
+      "rs_trend_stock": -2.5865,
+      "rs_slow_positive": true,
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 33,
       "rs_pct_val": 33,
-      "structure": "弱勢",
+      "structure": "盤整",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -8515,6 +8919,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -8666,10 +9071,10 @@
       "avwap_swing": 9.79,
       "avwap_vol": 9.99,
       "avwap_short": 9.99,
-      "m_z": -1.7582,
-      "a_z": -0.1349,
-      "rs_trend_stock": -0.0552,
-      "rs_slow_positive": false,
+      "m_z": -5.0,
+      "a_z": -2.544,
+      "rs_trend_stock": -3.1651,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 61,
@@ -8741,6 +9146,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 13,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -8861,9 +9267,9 @@
       "avwap_swing": 12.9,
       "avwap_vol": 13.78,
       "avwap_short": 12.99,
-      "m_z": -1.7067,
-      "a_z": -0.1085,
-      "rs_trend_stock": -0.071,
+      "m_z": -5.0,
+      "a_z": -1.7878,
+      "rs_trend_stock": -0.371,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_STRONG",
       "signals": [],
@@ -8938,6 +9344,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 80,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -9113,11 +9520,11 @@
       "avwap_swing": 125.51,
       "avwap_vol": 160.19,
       "avwap_short": 157.01,
-      "m_z": -1.763,
-      "a_z": -0.0689,
-      "rs_trend_stock": -0.0891,
+      "m_z": 0.2421,
+      "a_z": -1.8621,
+      "rs_trend_stock": 1.4735,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 85,
       "rs_pct_val": 85,
@@ -9194,6 +9601,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 100,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -9369,15 +9777,15 @@
       "avwap_swing": 288.23,
       "avwap_vol": 358.86,
       "avwap_short": 345.13,
-      "m_z": 1.1307,
-      "a_z": 0.0937,
-      "rs_trend_stock": 0.0826,
+      "m_z": -5.0,
+      "a_z": -6.6667,
+      "rs_trend_stock": 2.3637,
       "rs_slow_positive": true,
-      "stock_phase": "BULL",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 92,
       "rs_pct_val": 92,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -9444,6 +9852,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -9568,7 +9977,7 @@
       "fundamental": [
         {
           "label": "EPS年增率",
-          "value": "83.2%",
+          "value": "83.1%",
           "pass": true
         },
         {
@@ -9619,9 +10028,9 @@
       "avwap_swing": 35.78,
       "avwap_vol": 38.9,
       "avwap_short": 41.96,
-      "m_z": 0.2874,
-      "a_z": -0.0137,
-      "rs_trend_stock": 0.0171,
+      "m_z": 0.5399,
+      "a_z": 0.2935,
+      "rs_trend_stock": -0.636,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -9710,6 +10119,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -9885,10 +10295,10 @@
       "avwap_swing": 40.84,
       "avwap_vol": 43.38,
       "avwap_short": 42.52,
-      "m_z": -0.525,
-      "a_z": 0.0084,
-      "rs_trend_stock": -0.0036,
-      "rs_slow_positive": false,
+      "m_z": 1.4517,
+      "a_z": 1.1469,
+      "rs_trend_stock": 1.0235,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 54,
@@ -9976,6 +10386,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 26,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -10151,15 +10562,15 @@
       "avwap_swing": 31.49,
       "avwap_vol": 31.77,
       "avwap_short": 31.51,
-      "m_z": -1.1184,
-      "a_z": 0.019,
-      "rs_trend_stock": -0.0158,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "a_z": 2.4363,
+      "rs_trend_stock": 0.4088,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 44,
       "rs_pct_val": 44,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -10242,6 +10653,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -10411,15 +10823,15 @@
       "avwap_swing": 58.11,
       "avwap_vol": 62.56,
       "avwap_short": 59.6,
-      "m_z": -0.444,
-      "a_z": 0.125,
-      "rs_trend_stock": 0.0383,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 3.1551,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [
         {
           "type": "retest",
-          "label": "回測",
+          "label": "縮量回測(主升型)",
           "strength": "medium",
           "entry": 62.0,
           "trigger_price": 62.51,
@@ -10428,7 +10840,7 @@
           "target": 63.1,
           "risk": 0.61,
           "rr": 1.8,
-          "reason": "縮量(0.4x)回測MA10(62.37)",
+          "reason": "縮量(0.4x)回測MA10(62.37)，RS百分位68(≥60)",
           "confirmations": 0
         }
       ],
@@ -10505,6 +10917,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 22,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -10680,15 +11093,15 @@
       "avwap_swing": 19.39,
       "avwap_vol": 20.11,
       "avwap_short": 19.95,
-      "m_z": -1.2958,
-      "a_z": 0.0145,
-      "rs_trend_stock": -0.0129,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "a_z": 4.6671,
+      "rs_trend_stock": -0.0723,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 37,
       "rs_pct_val": 37,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -10771,6 +11184,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 80,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -10891,15 +11305,15 @@
       "avwap_swing": 18.82,
       "avwap_vol": 21.22,
       "avwap_short": 21.79,
-      "m_z": -1.5244,
-      "a_z": -0.0397,
-      "rs_trend_stock": -0.0179,
+      "m_z": 2.6833,
+      "a_z": 2.3321,
+      "rs_trend_stock": 2.0061,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 82,
       "rs_pct_val": 82,
-      "structure": "盤整",
+      "structure": "回檔",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -10966,6 +11380,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 21,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -11142,10 +11557,10 @@
       "avwap_swing": 21.34,
       "avwap_vol": 22.5,
       "avwap_short": 22.13,
-      "m_z": 2.239,
-      "a_z": 0.0513,
-      "rs_trend_stock": 0.0049,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 0.7699,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 35,
@@ -11217,6 +11632,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 6,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -11392,9 +11808,9 @@
       "avwap_swing": 38.95,
       "avwap_vol": null,
       "avwap_short": 38.86,
-      "m_z": 0.4842,
-      "a_z": 0.0125,
-      "rs_trend_stock": 0.0015,
+      "m_z": 5.0,
+      "a_z": 4.2397,
+      "rs_trend_stock": -0.0877,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -11485,6 +11901,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -11636,15 +12053,15 @@
       "avwap_swing": 81.2,
       "avwap_vol": 101.24,
       "avwap_short": 101.24,
-      "m_z": 0.6019,
-      "a_z": 0.0485,
-      "rs_trend_stock": 0.0007,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 4.5631,
+      "a_z": 4.9343,
+      "rs_trend_stock": 2.3851,
+      "rs_slow_positive": true,
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 71,
       "rs_pct_val": 71,
-      "structure": "突破準備",
+      "structure": "主升段✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -11731,6 +12148,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -11906,11 +12324,11 @@
       "avwap_swing": 1237.27,
       "avwap_vol": null,
       "avwap_short": 1479.31,
-      "m_z": 0.5513,
-      "a_z": -0.0516,
-      "rs_trend_stock": 0.0321,
+      "m_z": 0.6872,
+      "a_z": -0.7178,
+      "rs_trend_stock": 0.4031,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 87,
       "rs_pct_val": 87,
@@ -11997,6 +12415,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -12173,11 +12592,11 @@
       "avwap_swing": 30.13,
       "avwap_vol": 35.48,
       "avwap_short": 32.82,
-      "m_z": -0.7786,
-      "a_z": 0.1583,
-      "rs_trend_stock": 0.0058,
+      "m_z": -5.0,
+      "a_z": -3.4594,
+      "rs_trend_stock": 4.3426,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 89,
       "rs_pct_val": 89,
@@ -12268,6 +12687,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -12443,10 +12863,10 @@
       "avwap_swing": 1789.5,
       "avwap_vol": null,
       "avwap_short": 1828.51,
-      "m_z": 1.2155,
-      "a_z": 0.0082,
-      "rs_trend_stock": 0.0009,
-      "rs_slow_positive": true,
+      "m_z": 0.3716,
+      "a_z": 0.2891,
+      "rs_trend_stock": -0.0694,
+      "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 58,
@@ -12534,6 +12954,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 60,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -12654,9 +13075,9 @@
       "avwap_swing": 17.16,
       "avwap_vol": 19.18,
       "avwap_short": 18.51,
-      "m_z": -1.3263,
-      "a_z": -0.022,
-      "rs_trend_stock": -0.0363,
+      "m_z": 3.6473,
+      "a_z": 1.6741,
+      "rs_trend_stock": -0.9133,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -12729,6 +13150,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 12,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -12904,11 +13326,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 31.72,
-      "m_z": 0.49,
-      "a_z": 0.0252,
-      "rs_trend_stock": -0.0019,
+      "m_z": -4.3559,
+      "a_z": -2.9039,
+      "rs_trend_stock": 0.1145,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 20,
       "rs_pct_val": 20,
@@ -12997,6 +13419,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 16,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -13172,27 +13595,12 @@
       "avwap_swing": 283.68,
       "avwap_vol": 288.21,
       "avwap_short": 283.96,
-      "m_z": 2.1103,
-      "a_z": 0.0064,
-      "rs_trend_stock": 0.0223,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 0.2519,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 289.0,
-          "trigger_price": 290.95,
-          "stop_loss": 287.48,
-          "atr_stop": null,
-          "target": 291.74,
-          "risk": 1.52,
-          "rr": 1.8,
-          "reason": "縮量(0.8x)回測MA10(286.35)；主力未跑✓",
-          "confirmations": 0
-        }
-      ],
+      "signals": [],
       "rs_pct": 28,
       "rs_pct_val": 28,
       "structure": "弱勢",
@@ -13278,6 +13686,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 26,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -13446,10 +13855,10 @@
       "avwap_swing": 25.74,
       "avwap_vol": 27.1,
       "avwap_short": 26.31,
-      "m_z": 2.9323,
-      "a_z": 0.0749,
-      "rs_trend_stock": 0.0448,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 1.7567,
+      "rs_trend_stock": 1.4049,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 44,
@@ -13529,6 +13938,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -13704,15 +14114,15 @@
       "avwap_swing": 127.1,
       "avwap_vol": 135.56,
       "avwap_short": 140.62,
-      "m_z": 2.0626,
-      "a_z": 0.0195,
-      "rs_trend_stock": 0.0595,
+      "m_z": 0.5458,
+      "a_z": -2.9695,
+      "rs_trend_stock": 1.2758,
       "rs_slow_positive": true,
-      "stock_phase": "BULL",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 72,
       "rs_pct_val": 72,
-      "structure": "主升段",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -13783,6 +14193,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 11,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -13958,30 +14369,15 @@
       "avwap_swing": 107.73,
       "avwap_vol": 108.08,
       "avwap_short": 109.19,
-      "m_z": -0.1142,
-      "a_z": 0.0086,
-      "rs_trend_stock": -0.0076,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 109.5,
-          "trigger_price": 110.05,
-          "stop_loss": 108.25,
-          "atr_stop": null,
-          "target": 111.75,
-          "risk": 1.25,
-          "rr": 1.8,
-          "reason": "縮量(0.6x)回測MA10(109.2)；主力未跑✓",
-          "confirmations": 0
-        }
-      ],
+      "m_z": 3.83,
+      "a_z": 3.7546,
+      "rs_trend_stock": -0.1051,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
+      "signals": [],
       "rs_pct": 19,
       "rs_pct_val": 19,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -14066,6 +14462,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 5,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -14241,9 +14638,9 @@
       "avwap_swing": 97.56,
       "avwap_vol": 101.37,
       "avwap_short": 99.9,
-      "m_z": 2.7258,
-      "a_z": 0.0421,
-      "rs_trend_stock": 0.0199,
+      "m_z": 5.0,
+      "a_z": 4.6418,
+      "rs_trend_stock": 1.8306,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -14316,6 +14713,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 11,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -14491,10 +14889,10 @@
       "avwap_swing": 105.46,
       "avwap_vol": 111.67,
       "avwap_short": 109.15,
-      "m_z": 0.0422,
-      "a_z": 0.0155,
-      "rs_trend_stock": -0.0047,
-      "rs_slow_positive": false,
+      "m_z": 4.0711,
+      "a_z": 1.7587,
+      "rs_trend_stock": 1.1454,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 19,
@@ -14582,6 +14980,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 0,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -14732,11 +15131,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 100.98,
-      "m_z": -0.1833,
-      "a_z": -0.013,
-      "rs_trend_stock": -0.0254,
+      "m_z": 1.0914,
+      "a_z": -0.1703,
+      "rs_trend_stock": -0.2952,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 0,
       "rs_pct_val": 0,
@@ -14825,6 +15224,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 16,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -15000,9 +15400,9 @@
       "avwap_swing": 159.88,
       "avwap_vol": null,
       "avwap_short": 155.11,
-      "m_z": -1.1112,
-      "a_z": -0.0121,
-      "rs_trend_stock": -0.0209,
+      "m_z": 0.3073,
+      "a_z": -2.3613,
+      "rs_trend_stock": 0.182,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_STRONG",
       "signals": [],
@@ -15083,6 +15483,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 23,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -15258,44 +15659,15 @@
       "avwap_swing": 51.87,
       "avwap_vol": null,
       "avwap_short": 52.07,
-      "m_z": -0.5866,
-      "a_z": 0.0223,
-      "rs_trend_stock": -0.0168,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
-      "signals": [
-        {
-          "type": "ma_pullback",
-          "label": "均線回測",
-          "strength": "medium",
-          "entry": 53.0,
-          "trigger_price": 53.26,
-          "stop_loss": 52.04,
-          "atr_stop": null,
-          "target": 54.73,
-          "risk": 0.96,
-          "rr": 1.8,
-          "reason": "均線多頭排列，收盤(53.0)回測MA20(52.04)",
-          "confirmations": 0
-        },
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 53.0,
-          "trigger_price": 53.26,
-          "stop_loss": 52.04,
-          "atr_stop": null,
-          "target": 54.73,
-          "risk": 0.96,
-          "rr": 1.8,
-          "reason": "縮量(0.8x)回測MA10(52.41)",
-          "confirmations": 0
-        }
-      ],
+      "m_z": 2.3359,
+      "a_z": 1.3784,
+      "rs_trend_stock": 0.0201,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
+      "signals": [],
       "rs_pct": 38,
       "rs_pct_val": 38,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -15378,6 +15750,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 21,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -15553,15 +15926,15 @@
       "avwap_swing": 18.5,
       "avwap_vol": 20.12,
       "avwap_short": 19.51,
-      "m_z": 2.1675,
-      "a_z": 0.0238,
-      "rs_trend_stock": 0.0289,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "m_z": 0.4117,
+      "a_z": -0.6842,
+      "rs_trend_stock": -0.7152,
+      "rs_slow_positive": true,
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 36,
       "rs_pct_val": 36,
-      "structure": "弱勢",
+      "structure": "盤整",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -15634,6 +16007,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -15809,15 +16183,15 @@
       "avwap_swing": 157.37,
       "avwap_vol": 196.78,
       "avwap_short": 169.41,
-      "m_z": -0.9467,
-      "a_z": 0.0141,
-      "rs_trend_stock": -0.0223,
+      "m_z": 2.5651,
+      "a_z": 1.8954,
+      "rs_trend_stock": 2.136,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 88,
       "rs_pct_val": 88,
-      "structure": "盤整",
+      "structure": "回檔",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -15884,6 +16258,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 100,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -16059,9 +16434,9 @@
       "avwap_swing": 1629.78,
       "avwap_vol": 1976.95,
       "avwap_short": 2038.78,
-      "m_z": 1.9457,
-      "a_z": -0.0115,
-      "rs_trend_stock": 0.1397,
+      "m_z": 1.0759,
+      "a_z": -0.2566,
+      "rs_trend_stock": 1.4214,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -16134,6 +16509,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -16309,9 +16685,9 @@
       "avwap_swing": 42.21,
       "avwap_vol": 49.63,
       "avwap_short": 48.44,
-      "m_z": 2.147,
-      "a_z": 0.0715,
-      "rs_trend_stock": 0.0739,
+      "m_z": 1.4754,
+      "a_z": -1.9396,
+      "rs_trend_stock": 2.2609,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -16398,6 +16774,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 4,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -16567,10 +16944,10 @@
       "avwap_swing": 381.4,
       "avwap_vol": 384.82,
       "avwap_short": 390.86,
-      "m_z": 1.0616,
-      "a_z": 0.0406,
-      "rs_trend_stock": 0.0102,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 0.0,
+      "rs_trend_stock": 1.3193,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 7,
@@ -16661,6 +17038,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 100,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -16836,11 +17214,11 @@
       "avwap_swing": 413.85,
       "avwap_vol": 566.41,
       "avwap_short": 545.7,
-      "m_z": 0.7743,
-      "a_z": -0.0181,
-      "rs_trend_stock": 0.1059,
+      "m_z": -0.3084,
+      "a_z": -2.4626,
+      "rs_trend_stock": 1.1689,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 96,
       "rs_pct_val": 96,
@@ -16927,6 +17305,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -17095,15 +17474,15 @@
       "avwap_swing": 167.55,
       "avwap_vol": 182.0,
       "avwap_short": 177.44,
-      "m_z": 0.7173,
-      "a_z": 0.0681,
-      "rs_trend_stock": 0.0513,
+      "m_z": 5.0,
+      "a_z": 3.5452,
+      "rs_trend_stock": 1.9204,
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 69,
       "rs_pct_val": 69,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -17182,6 +17561,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 40,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -17351,27 +17731,12 @@
       "avwap_swing": 31.19,
       "avwap_vol": 34.93,
       "avwap_short": 32.81,
-      "m_z": -0.2133,
-      "a_z": 0.0078,
-      "rs_trend_stock": -0.0363,
+      "m_z": 3.4306,
+      "a_z": 4.1989,
+      "rs_trend_stock": 2.1173,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "weak",
-          "entry": 31.0,
-          "trigger_price": 31.15,
-          "stop_loss": 27.62,
-          "atr_stop": null,
-          "target": 34.55,
-          "risk": 3.38,
-          "rr": 1.05,
-          "reason": "縮量(0.2x)回測MA10(31.4)；⚠️趨勢破 AVWAP",
-          "confirmations": 0
-        }
-      ],
+      "signals": [],
       "rs_pct": 63,
       "rs_pct_val": 63,
       "structure": "盤整",
@@ -17445,6 +17810,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 60,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -17620,11 +17986,11 @@
       "avwap_swing": 76.89,
       "avwap_vol": 82.0,
       "avwap_short": 75.27,
-      "m_z": 0.0798,
-      "a_z": -0.0295,
-      "rs_trend_stock": 0.0033,
+      "m_z": -0.2605,
+      "a_z": -0.1736,
+      "rs_trend_stock": 0.9074,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 74,
       "rs_pct_val": 74,
@@ -17711,6 +18077,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -17861,10 +18228,10 @@
       "avwap_swing": 13.86,
       "avwap_vol": 16.53,
       "avwap_short": 16.0,
-      "m_z": 1.5017,
-      "a_z": 0.0401,
-      "rs_trend_stock": 0.0101,
-      "rs_slow_positive": false,
+      "m_z": 1.1109,
+      "a_z": 0.7481,
+      "rs_trend_stock": -0.2159,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 65,
@@ -17952,6 +18319,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 60,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -18103,9 +18471,9 @@
       "avwap_swing": 29.87,
       "avwap_vol": 34.32,
       "avwap_short": 33.2,
-      "m_z": -0.1986,
-      "a_z": -0.0082,
-      "rs_trend_stock": -0.0274,
+      "m_z": -0.3866,
+      "a_z": 1.0458,
+      "rs_trend_stock": 0.2307,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -18194,6 +18562,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 60,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -18369,11 +18738,11 @@
       "avwap_swing": 175.91,
       "avwap_vol": 191.96,
       "avwap_short": 179.51,
-      "m_z": -0.2868,
-      "a_z": 0.1468,
-      "rs_trend_stock": -0.002,
-      "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "m_z": -5.0,
+      "a_z": -2.7996,
+      "rs_trend_stock": 0.7385,
+      "rs_slow_positive": false,
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 79,
       "rs_pct_val": 79,
@@ -18421,6 +18790,273 @@
       ]
     },
     {
+      "code": "2357",
+      "name": "華碩",
+      "category": "large",
+      "industry": "電腦及週邊",
+      "sector_key": "電腦週邊",
+      "sector_rs": -0.1314,
+      "themes": [],
+      "warnings": [],
+      "price": 577.0,
+      "change": 3.0,
+      "change_pct": 0.52,
+      "volume": 2408110,
+      "vol_day_ratio": 0.52,
+      "vol_month_ratio": 0.96,
+      "week52_high": 745.0,
+      "week52_low": 441.0,
+      "scores": {
+        "chips": 49,
+        "fundamental": 95,
+        "technical": 51,
+        "volume": 25,
+        "revenue": 50,
+        "rs": 6,
+        "avwap": 10,
+        "topic": 50
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 773.4,
+        "fair": 1011.3,
+        "optimistic": 1308.8,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 470.0,
+            "fair": 571.1,
+            "optimistic": 648.4
+          },
+          {
+            "label": "PEG法",
+            "conservative": 1338.5,
+            "fair": 1784.7,
+            "optimistic": 2230.9
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 773.4,
+            "fair": 1011.3,
+            "optimistic": 1308.8
+          }
+        ]
+      },
+      "eps_ttm": 59.49,
+      "pe_mid": 9.6,
+      "chips_raw": {
+        "foreign": -38,
+        "trust": 282,
+        "dealer": 71,
+        "foreign_con": -1,
+        "trust_con": 1,
+        "dealer_con": 2,
+        "foreign_con_sum": -38,
+        "trust_con_sum": 282,
+        "dealer_con_sum": 174,
+        "foreign_sum30": -4688,
+        "trust_sum30": 4474,
+        "dealer_sum30": 535,
+        "daily": [
+          {
+            "date": "2026-03-27",
+            "foreign": -38,
+            "trust": 282,
+            "dealer": 71,
+            "total": 315
+          },
+          {
+            "date": "2026-03-26",
+            "foreign": 1061,
+            "trust": -4,
+            "dealer": 103,
+            "total": 1160
+          },
+          {
+            "date": "2026-03-25",
+            "foreign": -1209,
+            "trust": 200,
+            "dealer": -7,
+            "total": -1016
+          },
+          {
+            "date": "2026-03-24",
+            "foreign": -317,
+            "trust": 198,
+            "dealer": 9,
+            "total": -110
+          },
+          {
+            "date": "2026-03-23",
+            "foreign": -1042,
+            "trust": 936,
+            "dealer": 173,
+            "total": 67
+          }
+        ],
+        "shares_outstanding": 742760280
+      },
+      "holding": null,
+      "lending": {
+        "volume": 183,
+        "balance": 51518,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-23",
+            "volume": 45,
+            "balance": 49496
+          },
+          {
+            "date": "2026-03-24",
+            "volume": 1106,
+            "balance": 50455
+          },
+          {
+            "date": "2026-03-25",
+            "volume": 939,
+            "balance": 51303
+          },
+          {
+            "date": "2026-03-26",
+            "volume": 519,
+            "balance": 51701
+          },
+          {
+            "date": "2026-03-27",
+            "volume": 183,
+            "balance": 51518
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "124.1%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "16.2%",
+          "pass": true
+        },
+        {
+          "label": "負債比",
+          "value": "9.6%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -38,
+          "consecutive": -1,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 282,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "自營商",
+          "net": 71,
+          "consecutive": 2,
+          "pass": true
+        }
+      ],
+      "yahoo_rs": -0.423,
+      "ma60": 534.66,
+      "above_ma60": true,
+      "revenue_yoy": null,
+      "open": 572.0,
+      "high": 577.0,
+      "low": 566.0,
+      "prev_close": 574.0,
+      "ma5": 568.8,
+      "ma10": 578.0,
+      "ma20": 558.9,
+      "ma_bullish": false,
+      "high20": 604.0,
+      "low20": 500.0,
+      "avwap_swing": 544.31,
+      "avwap_vol": 579.85,
+      "avwap_short": 570.49,
+      "m_z": -5.0,
+      "a_z": -3.3333,
+      "rs_trend_stock": 0.7302,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_STRONG",
+      "signals": [],
+      "rs_pct": 11,
+      "rs_pct_val": 11,
+      "structure": "弱勢",
+      "lending_history": [
+        {
+          "date": "2026-03-23",
+          "volume": 45,
+          "balance": 49496
+        },
+        {
+          "date": "2026-03-24",
+          "volume": 1106,
+          "balance": 50455
+        },
+        {
+          "date": "2026-03-25",
+          "volume": 939,
+          "balance": 51303
+        },
+        {
+          "date": "2026-03-26",
+          "volume": 519,
+          "balance": 51701
+        },
+        {
+          "date": "2026-03-27",
+          "volume": 183,
+          "balance": 51518
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-29",
+          "score": 55
+        },
+        {
+          "date": "2026-03-28",
+          "score": 55
+        },
+        {
+          "date": "2026-03-27",
+          "score": 54
+        },
+        {
+          "date": "2026-03-26",
+          "score": 63
+        },
+        {
+          "date": "2026-03-25",
+          "score": 46
+        },
+        {
+          "date": "2026-03-24",
+          "score": 48
+        },
+        {
+          "date": "2026-03-23",
+          "score": 49
+        }
+      ]
+    },
+    {
       "code": "2395",
       "name": "研華",
       "category": "large",
@@ -18447,6 +19083,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 13,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -18623,11 +19260,11 @@
       "avwap_swing": 328.05,
       "avwap_vol": 350.61,
       "avwap_short": 335.78,
-      "m_z": -1.407,
-      "a_z": -0.0152,
-      "rs_trend_stock": -0.007,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 0.4444,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 22,
       "rs_pct_val": 22,
@@ -18691,287 +19328,6 @@
       ]
     },
     {
-      "code": "2357",
-      "name": "華碩",
-      "category": "large",
-      "industry": "電腦及週邊",
-      "sector_key": "電腦週邊",
-      "sector_rs": -0.1314,
-      "themes": [],
-      "warnings": [],
-      "price": 577.0,
-      "change": 3.0,
-      "change_pct": 0.52,
-      "volume": 2408110,
-      "vol_day_ratio": 0.52,
-      "vol_month_ratio": 0.96,
-      "week52_high": 745.0,
-      "week52_low": 441.0,
-      "scores": {
-        "chips": 49,
-        "fundamental": 95,
-        "technical": 51,
-        "volume": 25,
-        "revenue": 50,
-        "rs": 6,
-        "topic": 50
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 773.4,
-        "fair": 1011.3,
-        "optimistic": 1308.8,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 470.0,
-            "fair": 571.1,
-            "optimistic": 648.4
-          },
-          {
-            "label": "PEG法",
-            "conservative": 1338.5,
-            "fair": 1784.7,
-            "optimistic": 2230.9
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 773.4,
-            "fair": 1011.3,
-            "optimistic": 1308.8
-          }
-        ]
-      },
-      "eps_ttm": 59.49,
-      "pe_mid": 9.6,
-      "chips_raw": {
-        "foreign": -38,
-        "trust": 282,
-        "dealer": 71,
-        "foreign_con": -1,
-        "trust_con": 1,
-        "dealer_con": 2,
-        "foreign_con_sum": -38,
-        "trust_con_sum": 282,
-        "dealer_con_sum": 174,
-        "foreign_sum30": -4688,
-        "trust_sum30": 4474,
-        "dealer_sum30": 535,
-        "daily": [
-          {
-            "date": "2026-03-27",
-            "foreign": -38,
-            "trust": 282,
-            "dealer": 71,
-            "total": 315
-          },
-          {
-            "date": "2026-03-26",
-            "foreign": 1061,
-            "trust": -4,
-            "dealer": 103,
-            "total": 1160
-          },
-          {
-            "date": "2026-03-25",
-            "foreign": -1209,
-            "trust": 200,
-            "dealer": -7,
-            "total": -1016
-          },
-          {
-            "date": "2026-03-24",
-            "foreign": -317,
-            "trust": 198,
-            "dealer": 9,
-            "total": -110
-          },
-          {
-            "date": "2026-03-23",
-            "foreign": -1042,
-            "trust": 936,
-            "dealer": 173,
-            "total": 67
-          }
-        ],
-        "shares_outstanding": 742760280
-      },
-      "holding": null,
-      "lending": {
-        "volume": 183,
-        "balance": 51518,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-23",
-            "volume": 45,
-            "balance": 49496
-          },
-          {
-            "date": "2026-03-24",
-            "volume": 1106,
-            "balance": 50455
-          },
-          {
-            "date": "2026-03-25",
-            "volume": 939,
-            "balance": 51303
-          },
-          {
-            "date": "2026-03-26",
-            "volume": 519,
-            "balance": 51701
-          },
-          {
-            "date": "2026-03-27",
-            "volume": 183,
-            "balance": 51518
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "124.1%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "16.2%",
-          "pass": true
-        },
-        {
-          "label": "負債比",
-          "value": "9.6%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -38,
-          "consecutive": -1,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 282,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "自營商",
-          "net": 71,
-          "consecutive": 2,
-          "pass": true
-        }
-      ],
-      "yahoo_rs": -0.423,
-      "ma60": 534.66,
-      "above_ma60": true,
-      "revenue_yoy": null,
-      "open": 572.0,
-      "high": 577.0,
-      "low": 566.0,
-      "prev_close": 574.0,
-      "ma5": 568.8,
-      "ma10": 578.0,
-      "ma20": 558.9,
-      "ma_bullish": false,
-      "high20": 604.0,
-      "low20": 500.0,
-      "avwap_swing": 544.31,
-      "avwap_vol": 579.85,
-      "avwap_short": 570.49,
-      "m_z": 0.6528,
-      "a_z": 0.0374,
-      "rs_trend_stock": 0.0176,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 577.0,
-          "trigger_price": 579.88,
-          "stop_loss": 558.9,
-          "atr_stop": null,
-          "target": 609.58,
-          "risk": 18.1,
-          "rr": 1.8,
-          "reason": "縮量(0.5x)回測MA10(578.0)",
-          "confirmations": 0
-        }
-      ],
-      "rs_pct": 11,
-      "rs_pct_val": 11,
-      "structure": "弱勢",
-      "lending_history": [
-        {
-          "date": "2026-03-23",
-          "volume": 45,
-          "balance": 49496
-        },
-        {
-          "date": "2026-03-24",
-          "volume": 1106,
-          "balance": 50455
-        },
-        {
-          "date": "2026-03-25",
-          "volume": 939,
-          "balance": 51303
-        },
-        {
-          "date": "2026-03-26",
-          "volume": 519,
-          "balance": 51701
-        },
-        {
-          "date": "2026-03-27",
-          "volume": 183,
-          "balance": 51518
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-29",
-          "score": 55
-        },
-        {
-          "date": "2026-03-28",
-          "score": 55
-        },
-        {
-          "date": "2026-03-27",
-          "score": 54
-        },
-        {
-          "date": "2026-03-26",
-          "score": 63
-        },
-        {
-          "date": "2026-03-25",
-          "score": 46
-        },
-        {
-          "date": "2026-03-24",
-          "score": 48
-        },
-        {
-          "date": "2026-03-23",
-          "score": 49
-        }
-      ]
-    },
-    {
       "code": "2454",
       "name": "聯發科",
       "category": "large",
@@ -18998,6 +19354,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 19,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -19167,11 +19524,11 @@
       "avwap_swing": 1672.69,
       "avwap_vol": null,
       "avwap_short": 1611.37,
-      "m_z": 0.0012,
-      "a_z": 0.0258,
-      "rs_trend_stock": -0.0128,
+      "m_z": -1.082,
+      "a_z": -2.52,
+      "rs_trend_stock": 0.514,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 31,
       "rs_pct_val": 31,
@@ -19264,6 +19621,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -19432,10 +19790,10 @@
       "avwap_swing": 50.02,
       "avwap_vol": 49.17,
       "avwap_short": 49.02,
-      "m_z": 0.0046,
-      "a_z": 0.0162,
-      "rs_trend_stock": -0.025,
-      "rs_slow_positive": false,
+      "m_z": -5.0,
+      "a_z": -3.3333,
+      "rs_trend_stock": -2.1244,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 52,
@@ -19511,6 +19869,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -19648,9 +20007,9 @@
       "avwap_swing": 5.98,
       "avwap_vol": 6.84,
       "avwap_short": 6.62,
-      "m_z": -1.3483,
-      "a_z": -0.031,
-      "rs_trend_stock": -0.0473,
+      "m_z": -5.0,
+      "a_z": 0.0,
+      "rs_trend_stock": -0.2139,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -19723,6 +20082,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -19891,15 +20251,15 @@
       "avwap_swing": 166.46,
       "avwap_vol": 181.6,
       "avwap_short": 195.97,
-      "m_z": 0.5742,
-      "a_z": 0.0269,
-      "rs_trend_stock": 0.0439,
+      "m_z": 3.1518,
+      "a_z": 1.2699,
+      "rs_trend_stock": 1.61,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 73,
       "rs_pct_val": 73,
-      "structure": "主升段✓",
+      "structure": "主升段✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -19976,6 +20336,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 5,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -20144,11 +20505,11 @@
       "avwap_swing": 133.54,
       "avwap_vol": 133.46,
       "avwap_short": 129.23,
-      "m_z": 0.6883,
-      "a_z": 0.0168,
-      "rs_trend_stock": 0.0083,
+      "m_z": -5.0,
+      "a_z": -3.2634,
+      "rs_trend_stock": 0.7758,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 8,
       "rs_pct_val": 8,
@@ -20219,6 +20580,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 11,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -20394,9 +20756,9 @@
       "avwap_swing": 37.3,
       "avwap_vol": 37.19,
       "avwap_short": 36.73,
-      "m_z": 0.7129,
-      "a_z": 0.0095,
-      "rs_trend_stock": 0.0063,
+      "m_z": 5.0,
+      "a_z": 6.6667,
+      "rs_trend_stock": -0.0001,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -20469,6 +20831,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 16,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -20619,10 +20982,10 @@
       "avwap_swing": 9.85,
       "avwap_vol": 10.12,
       "avwap_short": 9.85,
-      "m_z": 2.4438,
-      "a_z": 0.0379,
-      "rs_trend_stock": 0.0358,
-      "rs_slow_positive": false,
+      "m_z": 3.3557,
+      "a_z": 0.6406,
+      "rs_trend_stock": 0.5222,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 26,
@@ -20698,6 +21061,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 22,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -20867,10 +21231,10 @@
       "avwap_swing": 110.42,
       "avwap_vol": 109.71,
       "avwap_short": 109.0,
-      "m_z": 2.0948,
-      "a_z": 0.038,
-      "rs_trend_stock": 0.0166,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 3.8588,
+      "rs_trend_stock": 2.1146,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 36,
@@ -20942,6 +21306,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -21110,10 +21475,10 @@
       "avwap_swing": 91.86,
       "avwap_vol": 101.72,
       "avwap_short": 101.13,
-      "m_z": 1.4238,
-      "a_z": 0.0293,
-      "rs_trend_stock": 0.0217,
-      "rs_slow_positive": false,
+      "m_z": 3.3974,
+      "a_z": 3.2744,
+      "rs_trend_stock": -0.9143,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 53,
@@ -21191,6 +21556,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 5,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -21342,11 +21708,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 15.74,
-      "m_z": -0.9978,
-      "a_z": -0.0163,
-      "rs_trend_stock": -0.0249,
+      "m_z": 3.7658,
+      "a_z": 1.2197,
+      "rs_trend_stock": -1.6997,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 9,
       "rs_pct_val": 9,
@@ -21417,6 +21783,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 2,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -21592,11 +21959,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 493.02,
-      "m_z": 1.051,
-      "a_z": 0.013,
-      "rs_trend_stock": 0.0106,
+      "m_z": -2.17,
+      "a_z": -4.78,
+      "rs_trend_stock": 0.1874,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 3,
       "rs_pct_val": 3,
@@ -21683,6 +22050,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -21833,16 +22201,16 @@
       "avwap_swing": 10.84,
       "avwap_vol": 11.59,
       "avwap_short": 11.04,
-      "m_z": -0.3396,
-      "a_z": 0.0402,
-      "rs_trend_stock": -0.0117,
-      "rs_slow_positive": false,
+      "m_z": -1.3433,
+      "a_z": -0.8955,
+      "rs_trend_stock": 0.9902,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [
         {
           "type": "retest",
-          "label": "回測",
-          "strength": "medium",
+          "label": "縮量回測(起漲型)",
+          "strength": "weak",
           "entry": 11.25,
           "trigger_price": 11.71,
           "stop_loss": 11.06,
@@ -21850,7 +22218,7 @@
           "target": 11.59,
           "risk": 0.19,
           "rr": 1.8,
-          "reason": "縮量(0.9x)回測MA10(11.47)",
+          "reason": "縮量(0.9x)回測MA10(11.47)，RS百分位53(40~60)，RS斜率剛翻正",
           "confirmations": 0
         }
       ],
@@ -21939,6 +22307,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -22115,9 +22484,9 @@
       "avwap_swing": 198.88,
       "avwap_vol": 274.79,
       "avwap_short": 256.54,
-      "m_z": 1.2503,
-      "a_z": -0.0354,
-      "rs_trend_stock": 0.0928,
+      "m_z": 0.0817,
+      "a_z": -1.4234,
+      "rs_trend_stock": -0.4709,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -22194,6 +22563,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 25,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -22363,10 +22733,10 @@
       "avwap_swing": 235.75,
       "avwap_vol": 261.61,
       "avwap_short": 256.33,
-      "m_z": 1.502,
-      "a_z": 0.0415,
-      "rs_trend_stock": 0.0036,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 5.0868,
+      "rs_trend_stock": 1.1878,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 42,
@@ -22419,8 +22789,8 @@
       "name": "宏碁遊戲-創",
       "category": "mid_small",
       "industry": "其他電子",
-      "sector_key": "",
-      "sector_rs": null,
+      "sector_key": "其他電子",
+      "sector_rs": 0.2708,
       "themes": [],
       "warnings": [],
       "price": 42.1,
@@ -22438,6 +22808,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 50,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -22602,6 +22973,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 100,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -22770,15 +23142,15 @@
       "avwap_swing": 152.8,
       "avwap_vol": 196.67,
       "avwap_short": 186.59,
-      "m_z": 1.3379,
-      "a_z": 0.0495,
-      "rs_trend_stock": 0.0663,
+      "m_z": 4.569,
+      "a_z": 1.7559,
+      "rs_trend_stock": 2.8822,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 92,
       "rs_pct_val": 92,
-      "structure": "主升段✓",
+      "structure": "主升段✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -22863,6 +23235,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 100,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -23031,10 +23404,10 @@
       "avwap_swing": 104.94,
       "avwap_vol": null,
       "avwap_short": 111.05,
-      "m_z": -0.6063,
-      "a_z": 0.0645,
-      "rs_trend_stock": -0.0605,
-      "rs_slow_positive": true,
+      "m_z": 1.6419,
+      "a_z": -0.5969,
+      "rs_trend_stock": 0.1745,
+      "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 93,
@@ -23128,6 +23501,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 24,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -23278,10 +23652,10 @@
       "avwap_swing": 14.26,
       "avwap_vol": 15.35,
       "avwap_short": 14.77,
-      "m_z": 0.5603,
-      "a_z": 0.0261,
-      "rs_trend_stock": -0.0165,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 3.8625,
+      "rs_trend_stock": 0.3923,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 40,
@@ -23369,6 +23743,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -23519,10 +23894,10 @@
       "avwap_swing": 16.0,
       "avwap_vol": 18.33,
       "avwap_short": 17.76,
-      "m_z": 0.9817,
-      "a_z": -0.0008,
-      "rs_trend_stock": -0.0012,
-      "rs_slow_positive": false,
+      "m_z": -0.8056,
+      "a_z": -0.5371,
+      "rs_trend_stock": -1.5532,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 56,
@@ -23612,6 +23987,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 25,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -23786,10 +24162,10 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 3558.47,
-      "m_z": -1.2639,
-      "a_z": -0.0234,
-      "rs_trend_stock": -0.0246,
-      "rs_slow_positive": true,
+      "m_z": 0.5876,
+      "a_z": -1.846,
+      "rs_trend_stock": -0.7181,
+      "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 41,
@@ -23877,6 +24253,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 80,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -24045,10 +24422,10 @@
       "avwap_swing": null,
       "avwap_vol": 58.6,
       "avwap_short": 58.98,
-      "m_z": 0.4414,
-      "a_z": 0.0058,
-      "rs_trend_stock": -0.0242,
-      "rs_slow_positive": true,
+      "m_z": 5.0,
+      "a_z": 1.876,
+      "rs_trend_stock": 0.9443,
+      "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 88,
@@ -24136,6 +24513,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 29,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -24286,16 +24664,16 @@
       "avwap_swing": 12.36,
       "avwap_vol": 13.01,
       "avwap_short": 12.78,
-      "m_z": 0.136,
-      "a_z": 0.0098,
-      "rs_trend_stock": -0.0043,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "m_z": -0.3311,
+      "a_z": -0.2207,
+      "rs_trend_stock": 0.1696,
+      "rs_slow_positive": true,
+      "stock_phase": "RANGE",
       "signals": [
         {
           "type": "retest",
-          "label": "回測",
-          "strength": "medium",
+          "label": "縮量回測(起漲型)",
+          "strength": "weak",
           "entry": 12.8,
           "trigger_price": 13.42,
           "stop_loss": 12.67,
@@ -24303,13 +24681,13 @@
           "target": 13.03,
           "risk": 0.13,
           "rr": 1.8,
-          "reason": "縮量(0.6x)回測MA10(12.76)",
+          "reason": "縮量(0.6x)回測MA10(12.76)，RS百分位49(40~60)，RS斜率剛翻正",
           "confirmations": 0
         }
       ],
       "rs_pct": 49,
       "rs_pct_val": 49,
-      "structure": "弱勢",
+      "structure": "盤整",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -24380,6 +24758,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 23,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -24530,10 +24909,10 @@
       "avwap_swing": 16.56,
       "avwap_vol": 16.98,
       "avwap_short": 16.65,
-      "m_z": 0.8746,
-      "a_z": 0.0325,
-      "rs_trend_stock": 0.0088,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 5.6317,
+      "rs_trend_stock": 1.1815,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 39,
@@ -24608,6 +24987,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 100,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -24783,11 +25163,11 @@
       "avwap_swing": 360.09,
       "avwap_vol": 497.0,
       "avwap_short": 493.24,
-      "m_z": -0.3124,
-      "a_z": -0.0195,
-      "rs_trend_stock": 0.0402,
+      "m_z": 5.0,
+      "a_z": 1.7838,
+      "rs_trend_stock": 2.6566,
       "rs_slow_positive": true,
-      "stock_phase": "BULL_PULLBACK",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 97,
       "rs_pct_val": 97,
@@ -24858,6 +25238,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 60,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -24977,11 +25358,11 @@
       "avwap_swing": 11.81,
       "avwap_vol": 14.4,
       "avwap_short": 14.82,
-      "m_z": -1.5327,
-      "a_z": -0.0063,
-      "rs_trend_stock": -0.1292,
+      "m_z": -5.0,
+      "a_z": -3.3333,
+      "rs_trend_stock": 1.5735,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 78,
       "rs_pct_val": 78,
@@ -25060,6 +25441,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -25234,15 +25616,15 @@
       "avwap_swing": 92.67,
       "avwap_vol": 98.84,
       "avwap_short": 98.51,
-      "m_z": 0.1459,
-      "a_z": -0.0311,
-      "rs_trend_stock": 0.0003,
+      "m_z": -4.7287,
+      "a_z": -3.2898,
+      "rs_trend_stock": -0.7128,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [
         {
           "type": "retest",
-          "label": "回測",
+          "label": "縮量回測(主升型)",
           "strength": "medium",
           "entry": 97.9,
           "trigger_price": 99.6,
@@ -25251,7 +25633,7 @@
           "target": 103.62,
           "risk": 3.18,
           "rr": 1.8,
-          "reason": "縮量(0.7x)回測MA10(98.85)",
+          "reason": "縮量(0.7x)回測MA10(98.85)，RS百分位60(≥60)",
           "confirmations": 0
         }
       ],
@@ -25313,274 +25695,6 @@
       ]
     },
     {
-      "code": "3711",
-      "name": "日月光投控",
-      "category": "large",
-      "industry": "半導體",
-      "sector_key": "半導體",
-      "sector_rs": -0.4371,
-      "themes": [
-        "封測"
-      ],
-      "warnings": [],
-      "price": 353.5,
-      "change": -5.5,
-      "change_pct": -1.53,
-      "volume": 16784878,
-      "vol_day_ratio": 0.84,
-      "vol_month_ratio": 0.88,
-      "week52_high": 394.0,
-      "week52_low": 115.0,
-      "scores": {
-        "chips": 34,
-        "fundamental": 80,
-        "technical": 71,
-        "volume": 25,
-        "revenue": 50,
-        "rs": 80,
-        "topic": 50
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 140.1,
-        "fair": 153.5,
-        "optimistic": 230.6,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 140.1,
-            "fair": 153.5,
-            "optimistic": 230.6
-          },
-          {
-            "label": "PEG法",
-            "conservative": 199.6,
-            "fair": 266.1,
-            "optimistic": 332.6
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 115.3,
-            "fair": 150.8,
-            "optimistic": 195.1
-          }
-        ]
-      },
-      "eps_ttm": 8.87,
-      "pe_mid": 17.3,
-      "chips_raw": {
-        "foreign": -3894,
-        "trust": 65,
-        "dealer": 226,
-        "foreign_con": -1,
-        "trust_con": 1,
-        "dealer_con": 5,
-        "foreign_con_sum": -3894,
-        "trust_con_sum": 65,
-        "dealer_con_sum": 853,
-        "foreign_sum30": -25778,
-        "trust_sum30": 7869,
-        "dealer_sum30": 3542,
-        "daily": [
-          {
-            "date": "2026-03-27",
-            "foreign": -3894,
-            "trust": 65,
-            "dealer": 226,
-            "total": -3603
-          },
-          {
-            "date": "2026-03-26",
-            "foreign": 2291,
-            "trust": -315,
-            "dealer": 194,
-            "total": 2170
-          },
-          {
-            "date": "2026-03-25",
-            "foreign": 2675,
-            "trust": 959,
-            "dealer": 65,
-            "total": 3699
-          },
-          {
-            "date": "2026-03-24",
-            "foreign": 1788,
-            "trust": 52,
-            "dealer": 40,
-            "total": 1880
-          },
-          {
-            "date": "2026-03-23",
-            "foreign": -915,
-            "trust": -100,
-            "dealer": 328,
-            "total": -687
-          }
-        ],
-        "shares_outstanding": 4374088782
-      },
-      "holding": null,
-      "lending": {
-        "volume": 462,
-        "balance": 29461,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-23",
-            "volume": 408,
-            "balance": 28863
-          },
-          {
-            "date": "2026-03-24",
-            "volume": 140,
-            "balance": 28868
-          },
-          {
-            "date": "2026-03-25",
-            "volume": 363,
-            "balance": 29028
-          },
-          {
-            "date": "2026-03-26",
-            "volume": 426,
-            "balance": 29184
-          },
-          {
-            "date": "2026-03-27",
-            "volume": 462,
-            "balance": 29461
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "54.3%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "11.6%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "41.4%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -3894,
-          "consecutive": -1,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 65,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "自營商",
-          "net": 226,
-          "consecutive": 5,
-          "pass": true
-        }
-      ],
-      "yahoo_rs": 0.5609,
-      "ma60": 311.8,
-      "above_ma60": true,
-      "revenue_yoy": null,
-      "open": 347.5,
-      "high": 354.0,
-      "low": 342.5,
-      "prev_close": 359.0,
-      "ma5": 345.3,
-      "ma10": 345.45,
-      "ma20": 344.25,
-      "ma_bullish": false,
-      "high20": 394.0,
-      "low20": 308.0,
-      "avwap_swing": 316.93,
-      "avwap_vol": null,
-      "avwap_short": 346.14,
-      "m_z": 0.5299,
-      "a_z": -0.0169,
-      "rs_trend_stock": 0.0364,
-      "rs_slow_positive": true,
-      "stock_phase": "RANGE",
-      "signals": [],
-      "rs_pct": 80,
-      "rs_pct_val": 80,
-      "structure": "盤整",
-      "lending_history": [
-        {
-          "date": "2026-03-23",
-          "volume": 408,
-          "balance": 28863
-        },
-        {
-          "date": "2026-03-24",
-          "volume": 140,
-          "balance": 28868
-        },
-        {
-          "date": "2026-03-25",
-          "volume": 363,
-          "balance": 29028
-        },
-        {
-          "date": "2026-03-26",
-          "volume": 426,
-          "balance": 29184
-        },
-        {
-          "date": "2026-03-27",
-          "volume": 462,
-          "balance": 29461
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-29",
-          "score": 49
-        },
-        {
-          "date": "2026-03-28",
-          "score": 49
-        },
-        {
-          "date": "2026-03-27",
-          "score": 45
-        },
-        {
-          "date": "2026-03-26",
-          "score": 65
-        },
-        {
-          "date": "2026-03-25",
-          "score": 69
-        },
-        {
-          "date": "2026-03-24",
-          "score": 69
-        },
-        {
-          "date": "2026-03-23",
-          "score": 49
-        }
-      ]
-    },
-    {
       "code": "2882",
       "name": "國泰金",
       "category": "large",
@@ -25604,6 +25718,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 14,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -25779,11 +25894,11 @@
       "avwap_swing": 71.44,
       "avwap_vol": null,
       "avwap_short": 71.06,
-      "m_z": -1.0787,
-      "a_z": 0.0095,
-      "rs_trend_stock": -0.0298,
+      "m_z": -5.0,
+      "a_z": -2.4371,
+      "rs_trend_stock": -0.0827,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 23,
       "rs_pct_val": 23,
@@ -25847,6 +25962,275 @@
       ]
     },
     {
+      "code": "3711",
+      "name": "日月光投控",
+      "category": "large",
+      "industry": "半導體",
+      "sector_key": "半導體",
+      "sector_rs": -0.4371,
+      "themes": [
+        "封測"
+      ],
+      "warnings": [],
+      "price": 353.5,
+      "change": -5.5,
+      "change_pct": -1.53,
+      "volume": 16784878,
+      "vol_day_ratio": 0.84,
+      "vol_month_ratio": 0.88,
+      "week52_high": 394.0,
+      "week52_low": 115.0,
+      "scores": {
+        "chips": 34,
+        "fundamental": 80,
+        "technical": 71,
+        "volume": 25,
+        "revenue": 50,
+        "rs": 80,
+        "avwap": 10,
+        "topic": 50
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 140.1,
+        "fair": 153.5,
+        "optimistic": 230.6,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 140.1,
+            "fair": 153.5,
+            "optimistic": 230.6
+          },
+          {
+            "label": "PEG法",
+            "conservative": 199.6,
+            "fair": 266.1,
+            "optimistic": 332.6
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 115.3,
+            "fair": 150.8,
+            "optimistic": 195.1
+          }
+        ]
+      },
+      "eps_ttm": 8.87,
+      "pe_mid": 17.3,
+      "chips_raw": {
+        "foreign": -3894,
+        "trust": 65,
+        "dealer": 226,
+        "foreign_con": -1,
+        "trust_con": 1,
+        "dealer_con": 5,
+        "foreign_con_sum": -3894,
+        "trust_con_sum": 65,
+        "dealer_con_sum": 853,
+        "foreign_sum30": -25778,
+        "trust_sum30": 7869,
+        "dealer_sum30": 3542,
+        "daily": [
+          {
+            "date": "2026-03-27",
+            "foreign": -3894,
+            "trust": 65,
+            "dealer": 226,
+            "total": -3603
+          },
+          {
+            "date": "2026-03-26",
+            "foreign": 2291,
+            "trust": -315,
+            "dealer": 194,
+            "total": 2170
+          },
+          {
+            "date": "2026-03-25",
+            "foreign": 2675,
+            "trust": 959,
+            "dealer": 65,
+            "total": 3699
+          },
+          {
+            "date": "2026-03-24",
+            "foreign": 1788,
+            "trust": 52,
+            "dealer": 40,
+            "total": 1880
+          },
+          {
+            "date": "2026-03-23",
+            "foreign": -915,
+            "trust": -100,
+            "dealer": 328,
+            "total": -687
+          }
+        ],
+        "shares_outstanding": 4374088782
+      },
+      "holding": null,
+      "lending": {
+        "volume": 462,
+        "balance": 29461,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-23",
+            "volume": 408,
+            "balance": 28863
+          },
+          {
+            "date": "2026-03-24",
+            "volume": 140,
+            "balance": 28868
+          },
+          {
+            "date": "2026-03-25",
+            "volume": 363,
+            "balance": 29028
+          },
+          {
+            "date": "2026-03-26",
+            "volume": 426,
+            "balance": 29184
+          },
+          {
+            "date": "2026-03-27",
+            "volume": 462,
+            "balance": 29461
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "54.3%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "11.6%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "41.4%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -3894,
+          "consecutive": -1,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 65,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "自營商",
+          "net": 226,
+          "consecutive": 5,
+          "pass": true
+        }
+      ],
+      "yahoo_rs": 0.5609,
+      "ma60": 311.8,
+      "above_ma60": true,
+      "revenue_yoy": null,
+      "open": 347.5,
+      "high": 354.0,
+      "low": 342.5,
+      "prev_close": 359.0,
+      "ma5": 345.3,
+      "ma10": 345.45,
+      "ma20": 344.25,
+      "ma_bullish": false,
+      "high20": 394.0,
+      "low20": 308.0,
+      "avwap_swing": 316.93,
+      "avwap_vol": null,
+      "avwap_short": 346.14,
+      "m_z": -0.9421,
+      "a_z": -3.3013,
+      "rs_trend_stock": 0.4934,
+      "rs_slow_positive": true,
+      "stock_phase": "BULL_PULLBACK",
+      "signals": [],
+      "rs_pct": 80,
+      "rs_pct_val": 80,
+      "structure": "盤整",
+      "lending_history": [
+        {
+          "date": "2026-03-23",
+          "volume": 408,
+          "balance": 28863
+        },
+        {
+          "date": "2026-03-24",
+          "volume": 140,
+          "balance": 28868
+        },
+        {
+          "date": "2026-03-25",
+          "volume": 363,
+          "balance": 29028
+        },
+        {
+          "date": "2026-03-26",
+          "volume": 426,
+          "balance": 29184
+        },
+        {
+          "date": "2026-03-27",
+          "volume": 462,
+          "balance": 29461
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-29",
+          "score": 49
+        },
+        {
+          "date": "2026-03-28",
+          "score": 49
+        },
+        {
+          "date": "2026-03-27",
+          "score": 45
+        },
+        {
+          "date": "2026-03-26",
+          "score": 65
+        },
+        {
+          "date": "2026-03-25",
+          "score": 69
+        },
+        {
+          "date": "2026-03-24",
+          "score": 69
+        },
+        {
+          "date": "2026-03-23",
+          "score": 49
+        }
+      ]
+    },
+    {
       "code": "2887",
       "name": "台新新光金",
       "category": "mid_small",
@@ -25870,6 +26254,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 28,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -26045,10 +26430,10 @@
       "avwap_swing": 23.34,
       "avwap_vol": 24.34,
       "avwap_short": 24.05,
-      "m_z": -1.9681,
-      "a_z": 0.0215,
-      "rs_trend_stock": -0.0359,
-      "rs_slow_positive": false,
+      "m_z": -3.9494,
+      "a_z": -2.9782,
+      "rs_trend_stock": 0.1474,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 47,
@@ -26142,6 +26527,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 3,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -26310,11 +26696,11 @@
       "avwap_swing": null,
       "avwap_vol": 61.31,
       "avwap_short": 52.91,
-      "m_z": -1.159,
-      "a_z": 0.0075,
-      "rs_trend_stock": -0.01,
+      "m_z": -0.6278,
+      "a_z": -0.7303,
+      "rs_trend_stock": 0.8203,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 6,
       "rs_pct_val": 6,
@@ -26401,6 +26787,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -26551,30 +26938,30 @@
       "avwap_swing": 133.81,
       "avwap_vol": 171.01,
       "avwap_short": 150.2,
-      "m_z": -0.3342,
-      "a_z": 0.0967,
-      "rs_trend_stock": 0.0283,
+      "m_z": 5.0,
+      "a_z": 4.4736,
+      "rs_trend_stock": 2.48,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [
         {
           "type": "retest",
-          "label": "回測",
+          "label": "縮量回測(主升型)",
           "strength": "medium",
           "entry": 155.5,
           "trigger_price": 156.78,
           "stop_loss": 150.97,
           "atr_stop": null,
-          "target": 163.65,
+          "target": 171.81,
           "risk": 4.53,
-          "rr": 1.8,
-          "reason": "縮量(0.2x)回測MA10(158.0)",
-          "confirmations": 1
+          "rr": 3.6,
+          "reason": "縮量(0.2x)回測MA10(158.0)，RS百分位84(≥60)",
+          "confirmations": 2
         }
       ],
       "rs_pct": 84,
       "rs_pct_val": 84,
-      "structure": "盤整",
+      "structure": "回檔",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -26647,6 +27034,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 8,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -26815,9 +27203,9 @@
       "avwap_swing": 75.29,
       "avwap_vol": null,
       "avwap_short": 75.29,
-      "m_z": 1.6801,
-      "a_z": 0.0475,
-      "rs_trend_stock": 0.0251,
+      "m_z": 5.0,
+      "a_z": 5.3652,
+      "rs_trend_stock": 1.7739,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -26890,6 +27278,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 100,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -27040,9 +27429,9 @@
       "avwap_swing": 84.17,
       "avwap_vol": null,
       "avwap_short": 116.53,
-      "m_z": -1.3184,
-      "a_z": -0.1435,
-      "rs_trend_stock": -0.1464,
+      "m_z": -0.7029,
+      "a_z": 0.4347,
+      "rs_trend_stock": 0.6399,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -27131,6 +27520,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 100,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -27282,11 +27672,11 @@
       "avwap_swing": 42.56,
       "avwap_vol": 50.39,
       "avwap_short": 45.47,
-      "m_z": -0.869,
-      "a_z": 0.1448,
-      "rs_trend_stock": -0.006,
+      "m_z": 2.0451,
+      "a_z": 2.5684,
+      "rs_trend_stock": 0.5379,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 90,
       "rs_pct_val": 90,
@@ -27379,6 +27769,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -27541,11 +27932,11 @@
       "avwap_swing": 52.37,
       "avwap_vol": 55.09,
       "avwap_short": 50.64,
-      "m_z": -1.3533,
-      "a_z": -0.0218,
-      "rs_trend_stock": -0.0376,
+      "m_z": -1.7549,
+      "a_z": -3.9263,
+      "rs_trend_stock": 0.1486,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 66,
       "rs_pct_val": 66,
@@ -27616,6 +28007,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -27766,9 +28158,9 @@
       "avwap_swing": 14.77,
       "avwap_vol": 17.31,
       "avwap_short": 17.06,
-      "m_z": 0.1707,
-      "a_z": -0.0212,
-      "rs_trend_stock": -0.0394,
+      "m_z": -1.8425,
+      "a_z": -0.9312,
+      "rs_trend_stock": -2.2923,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -27857,6 +28249,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -28032,9 +28425,9 @@
       "avwap_swing": 28.66,
       "avwap_vol": 29.75,
       "avwap_short": 29.31,
-      "m_z": 1.7992,
-      "a_z": 0.0655,
-      "rs_trend_stock": 0.0189,
+      "m_z": 5.0,
+      "a_z": 6.6667,
+      "rs_trend_stock": 0.8533,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -28107,6 +28500,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 26,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -28282,27 +28676,12 @@
       "avwap_swing": 43.44,
       "avwap_vol": 45.05,
       "avwap_short": 45.22,
-      "m_z": -0.8572,
-      "a_z": -0.0086,
-      "rs_trend_stock": -0.0103,
-      "rs_slow_positive": false,
+      "m_z": -0.995,
+      "a_z": -0.8718,
+      "rs_trend_stock": -0.6368,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
-      "signals": [
-        {
-          "type": "retest",
-          "label": "回測",
-          "strength": "medium",
-          "entry": 45.3,
-          "trigger_price": 46.28,
-          "stop_loss": 44.97,
-          "atr_stop": null,
-          "target": 45.89,
-          "risk": 0.33,
-          "rr": 1.8,
-          "reason": "縮量(0.8x)回測MA10(44.88)；主力未跑✓",
-          "confirmations": 0
-        }
-      ],
+      "signals": [],
       "rs_pct": 43,
       "rs_pct_val": 43,
       "structure": "盤整",
@@ -28390,6 +28769,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 80,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -28559,9 +28939,9 @@
       "avwap_swing": 211.24,
       "avwap_vol": 253.32,
       "avwap_short": 253.32,
-      "m_z": -0.4289,
-      "a_z": -0.0284,
-      "rs_trend_stock": -0.0709,
+      "m_z": 0.1361,
+      "a_z": 1.6261,
+      "rs_trend_stock": -0.8116,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -28656,6 +29036,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 25,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -28824,10 +29205,10 @@
       "avwap_swing": 65.42,
       "avwap_vol": 69.6,
       "avwap_short": 67.52,
-      "m_z": 3.6355,
-      "a_z": 0.089,
-      "rs_trend_stock": 0.0409,
-      "rs_slow_positive": false,
+      "m_z": 5.0,
+      "a_z": 0.0,
+      "rs_trend_stock": 2.28,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 42,
@@ -28903,6 +29284,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 0,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -29022,11 +29404,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 44.79,
-      "m_z": -1.2517,
-      "a_z": -0.0494,
-      "rs_trend_stock": -0.0218,
+      "m_z": 2.7489,
+      "a_z": 0.7302,
+      "rs_trend_stock": -1.0712,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 1,
       "rs_pct_val": 1,
@@ -29097,6 +29479,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 14,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -29265,11 +29648,11 @@
       "avwap_swing": 11.42,
       "avwap_vol": 11.7,
       "avwap_short": 11.96,
-      "m_z": -0.9746,
-      "a_z": -0.014,
-      "rs_trend_stock": -0.0023,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "m_z": 5.0,
+      "a_z": 3.8818,
+      "rs_trend_stock": -1.8515,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 24,
       "rs_pct_val": 24,
@@ -29340,6 +29723,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 8,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -29508,11 +29892,11 @@
       "avwap_swing": 88.12,
       "avwap_vol": null,
       "avwap_short": 87.57,
-      "m_z": 0.2477,
-      "a_z": 0.0122,
-      "rs_trend_stock": -0.0071,
+      "m_z": 0.5197,
+      "a_z": -0.5735,
+      "rs_trend_stock": -0.0049,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 13,
       "rs_pct_val": 13,
@@ -29599,6 +29983,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -29774,10 +30159,10 @@
       "avwap_swing": 270.81,
       "avwap_vol": 270.31,
       "avwap_short": 257.61,
-      "m_z": 0.6622,
-      "a_z": -0.0042,
-      "rs_trend_stock": 0.0165,
-      "rs_slow_positive": true,
+      "m_z": 1.0604,
+      "a_z": -1.6914,
+      "rs_trend_stock": 1.2005,
+      "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 64,
@@ -29865,6 +30250,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 12,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -30039,9 +30425,9 @@
       "avwap_swing": 134.39,
       "avwap_vol": 135.89,
       "avwap_short": 134.35,
-      "m_z": -0.1192,
-      "a_z": 0.0095,
-      "rs_trend_stock": -0.0066,
+      "m_z": -5.0,
+      "a_z": 0.0,
+      "rs_trend_stock": -0.2624,
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
@@ -30136,6 +30522,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 23,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -30304,15 +30691,15 @@
       "avwap_swing": 252.68,
       "avwap_vol": 270.3,
       "avwap_short": 263.64,
-      "m_z": -1.4659,
-      "a_z": -0.0251,
-      "rs_trend_stock": 0.005,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "a_z": 0.0,
+      "rs_trend_stock": -0.0391,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 39,
       "rs_pct_val": 39,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -30382,6 +30769,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 100,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -30548,10 +30936,10 @@
       "avwap_swing": 250.74,
       "avwap_vol": null,
       "avwap_short": 222.96,
-      "m_z": -0.7389,
-      "a_z": -0.0162,
-      "rs_trend_stock": -0.0338,
-      "rs_slow_positive": true,
+      "m_z": 2.9779,
+      "a_z": 3.0664,
+      "rs_trend_stock": 0.5043,
+      "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 95,
@@ -30639,6 +31027,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -30813,11 +31202,11 @@
       "avwap_swing": 47.38,
       "avwap_vol": 48.55,
       "avwap_short": 44.19,
-      "m_z": 0.8123,
-      "a_z": 0.0578,
-      "rs_trend_stock": -0.022,
-      "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "m_z": -5.0,
+      "a_z": -6.0755,
+      "rs_trend_stock": 1.7308,
+      "rs_slow_positive": false,
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 69,
       "rs_pct_val": 69,
@@ -30894,6 +31283,7 @@
         "volume": 100,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -31044,10 +31434,10 @@
       "avwap_swing": 33.86,
       "avwap_vol": 36.62,
       "avwap_short": 35.53,
-      "m_z": 1.4523,
-      "a_z": 0.0398,
-      "rs_trend_stock": 0.0756,
-      "rs_slow_positive": false,
+      "m_z": 0.5317,
+      "a_z": -1.6077,
+      "rs_trend_stock": 3.2112,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 55,
@@ -31141,6 +31531,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 6,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -31309,11 +31700,11 @@
       "avwap_swing": 2367.02,
       "avwap_vol": null,
       "avwap_short": 2295.88,
-      "m_z": -0.49,
-      "a_z": 0.0094,
-      "rs_trend_stock": -0.0109,
+      "m_z": -5.0,
+      "a_z": -4.9159,
+      "rs_trend_stock": 0.8912,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 11,
       "rs_pct_val": 11,
@@ -31400,6 +31791,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 100,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -31568,15 +31960,15 @@
       "avwap_swing": 55.12,
       "avwap_vol": 78.17,
       "avwap_short": 76.21,
-      "m_z": 0.4032,
-      "a_z": 0.1648,
-      "rs_trend_stock": 0.1062,
+      "m_z": 4.9836,
+      "a_z": 1.2382,
+      "rs_trend_stock": 1.3253,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 93,
       "rs_pct_val": 93,
-      "structure": "突破準備✓",
+      "structure": "突破準備✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -31659,6 +32051,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 27,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -31809,10 +32202,10 @@
       "avwap_swing": 13.12,
       "avwap_vol": 15.05,
       "avwap_short": 14.58,
-      "m_z": 3.6055,
-      "a_z": 0.1017,
-      "rs_trend_stock": 0.0699,
-      "rs_slow_positive": false,
+      "m_z": 3.422,
+      "a_z": 0.185,
+      "rs_trend_stock": 1.4148,
+      "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 45,
@@ -31896,6 +32289,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 10,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -32064,9 +32458,9 @@
       "avwap_swing": 42.79,
       "avwap_vol": null,
       "avwap_short": 42.8,
-      "m_z": 0.7773,
-      "a_z": -0.0001,
-      "rs_trend_stock": 0.0027,
+      "m_z": 5.0,
+      "a_z": 2.9268,
+      "rs_trend_stock": 0.2562,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -32139,6 +32533,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [],
@@ -32287,9 +32682,9 @@
       "avwap_swing": 107.88,
       "avwap_vol": 120.83,
       "avwap_short": 110.98,
-      "m_z": 3.1831,
-      "a_z": 0.0805,
-      "rs_trend_stock": 0.0905,
+      "m_z": 2.3049,
+      "a_z": 0.3036,
+      "rs_trend_stock": -0.4574,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -32372,6 +32767,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 3,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -32540,11 +32936,11 @@
       "avwap_swing": null,
       "avwap_vol": 27.9,
       "avwap_short": 26.16,
-      "m_z": 0.3551,
-      "a_z": 0.0138,
-      "rs_trend_stock": -0.0027,
+      "m_z": -1.7924,
+      "a_z": -1.0869,
+      "rs_trend_stock": 0.2103,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 5,
       "rs_pct_val": 5,
@@ -32631,6 +33027,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 1,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [],
@@ -32748,11 +33145,11 @@
       "avwap_swing": 26.84,
       "avwap_vol": null,
       "avwap_short": 26.84,
-      "m_z": 0.421,
-      "a_z": 0.1003,
-      "rs_trend_stock": 0.0117,
+      "m_z": -5.0,
+      "a_z": -2.3908,
+      "rs_trend_stock": 3.0266,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 1,
       "rs_pct_val": 1,
@@ -32831,6 +33228,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 18,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -33006,15 +33404,15 @@
       "avwap_swing": 34.21,
       "avwap_vol": 34.0,
       "avwap_short": 33.41,
-      "m_z": -0.0901,
-      "a_z": 0.0107,
-      "rs_trend_stock": -0.0062,
+      "m_z": 5.0,
+      "a_z": 4.816,
+      "rs_trend_stock": -0.0634,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 30,
       "rs_pct_val": 30,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -33083,6 +33481,7 @@
         "volume": 70,
         "revenue": 50,
         "rs": 60,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -33245,11 +33644,11 @@
       "avwap_swing": 24.85,
       "avwap_vol": 28.82,
       "avwap_short": 25.22,
-      "m_z": -0.5161,
-      "a_z": -0.0116,
-      "rs_trend_stock": 0.0197,
+      "m_z": -0.1583,
+      "a_z": 0.2323,
+      "rs_trend_stock": 0.588,
       "rs_slow_positive": true,
-      "stock_phase": "BULL_PULLBACK",
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 76,
       "rs_pct_val": 76,
@@ -33338,6 +33737,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -33488,11 +33888,11 @@
       "avwap_swing": 52.11,
       "avwap_vol": 60.13,
       "avwap_short": 53.81,
-      "m_z": 0.4464,
-      "a_z": 0.029,
-      "rs_trend_stock": 0.042,
+      "m_z": -5.0,
+      "a_z": -3.3333,
+      "rs_trend_stock": 2.2625,
       "rs_slow_positive": true,
-      "stock_phase": "BULL",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 85,
       "rs_pct_val": 85,
@@ -33579,6 +33979,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -33729,10 +34130,10 @@
       "avwap_swing": 13.56,
       "avwap_vol": 14.12,
       "avwap_short": 13.8,
-      "m_z": 0.3441,
-      "a_z": 0.0243,
-      "rs_trend_stock": -0.0078,
-      "rs_slow_positive": false,
+      "m_z": 1.6642,
+      "a_z": 4.4428,
+      "rs_trend_stock": 0.3045,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 50,
@@ -33820,6 +34221,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [],
@@ -33986,9 +34388,9 @@
       "avwap_swing": 14.36,
       "avwap_vol": 16.83,
       "avwap_short": 16.14,
-      "m_z": 2.2947,
-      "a_z": 0.1009,
-      "rs_trend_stock": 0.0656,
+      "m_z": 4.1905,
+      "a_z": -0.5397,
+      "rs_trend_stock": 2.3332,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -34071,6 +34473,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 9,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -34239,9 +34642,9 @@
       "avwap_swing": 186.86,
       "avwap_vol": null,
       "avwap_short": 187.81,
-      "m_z": 0.2711,
-      "a_z": 0.0125,
-      "rs_trend_stock": -0.0076,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 0.3199,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -34330,6 +34733,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 17,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -34480,11 +34884,11 @@
       "avwap_swing": 8.57,
       "avwap_vol": 8.71,
       "avwap_short": 8.5,
-      "m_z": -0.8631,
-      "a_z": -0.0049,
-      "rs_trend_stock": -0.0148,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "m_z": 2.4404,
+      "a_z": 0.983,
+      "rs_trend_stock": -0.3744,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 29,
       "rs_pct_val": 29,
@@ -34571,6 +34975,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 100,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -34690,11 +35095,11 @@
       "avwap_swing": 17.76,
       "avwap_vol": 23.58,
       "avwap_short": 23.01,
-      "m_z": -0.9038,
-      "a_z": 0.1245,
-      "rs_trend_stock": 0.1414,
+      "m_z": 5.0,
+      "a_z": 0.0,
+      "rs_trend_stock": 0.9883,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 94,
       "rs_pct_val": 94,
@@ -34787,6 +35192,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -34955,15 +35361,15 @@
       "avwap_swing": 187.64,
       "avwap_vol": 224.83,
       "avwap_short": 215.89,
-      "m_z": 1.4894,
-      "a_z": 0.0626,
-      "rs_trend_stock": 0.0538,
+      "m_z": 2.9041,
+      "a_z": 0.7262,
+      "rs_trend_stock": 2.4422,
       "rs_slow_positive": true,
       "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 70,
       "rs_pct_val": 70,
-      "structure": "主升段✓",
+      "structure": "主升段✓✓",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -35046,6 +35452,7 @@
         "volume": 85,
         "revenue": 50,
         "rs": 2,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -35165,9 +35572,9 @@
       "avwap_swing": 19.42,
       "avwap_vol": 19.6,
       "avwap_short": 17.87,
-      "m_z": 1.0019,
-      "a_z": 0.0486,
-      "rs_trend_stock": -0.0054,
+      "m_z": 5.0,
+      "a_z": 1.7476,
+      "rs_trend_stock": 2.1514,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -35242,6 +35649,7 @@
         "volume": 40,
         "revenue": 50,
         "rs": 12,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -35410,11 +35818,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 198.95,
-      "m_z": 0.1945,
-      "a_z": 0.0032,
-      "rs_trend_stock": -0.0,
+      "m_z": -0.9373,
+      "a_z": -0.0924,
+      "rs_trend_stock": 0.5149,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 21,
       "rs_pct_val": 21,
@@ -35507,6 +35915,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 9,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -35675,15 +36084,15 @@
       "avwap_swing": 30.52,
       "avwap_vol": null,
       "avwap_short": 30.94,
-      "m_z": -0.4025,
-      "a_z": 0.0135,
-      "rs_trend_stock": -0.0201,
+      "m_z": -3.9224,
+      "a_z": -3.5885,
+      "rs_trend_stock": 0.2379,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 15,
       "rs_pct_val": 15,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -35766,6 +36175,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 13,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -35941,9 +36351,9 @@
       "avwap_swing": 130.4,
       "avwap_vol": null,
       "avwap_short": 127.85,
-      "m_z": -0.08,
-      "a_z": -0.0066,
-      "rs_trend_stock": -0.0093,
+      "m_z": -2.6229,
+      "a_z": -3.691,
+      "rs_trend_stock": 0.1843,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_STRONG",
       "signals": [],
@@ -36032,6 +36442,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 1,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -36149,11 +36560,11 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 29.99,
-      "m_z": -0.7571,
-      "a_z": -0.0149,
-      "rs_trend_stock": -0.0202,
+      "m_z": 2.7489,
+      "a_z": 0.9458,
+      "rs_trend_stock": -0.7025,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_STRONG",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 2,
       "rs_pct_val": 2,
@@ -36198,6 +36609,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 2,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -36367,9 +36779,9 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 18.75,
-      "m_z": 0.0808,
-      "a_z": 0.0085,
-      "rs_trend_stock": -0.0063,
+      "m_z": 2.5855,
+      "a_z": 5.057,
+      "rs_trend_stock": -0.1527,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -36435,272 +36847,6 @@
       ]
     },
     {
-      "code": "2303",
-      "name": "聯電",
-      "category": "large",
-      "industry": "半導體",
-      "sector_key": "半導體",
-      "sector_rs": -0.4371,
-      "themes": [],
-      "warnings": [],
-      "price": 57.8,
-      "change": -0.4,
-      "change_pct": -0.69,
-      "volume": 41464196,
-      "vol_day_ratio": 0.59,
-      "vol_month_ratio": 0.47,
-      "week52_high": 79.7,
-      "week52_low": 39.5,
-      "scores": {
-        "chips": 34,
-        "fundamental": 73,
-        "technical": 45,
-        "volume": 10,
-        "revenue": 50,
-        "rs": 24,
-        "topic": 50
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 43.0,
-        "fair": 56.3,
-        "optimistic": 72.8,
-        "methods": [
-          {
-            "label": "歷史PE法",
-            "conservative": 41.0,
-            "fair": 45.0,
-            "optimistic": 51.3
-          },
-          {
-            "label": "PEG法",
-            "conservative": 45.2,
-            "fair": 60.2,
-            "optimistic": 75.3
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 43.0,
-            "fair": 56.3,
-            "optimistic": 72.8
-          }
-        ]
-      },
-      "eps_ttm": 3.31,
-      "pe_mid": 13.6,
-      "chips_raw": {
-        "foreign": -9055,
-        "trust": 968,
-        "dealer": 2286,
-        "foreign_con": -2,
-        "trust_con": 1,
-        "dealer_con": 1,
-        "foreign_con_sum": -12608,
-        "trust_con_sum": 968,
-        "dealer_con_sum": 2286,
-        "foreign_sum30": -30174,
-        "trust_sum30": 24106,
-        "dealer_sum30": 15399,
-        "daily": [
-          {
-            "date": "2026-03-27",
-            "foreign": -9055,
-            "trust": 968,
-            "dealer": 2286,
-            "total": -5801
-          },
-          {
-            "date": "2026-03-26",
-            "foreign": -3553,
-            "trust": -219,
-            "dealer": -890,
-            "total": -4662
-          },
-          {
-            "date": "2026-03-25",
-            "foreign": 3400,
-            "trust": -480,
-            "dealer": 938,
-            "total": 3858
-          },
-          {
-            "date": "2026-03-24",
-            "foreign": -4207,
-            "trust": 1216,
-            "dealer": -652,
-            "total": -3643
-          },
-          {
-            "date": "2026-03-23",
-            "foreign": -7197,
-            "trust": 2623,
-            "dealer": 1971,
-            "total": -2603
-          }
-        ],
-        "shares_outstanding": 12578524619
-      },
-      "holding": null,
-      "lending": {
-        "volume": 8634,
-        "balance": 492430,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-23",
-            "volume": 9032,
-            "balance": 517462
-          },
-          {
-            "date": "2026-03-24",
-            "volume": 2267,
-            "balance": 517047
-          },
-          {
-            "date": "2026-03-25",
-            "volume": 807,
-            "balance": 515059
-          },
-          {
-            "date": "2026-03-26",
-            "volume": 3084,
-            "balance": 497562
-          },
-          {
-            "date": "2026-03-27",
-            "volume": 8634,
-            "balance": 492430
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "18.2%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "11.0%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "17.2%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -9055,
-          "consecutive": -2,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 968,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "自營商",
-          "net": 2286,
-          "consecutive": 1,
-          "pass": true
-        }
-      ],
-      "yahoo_rs": -0.1415,
-      "ma60": 59.59,
-      "above_ma60": false,
-      "revenue_yoy": null,
-      "open": 57.1,
-      "high": 58.5,
-      "low": 57.1,
-      "prev_close": 58.2,
-      "ma5": 57.66,
-      "ma10": 58.71,
-      "ma20": 60.03,
-      "ma_bullish": false,
-      "high20": 67.4,
-      "low20": 55.7,
-      "avwap_swing": 63.06,
-      "avwap_vol": null,
-      "avwap_short": 57.86,
-      "m_z": 0.2245,
-      "a_z": 0.0099,
-      "rs_trend_stock": -0.0098,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
-      "signals": [],
-      "rs_pct": 41,
-      "rs_pct_val": 41,
-      "structure": "弱勢",
-      "lending_history": [
-        {
-          "date": "2026-03-23",
-          "volume": 9032,
-          "balance": 517462
-        },
-        {
-          "date": "2026-03-24",
-          "volume": 2267,
-          "balance": 517047
-        },
-        {
-          "date": "2026-03-25",
-          "volume": 807,
-          "balance": 515059
-        },
-        {
-          "date": "2026-03-26",
-          "volume": 3084,
-          "balance": 497562
-        },
-        {
-          "date": "2026-03-27",
-          "volume": 8634,
-          "balance": 492430
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-29",
-          "score": 40
-        },
-        {
-          "date": "2026-03-28",
-          "score": 40
-        },
-        {
-          "date": "2026-03-27",
-          "score": 39
-        },
-        {
-          "date": "2026-03-26",
-          "score": 36
-        },
-        {
-          "date": "2026-03-25",
-          "score": 52
-        },
-        {
-          "date": "2026-03-24",
-          "score": 40
-        },
-        {
-          "date": "2026-03-23",
-          "score": 42
-        }
-      ]
-    },
-    {
       "code": "2892",
       "name": "第一金",
       "category": "large",
@@ -36724,6 +36870,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 10,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -36899,11 +37046,11 @@
       "avwap_swing": 28.74,
       "avwap_vol": null,
       "avwap_short": 28.48,
-      "m_z": -0.6865,
-      "a_z": 0.007,
-      "rs_trend_stock": -0.0151,
+      "m_z": -5.0,
+      "a_z": -3.3333,
+      "rs_trend_stock": -0.016,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 17,
       "rs_pct_val": 17,
@@ -36967,6 +37114,273 @@
       ]
     },
     {
+      "code": "2303",
+      "name": "聯電",
+      "category": "large",
+      "industry": "半導體",
+      "sector_key": "半導體",
+      "sector_rs": -0.4371,
+      "themes": [],
+      "warnings": [],
+      "price": 57.8,
+      "change": -0.4,
+      "change_pct": -0.69,
+      "volume": 41464196,
+      "vol_day_ratio": 0.59,
+      "vol_month_ratio": 0.47,
+      "week52_high": 79.7,
+      "week52_low": 39.5,
+      "scores": {
+        "chips": 34,
+        "fundamental": 73,
+        "technical": 45,
+        "volume": 10,
+        "revenue": 50,
+        "rs": 24,
+        "avwap": 0,
+        "topic": 50
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 43.0,
+        "fair": 56.3,
+        "optimistic": 72.8,
+        "methods": [
+          {
+            "label": "歷史PE法",
+            "conservative": 41.0,
+            "fair": 45.0,
+            "optimistic": 51.3
+          },
+          {
+            "label": "PEG法",
+            "conservative": 45.2,
+            "fair": 60.2,
+            "optimistic": 75.3
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 43.0,
+            "fair": 56.3,
+            "optimistic": 72.8
+          }
+        ]
+      },
+      "eps_ttm": 3.31,
+      "pe_mid": 13.6,
+      "chips_raw": {
+        "foreign": -9055,
+        "trust": 968,
+        "dealer": 2286,
+        "foreign_con": -2,
+        "trust_con": 1,
+        "dealer_con": 1,
+        "foreign_con_sum": -12608,
+        "trust_con_sum": 968,
+        "dealer_con_sum": 2286,
+        "foreign_sum30": -30174,
+        "trust_sum30": 24106,
+        "dealer_sum30": 15399,
+        "daily": [
+          {
+            "date": "2026-03-27",
+            "foreign": -9055,
+            "trust": 968,
+            "dealer": 2286,
+            "total": -5801
+          },
+          {
+            "date": "2026-03-26",
+            "foreign": -3553,
+            "trust": -219,
+            "dealer": -890,
+            "total": -4662
+          },
+          {
+            "date": "2026-03-25",
+            "foreign": 3400,
+            "trust": -480,
+            "dealer": 938,
+            "total": 3858
+          },
+          {
+            "date": "2026-03-24",
+            "foreign": -4207,
+            "trust": 1216,
+            "dealer": -652,
+            "total": -3643
+          },
+          {
+            "date": "2026-03-23",
+            "foreign": -7197,
+            "trust": 2623,
+            "dealer": 1971,
+            "total": -2603
+          }
+        ],
+        "shares_outstanding": 12578524619
+      },
+      "holding": null,
+      "lending": {
+        "volume": 8634,
+        "balance": 492430,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-23",
+            "volume": 9032,
+            "balance": 517462
+          },
+          {
+            "date": "2026-03-24",
+            "volume": 2267,
+            "balance": 517047
+          },
+          {
+            "date": "2026-03-25",
+            "volume": 807,
+            "balance": 515059
+          },
+          {
+            "date": "2026-03-26",
+            "volume": 3084,
+            "balance": 497562
+          },
+          {
+            "date": "2026-03-27",
+            "volume": 8634,
+            "balance": 492430
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "18.2%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "11.0%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "17.2%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -9055,
+          "consecutive": -2,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 968,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "自營商",
+          "net": 2286,
+          "consecutive": 1,
+          "pass": true
+        }
+      ],
+      "yahoo_rs": -0.1415,
+      "ma60": 59.59,
+      "above_ma60": false,
+      "revenue_yoy": null,
+      "open": 57.1,
+      "high": 58.5,
+      "low": 57.1,
+      "prev_close": 58.2,
+      "ma5": 57.66,
+      "ma10": 58.71,
+      "ma20": 60.03,
+      "ma_bullish": false,
+      "high20": 67.4,
+      "low20": 55.7,
+      "avwap_swing": 63.06,
+      "avwap_vol": null,
+      "avwap_short": 57.86,
+      "m_z": -2.4449,
+      "a_z": -1.1344,
+      "rs_trend_stock": -0.0249,
+      "rs_slow_positive": false,
+      "stock_phase": "RANGE",
+      "signals": [],
+      "rs_pct": 41,
+      "rs_pct_val": 41,
+      "structure": "弱勢",
+      "lending_history": [
+        {
+          "date": "2026-03-23",
+          "volume": 9032,
+          "balance": 517462
+        },
+        {
+          "date": "2026-03-24",
+          "volume": 2267,
+          "balance": 517047
+        },
+        {
+          "date": "2026-03-25",
+          "volume": 807,
+          "balance": 515059
+        },
+        {
+          "date": "2026-03-26",
+          "volume": 3084,
+          "balance": 497562
+        },
+        {
+          "date": "2026-03-27",
+          "volume": 8634,
+          "balance": 492430
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-29",
+          "score": 40
+        },
+        {
+          "date": "2026-03-28",
+          "score": 40
+        },
+        {
+          "date": "2026-03-27",
+          "score": 39
+        },
+        {
+          "date": "2026-03-26",
+          "score": 36
+        },
+        {
+          "date": "2026-03-25",
+          "score": 52
+        },
+        {
+          "date": "2026-03-24",
+          "score": 40
+        },
+        {
+          "date": "2026-03-23",
+          "score": 42
+        }
+      ]
+    },
+    {
       "code": "3016",
       "name": "嘉晶",
       "category": "mid_small",
@@ -36990,6 +37404,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 27,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -37158,11 +37573,11 @@
       "avwap_swing": 63.84,
       "avwap_vol": 63.11,
       "avwap_short": 60.26,
-      "m_z": -1.2486,
-      "a_z": 0.0099,
-      "rs_trend_stock": -0.0303,
-      "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "a_z": 6.5412,
+      "rs_trend_stock": -0.9455,
+      "rs_slow_positive": false,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 46,
       "rs_pct_val": 46,
@@ -37233,6 +37648,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 40,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [],
@@ -37381,10 +37797,10 @@
       "avwap_swing": 31.23,
       "avwap_vol": 34.4,
       "avwap_short": 33.48,
-      "m_z": 2.6825,
-      "a_z": 0.1042,
-      "rs_trend_stock": 0.0739,
-      "rs_slow_positive": false,
+      "m_z": 3.4077,
+      "a_z": -0.6485,
+      "rs_trend_stock": 3.1126,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 60,
@@ -37437,247 +37853,6 @@
       ]
     },
     {
-      "code": "1301",
-      "name": "台塑",
-      "category": "large",
-      "industry": "化學工業",
-      "sector_key": "化學",
-      "sector_rs": 1.8257,
-      "themes": [],
-      "warnings": [],
-      "price": 46.9,
-      "change": -0.55,
-      "change_pct": -1.16,
-      "volume": 19650252,
-      "vol_day_ratio": 0.46,
-      "vol_month_ratio": 1.26,
-      "week52_high": 54.8,
-      "week52_low": 31.55,
-      "scores": {
-        "chips": 37,
-        "fundamental": 41,
-        "technical": 63,
-        "volume": 40,
-        "revenue": 50,
-        "rs": 23,
-        "topic": 50
-      },
-      "icons": [
-        "🏦"
-      ],
-      "fair_price": {},
-      "eps_ttm": -1.58,
-      "pe_mid": null,
-      "chips_raw": {
-        "foreign": -5390,
-        "trust": 1106,
-        "dealer": -188,
-        "foreign_con": -1,
-        "trust_con": 1,
-        "dealer_con": -1,
-        "foreign_con_sum": -5390,
-        "trust_con_sum": 1106,
-        "dealer_con_sum": -188,
-        "foreign_sum30": -74229,
-        "trust_sum30": 1741,
-        "dealer_sum30": -1556,
-        "daily": [
-          {
-            "date": "2026-03-27",
-            "foreign": -5390,
-            "trust": 1106,
-            "dealer": -188,
-            "total": -4472
-          },
-          {
-            "date": "2026-03-26",
-            "foreign": 16272,
-            "trust": 0,
-            "dealer": 603,
-            "total": 16875
-          },
-          {
-            "date": "2026-03-25",
-            "foreign": 2642,
-            "trust": 10,
-            "dealer": 331,
-            "total": 2983
-          },
-          {
-            "date": "2026-03-24",
-            "foreign": -897,
-            "trust": 3,
-            "dealer": -96,
-            "total": -990
-          },
-          {
-            "date": "2026-03-23",
-            "foreign": -18933,
-            "trust": 0,
-            "dealer": -789,
-            "total": -19722
-          }
-        ],
-        "shares_outstanding": 6365741000
-      },
-      "holding": null,
-      "lending": {
-        "volume": 480,
-        "balance": 217424,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-23",
-            "volume": 6044,
-            "balance": 217389
-          },
-          {
-            "date": "2026-03-24",
-            "volume": 1307,
-            "balance": 218168
-          },
-          {
-            "date": "2026-03-25",
-            "volume": 507,
-            "balance": 218371
-          },
-          {
-            "date": "2026-03-26",
-            "volume": 1508,
-            "balance": 218849
-          },
-          {
-            "date": "2026-03-27",
-            "volume": 480,
-            "balance": 217424
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "None%",
-          "pass": false
-        },
-        {
-          "label": "ROE",
-          "value": "-3.1%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "29.4%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -5390,
-          "consecutive": -1,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 1106,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "自營商",
-          "net": -188,
-          "consecutive": -1,
-          "pass": false
-        }
-      ],
-      "yahoo_rs": -0.1837,
-      "ma60": 45.0,
-      "above_ma60": true,
-      "revenue_yoy": null,
-      "open": 48.0,
-      "high": 48.15,
-      "low": 46.75,
-      "prev_close": 47.45,
-      "ma5": 45.96,
-      "ma10": 46.66,
-      "ma20": 47.23,
-      "ma_bullish": false,
-      "high20": 54.8,
-      "low20": 44.65,
-      "avwap_swing": 47.13,
-      "avwap_vol": null,
-      "avwap_short": 46.67,
-      "m_z": 0.4998,
-      "a_z": 0.0092,
-      "rs_trend_stock": 0.0166,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
-      "signals": [],
-      "rs_pct": 38,
-      "rs_pct_val": 38,
-      "structure": "弱勢",
-      "lending_history": [
-        {
-          "date": "2026-03-23",
-          "volume": 6044,
-          "balance": 217389
-        },
-        {
-          "date": "2026-03-24",
-          "volume": 1307,
-          "balance": 218168
-        },
-        {
-          "date": "2026-03-25",
-          "volume": 507,
-          "balance": 218371
-        },
-        {
-          "date": "2026-03-26",
-          "volume": 1508,
-          "balance": 218849
-        },
-        {
-          "date": "2026-03-27",
-          "volume": 480,
-          "balance": 217424
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-03-29",
-          "score": 39
-        },
-        {
-          "date": "2026-03-28",
-          "score": 39
-        },
-        {
-          "date": "2026-03-27",
-          "score": 38
-        },
-        {
-          "date": "2026-03-26",
-          "score": 56
-        },
-        {
-          "date": "2026-03-25",
-          "score": 57
-        },
-        {
-          "date": "2026-03-24",
-          "score": 38
-        },
-        {
-          "date": "2026-03-23",
-          "score": 37
-        }
-      ]
-    },
-    {
       "code": "2002",
       "name": "中鋼",
       "category": "large",
@@ -37701,6 +37876,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 7,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -37851,15 +38027,15 @@
       "avwap_swing": 19.98,
       "avwap_vol": null,
       "avwap_short": 19.46,
-      "m_z": 0.497,
-      "a_z": -0.0025,
-      "rs_trend_stock": 0.0051,
+      "m_z": 0.7618,
+      "a_z": 0.5079,
+      "rs_trend_stock": 0.2628,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 12,
       "rs_pct_val": 12,
-      "structure": "弱勢",
+      "structure": "盤整",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -37919,6 +38095,248 @@
       ]
     },
     {
+      "code": "1301",
+      "name": "台塑",
+      "category": "large",
+      "industry": "化學工業",
+      "sector_key": "化學",
+      "sector_rs": 1.8257,
+      "themes": [],
+      "warnings": [],
+      "price": 46.9,
+      "change": -0.55,
+      "change_pct": -1.16,
+      "volume": 19650252,
+      "vol_day_ratio": 0.46,
+      "vol_month_ratio": 1.26,
+      "week52_high": 54.8,
+      "week52_low": 31.55,
+      "scores": {
+        "chips": 37,
+        "fundamental": 41,
+        "technical": 63,
+        "volume": 40,
+        "revenue": 50,
+        "rs": 23,
+        "avwap": 5,
+        "topic": 50
+      },
+      "icons": [
+        "🏦"
+      ],
+      "fair_price": {},
+      "eps_ttm": -1.58,
+      "pe_mid": null,
+      "chips_raw": {
+        "foreign": -5390,
+        "trust": 1106,
+        "dealer": -188,
+        "foreign_con": -1,
+        "trust_con": 1,
+        "dealer_con": -1,
+        "foreign_con_sum": -5390,
+        "trust_con_sum": 1106,
+        "dealer_con_sum": -188,
+        "foreign_sum30": -74229,
+        "trust_sum30": 1741,
+        "dealer_sum30": -1556,
+        "daily": [
+          {
+            "date": "2026-03-27",
+            "foreign": -5390,
+            "trust": 1106,
+            "dealer": -188,
+            "total": -4472
+          },
+          {
+            "date": "2026-03-26",
+            "foreign": 16272,
+            "trust": 0,
+            "dealer": 603,
+            "total": 16875
+          },
+          {
+            "date": "2026-03-25",
+            "foreign": 2642,
+            "trust": 10,
+            "dealer": 331,
+            "total": 2983
+          },
+          {
+            "date": "2026-03-24",
+            "foreign": -897,
+            "trust": 3,
+            "dealer": -96,
+            "total": -990
+          },
+          {
+            "date": "2026-03-23",
+            "foreign": -18933,
+            "trust": 0,
+            "dealer": -789,
+            "total": -19722
+          }
+        ],
+        "shares_outstanding": 6365741000
+      },
+      "holding": null,
+      "lending": {
+        "volume": 480,
+        "balance": 217424,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-23",
+            "volume": 6044,
+            "balance": 217389
+          },
+          {
+            "date": "2026-03-24",
+            "volume": 1307,
+            "balance": 218168
+          },
+          {
+            "date": "2026-03-25",
+            "volume": 507,
+            "balance": 218371
+          },
+          {
+            "date": "2026-03-26",
+            "volume": 1508,
+            "balance": 218849
+          },
+          {
+            "date": "2026-03-27",
+            "volume": 480,
+            "balance": 217424
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "None%",
+          "pass": false
+        },
+        {
+          "label": "ROE",
+          "value": "-3.1%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "29.4%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -5390,
+          "consecutive": -1,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 1106,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "自營商",
+          "net": -188,
+          "consecutive": -1,
+          "pass": false
+        }
+      ],
+      "yahoo_rs": -0.1837,
+      "ma60": 45.0,
+      "above_ma60": true,
+      "revenue_yoy": null,
+      "open": 48.0,
+      "high": 48.15,
+      "low": 46.75,
+      "prev_close": 47.45,
+      "ma5": 45.96,
+      "ma10": 46.66,
+      "ma20": 47.23,
+      "ma_bullish": false,
+      "high20": 54.8,
+      "low20": 44.65,
+      "avwap_swing": 47.13,
+      "avwap_vol": null,
+      "avwap_short": 46.67,
+      "m_z": -0.2263,
+      "a_z": -3.4842,
+      "rs_trend_stock": 1.1419,
+      "rs_slow_positive": true,
+      "stock_phase": "RANGE",
+      "signals": [],
+      "rs_pct": 38,
+      "rs_pct_val": 38,
+      "structure": "盤整",
+      "lending_history": [
+        {
+          "date": "2026-03-23",
+          "volume": 6044,
+          "balance": 217389
+        },
+        {
+          "date": "2026-03-24",
+          "volume": 1307,
+          "balance": 218168
+        },
+        {
+          "date": "2026-03-25",
+          "volume": 507,
+          "balance": 218371
+        },
+        {
+          "date": "2026-03-26",
+          "volume": 1508,
+          "balance": 218849
+        },
+        {
+          "date": "2026-03-27",
+          "volume": 480,
+          "balance": 217424
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-03-29",
+          "score": 39
+        },
+        {
+          "date": "2026-03-28",
+          "score": 39
+        },
+        {
+          "date": "2026-03-27",
+          "score": 38
+        },
+        {
+          "date": "2026-03-26",
+          "score": 56
+        },
+        {
+          "date": "2026-03-25",
+          "score": 57
+        },
+        {
+          "date": "2026-03-24",
+          "score": 38
+        },
+        {
+          "date": "2026-03-23",
+          "score": 37
+        }
+      ]
+    },
+    {
       "code": "2834",
       "name": "臺企銀",
       "category": "mid_small",
@@ -37948,6 +38366,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 8,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -38122,9 +38541,9 @@
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": 15.04,
-      "m_z": 0.3178,
-      "a_z": 0.0121,
-      "rs_trend_stock": -0.0091,
+      "m_z": 5.0,
+      "a_z": 4.3298,
+      "rs_trend_stock": -0.1188,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -38213,6 +38632,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 80,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -38363,9 +38783,9 @@
       "avwap_swing": 32.43,
       "avwap_vol": 35.37,
       "avwap_short": 36.54,
-      "m_z": -0.0121,
-      "a_z": -0.0337,
-      "rs_trend_stock": 0.0444,
+      "m_z": -2.6018,
+      "a_z": -3.5425,
+      "rs_trend_stock": 0.3414,
       "rs_slow_positive": true,
       "stock_phase": "BULL_PULLBACK",
       "signals": [],
@@ -38454,6 +38874,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -38628,11 +39049,11 @@
       "avwap_swing": 52.58,
       "avwap_vol": 50.46,
       "avwap_short": 48.9,
-      "m_z": 0.331,
-      "a_z": 0.0067,
-      "rs_trend_stock": 0.0243,
+      "m_z": -0.4284,
+      "a_z": -3.1992,
+      "rs_trend_stock": 1.2204,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 61,
       "rs_pct_val": 61,
@@ -38707,6 +39128,7 @@
         "volume": 55,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -38857,10 +39279,10 @@
       "avwap_swing": 42.71,
       "avwap_vol": null,
       "avwap_short": 44.13,
-      "m_z": 0.1288,
-      "a_z": -0.0041,
-      "rs_trend_stock": 0.0222,
-      "rs_slow_positive": false,
+      "m_z": -1.0688,
+      "a_z": -0.7125,
+      "rs_trend_stock": 1.2199,
+      "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 59,
@@ -38948,6 +39370,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 19,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [],
@@ -39065,9 +39488,9 @@
       "avwap_swing": 12.42,
       "avwap_vol": null,
       "avwap_short": 12.94,
-      "m_z": 0.1809,
-      "a_z": -0.0124,
-      "rs_trend_stock": -0.0067,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": -1.8587,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -39140,6 +39563,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 17,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [
@@ -39308,11 +39732,11 @@
       "avwap_swing": 262.01,
       "avwap_vol": 282.88,
       "avwap_short": 291.85,
-      "m_z": 1.0753,
-      "a_z": 0.0261,
-      "rs_trend_stock": 0.0345,
+      "m_z": 0.058,
+      "a_z": -0.9861,
+      "rs_trend_stock": 0.2008,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 28,
       "rs_pct_val": 28,
@@ -39405,6 +39829,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 60,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -39573,11 +39998,11 @@
       "avwap_swing": 61.43,
       "avwap_vol": 63.96,
       "avwap_short": 61.67,
-      "m_z": -0.5619,
-      "a_z": -0.0362,
-      "rs_trend_stock": -0.0034,
+      "m_z": -2.4727,
+      "a_z": -4.9818,
+      "rs_trend_stock": 1.23,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 76,
       "rs_pct_val": 76,
@@ -39664,6 +40089,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 20,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -39830,9 +40256,9 @@
       "avwap_swing": 31.94,
       "avwap_vol": null,
       "avwap_short": 30.98,
-      "m_z": 0.4218,
-      "a_z": -0.0033,
-      "rs_trend_stock": 0.0069,
+      "m_z": 1.5698,
+      "a_z": 1.0466,
+      "rs_trend_stock": 0.3589,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -39927,6 +40353,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 80,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -40101,11 +40528,11 @@
       "avwap_swing": 281.43,
       "avwap_vol": 294.34,
       "avwap_short": 285.35,
-      "m_z": -0.2982,
-      "a_z": -0.0262,
-      "rs_trend_stock": 0.0029,
-      "rs_slow_positive": true,
-      "stock_phase": "BULL_PULLBACK",
+      "m_z": 5.0,
+      "a_z": 5.4538,
+      "rs_trend_stock": 0.8627,
+      "rs_slow_positive": false,
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 81,
       "rs_pct_val": 81,
@@ -40192,6 +40619,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 15,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -40240,7 +40668,7 @@
         },
         {
           "label": "負債比",
-          "value": "81.0%",
+          "value": "81.6%",
           "pass": false
         }
       ],
@@ -40281,11 +40709,11 @@
       "avwap_swing": null,
       "avwap_vol": 11.91,
       "avwap_short": 11.13,
-      "m_z": 0.2525,
-      "a_z": -0.0171,
-      "rs_trend_stock": -0.0057,
+      "m_z": 0.2042,
+      "a_z": -0.7303,
+      "rs_trend_stock": -1.3527,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 25,
       "rs_pct_val": 25,
@@ -40362,6 +40790,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [
@@ -40530,11 +40959,11 @@
       "avwap_swing": 133.55,
       "avwap_vol": 145.4,
       "avwap_short": 140.14,
-      "m_z": 0.687,
-      "a_z": 0.0006,
-      "rs_trend_stock": 0.0424,
+      "m_z": -1.7279,
+      "a_z": -2.1717,
+      "rs_trend_stock": 1.4098,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL_PULLBACK",
       "signals": [],
       "rs_pct": 65,
       "rs_pct_val": 65,
@@ -40613,6 +41042,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 15,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -40730,9 +41160,9 @@
       "avwap_swing": 17.58,
       "avwap_vol": 18.43,
       "avwap_short": 18.01,
-      "m_z": -1.1338,
-      "a_z": -0.0884,
-      "rs_trend_stock": -0.0672,
+      "m_z": -5.0,
+      "a_z": -2.5485,
+      "rs_trend_stock": 0.7353,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_STRONG",
       "signals": [],
@@ -40811,6 +41241,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 18,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [
@@ -40985,11 +41416,11 @@
       "avwap_swing": 15.56,
       "avwap_vol": 16.25,
       "avwap_short": 14.79,
-      "m_z": -1.4307,
-      "a_z": -0.0001,
-      "rs_trend_stock": -0.0069,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 1.3331,
+      "a_z": 0.6816,
+      "rs_trend_stock": 0.2713,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 31,
       "rs_pct_val": 31,
@@ -41076,6 +41507,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 19,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [
@@ -41250,9 +41682,9 @@
       "avwap_swing": 23.48,
       "avwap_vol": 23.67,
       "avwap_short": 22.94,
-      "m_z": 0.7885,
-      "a_z": 0.0212,
-      "rs_trend_stock": 0.0036,
+      "m_z": 5.0,
+      "a_z": 1.9211,
+      "rs_trend_stock": 0.7334,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -41329,6 +41761,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [],
@@ -41477,9 +41910,9 @@
       "avwap_swing": 18.48,
       "avwap_vol": 19.65,
       "avwap_short": 18.19,
-      "m_z": -1.0198,
-      "a_z": 0.053,
-      "rs_trend_stock": -0.043,
+      "m_z": 5.0,
+      "a_z": 6.2676,
+      "rs_trend_stock": 1.8915,
       "rs_slow_positive": true,
       "stock_phase": "RANGE",
       "signals": [],
@@ -41558,6 +41991,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 100,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -41706,11 +42140,11 @@
       "avwap_swing": 61.79,
       "avwap_vol": 67.64,
       "avwap_short": 68.94,
-      "m_z": -1.8352,
-      "a_z": -0.0928,
-      "rs_trend_stock": -0.0888,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 0.9856,
       "rs_slow_positive": true,
-      "stock_phase": "RANGE",
+      "stock_phase": "BULL",
       "signals": [],
       "rs_pct": 90,
       "rs_pct_val": 90,
@@ -41797,6 +42231,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 60,
+        "avwap": 15,
         "topic": 50
       },
       "icons": [],
@@ -41945,15 +42380,15 @@
       "avwap_swing": 24.37,
       "avwap_vol": 24.53,
       "avwap_short": 23.69,
-      "m_z": 1.631,
-      "a_z": 0.0784,
-      "rs_trend_stock": 0.0437,
-      "rs_slow_positive": true,
-      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": 1.956,
+      "rs_slow_positive": false,
+      "stock_phase": "RANGE",
       "signals": [],
       "rs_pct": 74,
       "rs_pct_val": 74,
-      "structure": "主升段",
+      "structure": "盤整",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -42028,6 +42463,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 4,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -42176,11 +42612,11 @@
       "avwap_swing": 24.93,
       "avwap_vol": null,
       "avwap_short": 22.95,
-      "m_z": 0.3437,
-      "a_z": 0.0149,
-      "rs_trend_stock": -0.0017,
+      "m_z": -1.3238,
+      "a_z": -1.1803,
+      "rs_trend_stock": 0.4866,
       "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
+      "stock_phase": "BEAR_STRONG",
       "signals": [],
       "rs_pct": 6,
       "rs_pct_val": 6,
@@ -42267,6 +42703,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 40,
+        "avwap": 5,
         "topic": 50
       },
       "icons": [],
@@ -42415,9 +42852,9 @@
       "avwap_swing": 50.04,
       "avwap_vol": 48.34,
       "avwap_short": 45.89,
-      "m_z": 0.9454,
-      "a_z": 0.0289,
-      "rs_trend_stock": 0.0105,
+      "m_z": -5.0,
+      "a_z": -4.8001,
+      "rs_trend_stock": 0.7457,
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
@@ -42500,6 +42937,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 1,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [],
@@ -42660,9 +43098,9 @@
       "avwap_swing": 42.36,
       "avwap_vol": null,
       "avwap_short": 42.36,
-      "m_z": 0.1114,
-      "a_z": -0.0298,
-      "rs_trend_stock": 0.0034,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": -1.7054,
       "rs_slow_positive": false,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
@@ -42747,6 +43185,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 27,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -42895,15 +43334,15 @@
       "avwap_swing": 30.89,
       "avwap_vol": 31.33,
       "avwap_short": 30.97,
-      "m_z": -0.0771,
-      "a_z": -0.0176,
-      "rs_trend_stock": 0.0061,
+      "m_z": 5.0,
+      "a_z": 4.1374,
+      "rs_trend_stock": -0.6111,
       "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 46,
       "rs_pct_val": 46,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -42980,6 +43419,7 @@
         "volume": 25,
         "revenue": 50,
         "rs": 9,
+        "avwap": 10,
         "topic": 50
       },
       "icons": [],
@@ -43146,15 +43586,15 @@
       "avwap_swing": 26.92,
       "avwap_vol": 28.12,
       "avwap_short": 27.26,
-      "m_z": -0.18,
-      "a_z": 0.0118,
-      "rs_trend_stock": 0.0059,
-      "rs_slow_positive": false,
-      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "a_z": 6.6667,
+      "rs_trend_stock": 0.2907,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
       "signals": [],
       "rs_pct": 16,
       "rs_pct_val": 16,
-      "structure": "盤整",
+      "structure": "弱勢",
       "lending_history": [
         {
           "date": "2026-03-23",
@@ -43243,6 +43683,7 @@
         "volume": 10,
         "revenue": 50,
         "rs": 18,
+        "avwap": 0,
         "topic": 50
       },
       "icons": [],
@@ -43391,9 +43832,9 @@
       "avwap_swing": 9.45,
       "avwap_vol": 8.95,
       "avwap_short": 8.58,
-      "m_z": -1.1906,
-      "a_z": 0.0144,
-      "rs_trend_stock": -0.0132,
+      "m_z": 0.9237,
+      "a_z": -0.4758,
+      "rs_trend_stock": 0.3247,
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
