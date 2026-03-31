@@ -480,6 +480,7 @@ def calc_signals(yahoo, stock_phase="RANGE", rs_pct=50):
         # atr_stop
         atr = yahoo.get("atr_14")
         atr_stop = round(entry - 2 * atr, 2) if atr else None
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         return {
             "type":               type_,
             "label":              label,
@@ -492,6 +493,7 @@ def calc_signals(yahoo, stock_phase="RANGE", rs_pct=50):
             "reason":             _reason,
             "trigger_price":      trigger_price,
             "atr_stop":           atr_stop,
+            "timeframe":          _TF.get(type_, "medium"),
             "confirmations":      _confirmations,
             "confirmation_flags": _conf_flags,
         }

@@ -2136,6 +2136,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
         _today_high = yahoo.get("high") or entry
         _buf = _TRIGGER_BUFFER.get(type_, 0.003)
         trigger_price = round(_today_high * (1 + _buf), 2)
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         return {
             "type":          type_,
             "label":         label,
@@ -2148,6 +2149,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
             "risk":          risk,
             "rr":            rr,
             "reason":        _reason,
+            "timeframe":          _TF.get(type_, "medium"),
             "confirmations":      _confirmations,
             "confirmation_flags": _conf_flags,
         }

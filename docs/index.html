@@ -561,6 +561,12 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <button class="tab"        id="tab-exp"      onclick="setTab('exp')">🎲 隨機</button>
     <button class="tab" id="tab-ma60" onclick="toggleMA60()" style="margin-left:8px;border:1px solid #666;">📈 MA60</button>
     <button class="tab" id="tab-signal" onclick="toggleSignalFilter()" style="border:1px solid #666;">🔔 訊號</button>
+    <span style="margin-left:6px;display:inline-flex;gap:3px;vertical-align:middle">
+      <button class="tf-chip tab" data-tf="all"    onclick="setSigTF('all')"    style="font-size:11px;padding:2px 8px;background:var(--blue);color:#fff">全部</button>
+      <button class="tf-chip tab" data-tf="short"  onclick="setSigTF('short')"  style="font-size:11px;padding:2px 8px">短線</button>
+      <button class="tf-chip tab" data-tf="medium" onclick="setSigTF('medium')" style="font-size:11px;padding:2px 8px">中線</button>
+      <button class="tf-chip tab" data-tf="long"   onclick="setSigTF('long')"   style="font-size:11px;padding:2px 8px">長線</button>
+    </span>
   </div>
   <div class="search-wrap">
     <input class="search-input" id="search" placeholder="搜尋股票名稱或代碼..." oninput="render()">
@@ -932,17 +938,22 @@ function renderMarketBar(data){
 function rExpCard(s,pfx){
   pfx=pfx||'xc';
   var pc=s.chg_pct>=0?'var(--green)':'var(--red)';
-  var sigs=s.signals||[];
+  var sigs=(s.signals||[]).filter(function(sg){return sigTF==='all'||sg.timeframe===sigTF;});
   var hasStrong=sigs.some(function(sg){return sg.strength==='strong';});
   var hasMed=sigs.some(function(sg){return sg.strength==='medium';});
   var cntCls=hasStrong?'sc-strong':hasMed?'sc-medium':'';
   var SLBL={'strong':'強','medium':'中','weak':'弱'};
+  var TF_LBL={'short':'短','medium':'中','long':'長'};
+  var TF_CLR={'short':'var(--orange)','medium':'var(--blue)','long':'var(--purple,#a78bfa)'};
   var sigsHtml=sigs.map(function(sg){
     var st=sg.strength;
+    var tfLbl=TF_LBL[sg.timeframe]||'中';
+    var tfClr=TF_CLR[sg.timeframe]||'var(--blue)';
     return '<div class="exp-sig '+st+'">'+
       '<div class="exp-sig-head">'+
         '<span class="exp-sig-badge '+st+'">'+(SLBL[st]||st)+'</span>'+
         '<span class="exp-sig-label">'+sg.label+'</span>'+
+        '<span style="margin-left:auto;font-size:9px;padding:1px 4px;border-radius:6px;border:1px solid '+tfClr+';color:'+tfClr+'">'+tfLbl+'</span>'+
       '</div>'+
       '<div class="exp-sig-reason">'+sg.reason+'</div>'+
       '<div class="exp-sig-prices">'+
@@ -1546,6 +1557,17 @@ function toggleSignalFilter(){
   render();
 }
 
+var sigTF='all';
+function setSigTF(tf){
+  sigTF=tf;
+  document.querySelectorAll('.tf-chip').forEach(function(b){
+    var on=b.dataset.tf===tf;
+    b.style.background=on?'var(--blue)':'';
+    b.style.color=on?'#fff':'';
+  });
+  render();
+}
+
 function render(){
   if(curTab==='exp'){renderExpansionInApp();return;}
   var q=(document.getElementById('search')||{}).value||'';
@@ -1558,6 +1580,7 @@ function render(){
   if(curThm!=='all') list=list.filter(function(s){return(s.themes||[]).indexOf(curThm)>=0;});
   if(filterMA60) list=list.filter(function(s){return s.above_ma60===true;});
   if(filterSignal) list=list.filter(function(s){return s.signals&&s.signals.length>0;});
+  if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return sg.timeframe===sigTF;});});
   if(q) list=list.filter(function(s){return s.code.indexOf(q)>=0||s.name.indexOf(q)>=0;});
 
   calcRanks();
@@ -1946,12 +1969,16 @@ function rNews(news){
 }
 
 function rSignals(s){
-  var sigs=s.signals||[];
+  var sigs=(s.signals||[]).filter(function(sg){return sigTF==='all'||sg.timeframe===sigTF;});
   if(!sigs.length)return '<div style="font-size:13px;color:var(--text3);text-align:center;padding:18px 0">目前無符合條件的買點訊號</div>';
   var LABELS={'strong':'強','medium':'中','weak':'弱'};
+  var TF_LBL={'short':'短線','medium':'中線','long':'長線'};
+  var TF_CLR={'short':'var(--orange)','medium':'var(--blue)','long':'var(--purple,#a78bfa)'};
   var cards=sigs.map(function(sg){
     var st=sg.strength||'medium';
     var stLbl=LABELS[st]||st;
+    var tfLbl=TF_LBL[sg.timeframe]||'中線';
+    var tfClr=TF_CLR[sg.timeframe]||'var(--blue)';
     // 確認數 + 可展開明細（●●●○○○）
     var confId='conf-'+Math.random().toString(36).slice(2,7);
     var confHtml='';
@@ -1994,6 +2021,7 @@ function rSignals(s){
       '<div class="sig-head">'+
         '<span class="sig-badge '+st+'">'+stLbl+'</span>'+
         '<span class="sig-label">'+sg.label+'</span>'+
+        '<span style="margin-left:auto;font-size:9px;padding:1px 5px;border-radius:8px;border:1px solid '+tfClr+';color:'+tfClr+'">'+tfLbl+'</span>'+
       '</div>'+
       '<div class="sig-reason">'+sg.reason+'</div>'+
       triggerHtml+
