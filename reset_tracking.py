@@ -8,8 +8,7 @@ for path in ["docs/stocks.json", "docs/expansion.json"]:
     data = json.loads(p.read_text(encoding="utf-8"))
     before = len(data.get("signal_tracking", []))
     data["signal_tracking"] = []
-    if "expansion" in path:
-        data["backtest_stats"] = {}
+    data["backtest_stats"] = {}
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"{path}: cleared {before} records → 0")
 

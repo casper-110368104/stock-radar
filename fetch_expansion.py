@@ -700,8 +700,10 @@ def aggregate_backtest_stats(all_results):
         total   = decided + b["inconclusive"]
         if total < 5:
             continue
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         stats[t] = {
             "label":             SIGNAL_LABELS.get(t, t),
+            "timeframe":         _TF.get(t, "medium"),
             "count":             total,
             "win_rate":          round(b["wins"] / decided, 3) if decided > 0 else 0.5,
             "avg_gain_pct":      round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0,

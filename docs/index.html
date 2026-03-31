@@ -1038,28 +1038,89 @@ function _btApply(card){
   if(noRes) noRes.style.display=vis===0?'':'none';
 }
 
+var _btStatsTF='all';
+function _setBtStatsTF(tf){
+  _btStatsTF=tf;
+  document.querySelectorAll('.bts-tab').forEach(function(b){
+    var on=b.dataset.tf===tf;
+    b.style.background=on?'var(--blue)':'var(--bg3)';
+    b.style.color=on?'#fff':'var(--text2)';
+  });
+  document.querySelectorAll('.bts-group').forEach(function(g){
+    g.style.display=(tf==='all'||g.dataset.tf===tf)?'block':'none';
+  });
+}
+
 function _renderBtStats(stats){
   var keys=Object.keys(stats||{});
   if(!keys.length) return '';
-  keys.sort(function(a,b){return (stats[b].win_rate||0)-(stats[a].win_rate||0);});
-  var rows=keys.map(function(k){
-    var s=stats[k];
-    var pct=Math.round((s.win_rate||0)*100);
-    var barW=Math.round(pct*0.72);
-    var c=pct>=60?'var(--green)':pct>=50?'var(--orange)':'var(--red)';
-    return '<div class="bt-row">'+
-      '<div class="bt-sig-label">'+(s.label||k)+'</div>'+
-      '<div class="bt-bar-wrap"><div class="bt-bar" style="width:'+barW+'px;background:'+c+'"></div></div>'+
-      '<div class="bt-pct" style="color:'+c+'">'+pct+'%</div>'+
-      '<div class="bt-count">樣本 '+(s.count||0)+'</div>'+
+
+  // group by timeframe
+  var TF_ORDER=['short','medium','long'];
+  var TF_META={short:{lbl:'短線',sub:'2-5日'},medium:{lbl:'中線',sub:'5-15日'},long:{lbl:'長線',sub:'15日+'}};
+  var groups={short:[],medium:[],long:[]};
+  keys.forEach(function(k){ var tf=(stats[k].timeframe||'medium'); if(groups[tf]) groups[tf].push(k); });
+
+  // compute group win rates (weighted by decided count)
+  function groupWR(ks){
+    var w=0,t=0;
+    ks.forEach(function(k){var s=stats[k];var d=Math.round((s.win_rate||0)*(s.count||0));w+=d;t+=(s.count||0);});
+    return t>0?Math.round(w/t*100):null;
+  }
+  var grpWR={};
+  TF_ORDER.forEach(function(tf){ grpWR[tf]=groupWR(groups[tf]); });
+
+  // tab bar
+  var tabHtml='<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">'+
+    ['all','short','medium','long'].map(function(tf){
+      var lbl=tf==='all'?'全部':TF_META[tf].lbl;
+      var wr=tf!=='all'&&grpWR[tf]!=null?' '+grpWR[tf]+'%':'';
+      var c=tf!=='all'&&grpWR[tf]!=null?(grpWR[tf]>=60?'var(--green)':grpWR[tf]>=50?'var(--orange)':'var(--red)'):'';
+      var act=tf==='all';
+      return '<button class="bts-tab" data-tf="'+tf+'" onclick="_setBtStatsTF(\''+tf+'\')" style="font-size:11px;padding:3px 10px;border-radius:12px;border:none;cursor:pointer;background:'+(act?'var(--blue)':'var(--bg3)')+';color:'+(act?'#fff':'var(--text2)')+'">'+lbl+(c?'<span style="color:'+c+';margin-left:3px">'+wr+'</span>':'')+'</button>';
+    }).join('')+
+  '</div>';
+
+  // group sections
+  var sectHtml=TF_ORDER.map(function(tf){
+    var ks=groups[tf];
+    if(!ks.length) return '';
+    ks.sort(function(a,b){return (stats[b].win_rate||0)-(stats[a].win_rate||0);});
+    var wr=grpWR[tf];
+    var wrClr=wr>=60?'var(--green)':wr>=50?'var(--orange)':'var(--red)';
+    var rows=ks.map(function(k){
+      var s=stats[k];
+      var pct=Math.round((s.win_rate||0)*100);
+      var barW=Math.round(pct*0.68);
+      var c=pct>=60?'var(--green)':pct>=50?'var(--orange)':'var(--red)';
+      var gainLbl=s.avg_gain_pct>0?'+'+s.avg_gain_pct+'%':'';
+      var lossLbl=s.avg_loss_pct<0?s.avg_loss_pct+'%':'';
+      return '<div class="bt-row">'+
+        '<div class="bt-sig-label">'+(s.label||k)+'</div>'+
+        '<div class="bt-bar-wrap"><div class="bt-bar" style="width:'+barW+'px;background:'+c+'"></div></div>'+
+        '<div class="bt-pct" style="color:'+c+'">'+pct+'%</div>'+
+        '<div class="bt-count" style="display:flex;gap:6px">'+
+          '<span style="color:var(--text3)">'+s.count+'筆</span>'+
+          (gainLbl?'<span style="color:var(--green);font-size:10px">獲利均'+gainLbl+'</span>':'')+
+          (lossLbl?'<span style="color:var(--red);font-size:10px">虧損均'+lossLbl+'</span>':'')+
+        '</div>'+
+      '</div>';
+    }).join('');
+    return '<div class="bts-group" data-tf="'+tf+'" style="margin-bottom:10px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)">'+
+        '<span style="font-size:12px;font-weight:600;color:var(--text1)">'+TF_META[tf].lbl+'</span>'+
+        '<span style="font-size:10px;color:var(--text3)">'+TF_META[tf].sub+'</span>'+
+        (wr!=null?'<span style="margin-left:auto;font-size:13px;font-weight:700;color:'+wrClr+'">'+wr+'%</span>':'')+
+      '</div>'+rows+
     '</div>';
   }).join('');
+
   return '<div class="bt-card">'+
     '<div class="bt-card-hdr open">'+
-      '<div class="bt-title" style="margin-bottom:0">📊 訊號歷史勝率 <span class="bt-sub">（近2年歷史回測，第5～15日判定，動態 RR 1:1~1:3.6）</span></div>'+
+      '<div class="bt-title" style="margin-bottom:0">📊 訊號歷史勝率 <span class="bt-sub">（近2年回測，第5-15日判定）</span></div>'+
       '<button class="bt-toggle-btn" onclick="_btToggle(this)">▾</button>'+
     '</div>'+
-    '<div class="bt-card-body">'+rows+'</div>'+
+    '<div class="bt-card-body">'+tabHtml+sectHtml+'</div>'+
   '</div>';
 }
 
