@@ -1892,8 +1892,10 @@ def bt_aggregate_stats(all_results):
         total   = decided + b["inconclusive"]
         if total < 5:
             continue
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         stats[t] = {
             "label":             _SIGNAL_LABELS_BT.get(t, t),
+            "timeframe":         _TF.get(t, "medium"),
             "count":             total,
             "win_rate":          round(b["wins"] / decided, 3) if decided > 0 else 0.5,
             "avg_gain_pct":      round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0,
@@ -2136,6 +2138,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
         _today_high = yahoo.get("high") or entry
         _buf = _TRIGGER_BUFFER.get(type_, 0.003)
         trigger_price = round(_today_high * (1 + _buf), 2)
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         return {
             "type":          type_,
             "label":         label,
@@ -2148,6 +2151,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
             "risk":          risk,
             "rr":            rr,
             "reason":        _reason,
+            "timeframe":          _TF.get(type_, "medium"),
             "confirmations":      _confirmations,
             "confirmation_flags": _conf_flags,
         }

@@ -206,64 +206,62 @@ def calc_avwap(closes, highs, lows, volumes, anchor_idx):
 
 
 def _compute_rs_layers(sc, bc):
-    """計算三層 RS 序列（fast=60日、mid=120日、slow=240日）"""
+    """計算日 RS 序列 = 個股日報酬 − 基準日報酬（%），與類股輪動同頻率同單位"""
     n = min(len(sc), len(bc))
     sc, bc = sc[-n:], bc[-n:]
-    fast, mid, slow = [], [], []
-    for t in range(n):
-        if t >= 60:
-            fast.append((sc[t]/sc[t-60]-1) - (bc[t]/bc[t-60]-1))
-        if t >= 120:
-            mid.append((sc[t]/sc[t-120]-1) - (bc[t]/bc[t-120]-1))
-        if t >= 240:
-            slow.append((sc[t]/sc[t-240]-1) - (bc[t]/bc[t-240]-1))
-    return fast, mid, slow
+    daily_rs = []
+    for t in range(1, n):
+        if sc[t-1] > 0 and bc[t-1] > 0:
+            sr = sc[t]/sc[t-1] - 1
+            br = bc[t]/bc[t-1] - 1
+            daily_rs.append(round((sr - br) * 100, 4))
+    return daily_rs
 
 
-def _compute_m_a(rs_fast):
-    """計算 M（RS動能）、A（M加速度）、RS_trend（5日斜率），均以 Z-score 標準化"""
-    if len(rs_fast) < 12:
+def _compute_m_a(daily_rs):
+    """M = RS/MA10（比值），A = M今日 − avg(M近3日)，rs_trend = 5日線性斜率"""
+    if len(daily_rs) < 13:
         return None, None, None
-    rs_ma10 = sum(rs_fast[-10:]) / 10
-    m_raw   = rs_fast[-1] - rs_ma10
 
-    # M 序列（近30天）→ 用 M 自己的分布做 Z-score，避免用 RS μ/σ 導致 m_z 永遠負
-    m_series = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-                for i in range(max(10, len(rs_fast)-30), len(rs_fast)) if i >= 9]
-    mu_m  = sum(m_series)/len(m_series) if m_series else 0.0
-    std_m = (sum((x-mu_m)**2 for x in m_series)/len(m_series))**0.5 if m_series else 0.0
-    m_z   = (m_raw - mu_m) / std_m if std_m > 0 else 0.0
+    m_series = []
+    for i in range(9, len(daily_rs)):
+        rs_ma10 = sum(daily_rs[i-9:i+1]) / 10
+        m = (daily_rs[i] / rs_ma10) if abs(rs_ma10) >= 0.05 else 0.0
+        m = max(-5.0, min(5.0, m))
+        m_series.append(m)
 
-    # A = M_today - M_3day_avg（直覺：今日動能相對近3日均值的偏離）
-    m_tail = [rs_fast[i] - sum(rs_fast[i-9:i+1])/10
-              for i in range(len(rs_fast)-3, len(rs_fast)) if i >= 9]
-    a_z = (m_tail[-1] - sum(m_tail)/len(m_tail)) if len(m_tail) >= 3 else None
+    if len(m_series) < 3:
+        return None, None, None
 
-    if len(rs_fast) >= 5:
-        vals   = rs_fast[-5:]
-        mu5    = sum(vals)/5
+    m_today = m_series[-1]
+    m_tail  = m_series[-3:]
+    a = m_tail[-1] - sum(m_tail) / len(m_tail)
+
+    if len(daily_rs) >= 5:
+        vals   = daily_rs[-5:]
+        mu5    = sum(vals) / 5
         x_mean = 2.0
-        num    = sum((i-x_mean)*(vals[i]-mu5) for i in range(5))
-        den    = sum((i-x_mean)**2 for i in range(5))
-        rs_trend = round(num/den, 4) if den else 0.0
+        num    = sum((i - x_mean) * (vals[i] - mu5) for i in range(5))
+        den    = sum((i - x_mean) ** 2 for i in range(5))
+        rs_trend = round(num / den, 4) if den else 0.0
     else:
         rs_trend = None
 
-    return m_z, a_z, rs_trend
+    return round(m_today, 4), round(a, 4), rs_trend
 
 
 def classify_stock_phase(rs_pct, m_z, a_z, rs_trend, rs_slow_positive=None):
-    """依 RS 百分位、M/A Z-score 和 RS_trend 分類個股型態"""
+    """依 RS 百分位、M 比值（RS/MA10）和 RS_trend 分類個股型態"""
     if rs_pct is None or m_z is None:
         return "RANGE"
     rs_slow_ok = rs_slow_positive if rs_slow_positive is not None else True
-    if rs_pct >= 70 and m_z > 0 and (a_z is None or a_z >= 0) and rs_slow_ok:
+    if rs_pct >= 70 and m_z > 1.0 and (a_z is None or a_z >= 0) and rs_slow_ok:
         return "RANGE" if (rs_trend is not None and rs_trend < 0) else "BULL"
-    if rs_pct >= 60 and m_z < 0 and (a_z is None or a_z < 0) and (rs_trend is None or rs_trend > 0):
+    if rs_pct >= 60 and m_z < 1.0 and (a_z is None or a_z < 0) and (rs_trend is None or rs_trend > 0):
         return "BULL_PULLBACK"
-    if rs_pct < 30 and m_z < 0 and (a_z is None or a_z < 0):
+    if rs_pct < 30 and m_z < 1.0 and (a_z is None or a_z < 0):
         return "BEAR_STRONG"
-    if rs_pct < 50 and m_z > 0:
+    if rs_pct < 50 and m_z > 1.0:
         return "BEAR_WEAK"
     return "RANGE"
 
@@ -338,46 +336,52 @@ def fetch_yahoo_data(code):
         m_z_val = a_z_val = rs_trend_val = None
         if _bm_closes_exp:
             try:
-                bc = _bm_closes_exp
-                sc = closes
-                _n = min(len(sc), len(bc))
-                if _n >= 240:
-                    sc_a = sc[-_n:]; bc_a = bc[-_n:]
-                    r60  = sc_a[-1]/sc_a[-60]  - 1; b60  = bc_a[-1]/bc_a[-60]  - 1
-                    r120 = sc_a[-1]/sc_a[-120] - 1; b120 = bc_a[-1]/bc_a[-120] - 1
-                    r240 = sc_a[-1]/sc_a[-240] - 1; b240 = bc_a[-1]/bc_a[-240] - 1
-                    _rs_scalar = round(0.4*(r60-b60) + 0.3*(r120-b120) + 0.3*(r240-b240), 4)
-                rs_fast, _, _ = _compute_rs_layers(sc, bc)
-                m_z_val, a_z_val, rs_trend_val = _compute_m_a(rs_fast)
+                daily_rs = _compute_rs_layers(closes, _bm_closes_exp)
+                m_z_val, a_z_val, rs_trend_val = _compute_m_a(daily_rs)
+                # 相容舊 _rs_scalar（供 rs_pct 排序用）
+                _n = min(len(closes), len(_bm_closes_exp))
+                if _n >= 60:
+                    sc_a = closes[-_n:]; bc_a = _bm_closes_exp[-_n:]
+                    r60 = sc_a[-1]/sc_a[-60] - 1; b60 = bc_a[-1]/bc_a[-60] - 1
+                    _rs_scalar = round(r60 - b60, 4)
             except Exception:
                 pass
 
+        # ATR 14日
+        atr_14 = None
+        if len(closes) > 14:
+            trs = [max(highs[i]-lows[i], abs(highs[i]-closes[i-1]), abs(lows[i]-closes[i-1]))
+                   for i in range(1, len(closes))]
+            atr_14 = round(sum(trs[-14:]) / 14, 2)
+
         return {
-            "price":         price,
-            "prev_close":    prev_close,
-            "ma5":           ma(5),
-            "ma10":          ma(10),
-            "ma20":          ma(20),
-            "ma60":          ma(60),
-            "high20":        high20,
-            "low20":         low20,
-            "prev_low20":    prev_low20,
-            "vol_day_ratio": vol_day_ratio,
+            "price":            price,
+            "prev_close":       prev_close,
+            "high":             round(highs[-1], 2),
+            "ma5":              ma(5),
+            "ma10":             ma(10),
+            "ma20":             ma(20),
+            "ma60":             ma(60),
+            "high20":           high20,
+            "low20":            low20,
+            "prev_low20":       prev_low20,
+            "vol_day_ratio":    vol_day_ratio,
             # AVWAP 三線
-            "avwap_swing":   avwap_swing,
-            "avwap_vol":     avwap_vol,
-            "avwap_short":   avwap_short,
+            "avwap_swing":      avwap_swing,
+            "avwap_vol":        avwap_vol,
+            "avwap_short":      avwap_short,
             # RS 指標
-            "_rs_scalar":    _rs_scalar,
-            "m_z":           round(m_z_val, 4) if m_z_val is not None else None,
-            "a_z":           round(a_z_val, 4) if a_z_val is not None else None,
-            "rs_trend":      rs_trend_val,
+            "_rs_scalar":       _rs_scalar,
+            "m_z":              round(m_z_val, 4) if m_z_val is not None else None,
+            "a_z":              round(a_z_val, 4) if a_z_val is not None else None,
+            "rs_trend":         rs_trend_val,
+            "atr_14":           atr_14,
             # 原始序列供回測用，不寫入 JSON
-            "_closes":       closes,
-            "_highs":        highs,
-            "_lows":         lows,
-            "_volumes":      volumes,
-            "_opens":        opens,
+            "_closes":          closes,
+            "_highs":           highs,
+            "_lows":            lows,
+            "_volumes":         volumes,
+            "_opens":           opens,
         }
     except Exception:
         return None
@@ -402,7 +406,7 @@ _ALLOWED_SIGNALS = {
 }
 
 
-def calc_signals(yahoo, stock_phase="RANGE"):
+def calc_signals(yahoo, stock_phase="RANGE", rs_pct=50):
     signals   = []
     price     = yahoo.get("price")     or 0
     high20    = yahoo.get("high20")
@@ -428,11 +432,22 @@ def calc_signals(yahoo, stock_phase="RANGE"):
     _mm_ok     = avwap_vol   is None or price >= avwap_vol
     _short_ok  = avwap_short is None or price >= avwap_short
 
-    # BULL 型態動能額外條件
+    # BULL 型態動能額外條件（收緊：m_z_val > 1.2）
     _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 0 and
+        m_z_val is not None and m_z_val > 1.2 and
         rs_trend_val is not None and rs_trend_val > 0
     )
+
+    # confirmation_flags（expansion 無籌碼分與大盤相位，共 4 項）
+    _conf_flags = [
+        {"lbl": "RS強勢",     "sub": "RS百分位≥70",        "ok": rs_pct >= 70},
+        {"lbl": "量能擴張",   "sub": "日量比>1.3×",         "ok": vol_day > 1.3},
+        {"lbl": "個股多頭",   "sub": "個股相位=BULL",        "ok": stock_phase == "BULL"},
+        {"lbl": "均量線對齊", "sub": "三條AVWAP均低於現價",  "ok": bool(
+            avwap_swing and avwap_vol and avwap_short
+            and price >= avwap_swing and price >= avwap_vol and price >= avwap_short)},
+    ]
+    _confirmations = sum(f["ok"] for f in _conf_flags)
 
     def _sig(type_, label, strength, entry, stop, reason):
         # 型態篩選
@@ -456,16 +471,31 @@ def calc_signals(yahoo, stock_phase="RANGE"):
             rr *= 0.7
         rr = round(rr, 2)
         target = round(entry + risk * rr, 2)
+        # trigger_price
+        _TRIGGER_BUFFER = {"breakout": 0.002, "high_base": 0.003,
+                           "false_breakdown": 0.003, "ma_pullback": 0.005,
+                           "retest": 0.005, "ma60_support": 0.005}
+        _today_high = yahoo.get("high") or entry
+        trigger_price = round(_today_high * (1 + _TRIGGER_BUFFER.get(type_, 0.003)), 2)
+        # atr_stop
+        atr = yahoo.get("atr_14")
+        atr_stop = round(entry - 2 * atr, 2) if atr else None
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         return {
-            "type":      type_,
-            "label":     label,
-            "strength":  _strength,
-            "entry":     round(entry, 2),
-            "stop_loss": round(stop, 2),
-            "target":    target,
-            "risk":      risk,
-            "rr":        rr,
-            "reason":    _reason,
+            "type":               type_,
+            "label":              label,
+            "strength":           _strength,
+            "entry":              round(entry, 2),
+            "stop_loss":          round(stop, 2),
+            "target":             target,
+            "risk":               risk,
+            "rr":                 rr,
+            "reason":             _reason,
+            "trigger_price":      trigger_price,
+            "atr_stop":           atr_stop,
+            "timeframe":          _TF.get(type_, "medium"),
+            "confirmations":      _confirmations,
+            "confirmation_flags": _conf_flags,
         }
 
     # 1. 突破：收盤突破20日高 + 量比≥1.5 + 短線節奏健康 + BULL動能確認
@@ -474,18 +504,26 @@ def calc_signals(yahoo, stock_phase="RANGE"):
                  f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x")
         if s: signals.append(s)
 
-    # 2. 假跌破：昨收 < prev_low20 且今收 > low20
-    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20:
-        s = _sig("false_breakdown", "假跌破", "strong", price, round(low20 * 0.98, 2),
-                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復")
+    # 2. 假跌破：加 rs_pct ≥ 50，強度改 medium
+    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20 and rs_pct >= 50:
+        s = _sig("false_breakdown", "假跌破", "medium", price, round(low20 * 0.98, 2),
+                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復，RS百分位{rs_pct}")
         if s: signals.append(s)
 
-    # 3. 均線回測：多頭排列 + 收盤距MA20在3%以內
-    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20:
-        dist = (price - ma20) / ma20
-        if 0 <= dist <= 0.03:
-            s = _sig("ma_pullback", "均線回測", "medium", price, ma20,
-                     f"均線多頭排列，收盤({price})回測MA20({ma20})")
+    # 3a. 均線回測 A（起漲型）：RS 40~60 + rs_trend>0 + _trend_ok
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0 and _trend_ok:
+        dist_ma20 = (price - ma20) / ma20
+        if 0 <= dist_ma20 <= 0.03 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
+            s = _sig("ma_pullback", "均線回測(起漲型)", "weak", price, ma20,
+                     f"均線多頭，RS百分位{rs_pct}(40~60)，RS斜率剛翻正，AVWAP趨勢線守住")
+            if s: signals.append(s)
+
+    # 3b. 均線回測 B（主升型）：RS ≥ 60 + _trend_ok
+    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0 and _trend_ok:
+        dist_ma20 = (price - ma20) / ma20
+        if 0 <= dist_ma20 <= 0.03 and rs_pct >= 60:
+            s = _sig("ma_pullback", "均線回測(主升型)", "medium", price, ma20,
+                     f"均線多頭，RS百分位{rs_pct}(≥60)，AVWAP趨勢線守住")
             if s: signals.append(s)
 
     # 4. 強整再突：緊貼20日高（距離≤5%）+ 收盤 > MA5 + 短線節奏健康 + BULL動能確認
@@ -497,20 +535,28 @@ def calc_signals(yahoo, stock_phase="RANGE"):
                      f"緊貼20日高({high20})整理，量比{vol_day:.1f}x")
             if s: signals.append(s)
 
-    # 5. 縮量回測：收盤距MA10在2%以內 + 量比<1 + 收盤>MA20
-    if ma10 and ma20 and price > ma20:
-        dist = abs(price - ma10) / ma10
-        if dist <= 0.02 and vol_day < 1.0:
-            s = _sig("retest", "縮量回測", "medium", price, ma20,
-                     f"縮量({vol_day:.1f}x)回測MA10({ma10})")
+    # 5a. 縮量回測 A（起漲型）：RS 40~60 + rs_trend>0 + _trend_ok + 縮量
+    if ma10 and ma20 and price > ma20 and _trend_ok:
+        dist_ma10 = abs(price - ma10) / ma10
+        if dist_ma10 <= 0.02 and vol_day < 1.0 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
+            s = _sig("retest", "縮量回測(起漲型)", "weak", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
             if s: signals.append(s)
 
-    # 6. MA60支撐：收盤距MA60在2%以內
-    if ma60:
+    # 5b. 縮量回測 B（主升型）：RS ≥ 60 + _trend_ok + 縮量
+    if ma10 and ma20 and price > ma20 and _trend_ok:
+        dist_ma10 = abs(price - ma10) / ma10
+        if dist_ma10 <= 0.02 and vol_day < 1.0 and rs_pct >= 60:
+            s = _sig("retest", "縮量回測(主升型)", "medium", price, ma20,
+                     f"縮量({vol_day:.1f}x)回測MA10，RS百分位{rs_pct}(≥60)")
+            if s: signals.append(s)
+
+    # 6. MA60支撐：rs_pct ≥ 55 + _trend_ok
+    if ma60 and rs_pct >= 55 and _trend_ok:
         dist = (price - ma60) / ma60
         if 0 <= dist <= 0.02:
             s = _sig("ma60_support", "MA60支撐", "weak", price, round(ma60 * 0.97, 2),
-                     f"收盤({price})貼近MA60({ma60})")
+                     f"收盤({price})貼近MA60({ma60})，RS百分位{rs_pct}")
             if s: signals.append(s)
 
     return signals
@@ -654,8 +700,10 @@ def aggregate_backtest_stats(all_results):
         total   = decided + b["inconclusive"]
         if total < 5:
             continue
+        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         stats[t] = {
             "label":             SIGNAL_LABELS.get(t, t),
+            "timeframe":         _TF.get(t, "medium"),
             "count":             total,
             "win_rate":          round(b["wins"] / decided, 3) if decided > 0 else 0.5,
             "avg_gain_pct":      round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0,
@@ -922,7 +970,7 @@ def main():
         yahoo["rs_pct"]      = rs_pct
         yahoo["stock_phase"] = phase
 
-        signals = calc_signals(yahoo, stock_phase=phase)
+        signals = calc_signals(yahoo, stock_phase=phase, rs_pct=rs_pct)
         if not signals:
             no_sig += 1
             continue
