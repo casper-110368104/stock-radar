@@ -938,7 +938,7 @@ function renderMarketBar(data){
 function rExpCard(s,pfx){
   pfx=pfx||'xc';
   var pc=s.chg_pct>=0?'var(--green)':'var(--red)';
-  var sigs=(s.signals||[]).filter(function(sg){return sigTF==='all'||sg.timeframe===sigTF;});
+  var sigs=(s.signals||[]).filter(function(sg){return sigTF==='all'||_sgTF(sg)===sigTF;});
   var hasStrong=sigs.some(function(sg){return sg.strength==='strong';});
   var hasMed=sigs.some(function(sg){return sg.strength==='medium';});
   var cntCls=hasStrong?'sc-strong':hasMed?'sc-medium':'';
@@ -947,8 +947,8 @@ function rExpCard(s,pfx){
   var TF_CLR={'short':'var(--orange)','medium':'var(--blue)','long':'var(--purple,#a78bfa)'};
   var sigsHtml=sigs.map(function(sg){
     var st=sg.strength;
-    var tfLbl=TF_LBL[sg.timeframe]||'中';
-    var tfClr=TF_CLR[sg.timeframe]||'var(--blue)';
+    var tfLbl=TF_LBL[_sgTF(sg)]||'中';
+    var tfClr=TF_CLR[_sgTF(sg)]||'var(--blue)';
     return '<div class="exp-sig '+st+'">'+
       '<div class="exp-sig-head">'+
         '<span class="exp-sig-badge '+st+'">'+(SLBL[st]||st)+'</span>'+
@@ -1206,6 +1206,7 @@ function renderExpansionInApp(){
     app.innerHTML='<div class="empty">📭 尚無隨機500股資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
     return;
   }
+  if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
   var SORD={'strong':0,'medium':1,'weak':2};
   list.sort(function(a,b){return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));});
   app.innerHTML='<div style="font-size:10px;color:var(--text3);padding:8px 0">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
@@ -1618,6 +1619,9 @@ function toggleSignalFilter(){
   render();
 }
 
+var _TF_FB={'retest':'short','false_breakdown':'short','ma60_support':'long'};
+function _sgTF(sg){return sg.timeframe||_TF_FB[sg.type]||'medium';}
+
 var sigTF='all';
 function setSigTF(tf){
   sigTF=tf;
@@ -1641,7 +1645,7 @@ function render(){
   if(curThm!=='all') list=list.filter(function(s){return(s.themes||[]).indexOf(curThm)>=0;});
   if(filterMA60) list=list.filter(function(s){return s.above_ma60===true;});
   if(filterSignal) list=list.filter(function(s){return s.signals&&s.signals.length>0;});
-  if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return sg.timeframe===sigTF;});});
+  if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
   if(q) list=list.filter(function(s){return s.code.indexOf(q)>=0||s.name.indexOf(q)>=0;});
 
   calcRanks();
@@ -2030,7 +2034,7 @@ function rNews(news){
 }
 
 function rSignals(s){
-  var sigs=(s.signals||[]).filter(function(sg){return sigTF==='all'||sg.timeframe===sigTF;});
+  var sigs=(s.signals||[]).filter(function(sg){return sigTF==='all'||_sgTF(sg)===sigTF;});
   if(!sigs.length)return '<div style="font-size:13px;color:var(--text3);text-align:center;padding:18px 0">目前無符合條件的買點訊號</div>';
   var LABELS={'strong':'強','medium':'中','weak':'弱'};
   var TF_LBL={'short':'短線','medium':'中線','long':'長線'};
@@ -2038,8 +2042,8 @@ function rSignals(s){
   var cards=sigs.map(function(sg){
     var st=sg.strength||'medium';
     var stLbl=LABELS[st]||st;
-    var tfLbl=TF_LBL[sg.timeframe]||'中線';
-    var tfClr=TF_CLR[sg.timeframe]||'var(--blue)';
+    var tfLbl=TF_LBL[_sgTF(sg)]||'中線';
+    var tfClr=TF_CLR[_sgTF(sg)]||'var(--blue)';
     // 確認數 + 可展開明細（●●●○○○）
     var confId='conf-'+Math.random().toString(36).slice(2,7);
     var confHtml='';
