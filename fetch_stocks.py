@@ -1761,7 +1761,85 @@ def fetch_news(name, sid):
             continue
     return [], []
 
-# ── 5. 歷史回測工具函式 ───────────────────────────────────────────
+# ── 5. 圖形型態偵測 ──────────────────────────────────────────────
+
+def _piv_highs(highs, window=3):
+    h = highs[-60:]
+    n = len(h)
+    return [(i, h[i]) for i in range(window, n - window)
+            if h[i] == max(h[i - window:i + window + 1])
+            and h[i] > h[i - 1] and h[i] > h[i + 1]]
+
+def _piv_lows(lows, window=3):
+    l = lows[-60:]
+    n = len(l)
+    return [(i, l[i]) for i in range(window, n - window)
+            if l[i] == min(l[i - window:i + window + 1])
+            and l[i] < l[i - 1] and l[i] < l[i + 1]]
+
+def _slope(points):
+    if len(points) < 2:
+        return 0.0
+    xs = [p[0] for p in points]
+    ys = [p[1] for p in points]
+    mx = sum(xs) / len(xs)
+    my = sum(ys) / len(ys)
+    num = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    den = sum((x - mx) ** 2 for x in xs)
+    return num / den if den else 0.0
+
+_PATTERN_DESC = {
+    "三角收斂": "壓力收斂，蓄力待突破",
+    "下降楔形": "反轉型態，支撐漸強",
+    "上升楔形": "漲勢收窄，注意過熱",
+    "矩形整理": "橫盤蓄力，等待方向",
+    "旗形":     "急漲後健康回檔",
+    "雙底":     "結構性打底確認",
+}
+
+def detect_chart_patterns(highs, lows, closes, volumes, price):
+    """偵測圖形型態，回傳 list[str]，例如 ['三角收斂', '旗形']"""
+    patterns = []
+    if len(highs) < 30:
+        return patterns
+
+    ph = _piv_highs(highs)[-4:]
+    pl = _piv_lows(lows)[-4:]
+    if len(ph) >= 2 and len(pl) >= 2:
+        sr = _slope(ph)
+        ss = _slope(pl)
+        th = price * 0.001
+
+        if sr < -th and ss > th:
+            patterns.append("三角收斂")
+
+        if sr < -th and ss < -th and ss > sr * 1.2:
+            patterns.append("下降楔形")
+
+        if sr > th and ss > th and sr < ss * 1.2:
+            patterns.append("上升楔形")
+
+        if abs(sr) <= th and abs(ss) <= th:
+            patterns.append("矩形整理")
+
+    if len(closes) >= 30:
+        pole = (closes[-20] - closes[-30]) / closes[-30] if closes[-30] else 0
+        flag = (closes[-1] - closes[-10]) / closes[-10] if closes[-10] else 0
+        if pole > 0.08 and -0.05 < flag < 0:
+            patterns.append("旗形")
+
+    if len(pl) >= 2:
+        b1, b2 = pl[-2][1], pl[-1][1]
+        if max(b1, b2) > 0 and abs(b1 - b2) / max(b1, b2) < 0.03:
+            seg = closes[pl[-2][0]:pl[-1][0]]
+            mid_high = max(seg) if seg else b1
+            if b1 > 0 and (mid_high - b1) / b1 > 0.03:
+                patterns.append("雙底")
+
+    return patterns
+
+
+# ── 6. 歷史回測工具函式 ───────────────────────────────────────────
 
 _SIGNAL_LABELS_BT = {
     "breakout":        "突破",
@@ -2891,7 +2969,7 @@ def main():
                 structure=r.get("structure", ""),
             )
 
-    # ── 提取原始歷史序列供回測，同時從 results 移除（避免寫入 JSON）
+    # ── 提取原始歷史序列供回測 + 型態偵測，同時從 results 移除（避免寫入 JSON）
     raw_histories = {}
     for r in results:
         cls = r.pop("_closes",  None)
@@ -2901,6 +2979,9 @@ def main():
         opn = r.pop("_opens",   None)
         if cls and hgh and lws and vls:
             raw_histories[r["code"]] = (cls, hgh, lws, vls, opn)
+            r["patterns"] = detect_chart_patterns(hgh, lws, cls, vls, r.get("price", 0))
+        else:
+            r.setdefault("patterns", [])
 
     # ── 歷史勝率回測
     print(f"\n  [回測] 計算歷史訊號勝率（{len(raw_histories)} 支股票）...")

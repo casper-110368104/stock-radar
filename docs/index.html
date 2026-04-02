@@ -567,6 +567,20 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
       <button class="tf-chip tab" data-tf="medium" onclick="setSigTF('medium')" style="font-size:11px;padding:2px 8px">中線</button>
       <button class="tf-chip tab" data-tf="long"   onclick="setSigTF('long')"   style="font-size:11px;padding:2px 8px">長線</button>
     </span>
+    <span style="margin-left:6px;position:relative;display:inline-flex;vertical-align:middle">
+      <button id="pat-btn" onclick="togglePatDD()" class="tab" style="font-size:11px;padding:2px 8px;border:1px solid #555;">📐 型態 ▼</button>
+      <div id="pat-dd" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:var(--bg2);border:1px solid #444;border-radius:6px;padding:6px;min-width:110px;margin-top:2px">
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <button class="pat-opt tab" data-p="all" onclick="setPattern('all')" style="font-size:11px;padding:2px 8px;background:var(--blue);color:#fff">全部</button>
+          <button class="pat-opt tab" data-p="三角收斂" onclick="setPattern('三角收斂')" style="font-size:11px;padding:2px 8px">三角收斂</button>
+          <button class="pat-opt tab" data-p="下降楔形" onclick="setPattern('下降楔形')" style="font-size:11px;padding:2px 8px">下降楔形</button>
+          <button class="pat-opt tab" data-p="上升楔形" onclick="setPattern('上升楔形')" style="font-size:11px;padding:2px 8px">上升楔形</button>
+          <button class="pat-opt tab" data-p="矩形整理" onclick="setPattern('矩形整理')" style="font-size:11px;padding:2px 8px">矩形整理</button>
+          <button class="pat-opt tab" data-p="旗形" onclick="setPattern('旗形')" style="font-size:11px;padding:2px 8px">旗形</button>
+          <button class="pat-opt tab" data-p="雙底" onclick="setPattern('雙底')" style="font-size:11px;padding:2px 8px">雙底</button>
+        </div>
+      </div>
+    </span>
   </div>
   <div class="search-wrap">
     <input class="search-input" id="search" placeholder="搜尋股票名稱或代碼..." oninput="render()">
@@ -854,8 +868,8 @@ function renderBacktest(){
   var app=document.getElementById('bt-app');
   if(!app) return;
   var secStyle='font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:8px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px';
-  var stocksHtml=_renderBtStats(stocksBtStats)+_renderBtTracking(stocksBtTracking);
-  var expHtml=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking);
+  var stocksHtml=_renderBtStats(stocksBtStats)+_renderBtTracking(stocksBtTracking)+_renderPatternStats(stocks);
+  var expHtml=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking)+_renderPatternStats(expansionData.stocks||[]);
   app.innerHTML=
     '<div style="'+secStyle+'">📈 個股選股雷達</div>'+
     (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無個股回測資料</div>')+
@@ -972,6 +986,7 @@ function rExpCard(s,pfx){
         '<span class="exp-name">'+s.name+'</span>'+
         _phaseBadge(s.stock_phase)+
         '<span class="exp-sig-count '+cntCls+'">📈 '+sigs.length+'</span>'+
+        (s.patterns&&s.patterns.length?s.patterns.map(function(p){return '<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(139,92,246,.18);color:#a78bfa;margin-left:2px">📐'+p+'</span>';}).join(''):'')+''+
       '</div>'+
       '<div style="display:flex;align-items:center;gap:6px">'+
         '<div class="exp-right">'+
@@ -1049,6 +1064,36 @@ function _setBtStatsTF(tf){
   document.querySelectorAll('.bts-group').forEach(function(g){
     g.style.display=(tf==='all'||g.dataset.tf===tf)?'block':'none';
   });
+}
+
+function _renderPatternStats(stockList){
+  var cnt={};
+  (stockList||[]).forEach(function(s){
+    (s.patterns||[]).forEach(function(p){ cnt[p]=(cnt[p]||0)+1; });
+  });
+  var keys=Object.keys(cnt);
+  if(!keys.length) return '';
+  keys.sort(function(a,b){return cnt[b]-cnt[a];});
+  var total=stockList.length||1;
+  var rows=keys.map(function(p){
+    var n=cnt[p];
+    var pct=Math.round(n/total*100);
+    var c='rgba(139,92,246,.7)';
+    return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'+
+      '<span style="width:56px;font-size:11px;color:#a78bfa;flex-shrink:0">'+p+'</span>'+
+      '<div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">'+
+        '<div style="height:6px;width:'+Math.min(pct*1.5,100)+'%;background:'+c+';border-radius:3px"></div>'+
+      '</div>'+
+      '<span style="width:28px;text-align:right;font-size:11px;color:var(--text2)">'+n+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div class="bt-card" style="margin-top:12px">'+
+    '<div class="bt-card-hdr open" style="cursor:pointer" onclick="_btToggle(this)">'+
+      '<div class="bt-title" style="margin-bottom:0">📐 型態統計 <span class="bt-sub">（有出現型態的個股數）</span></div>'+
+      '<button class="bt-toggle-btn" onclick="event.stopPropagation();_btToggle(this.closest(\'.bt-card-hdr\'))">▾</button>'+
+    '</div>'+
+    '<div class="bt-card-body">'+rows+'</div>'+
+  '</div>';
 }
 
 function _renderBtStats(stats){
@@ -1207,6 +1252,7 @@ function renderExpansionInApp(){
     return;
   }
   if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
+  if(curPattern!=='all') list=list.filter(function(s){return(s.patterns||[]).indexOf(curPattern)>=0;});
   var SORD={'strong':0,'medium':1,'weak':2};
   list.sort(function(a,b){return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));});
   app.innerHTML='<div style="font-size:10px;color:var(--text3);padding:8px 0">更新：'+expansionData.updated_at+'　有訊號：'+list.length+'檔 / 掃描：'+(expansionData.sample_size||0)+'檔</div>'+
@@ -1622,6 +1668,26 @@ function toggleSignalFilter(){
 var _TF_FB={'retest':'short','false_breakdown':'short','ma60_support':'long'};
 function _sgTF(sg){return sg.timeframe||_TF_FB[sg.type]||'medium';}
 
+var _ALL_PATTERNS=['三角收斂','下降楔形','上升楔形','矩形整理','旗形','雙底'];
+var _PAT_DESC={'三角收斂':'壓力收斂蓄力','下降楔形':'反轉型態','上升楔形':'注意過熱','矩形整理':'橫盤蓄力','旗形':'急漲回檔','雙底':'結構打底'};
+var curPattern='all';
+function togglePatDD(){
+  var dd=document.getElementById('pat-dd');
+  if(dd) dd.style.display=dd.style.display==='none'?'block':'none';
+}
+function setPattern(p){
+  curPattern=p;
+  document.querySelectorAll('.pat-opt').forEach(function(b){
+    b.style.background=b.dataset.p===p?'var(--blue)':'var(--bg2)';
+    b.style.color=b.dataset.p===p?'#fff':'var(--text2)';
+  });
+  var dd=document.getElementById('pat-dd');
+  if(dd) dd.style.display='none';
+  var btn=document.getElementById('pat-btn');
+  if(btn) btn.textContent='📐 '+(p==='all'?'型態':p)+' ▼';
+  render();
+}
+
 var sigTF='all';
 function setSigTF(tf){
   sigTF=tf;
@@ -1646,6 +1712,7 @@ function render(){
   if(filterMA60) list=list.filter(function(s){return s.above_ma60===true;});
   if(filterSignal) list=list.filter(function(s){return s.signals&&s.signals.length>0;});
   if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
+  if(curPattern!=='all') list=list.filter(function(s){return(s.patterns||[]).indexOf(curPattern)>=0;});
   if(q) list=list.filter(function(s){return s.code.indexOf(q)>=0||s.name.indexOf(q)>=0;});
 
   calcRanks();
@@ -1676,6 +1743,12 @@ function rCard(s){
   if(s.signals&&s.signals.length){
     var hasStrongSig=s.signals.some(function(sg){return sg.strength==='strong';});
     sigBadge='<span class="sig-dot'+(hasStrongSig?'':' sd-med')+'">📈'+s.signals.length+'</span>';
+  }
+  var patBadge='';
+  if(s.patterns&&s.patterns.length){
+    patBadge=(s.patterns||[]).map(function(p){
+      return '<span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(139,92,246,.18);color:#a78bfa;margin-left:2px">📐'+p+'</span>';
+    }).join('');
   }
 
   // ind rank badge
@@ -1828,6 +1901,7 @@ function rCard(s){
           '<span class="sname">'+s.name+'</span>'+
           '<div class="icons">'+icons+'</div>'+
           sigBadge+
+          patBadge+
         '</div>'+
         '<div class="score-row">'+
           '<span class="sc-chip" style="color:'+col+'">'+ws+'分</span>'+
@@ -2099,7 +2173,19 @@ function rSignals(s){
       confHtml+
     '</div>';
   }).join('');
-  return '<div class="sig-list">'+cards+'</div>';
+  var patHtml='';
+  if(s.patterns&&s.patterns.length){
+    var pTags=(s.patterns||[]).map(function(p){
+      return '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)">'+
+        '📐 '+p+'<span style="font-size:10px;color:var(--text3);margin-left:4px">'+(_PAT_DESC[p]||'')+'</span>'+
+      '</span>';
+    }).join('');
+    patHtml='<div style="margin-top:10px;padding:8px 10px;background:var(--bg3);border-radius:8px">'+
+      '<div style="font-size:10px;color:var(--text3);margin-bottom:5px">型態確認</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:5px">'+pTags+'</div>'+
+    '</div>';
+  }
+  return '<div class="sig-list">'+cards+patHtml+'</div>';
 }
 
 // ─ Filter ─
@@ -2322,6 +2408,13 @@ document.addEventListener('DOMContentLoaded',function(){
   makeSheet('modal', closeCM);
   makeSheet('panel', closeCfg);
   makeSheet('scmodal', closeSCM);
+  document.addEventListener('click',function(e){
+    var dd=document.getElementById('pat-dd');
+    var btn=document.getElementById('pat-btn');
+    if(dd&&dd.style.display!=='none'&&!dd.contains(e.target)&&e.target!==btn){
+      dd.style.display='none';
+    }
+  });
 });
 
 // ─ Load ─
