@@ -1808,18 +1808,22 @@ def detect_chart_patterns(highs, lows, closes, volumes, price):
     if len(ph) >= 2 and len(pl) >= 2:
         sr = _slope(ph)
         ss = _slope(pl)
-        th = price * 0.001
+        avg_p = price or 1
+        sr_rel = sr / avg_p   # 相對斜率（% per bar）
+        ss_rel = ss / avg_p
+        th      = 0.0003   # 0.03%/bar：方向性型態門檻
+        th_flat = 0.0015   # 0.15%/bar：橫盤型態門檻
 
-        if sr < -th and ss > th:
+        if sr_rel < -th and ss_rel > th:
             patterns.append("三角收斂")
 
-        if sr < -th and ss < -th and ss > sr * 1.2:
+        if sr_rel < -th and ss_rel < -th and ss_rel > sr_rel * 1.2:
             patterns.append("下降楔形")
 
-        if sr > th and ss > th and sr < ss * 1.2:
+        if sr_rel > th and ss_rel > th and sr_rel < ss_rel * 1.2:
             patterns.append("上升楔形")
 
-        if abs(sr) <= th and abs(ss) <= th:
+        if abs(sr_rel) <= th_flat and abs(ss_rel) <= th_flat:
             patterns.append("矩形整理")
 
     if len(closes) >= 30:
@@ -1831,7 +1835,8 @@ def detect_chart_patterns(highs, lows, closes, volumes, price):
     if len(pl) >= 2:
         b1, b2 = pl[-2][1], pl[-1][1]
         if max(b1, b2) > 0 and abs(b1 - b2) / max(b1, b2) < 0.03:
-            seg = closes[pl[-2][0]:pl[-1][0]]
+            cls60 = closes[-60:]  # 對齊 _piv_lows 使用的相同窗口
+            seg = cls60[pl[-2][0]:pl[-1][0]]
             mid_high = max(seg) if seg else b1
             if b1 > 0 and (mid_high - b1) / b1 > 0.03:
                 patterns.append("雙底")

@@ -673,6 +673,7 @@ var navStack=[];     // 返回堆疊 [{view, title, sectorKey, modalCtx}]
 var _scmCtx={};      // 目前開啟的 sector modal context
 var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預設值防止 undefined）
 var sectorData={};   // 產業輪動資料
+var marketRegime={};  // 大盤相位資料
 var expansionData={updated_at:'',signal_count:0,stocks:[]};
 var stocksBtStats={};
 var stocksBtTracking=[];
@@ -1265,7 +1266,13 @@ function renderMacroPreview(){
   if(!msub) return;
   var lc={red:'#ef4444',yellow:'#f59e0b',green:'#22c55e',yellow_blue:'#60a5fa',blue:'#3b82f6'};
   var col=lc[bizCycle.light]||'#9ca3af';
+  var MRlbl={bull:'大盤多頭',bull_pullback:'大盤回檔',range:'大盤盤整',bear:'大盤空頭'};
+  var MRclr={bull:'#22c55e',bull_pullback:'#f59e0b',range:'#9ca3af',bear:'#ef4444'};
   var txt=bizCycle.label||'景氣燈號・期貨外資・大盤狀態';
+  if(marketRegime.regime){
+    var rc=MRclr[marketRegime.regime]||'#9ca3af';
+    txt='<span style="color:'+rc+'">'+(MRlbl[marketRegime.regime]||'')+'</span> ｜ '+txt;
+  }
   if(window._foiData) txt+=(window._foiData.net>0?' | 期貨外資偏多':' | 期貨外資偏空');
   msub.innerHTML='<span style="color:'+col+';font-weight:600">'+txt+'</span>';
 }
@@ -1276,7 +1283,65 @@ function renderMacroFull(){
   var lc={red:'#ef4444',yellow:'#f59e0b',green:'#22c55e',yellow_blue:'#60a5fa',blue:'#3b82f6'};
   var col=lc[bizCycle.light]||'#9ca3af';
   var h='';
-  // 景氣燈號大卡
+
+  // ── 大盤行情 + 外資期貨 合併卡 ────────────────────────────
+  var mr=marketRegime;
+  var MR_MAP={
+    bull:         {lbl:'多頭',    col:'#22c55e', icon:'▲', tip:'大盤多頭走強，適合持股，關注強勢類股突破'},
+    bull_pullback:{lbl:'回檔整理',col:'#f59e0b', icon:'↗', tip:'多頭暫時回檔，等待支撐確認後可分批進場'},
+    range:        {lbl:'盤整',    col:'#9ca3af', icon:'─', tip:'大盤方向不明，建議縮小倉位，等待突破訊號'},
+    bear:         {lbl:'空頭',    col:'#ef4444', icon:'▼', tip:'大盤空頭格局，以觀望為主，避免追強'},
+  };
+  var mrc=MR_MAP[mr.regime]||MR_MAP.range;
+  var ma20dist=mr.taiex&&mr.ma20?((mr.taiex-mr.ma20)/mr.ma20*100).toFixed(1):null;
+  var ma60dist=mr.taiex&&mr.ma60?((mr.taiex-mr.ma60)/mr.ma60*100).toFixed(1):null;
+  var distClr=function(v){return v>0?'var(--green)':'var(--red)';};
+  h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
+    '<div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;letter-spacing:.5px">📊 大盤行情</div>'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">'+
+      '<div style="font-size:24px;font-weight:800;color:'+mrc.col+'">'+mrc.icon+' '+mrc.lbl+'</div>'+
+      (mr.taiex?'<div style="font-size:16px;font-weight:700;color:var(--text1)">'+mr.taiex.toLocaleString()+'</div>':'')+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px">'+
+      (mr.ma20&&ma20dist!=null?
+        '<div style="background:var(--bg3);border-radius:8px;padding:8px 10px">'+
+          '<div style="font-size:10px;color:var(--text3)">MA20</div>'+
+          '<div style="font-size:13px;font-weight:600;color:var(--text1)">'+mr.ma20.toLocaleString()+'</div>'+
+          '<div style="font-size:10px;color:'+distClr(ma20dist)+'">'+(ma20dist>0?'+':'')+ma20dist+'%</div>'+
+        '</div>':'')+
+      (mr.ma60&&ma60dist!=null?
+        '<div style="background:var(--bg3);border-radius:8px;padding:8px 10px">'+
+          '<div style="font-size:10px;color:var(--text3)">MA60</div>'+
+          '<div style="font-size:13px;font-weight:600;color:var(--text1)">'+mr.ma60.toLocaleString()+'</div>'+
+          '<div style="font-size:10px;color:'+distClr(ma60dist)+'">'+(ma60dist>0?'+':'')+ma60dist+'%</div>'+
+        '</div>':'')+
+    '</div>'+
+    (window._foiData?function(){
+      var d=window._foiData;
+      var nc=d.net>0?'var(--red)':'var(--green)';
+      var foiSig=d.net>5000?'外資期貨大幅偏多 🔥':d.net>0?'外資期貨偏多':d.net<-5000?'外資期貨大幅偏空 🧊':'外資期貨偏空';
+      return '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">'+
+        '<div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">'+
+          '<div style="font-size:10px;color:var(--text3)">外資期貨多單</div>'+
+          '<div style="font-size:13px;font-weight:700;color:var(--red)">'+d.long.toLocaleString()+'</div>'+
+        '</div>'+
+        '<div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">'+
+          '<div style="font-size:10px;color:var(--text3)">空單</div>'+
+          '<div style="font-size:13px;font-weight:700;color:var(--green)">'+d.short.toLocaleString()+'</div>'+
+        '</div>'+
+        '<div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">'+
+          '<div style="font-size:10px;color:var(--text3)">淨部位</div>'+
+          '<div style="font-size:13px;font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+d.net.toLocaleString()+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:11px;color:'+nc+';background:var(--bg3);border-radius:6px;padding:5px 10px;margin-bottom:8px">'+foiSig+'</div>';
+    }():'')+(mr.regime?
+    '<div style="font-size:12px;color:var(--text2);background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;line-height:1.7">'+
+      '💡 '+mrc.tip+
+    '</div>':'')+
+  '</div>';
+
+  // ── 景氣燈號大卡 ──────────────────────────────────────────
   h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
     '<div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:600;letter-spacing:.5px">景氣信號燈</div>'+
     '<div style="font-size:22px;font-weight:800;color:'+col+'">'+bizCycle.label+'</div>'+
@@ -1288,28 +1353,6 @@ function renderMacroFull(){
         :'🟢 景氣穩健運行中')+
     '</div>'+
   '</div>';
-  // 期貨外資
-  if(window._foiData){
-    var d=window._foiData;
-    var nc=d.net>0?'var(--red)':'var(--green)';
-    h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
-      '<div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-weight:600;letter-spacing:.5px">外資期貨未平倉</div>'+
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+
-        '<div style="background:var(--bg3);border-radius:10px;padding:10px;text-align:center">'+
-          '<div style="font-size:10px;color:var(--text3);margin-bottom:3px">多單</div>'+
-          '<div style="font-size:15px;font-weight:700;color:var(--red)">'+d.long.toLocaleString()+'</div>'+
-        '</div>'+
-        '<div style="background:var(--bg3);border-radius:10px;padding:10px;text-align:center">'+
-          '<div style="font-size:10px;color:var(--text3);margin-bottom:3px">空單</div>'+
-          '<div style="font-size:15px;font-weight:700;color:var(--green)">'+d.short.toLocaleString()+'</div>'+
-        '</div>'+
-        '<div style="background:var(--bg3);border-radius:10px;padding:10px;text-align:center">'+
-          '<div style="font-size:10px;color:var(--text3);margin-bottom:3px">淨部位</div>'+
-          '<div style="font-size:15px;font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+d.net.toLocaleString()+'</div>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  }
   // 產業輪動地圖
   var sdKeys=Object.keys(sectorData);
   if(sdKeys.length){
@@ -2447,6 +2490,7 @@ async function loadData(){
     _step='process';
     var allStocks=data.stocks||[];
     sectorData=data.sector_rotation||{};
+    marketRegime=data.market_regime||{};
     stocksBtStats=data.backtest_stats||{};
     stocksBtTracking=data.signal_tracking||[];
     etfs  =allStocks.filter(function(s){return s.code.startsWith('00');});
