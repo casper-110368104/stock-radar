@@ -1282,7 +1282,9 @@ function _renderPatternStats(stockList){
 
 function _renderBtStats(stats){
   var keys=Object.keys(stats||{});
-  if(!keys.length) return '';
+  if(!keys.length) return '<div style="font-size:11px;color:var(--text3);background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
+    '📊 勝率統計尚未建立 — 待 GitHub Actions 執行後自動填入（訊號追蹤約需 5–15 日）'+
+  '</div>';
 
   // group by timeframe
   var TF_ORDER=['short','medium','long'];
@@ -2306,9 +2308,35 @@ function rVol(s){
         '<div class="tech-sub" style="color:'+ac+'">'+asign+a.dist.toFixed(1)+'%　'+a.sub+'</div>'+
       '</div>';
     }).join('');
+    // AVWAP alignment check
+    var allAbove=avArr.every(function(a){return a.dist>=0;});
+    var allBelow=avArr.every(function(a){return a.dist<0;});
+    var alignBadge='';
+    if(avArr.length>=2){
+      if(allAbove) alignBadge='<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(34,197,94,.15);color:#22c55e;margin-left:6px">全線支撐 ✓</span>';
+      else if(allBelow) alignBadge='<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(239,68,68,.12);color:#ef4444;margin-left:6px">全線壓力 ✗</span>';
+    }
+    // RS trend
+    var rsTrendH='';
+    if(s.m_z!=null){
+      var mz=s.m_z,az=s.a_z||0;
+      var mzClr=mz>1?'#22c55e':mz<-1?'#ef4444':'#9ca3af';
+      var mzLbl=mz>1.5?'RS動能強':mz>0?'RS偏強':mz>-1?'RS偏弱':'RS弱勢';
+      var azArr=az>0.3?'▲':az<-0.3?'▼':'─';
+      var azClr=az>0.3?'#22c55e':az<-0.3?'#ef4444':'#9ca3af';
+      rsTrendH='<div style="margin-top:6px;display:flex;align-items:center;gap:8px;font-size:11px">'+
+        '<span style="color:var(--text3)">RS動能</span>'+
+        '<span style="color:'+mzClr+';font-weight:700">'+mzLbl+' (M='+mz.toFixed(2)+')</span>'+
+        '<span style="color:'+azClr+';font-weight:800">'+azArr+'</span>'+
+        (s.rs_slow_positive?'<span style="font-size:9px;color:#22c55e">長線RS正向</span>':'<span style="font-size:9px;color:#ef4444">長線RS負向</span>')+
+      '</div>';
+    }
     avwapH='<div class="tech-sec" style="margin-top:10px">'+
-      '<div class="tech-title">📍 AVWAP 支撐位</div>'+
+      '<div style="display:flex;align-items:center;margin-bottom:6px">'+
+        '<span class="tech-title" style="margin-bottom:0">📍 AVWAP 支撐位</span>'+alignBadge+
+      '</div>'+
       '<div class="tech-grid" style="grid-template-columns:repeat('+avArr.length+',1fr)">'+acols+'</div>'+
+      rsTrendH+
     '</div>';
   }
   return vh+rh+th+avwapH;
@@ -2390,12 +2418,26 @@ function rSignals(s){
       '</div>'+
       '<div class="sig-reason">'+sg.reason+'</div>'+
       triggerHtml+
-      '<div class="sig-prices">'+
-        '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
-        '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
-        '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
-        atrHtml+
-      '</div>'+
+      (function(){
+        var R=+(sg.entry-sg.stop_loss).toFixed(2);
+        var T1=R>0?+(sg.entry+R*1).toFixed(2):null;
+        var T2=R>0?+(sg.entry+R*2).toFixed(2):null;
+        var T3=R>0?+(sg.entry+R*3).toFixed(2):null;
+        var tHtml=T1?'<div style="margin-top:6px;padding:6px 8px;background:rgba(34,197,94,.06);border-radius:6px;border:1px solid rgba(34,197,94,.15)">'+
+          '<div style="font-size:10px;color:var(--text3);margin-bottom:4px">分批出場建議 <span style="opacity:.6">（各1/3倉位）</span></div>'+
+          '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
+            '<span style="font-size:11px"><span style="color:var(--text3)">T1 +1R：</span><span style="color:var(--green);font-weight:600">$'+T1+'</span><span style="font-size:9px;color:var(--text3);margin-left:3px">→ 移停損至成本</span></span>'+
+            '<span style="font-size:11px"><span style="color:var(--text3)">T2 +2R：</span><span style="color:var(--green);font-weight:600">$'+T2+'</span><span style="font-size:9px;color:var(--text3);margin-left:3px">→ 移停損至T1</span></span>'+
+            '<span style="font-size:11px"><span style="color:var(--text3)">T3 +3R：</span><span style="color:var(--green);font-weight:600">$'+T3+'</span><span style="font-size:9px;color:var(--text3);margin-left:3px">→ 出清</span></span>'+
+          '</div>'+
+        '</div>':'';
+        return '<div class="sig-prices">'+
+          '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
+          '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
+          '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
+          atrHtml+
+        '</div>'+tHtml;
+      }())+
       (function(){
         var ps=_calcPosSz(sg);
         var capAmt=Math.round(totalCapital*ps/100);

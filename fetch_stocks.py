@@ -2924,11 +2924,16 @@ def main():
         n = len(sorted_rs)
         for r, rv in rs_raw:
             pct = sum(1 for x in sorted_rs if x <= rv) / n * 100
-            if   pct >= 90: r["scores"]["rs"] = 100
-            elif pct >= 80: r["scores"]["rs"] = 80
-            elif pct >= 70: r["scores"]["rs"] = 60
-            elif pct >= 50: r["scores"]["rs"] = 40
-            else:           r["scores"]["rs"] = max(0, int(pct * 0.6))
+            # 基底分：區間百分位（interval RS）
+            if   pct >= 90: base_score = 100
+            elif pct >= 80: base_score = 80
+            elif pct >= 70: base_score = 60
+            elif pct >= 50: base_score = 40
+            else:           base_score = max(0, int(pct * 0.6))
+            # 動能加分：M值（time-series RS趨勢）最多 ±20
+            mz = r.get("m_z", 0) or 0
+            mz_bonus = max(-20, min(20, int(mz * 8)))  # mz=2.5 → +20
+            r["scores"]["rs"] = max(0, min(100, base_score + mz_bonus))
             r["rs_pct"] = int(pct)  # 記錄百分位供型態分類用
     # 其餘無 RS 值的股票設預設 rs_pct=50
     for r in results:
