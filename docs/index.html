@@ -561,26 +561,28 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <button class="tab"        id="tab-exp"      onclick="setTab('exp')">🎲 隨機</button>
     <button class="tab" id="tab-ma60" onclick="toggleMA60()" style="margin-left:8px;border:1px solid #666;">📈 MA60</button>
     <button class="tab" id="tab-signal" onclick="toggleSignalFilter()" style="border:1px solid #666;">🔔 訊號</button>
-    <span style="margin-left:6px;display:inline-flex;gap:3px;vertical-align:middle">
-      <button class="tf-chip tab" data-tf="all"    onclick="setSigTF('all')"    style="font-size:11px;padding:2px 8px;background:var(--blue);color:#fff">全部</button>
-      <button class="tf-chip tab" data-tf="short"  onclick="setSigTF('short')"  style="font-size:11px;padding:2px 8px">短線</button>
-      <button class="tf-chip tab" data-tf="medium" onclick="setSigTF('medium')" style="font-size:11px;padding:2px 8px">中線</button>
-      <button class="tf-chip tab" data-tf="long"   onclick="setSigTF('long')"   style="font-size:11px;padding:2px 8px">長線</button>
-    </span>
-    <span style="margin-left:6px;position:relative;display:inline-flex;vertical-align:middle">
-      <button id="pat-btn" onclick="togglePatDD()" class="tab" style="font-size:11px;padding:2px 8px;border:1px solid #555;">📐 型態 ▼</button>
-      <div id="pat-dd" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:var(--bg2);border:1px solid #444;border-radius:6px;padding:6px;min-width:110px;margin-top:2px">
-        <div style="display:flex;flex-wrap:wrap;gap:4px">
-          <button class="pat-opt tab" data-p="all" onclick="setPattern('all')" style="font-size:11px;padding:2px 8px;background:var(--blue);color:#fff">全部</button>
-          <button class="pat-opt tab" data-p="三角收斂" onclick="setPattern('三角收斂')" style="font-size:11px;padding:2px 8px">三角收斂</button>
-          <button class="pat-opt tab" data-p="下降楔形" onclick="setPattern('下降楔形')" style="font-size:11px;padding:2px 8px">下降楔形</button>
-          <button class="pat-opt tab" data-p="上升楔形" onclick="setPattern('上升楔形')" style="font-size:11px;padding:2px 8px">上升楔形</button>
-          <button class="pat-opt tab" data-p="矩形整理" onclick="setPattern('矩形整理')" style="font-size:11px;padding:2px 8px">矩形整理</button>
-          <button class="pat-opt tab" data-p="旗形" onclick="setPattern('旗形')" style="font-size:11px;padding:2px 8px">旗形</button>
-          <button class="pat-opt tab" data-p="雙底" onclick="setPattern('雙底')" style="font-size:11px;padding:2px 8px">雙底</button>
-        </div>
+    <button id="filter-toggle-btn" class="tab" onclick="toggleFilterPanel()" style="margin-left:6px;border:1px solid #666;font-size:11px;padding:2px 10px">🔽 篩選</button>
+  </div>
+  <div id="filter-panel" style="display:none;padding:6px 12px 8px;background:var(--bg2);border-bottom:1px solid var(--border);display:none">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap">時框</span>
+        <button class="tf-chip tab" data-tf="all"    onclick="setSigTF('all')"    style="font-size:11px;padding:2px 8px;background:var(--blue);color:#fff">全部</button>
+        <button class="tf-chip tab" data-tf="short"  onclick="setSigTF('short')"  style="font-size:11px;padding:2px 8px">短線</button>
+        <button class="tf-chip tab" data-tf="medium" onclick="setSigTF('medium')" style="font-size:11px;padding:2px 8px">中線</button>
+        <button class="tf-chip tab" data-tf="long"   onclick="setSigTF('long')"   style="font-size:11px;padding:2px 8px">長線</button>
       </div>
-    </span>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap">型態</span>
+        <button class="pat-opt tab" data-p="all"    onclick="setPattern('all')"    style="font-size:11px;padding:2px 8px;background:var(--blue);color:#fff">全部</button>
+        <button class="pat-opt tab" data-p="三角收斂" onclick="setPattern('三角收斂')" style="font-size:11px;padding:2px 8px">三角收斂</button>
+        <button class="pat-opt tab" data-p="下降楔形" onclick="setPattern('下降楔形')" style="font-size:11px;padding:2px 8px">下降楔形</button>
+        <button class="pat-opt tab" data-p="上升楔形" onclick="setPattern('上升楔形')" style="font-size:11px;padding:2px 8px">上升楔形</button>
+        <button class="pat-opt tab" data-p="矩形整理" onclick="setPattern('矩形整理')" style="font-size:11px;padding:2px 8px">矩形整理</button>
+        <button class="pat-opt tab" data-p="旗形"    onclick="setPattern('旗形')"    style="font-size:11px;padding:2px 8px">旗形</button>
+        <button class="pat-opt tab" data-p="雙底"    onclick="setPattern('雙底')"    style="font-size:11px;padding:2px 8px">雙底</button>
+      </div>
+    </div>
   </div>
   <div class="search-wrap">
     <input class="search-input" id="search" placeholder="搜尋股票名稱或代碼..." oninput="render()">
@@ -679,6 +681,9 @@ var stocksBtStats={};
 var stocksBtTracking=[];
 var totalCapital=1000000; // 模擬總資金（預設100萬）
 var _curECTab='combined'; // equity curve tab: stocks / exp / combined
+var riskPct=1.0;          // 每筆風險% (固定風險法，預設1%)
+var includeFeeSim=true;   // 資金曲線是否含手續費+稅+滑點
+var FEE_ROUNDTRIP=0.0074; // 台股來回成本：手續費0.285%+交易稅0.3%+滑點0.2%≈0.74%
 var curExpSort='strength';
 var wl=[];try{wl=JSON.parse(localStorage.getItem('wl')||'[]');}catch(e){}
 // iOS Safari PWA 相對 URL 需轉成絕對路徑，否則拋出 "The string did not match the expected pattern."
@@ -869,13 +874,33 @@ function renderHomeCards(){
 
 // ── 風控 & 資金曲線 ───────────────────────────────────────────
 
-// 建議倉位：依訊號強度 × 大盤相位
+// Q1 動態縮倉：連虧調整係數
+function _dynSizeMult(){
+  var all=[].concat(stocksBtTracking||[]).concat(expansionData.signal_tracking||[]);
+  var resolved=all.filter(function(t){return t.status==='win'||t.status==='loss';})
+    .sort(function(a,b){return (b.trigger_date||'')>(a.trigger_date||'')?1:-1;})
+    .slice(0,5);
+  if(!resolved.length) return 1.0;
+  var consec=0;
+  for(var i=0;i<resolved.length;i++){
+    if(resolved[i].status==='loss') consec++;
+    else break;
+  }
+  if(consec>=3) return 0.5;   // 3連虧 → 半倉
+  if(consec>=2) return 0.75;  // 2連虧 → 七五折
+  return 1.0;
+}
+
+// Q3 固定風險法：倉位% = 風險% ÷ 停損距離%
 function _calcPosSz(sig){
-  var BASE={strong:8,medium:5,weak:3};
-  var rgMult={bull:1.0,bull_pullback:0.75,range:0.5,bear:0.25};
-  var base=BASE[sig.strength]||5;
-  var mult=rgMult[marketRegime.regime||'range']||0.5;
-  return Math.min(Math.round(base*mult*10)/10, 10); // 最高10%
+  var stopDist=(sig.entry>0&&sig.stop_loss>0)
+    ?(sig.entry-sig.stop_loss)/sig.entry*100:5;
+  if(stopDist<=0) stopDist=5;
+  var rawPos=riskPct/stopDist*100;                         // 固定風險比例
+  var rgMult={bull:1.0,bull_pullback:0.8,range:0.6,bear:0.35};
+  var mult=rgMult[marketRegime.regime||'range']||0.6;      // 大盤相位係數
+  var dyn=_dynSizeMult();                                  // 連虧動態調整
+  return Math.min(Math.round(rawPos*mult*dyn*10)/10,25);   // 上限25%
 }
 
 // 從 signal_tracking 建構時間序列資金曲線
@@ -888,6 +913,7 @@ function _buildCurveFromTracking(tracking, posPct){
   var points=[{x:0,y:100,date:''}];
   resolved.forEach(function(t,i){
     var g=(t.gain_pct||0)/100;
+    if(includeFeeSim) g-=FEE_ROUNDTRIP;  // Q2 扣除手續費+稅+滑點
     capital*=(1+(posPct/100)*g);
     if(capital>peak) peak=capital;
     var dd=(peak-capital)/peak*100;
@@ -905,6 +931,7 @@ function _buildCurveFromStats(stats, posPct){
     var s=stats[k];
     var n=s.count||0, wr=s.win_rate||0;
     var wg=(s.avg_gain_pct||0)/100, wl=(s.avg_loss_pct||0)/100;
+    if(includeFeeSim){wg-=FEE_ROUNDTRIP;wl-=FEE_ROUNDTRIP;} // Q2 扣除手續費
     var wins=Math.round(n*wr), losses=n-wins;
     for(var i=0;i<wins;i++) allTrades.push(wg);
     for(var i=0;i<losses;i++) allTrades.push(wl);
@@ -970,16 +997,14 @@ function _svgEquityCurve(points,W,H){
 }
 
 function _renderEquityCurve(){
-  var posPct=5; // 固定5%倉位做模擬
+  // 用固定風險法計算模擬倉位（以預設停損5%為基準）
+  var posPct=Math.min(Math.round(riskPct/5*100*10)/10,25);
   var cap=totalCapital;
-  // 取得兩組資料
   var stData=_buildCurveFromTracking(stocksBtTracking,posPct)||_buildCurveFromStats(stocksBtStats,posPct);
   var exData=_buildCurveFromTracking(expansionData.signal_tracking||[],posPct)||_buildCurveFromStats(expansionData.backtest_stats||{},posPct);
-  // 合計：merge tracking陣列
   var allTracking=[].concat(stocksBtTracking||[]).concat(expansionData.signal_tracking||[]);
   var comboData=_buildCurveFromTracking(allTracking,posPct);
   if(!comboData&&stData&&exData){
-    // 統計模擬合併
     var mergedStats={};
     [stocksBtStats,expansionData.backtest_stats||{}].forEach(function(bs){Object.assign(mergedStats,bs);});
     comboData=_buildCurveFromStats(mergedStats,posPct);
@@ -989,48 +1014,43 @@ function _renderEquityCurve(){
   var tabData={combined:comboData,stocks:stData,exp:exData};
   var tabBar=tabs.map(function(t){
     var active=t===_curECTab;
-    return '<button onclick="_setECTab(\''+t+'\')" style="font-size:11px;padding:3px 12px;border-radius:12px;border:none;cursor:pointer;background:'+(active?'var(--blue)':'var(--bg3)')+';color:'+(active?'#fff':'var(--text2)')+'">'+tabLbl[t]+'</button>';
+    return '<button onclick="_setECTab(\''+t+'\')" style="font-size:11px;padding:3px 10px;border-radius:12px;border:none;cursor:pointer;background:'+(active?'var(--blue)':'var(--bg3)')+';color:'+(active?'#fff':'var(--text2)')+'">'+tabLbl[t]+'</button>';
   }).join('');
-
   var d=tabData[_curECTab];
-  var simNote=d&&d.simulated?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px">⚠️ 目前為回測統計模擬（無實際追蹤交易），資料來源：歷史回測勝率</div>':'';
-
+  var dynM=_dynSizeMult();
+  var dynNote=dynM<1?'<span style="color:var(--orange);font-size:10px">⚠️ 連虧縮倉中 ×'+dynM+'</span>':'';
+  var simNote=d&&d.simulated?'<div style="font-size:10px;color:var(--text3);margin-bottom:4px">⚠️ 模擬模式（無實際追蹤交易）：以回測勝率推算</div>':'';
   var chart=d?_svgEquityCurve(d.points,320,130):'<div style="color:var(--text3);text-align:center;padding:24px;font-size:12px">尚無資料</div>';
   var tr=d?d.totalReturn:null;
   var trClr=tr>=0?'var(--green)':'var(--red)';
   var capGain=tr!=null?Math.round(cap*tr/100):null;
-  var statsHtml='';
-  if(d){
-    statsHtml='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px">'+
-      _ecStat('總報酬',(tr>=0?'+':'')+tr+'%',trClr)+
-      _ecStat('實際損益',capGain!=null?(capGain>=0?'+':'')+capGain.toLocaleString()+'元':'-',trClr)+
-      _ecStat('最大回撤','-'+d.maxDD+'%','var(--orange)')+
-      _ecStat('完成交易',d.count+'筆','var(--text2)')+
-    '</div>';
-  }
-  // 倉位說明
-  var rgLbl={bull:'多頭 ×1.0',bull_pullback:'回檔 ×0.75',range:'盤整 ×0.5',bear:'空頭 ×0.25'};
-  var posNote='<div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.6">'+
-    '模擬條件：每筆固定 '+posPct+'% 倉位 ｜ 大盤相位：'+(rgLbl[marketRegime.regime||'range']||'─')+'　｜　'+
-    '實際建議倉位依訊號強度調整（強8% / 中5% / 弱3%）×相位係數'+
+  var wr=d&&d.count?Math.round(d.wins/d.count*100):null;
+  var statsHtml=d?'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px">'+
+    _ecStat('總報酬',(tr>=0?'+':'')+tr+'%',trClr)+
+    _ecStat('實際損益',capGain!=null?(capGain>=0?'+':'')+capGain.toLocaleString()+'元':'-',trClr)+
+    _ecStat('最大回撤','-'+d.maxDD+'%','var(--orange)')+
+    (wr!=null?_ecStat('勝率',wr+'%',wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):_ecStat('交易筆數',d.count+'筆','var(--text2)'))+
+  '</div>':'';
+  var inputStyle='width:70px;font-size:11px;padding:2px 5px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--text1)';
+  var controls='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;padding:6px 8px;background:var(--bg3);border-radius:8px">'+
+    '<span style="font-size:10px;color:var(--text3)">總資金</span>'+
+    '<input type="number" value="'+cap+'" min="10000" step="10000" style="'+inputStyle+';width:90px" onchange="totalCapital=+this.value;renderBacktest()">'+
+    '<span style="font-size:10px;color:var(--text3);margin-left:4px">每筆風險%</span>'+
+    '<input type="number" value="'+riskPct+'" min="0.1" max="3" step="0.1" style="'+inputStyle+'" onchange="riskPct=+this.value;renderBacktest()">'+
+    '<label style="font-size:10px;display:flex;align-items:center;gap:3px;cursor:pointer;margin-left:4px">'+
+      '<input type="checkbox" '+(includeFeeSim?'checked':'')+' onchange="includeFeeSim=this.checked;renderBacktest()" style="accent-color:var(--blue)">'+
+      '含費用(0.74%)'+
+    '</label>'+
+    dynNote+
   '</div>';
-
   return '<div class="bt-card" style="margin-top:14px">'+
     '<div class="bt-card-hdr open">'+
-      '<div class="bt-title" style="margin-bottom:0">📈 資金曲線模擬 <span class="bt-sub">（每筆 '+posPct+'% 倉位）</span></div>'+
+      '<div class="bt-title" style="margin-bottom:0">📈 資金曲線模擬 <span class="bt-sub">（風險'+riskPct+'% / 筆，模擬倉位'+posPct+'%）</span></div>'+
       '<button class="bt-toggle-btn" onclick="_btToggle(this)">▾</button>'+
     '</div>'+
     '<div class="bt-card-body">'+
-      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'+
-        tabBar+
-        '<div style="margin-left:auto;display:flex;align-items:center;gap:5px">'+
-          '<span style="font-size:10px;color:var(--text3)">總資金</span>'+
-          '<input id="cap-input" type="number" value="'+cap+'" min="10000" step="10000" '+
-            'style="width:90px;font-size:11px;padding:3px 6px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text1)" '+
-            'onchange="totalCapital=+this.value;renderBacktest()">'+
-        '</div>'+
-      '</div>'+
-      simNote+chart+statsHtml+posNote+
+      '<div style="display:flex;gap:5px;align-items:center;margin-bottom:8px;flex-wrap:wrap">'+tabBar+'</div>'+
+      simNote+chart+statsHtml+controls+
     '</div>'+
   '</div>';
 }
@@ -1899,9 +1919,25 @@ function _sgTF(sg){return sg.timeframe||_TF_FB[sg.type]||'medium';}
 var _ALL_PATTERNS=['三角收斂','下降楔形','上升楔形','矩形整理','旗形','雙底'];
 var _PAT_DESC={'三角收斂':'壓力收斂蓄力','下降楔形':'反轉型態','上升楔形':'注意過熱','矩形整理':'橫盤蓄力','旗形':'急漲回檔','雙底':'結構打底'};
 var curPattern='all';
-function togglePatDD(){
-  var dd=document.getElementById('pat-dd');
-  if(dd) dd.style.display=dd.style.display==='none'?'block':'none';
+function toggleFilterPanel(){
+  var p=document.getElementById('filter-panel');
+  if(!p) return;
+  var open=p.style.display==='none'||p.style.display==='';
+  p.style.display=open?'block':'none';
+  var btn=document.getElementById('filter-toggle-btn');
+  if(btn){
+    var active=sigTF!=='all'||curPattern!=='all';
+    btn.textContent=(open?'🔼':'🔽')+' 篩選'+(active?' ●':'');
+  }
+}
+function _updateFilterBtn(){
+  var btn=document.getElementById('filter-toggle-btn');
+  if(!btn) return;
+  var p=document.getElementById('filter-panel');
+  var open=p&&p.style.display==='block';
+  var active=sigTF!=='all'||curPattern!=='all';
+  btn.textContent=(open?'🔼':'🔽')+' 篩選'+(active?' ●':'');
+  if(active) btn.style.color='var(--blue)'; else btn.style.color='';
 }
 function setPattern(p){
   curPattern=p;
@@ -1909,10 +1945,7 @@ function setPattern(p){
     b.style.background=b.dataset.p===p?'var(--blue)':'var(--bg2)';
     b.style.color=b.dataset.p===p?'#fff':'var(--text2)';
   });
-  var dd=document.getElementById('pat-dd');
-  if(dd) dd.style.display='none';
-  var btn=document.getElementById('pat-btn');
-  if(btn) btn.textContent='📐 '+(p==='all'?'型態':p)+' ▼';
+  _updateFilterBtn();
   render();
 }
 
@@ -1924,6 +1957,7 @@ function setSigTF(tf){
     b.style.background=on?'var(--blue)':'';
     b.style.color=on?'#fff':'';
   });
+  _updateFilterBtn();
   render();
 }
 
@@ -2080,6 +2114,7 @@ function rCard(s){
 
     detail='<div class="detail">'+
       wbar+
+      (patBadge?'<div style="padding:4px 0 2px 0">'+patBadge+'</div>':'')+
       '<div class="price-row">'+
         '<div><div class="price-big '+cls+'">$'+Number(s.price).toLocaleString()+'</div>'+
         '<div class="price-sub '+cls+'">'+sg+s.change+' ('+sg+s.change_pct+'%)</div>'+
@@ -2129,7 +2164,6 @@ function rCard(s){
           '<span class="sname">'+s.name+'</span>'+
           '<div class="icons">'+icons+'</div>'+
           sigBadge+
-          patBadge+
         '</div>'+
         '<div class="score-row">'+
           '<span class="sc-chip" style="color:'+col+'">'+ws+'分</span>'+
@@ -2418,36 +2452,59 @@ function rSignals(s){
       '</div>'+
       '<div class="sig-reason">'+sg.reason+'</div>'+
       triggerHtml+
+      '<div class="sig-prices">'+
+        '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
+        '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
+        '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
+        atrHtml+
+      '</div>'+
       (function(){
-        var R=+(sg.entry-sg.stop_loss).toFixed(2);
-        var T1=R>0?+(sg.entry+R*1).toFixed(2):null;
-        var T2=R>0?+(sg.entry+R*2).toFixed(2):null;
-        var T3=R>0?+(sg.entry+R*3).toFixed(2):null;
-        var tHtml=T1?'<div style="margin-top:6px;padding:6px 8px;background:rgba(34,197,94,.06);border-radius:6px;border:1px solid rgba(34,197,94,.15)">'+
-          '<div style="font-size:10px;color:var(--text3);margin-bottom:4px">分批出場建議 <span style="opacity:.6">（各1/3倉位）</span></div>'+
-          '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
-            '<span style="font-size:11px"><span style="color:var(--text3)">T1 +1R：</span><span style="color:var(--green);font-weight:600">$'+T1+'</span><span style="font-size:9px;color:var(--text3);margin-left:3px">→ 移停損至成本</span></span>'+
-            '<span style="font-size:11px"><span style="color:var(--text3)">T2 +2R：</span><span style="color:var(--green);font-weight:600">$'+T2+'</span><span style="font-size:9px;color:var(--text3);margin-left:3px">→ 移停損至T1</span></span>'+
-            '<span style="font-size:11px"><span style="color:var(--text3)">T3 +3R：</span><span style="color:var(--green);font-weight:600">$'+T3+'</span><span style="font-size:9px;color:var(--text3);margin-left:3px">→ 出清</span></span>'+
-          '</div>'+
-        '</div>':'';
-        return '<div class="sig-prices">'+
-          '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
-          '<div class="sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
-          '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
-          atrHtml+
-        '</div>'+tHtml;
-      }())+
-      (function(){
+        // Q4 統一交易計劃（預設收起）
         var ps=_calcPosSz(sg);
         var capAmt=Math.round(totalCapital*ps/100);
-        var sharesNote=sg.entry>0?Math.floor(capAmt/sg.entry/1000)*1000+'股':'';
-        return '<div style="margin-top:6px;padding:6px 8px;background:rgba(59,130,246,.08);border-radius:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
-          '<span style="font-size:10px;color:var(--text3)">建議倉位</span>'+
-          '<span style="font-size:13px;font-weight:700;color:var(--blue)">'+ps+'%</span>'+
-          '<span style="font-size:11px;color:var(--text2)">NT$'+capAmt.toLocaleString()+'</span>'+
-          (sharesNote?'<span style="font-size:10px;color:var(--text3)">≈ '+sharesNote+'</span>':'')+
-          '<span style="font-size:9px;color:var(--text3);margin-left:auto">依訊號強度×大盤相位</span>'+
+        var R=+(sg.entry-sg.stop_loss).toFixed(2);
+        var T1=R>0?+(sg.entry+R).toFixed(2):null;
+        var T2=R>0?+(sg.entry+R*2).toFixed(2):null;
+        var T3=R>0?+(sg.entry+R*3).toFixed(2):null;
+        var fullShares=sg.entry>0?Math.floor(capAmt/sg.entry/1000)*1000:0;
+        var uid='tp'+Math.random().toString(36).slice(2,7);
+        var body='<div style="padding:8px 10px">'+
+          '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px">'+
+            '<div style="background:var(--bg4);border-radius:6px;padding:5px 7px">'+
+              '<div style="font-size:9px;color:var(--text3)">初始進場 50%</div>'+
+              '<div style="font-size:12px;font-weight:700">$'+sg.entry+'</div>'+
+              '<div style="font-size:10px;color:var(--blue)">'+Math.round(ps*0.5*10)/10+'%　'+Math.floor(fullShares*0.5)+'股</div>'+
+            '</div>'+
+            (T1?'<div style="background:var(--bg4);border-radius:6px;padding:5px 7px">'+
+              '<div style="font-size:9px;color:var(--text3)">加碼1 30% @T1</div>'+
+              '<div style="font-size:12px;font-weight:700;color:var(--green)">$'+T1+'</div>'+
+              '<div style="font-size:10px;color:var(--blue)">+'+Math.round(ps*0.3*10)/10+'%</div>'+
+            '</div>':'')+
+            (T2?'<div style="background:var(--bg4);border-radius:6px;padding:5px 7px">'+
+              '<div style="font-size:9px;color:var(--text3)">加碼2 20% @T2</div>'+
+              '<div style="font-size:12px;font-weight:700;color:var(--green)">$'+T2+'</div>'+
+              '<div style="font-size:10px;color:var(--blue)">+'+Math.round(ps*0.2*10)/10+'%</div>'+
+            '</div>':'')+
+          '</div>'+
+          (T1?'<div style="border-top:1px solid var(--border);padding-top:6px;font-size:11px">'+
+            '<div style="color:var(--text3);font-size:9px;margin-bottom:4px">出場計劃</div>'+
+            '<div style="display:flex;flex-direction:column;gap:3px">'+
+              '<div>T1 <span style="color:var(--green);font-weight:600">$'+T1+'</span><span style="color:var(--text3);font-size:10px;margin-left:5px">出1/3 → 停損移至成本</span></div>'+
+              (T2?'<div>T2 <span style="color:var(--green);font-weight:600">$'+T2+'</span><span style="color:var(--text3);font-size:10px;margin-left:5px">出1/3 → 停損移至T1</span></div>':'')+
+              (T3?'<div>T3 <span style="color:var(--green);font-weight:600">$'+T3+'</span><span style="color:var(--text3);font-size:10px;margin-left:5px">全出</span></div>':'')+
+            '</div>'+
+          '</div>':'')+
+        '</div>';
+        return '<div style="margin-top:7px;border:1px solid var(--border);border-radius:8px;overflow:hidden">'+
+          '<div onclick="var b=document.getElementById(\''+uid+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\'" '+
+            'style="cursor:pointer;padding:5px 10px;background:var(--bg3);display:flex;align-items:center;gap:7px">'+
+            '<span style="font-size:11px;font-weight:700">📋 交易計劃</span>'+
+            '<span style="font-size:13px;font-weight:800;color:var(--blue)">'+ps+'%</span>'+
+            '<span style="font-size:11px;color:var(--text2)">NT$'+capAmt.toLocaleString()+'</span>'+
+            (fullShares?'<span style="font-size:10px;color:var(--text3)">≈'+fullShares+'股</span>':'')+
+            '<span style="font-size:10px;color:var(--text3);margin-left:auto">▼</span>'+
+          '</div>'+
+          '<div id="'+uid+'" style="display:none">'+body+'</div>'+
         '</div>';
       }())+
       confHtml+
