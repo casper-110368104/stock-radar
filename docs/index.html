@@ -558,12 +558,10 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
     <button class="tab"        id="tab-large"    onclick="setTab('large')">🏢 大型</button>
     <button class="tab"        id="tab-mid_small" onclick="setTab('mid_small')">🚀 中小型</button>
     <button class="tab"        id="tab-watch"    onclick="setTab('watch')">⭐ 自選</button>
-    <button class="tab"        id="tab-exp"      onclick="setTab('exp')">🎲 隨機</button>
-    <button class="tab" id="tab-ma60" onclick="toggleMA60()" style="margin-left:8px;border:1px solid #666;">📈 MA60</button>
-    <button class="tab" id="tab-signal" onclick="toggleSignalFilter()" style="border:1px solid #666;">🔔 訊號</button>
-    <button id="filter-toggle-btn" class="tab" onclick="toggleFilterPanel()" style="margin-left:6px;border:1px solid #666;font-size:11px;padding:2px 10px">🔽 篩選</button>
+    <button class="tab" id="tab-signal" onclick="toggleSignalFilter()" style="margin-left:8px;border:1px solid #666;">🔔 訊號</button>
+    <button id="filter-toggle-btn" class="tab" onclick="toggleFilterPanel()" style="margin-left:4px;border:1px solid #666;font-size:11px;padding:2px 10px">🔽 篩選</button>
   </div>
-  <div id="filter-panel" style="display:none;padding:6px 12px 8px;background:var(--bg2);border-bottom:1px solid var(--border);display:none">
+  <div id="filter-panel" style="display:none;padding:6px 12px 8px;background:var(--bg2);border-bottom:1px solid var(--border)">
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
       <div style="display:flex;align-items:center;gap:4px">
         <span style="font-size:10px;color:var(--text3);white-space:nowrap">時框</span>
@@ -581,6 +579,10 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <button class="pat-opt tab" data-p="矩形整理" onclick="setPattern('矩形整理')" style="font-size:11px;padding:2px 8px">矩形整理</button>
         <button class="pat-opt tab" data-p="旗形"    onclick="setPattern('旗形')"    style="font-size:11px;padding:2px 8px">旗形</button>
         <button class="pat-opt tab" data-p="雙底"    onclick="setPattern('雙底')"    style="font-size:11px;padding:2px 8px">雙底</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap">其他</span>
+        <button id="ma60-chip" class="tab" onclick="toggleMA60()" style="font-size:11px;padding:2px 8px">MA60以上</button>
       </div>
     </div>
   </div>
@@ -1067,6 +1069,13 @@ function _setECTab(t){
   renderBacktest();
 }
 
+function _clearBtData(){
+  if(!confirm('確定清空所有回測追蹤記錄？（僅清除畫面顯示，JSON 資料需透過 reset_tracking.py 重置）')) return;
+  stocksBtStats={};
+  stocksBtTracking=[];
+  if(expansionData){expansionData.backtest_stats={};expansionData.signal_tracking=[];}
+  renderBacktest();
+}
 function renderBacktest(){
   var app=document.getElementById('bt-app');
   if(!app) return;
@@ -1075,7 +1084,10 @@ function renderBacktest(){
   var expHtml=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking)+_renderPatternStats(expansionData.stocks||[]);
   app.innerHTML=
     _renderEquityCurve()+
-    '<div style="'+secStyle+';margin-top:16px">📈 個股選股雷達</div>'+
+    '<div style="'+secStyle+';margin-top:16px;display:flex;justify-content:space-between;align-items:center">'+
+      '<span>📈 個股選股雷達</span>'+
+      '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 清空追蹤</button>'+
+    '</div>'+
     (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無個股回測資料</div>')+
     '<div style="'+secStyle+';margin-top:16px">🎲 隨機500股掃描</div>'+
     (expHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無隨機500股回測資料</div>');
@@ -1872,8 +1884,9 @@ document.getElementById('sort-bar').addEventListener('click',function(e){
 var filterMA60 = false;
 function toggleMA60(){
   filterMA60 = !filterMA60;
-  var btn = document.getElementById('tab-ma60');
-  if(btn){ btn.style.background = filterMA60 ? '#2a6' : ''; btn.style.color = filterMA60 ? '#fff' : ''; }
+  var btn = document.getElementById('ma60-chip');
+  if(btn){ btn.style.background = filterMA60 ? 'var(--blue)' : ''; btn.style.color = filterMA60 ? '#fff' : ''; }
+  _updateFilterBtn();
   render();
 }
 
@@ -1935,7 +1948,7 @@ function _updateFilterBtn(){
   if(!btn) return;
   var p=document.getElementById('filter-panel');
   var open=p&&p.style.display==='block';
-  var active=sigTF!=='all'||curPattern!=='all';
+  var active=sigTF!=='all'||curPattern!=='all'||filterMA60;
   btn.textContent=(open?'🔼':'🔽')+' 篩選'+(active?' ●':'');
   if(active) btn.style.color='var(--blue)'; else btn.style.color='';
 }
@@ -2114,7 +2127,12 @@ function rCard(s){
 
     detail='<div class="detail">'+
       wbar+
-      (patBadge?'<div style="padding:4px 0 2px 0">'+patBadge+'</div>':'')+
+      (function(){
+        var tags=patBadge+(sectorPhaseHtml||'')+
+          (s.stock_phase&&s.stock_phase!=='RANGE'?_phaseBadge(s.stock_phase):'')+
+          (s.structure?_structBadge(s.structure):'');
+        return tags?'<div style="padding:4px 0 4px 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center">'+tags+'</div>':'';
+      }())+
       '<div class="price-row">'+
         '<div><div class="price-big '+cls+'">$'+Number(s.price).toLocaleString()+'</div>'+
         '<div class="price-sub '+cls+'">'+sg+s.change+' ('+sg+s.change_pct+'%)</div>'+
@@ -2144,13 +2162,13 @@ function rCard(s){
       '</div>'+
       thbar+
       '<div class="dtabs">'+
-        mTab(s.code,0,ti,'🏦 籌碼')+mTab(s.code,1,ti,'💰 基本')+mTab(s.code,2,ti,'📊 量能')+mTab(s.code,3,ti,'📰 新聞')+mTab(s.code,4,ti,'📈 訊號')+
+        mTab(s.code,0,ti,'🏦 籌碼')+mTab(s.code,1,ti,'💰 基本')+mTab(s.code,2,ti,'📊 量能')+mTab(s.code,3,ti,'📐 技術')+mTab(s.code,4,ti,'📈 訊號')+
       '</div>'+
       '<div id="dp-'+s.code+'">'+
         '<div class="dpage'+(ti===0?' active':'')+'">'+rChips(s)+'</div>'+
         '<div class="dpage'+(ti===1?' active':'')+'">'+rFund(s)+'</div>'+
         '<div class="dpage'+(ti===2?' active':'')+'">'+rVol(s)+'</div>'+
-        '<div class="dpage'+(ti===3?' active':'')+'">'+rNews(s.topic&&s.topic.news)+'</div>'+
+        '<div class="dpage'+(ti===3?' active':'')+'">'+rTech(s)+'</div>'+
         '<div class="dpage'+(ti===4?' active':'')+'">'+rSignals(s)+'</div>'+
       '</div>'+
     '</div>';
@@ -2170,9 +2188,6 @@ function rCard(s){
           '<div class="sc-bar"><div class="sc-bar-fill" style="width:'+ws+'%;background:'+col+'"></div></div>'+
         '</div>'+
         rankHtml+
-        sectorPhaseHtml+
-        (s.stock_phase&&s.stock_phase!=='RANGE'?_phaseBadge(s.stock_phase):'')+
-        (s.structure?_structBadge(s.structure):'')+
       '</div>'+
       '<div class="card-right">'+
         '<span class="price-num '+cls+'">$'+Number(s.price).toLocaleString()+'</span>'+
@@ -2302,6 +2317,9 @@ function rVol(s){
         '<span class="range-end">$'+s.week52_high.toLocaleString()+'</span>'+
       '</div></div>';
   }
+  return vh+rh;
+}
+function rTech(s){
   // 技術面三指標
   var th='';
   if(s.week52_high&&s.week52_low&&s.price){
@@ -2342,7 +2360,6 @@ function rVol(s){
         '<div class="tech-sub" style="color:'+ac+'">'+asign+a.dist.toFixed(1)+'%　'+a.sub+'</div>'+
       '</div>';
     }).join('');
-    // AVWAP alignment check
     var allAbove=avArr.every(function(a){return a.dist>=0;});
     var allBelow=avArr.every(function(a){return a.dist<0;});
     var alignBadge='';
@@ -2350,7 +2367,6 @@ function rVol(s){
       if(allAbove) alignBadge='<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(34,197,94,.15);color:#22c55e;margin-left:6px">全線支撐 ✓</span>';
       else if(allBelow) alignBadge='<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(239,68,68,.12);color:#ef4444;margin-left:6px">全線壓力 ✗</span>';
     }
-    // RS trend
     var rsTrendH='';
     if(s.m_z!=null){
       var mz=s.m_z,az=s.a_z||0;
@@ -2373,7 +2389,8 @@ function rVol(s){
       rsTrendH+
     '</div>';
   }
-  return vh+rh+th+avwapH;
+  if(!th&&!avwapH) return '<div style="font-size:13px;color:var(--text3);text-align:center;padding:18px 0">技術資料載入中</div>';
+  return th+avwapH;
 }
 function rNews(news){
   if(!news||!news.length)return '<div style="font-size:13px;color:var(--text3)">暫無相關新聞</div>';
