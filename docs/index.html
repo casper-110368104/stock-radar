@@ -1208,9 +1208,9 @@ function rExpCard(s,pfx){
         var d=(p-val)/val*100,c=d>=0?'var(--green)':'var(--red)',sg=d>=0?'+':'';
         return lbl+' <span style="color:'+c+'">$'+val+'<span style="font-size:9px;opacity:.8"> ('+sg+d.toFixed(1)+'%)</span></span>';
       }
-      if(s.avwap_swing!=null) av.push(_avItem('趨勢',s.avwap_swing));
-      if(s.avwap_vol  !=null) av.push(_avItem('主力',s.avwap_vol));
-      if(s.avwap_short!=null) av.push(_avItem('短線',s.avwap_short));
+      if(s.avwap_swing>0) av.push(_avItem('趨勢',s.avwap_swing));
+      if(s.avwap_vol  >0) av.push(_avItem('主力',s.avwap_vol));
+      if(s.avwap_short>0) av.push(_avItem('短線',s.avwap_short));
       return av.length?'<br><span style="font-size:10px;color:var(--text3)">AVWAP　</span>'+av.join('　'):'';
     }())+
     '</div>'+
@@ -2330,9 +2330,9 @@ function rVol(s){
   }
   // AVWAP 支撐位
   var avwapH='',avArr=[];
-  if(s.avwap_swing!=null){var d=(s.price-s.avwap_swing)/s.avwap_swing*100;avArr.push({lbl:'趨勢AVWAP',sub:'60日低點起錨',val:s.avwap_swing,dist:d});}
-  if(s.avwap_vol  !=null){var d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avArr.push({lbl:'主力AVWAP',sub:'20日最大量起錨',val:s.avwap_vol,  dist:d});}
-  if(s.avwap_short!=null){var d=(s.price-s.avwap_short)/s.avwap_short*100;avArr.push({lbl:'短線AVWAP',sub:'近期低點起錨', val:s.avwap_short,dist:d});}
+  if(s.avwap_swing>0){var d=(s.price-s.avwap_swing)/s.avwap_swing*100;avArr.push({lbl:'趨勢AVWAP',sub:'60日低點起錨',val:s.avwap_swing,dist:d});}
+  if(s.avwap_vol  >0){var d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avArr.push({lbl:'主力AVWAP',sub:'20日最大量起錨',val:s.avwap_vol,  dist:d});}
+  if(s.avwap_short>0){var d=(s.price-s.avwap_short)/s.avwap_short*100;avArr.push({lbl:'短線AVWAP',sub:'近期低點起錨', val:s.avwap_short,dist:d});}
   if(avArr.length){
     var acols=avArr.map(function(a){
       var ac=a.dist>=0?'var(--green)':'var(--red)',asign=a.dist>=0?'+':'';
