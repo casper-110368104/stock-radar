@@ -199,9 +199,12 @@ def calc_avwap(closes, highs, lows, volumes, anchor_idx):
         return None
     cum_tv, cum_v = 0.0, 0.0
     for i in range(anchor_idx, len(closes)):
-        tp = (highs[i] + lows[i] + closes[i]) / 3.0
-        cum_tv += tp * volumes[i]
-        cum_v  += volumes[i]
+        h, l, c, v = highs[i], lows[i], closes[i], volumes[i]
+        if math.isnan(h) or math.isnan(l) or math.isnan(c) or math.isnan(v):
+            continue  # 跳過 NaN bar（除權日/資料缺口），避免 nan→0.0 寫入 JSON
+        tp = (h + l + c) / 3.0
+        cum_tv += tp * v
+        cum_v  += v
     return round(cum_tv / cum_v, 2) if cum_v > 0 else None
 
 
