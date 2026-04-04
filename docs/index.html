@@ -2317,7 +2317,31 @@ function rVol(s){
         '<span class="range-end">$'+s.week52_high.toLocaleString()+'</span>'+
       '</div></div>';
   }
-  return vh+rh;
+  // AVWAP 摘要（緊湊版，完整版在技術頁）
+  var avRow='';
+  var avItems=[];
+  if(s.avwap_swing>0){var _d=(s.price-s.avwap_swing)/s.avwap_swing*100;avItems.push({lbl:'趨勢',val:s.avwap_swing,d:_d});}
+  if(s.avwap_vol  >0){var _d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avItems.push({lbl:'主力',val:s.avwap_vol,  d:_d});}
+  if(s.avwap_short>0){var _d=(s.price-s.avwap_short)/s.avwap_short*100;avItems.push({lbl:'短線',val:s.avwap_short,d:_d});}
+  if(avItems.length){
+    var avCells=avItems.map(function(a){
+      var c=a.d>=0?'var(--green)':'var(--red)',sg=a.d>=0?'+':'';
+      return '<div style="text-align:center">'+
+        '<div style="font-size:9px;color:var(--text3)">'+a.lbl+'AVWAP</div>'+
+        '<div style="font-size:12px;font-weight:700;color:'+c+'">$'+a.val.toFixed(1)+'</div>'+
+        '<div style="font-size:9px;color:'+c+'">'+sg+a.d.toFixed(1)+'%</div>'+
+      '</div>';
+    }).join('');
+    var avAllAbove=avItems.every(function(a){return a.d>=0;});
+    var avBadge=avAllAbove?'<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:rgba(34,197,94,.15);color:#22c55e;margin-left:4px">全線支撐</span>':'';
+    avRow='<div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:8px">'+
+      '<div style="display:flex;align-items:center;margin-bottom:5px">'+
+        '<span style="font-size:10px;color:var(--text3)">📍 AVWAP 支撐位</span>'+avBadge+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:repeat('+avItems.length+',1fr);gap:4px">'+avCells+'</div>'+
+    '</div>';
+  }
+  return vh+rh+avRow;
 }
 function rTech(s){
   // 技術面三指標
