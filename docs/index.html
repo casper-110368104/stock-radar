@@ -692,6 +692,7 @@ var wl=[];try{wl=JSON.parse(localStorage.getItem('wl')||'[]');}catch(e){}
 var _pageBase=(function(){var h=location.href.split('?')[0];return h.endsWith('/')?h:h.replace(/\/[^/]*$/,'/');}());
 function stocksUrl(){return _pageBase+'stocks.json?t='+Date.now();}
 function expansionUrl(){return _pageBase+'expansion.json?t='+Date.now();}
+function escapeHtml(s){if(s==null)return '';var d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
 
 var IND_S={'半導體業':'半導體','電腦及週邊設備業':'電腦週邊','光電業':'光電','其他電子業':'其他電子',
   '電子零組件業':'電子零組件','通信網路業':'通訊網路','電子通路業':'電子通路','資訊服務業':'資訊服務',
@@ -906,19 +907,25 @@ function _calcPosSz(sig){
 }
 
 // 從 signal_tracking 建構時間序列資金曲線
-function _buildCurveFromTracking(tracking, posPct){
-  posPct=posPct||5;
+function _buildCurveFromTracking(tracking, defaultPosPct){
+  defaultPosPct=defaultPosPct||5;
   var resolved=(tracking||[]).filter(function(t){return t.status==='win'||t.status==='loss';});
   resolved.sort(function(a,b){return (a.trigger_date||'')>(b.trigger_date||'')?1:-1;});
   if(!resolved.length) return null;
   var capital=100,peak=100,maxDD=0;
   var points=[{x:0,y:100,date:''}];
   resolved.forEach(function(t,i){
+    // 優先用各筆訊號自身的停損距離計算倉位（固定風險法），fallback 至傳入預設值
+    var pp=defaultPosPct;
+    if(t.entry>0&&t.stop_loss>0){
+      var sd=(t.entry-t.stop_loss)/t.entry*100;
+      if(sd>0) pp=Math.min(Math.round(riskPct/sd*100*10)/10,25);
+    }
     var g=(t.gain_pct||0)/100;
     if(includeFeeSim) g-=FEE_ROUNDTRIP;  // Q2 扣除手續費+稅+滑點
-    capital*=(1+(posPct/100)*g);
-    if(capital>peak) peak=capital;
-    var dd=(peak-capital)/peak*100;
+    capital*=(1+(pp/100)*g);
+    if(peak>0&&capital>peak) peak=capital;
+    var dd=peak>0?(peak-capital)/peak*100:0;
     if(dd>maxDD) maxDD=dd;
     points.push({x:i+1,y:+capital.toFixed(2),date:(t.trigger_date||'').slice(5)});
   });
@@ -1185,7 +1192,7 @@ function rExpCard(s,pfx){
         '<span class="exp-sig-label">'+sg.label+'</span>'+
         '<span style="margin-left:auto;font-size:9px;padding:1px 4px;border-radius:6px;border:1px solid '+tfClr+';color:'+tfClr+'">'+tfLbl+'</span>'+
       '</div>'+
-      '<div class="exp-sig-reason">'+sg.reason+'</div>'+
+      '<div class="exp-sig-reason">'+escapeHtml(sg.reason)+'</div>'+
       '<div class="exp-sig-prices">'+
         '<div class="exp-sig-px">進場 <span>$'+sg.entry+'</span></div>'+
         '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+
@@ -2491,7 +2498,7 @@ function rSignals(s){
         '<span class="sig-label">'+sg.label+'</span>'+
         '<span style="margin-left:auto;font-size:9px;padding:1px 5px;border-radius:8px;border:1px solid '+tfClr+';color:'+tfClr+'">'+tfLbl+'</span>'+
       '</div>'+
-      '<div class="sig-reason">'+sg.reason+'</div>'+
+      '<div class="sig-reason">'+escapeHtml(sg.reason)+'</div>'+
       triggerHtml+
       '<div class="sig-prices">'+
         '<div class="sig-px">停損 <span style="color:var(--red)">$'+sg.stop_loss+'</span></div>'+

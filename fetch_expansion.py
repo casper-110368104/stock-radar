@@ -310,7 +310,7 @@ def fetch_yahoo_data(code):
             _ma20_j = sum(_win) / len(_win)
             _vwin   = volumes[max(0, _j-19):_j+1]
             _vol20  = sum(_vwin) / len(_vwin) if _vwin else 1
-            if closes[_j] > _ma20_j or volumes[_j] / _vol20 > 1:
+            if closes[_j] > _ma20_j or (_vol20 > 0 and volumes[_j] / _vol20 > 1):
                 avwap_swing = calc_avwap(closes, highs, lows, volumes, idx_swing)
                 break
 
