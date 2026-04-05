@@ -2307,8 +2307,9 @@ function rVol(s){
     var vr=v20/v60,vrC=vr>1.5?'var(--green)':vr>1.0?'var(--orange)':'var(--text2)';
     vr20h='<div class="vol-box"><div class="vol-lbl">量能比<br>20日 vs 60日</div><div class="vol-val" style="color:'+vrC+'">'+vr.toFixed(2)+'x</div></div>';
   }
-  // 三格量能（固定 repeat(3,1fr)）
-  var vh='<div class="vol-grid" style="grid-template-columns:repeat(3,1fr)">'+
+  // 量能格：有 vol20/vol60 比才顯示第三欄
+  var volCols=vr20h?3:2;
+  var vh='<div class="vol-grid" style="grid-template-columns:repeat('+volCols+',1fr)">'+
     '<div class="vol-box"><div class="vol-lbl">月量比<br>近20日 vs 前3月</div><div class="vol-val" style="color:'+mc+'">'+mr.toFixed(2)+'x</div></div>'+
     '<div class="vol-box"><div class="vol-lbl">日量比<br>今日 vs 均量</div><div class="vol-val" style="color:'+dc+'">'+dr.toFixed(2)+'x'+(dr>=2?' 🔥':'')+'</div></div>'+
     vr20h+
