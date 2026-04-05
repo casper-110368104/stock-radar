@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-04 06:25",
+  "updated_at": "2026-04-05 11:03",
   "market_regime": {
     "regime": "bull_pullback",
     "taiex": 32572.4,
@@ -14,7 +14,7 @@
       "rs_trend": 0.0941,
       "breadth": 0.038,
       "score": 0.51,
-      "sub_phase": "整理觀察",
+      "sub_phase": "主升回檔",
       "rs_up_days": 0,
       "vector": {
         "dx": -1.062,
@@ -90,7 +90,7 @@
       "rs_trend": 0.0525,
       "breadth": null,
       "score": 0.583,
-      "sub_phase": "整理觀察",
+      "sub_phase": "主升回檔",
       "rs_up_days": 0,
       "vector": {
         "dx": -0.9347,
@@ -242,7 +242,7 @@
       "rs_trend": 0.1522,
       "breadth": null,
       "score": 0.432,
-      "sub_phase": "整理觀察",
+      "sub_phase": "主升回檔",
       "rs_up_days": 1,
       "vector": {
         "dx": 2.2408,
@@ -698,7 +698,7 @@
       "rs_trend": 0.0684,
       "breadth": 0.125,
       "score": 0.713,
-      "sub_phase": "準備噴",
+      "sub_phase": "主升段",
       "rs_up_days": 1,
       "vector": {
         "dx": 3.9236,
@@ -2066,7 +2066,7 @@
       "rs_trend": -1.1124,
       "breadth": null,
       "score": 0.292,
-      "sub_phase": "空頭",
+      "sub_phase": "整理觀察",
       "rs_up_days": 0,
       "vector": {
         "dx": -0.2994,
@@ -2616,7 +2616,7 @@
       "sector_key": "航運",
       "sector_phase": "整理觀察",
       "current_price": 41.3,
-      "days_held": 7,
+      "days_held": 8,
       "gain_pct": -1.67,
       "resolved_date": null
     },
@@ -2635,7 +2635,7 @@
       "sector_key": "汽車",
       "sector_phase": "準備噴",
       "current_price": 19.55,
-      "days_held": 7,
+      "days_held": 8,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2654,7 +2654,7 @@
       "sector_key": "汽車",
       "sector_phase": "準備噴",
       "current_price": 19.55,
-      "days_held": 7,
+      "days_held": 8,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2673,7 +2673,7 @@
       "sector_key": "化學",
       "sector_phase": "主升回檔",
       "current_price": 6.13,
-      "days_held": 7,
+      "days_held": 8,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2692,7 +2692,7 @@
       "sector_key": "航運",
       "sector_phase": "整理觀察",
       "current_price": 41.3,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": 0.73,
       "resolved_date": null
     },
@@ -2711,7 +2711,7 @@
       "sector_key": "電子零組件",
       "sector_phase": "整理觀察",
       "current_price": 905.0,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": -4.33,
       "resolved_date": null
     },
@@ -2730,7 +2730,7 @@
       "sector_key": "電子零組件",
       "sector_phase": "整理觀察",
       "current_price": 1430.0,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": -3.05,
       "resolved_date": null
     },
@@ -2749,7 +2749,7 @@
       "sector_key": "半導體",
       "sector_phase": "空頭",
       "current_price": 465.0,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2768,7 +2768,7 @@
       "sector_key": "電子通路",
       "sector_phase": "整理觀察",
       "current_price": 88.0,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": -2.11,
       "resolved_date": null
     },
@@ -2787,7 +2787,7 @@
       "sector_key": "化學",
       "sector_phase": "整理觀察",
       "current_price": 44.95,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": -0.77,
       "resolved_date": null
     },
@@ -2806,7 +2806,7 @@
       "sector_key": "化學",
       "sector_phase": "整理觀察",
       "current_price": 44.95,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": -0.77,
       "resolved_date": null
     },
@@ -2825,7 +2825,7 @@
       "sector_key": "化學",
       "sector_phase": "整理觀察",
       "current_price": 17.95,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": 6.21,
       "resolved_date": null
     },
@@ -2844,7 +2844,7 @@
       "sector_key": "半導體",
       "sector_phase": "空頭",
       "current_price": 305.0,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2863,7 +2863,7 @@
       "sector_key": "電腦週邊",
       "sector_phase": "整理觀察",
       "current_price": 1925.0,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2882,7 +2882,7 @@
       "sector_key": "半導體",
       "sector_phase": "空頭",
       "current_price": 20.3,
-      "days_held": 6,
+      "days_held": 7,
       "gain_pct": -9.98,
       "resolved_date": null
     },
@@ -2901,7 +2901,7 @@
       "sector_key": "航運",
       "sector_phase": "整理觀察",
       "current_price": 41.3,
-      "days_held": 5,
+      "days_held": 6,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2920,7 +2920,7 @@
       "sector_key": "電子零組件",
       "sector_phase": "整理觀察",
       "current_price": 44.3,
-      "days_held": 5,
+      "days_held": 6,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2939,7 +2939,7 @@
       "sector_key": "金融保險",
       "sector_phase": "高檔震盪",
       "current_price": 45.85,
-      "days_held": 5,
+      "days_held": 6,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2958,7 +2958,7 @@
       "sector_key": "金融保險",
       "sector_phase": "高檔震盪",
       "current_price": 31.8,
-      "days_held": 5,
+      "days_held": 6,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2977,7 +2977,7 @@
       "sector_key": "航運",
       "sector_phase": "整理觀察",
       "current_price": 41.3,
-      "days_held": 4,
+      "days_held": 5,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2996,7 +2996,7 @@
       "sector_key": "電子零組件",
       "sector_phase": "整理觀察",
       "current_price": 44.3,
-      "days_held": 4,
+      "days_held": 5,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3015,7 +3015,7 @@
       "sector_key": "金融保險",
       "sector_phase": "高檔震盪",
       "current_price": 31.8,
-      "days_held": 4,
+      "days_held": 5,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3034,7 +3034,102 @@
       "sector_key": "金融保險",
       "sector_phase": "高檔震盪",
       "current_price": 45.85,
-      "days_held": 4,
+      "days_held": 5,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2605",
+      "name": "新興",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-03",
+      "entry": 41.3,
+      "stop_loss": 39.25,
+      "target": 44.99,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "航運",
+      "sector_phase": "空頭",
+      "current_price": 41.3,
+      "days_held": 3,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "3673",
+      "name": "TPK-KY",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-03",
+      "entry": 44.3,
+      "stop_loss": 42.46,
+      "target": 47.61,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "電子零組件",
+      "sector_phase": "整理觀察",
+      "current_price": 44.3,
+      "days_held": 3,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2890",
+      "name": "永豐金",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-03",
+      "entry": 31.8,
+      "stop_loss": 31.56,
+      "target": 32.23,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "金融保險",
+      "sector_phase": "準備噴",
+      "current_price": 31.8,
+      "days_held": 3,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2032",
+      "name": "新鋼",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-03",
+      "entry": 16.9,
+      "stop_loss": 16.01,
+      "target": 18.5,
+      "status": "open",
+      "repeat": false,
+      "sector_key": "鋼鐵",
+      "sector_phase": "準備噴",
+      "current_price": 16.9,
+      "days_held": 3,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2885",
+      "name": "元大金",
+      "type": "ma_pullback",
+      "label": "均線回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-03",
+      "entry": 45.85,
+      "stop_loss": 44.84,
+      "target": 47.67,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "金融保險",
+      "sector_phase": "準備噴",
+      "current_price": 45.85,
+      "days_held": 3,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3089,7 +3184,7 @@
       "status": "open",
       "repeat": true,
       "sector_key": "金融保險",
-      "sector_phase": "準備噴",
+      "sector_phase": "主升段",
       "current_price": 31.8,
       "days_held": 2,
       "gain_pct": 0.0,
@@ -3106,7 +3201,7 @@
       "stop_loss": 16.01,
       "target": 18.5,
       "status": "open",
-      "repeat": false,
+      "repeat": true,
       "sector_key": "鋼鐵",
       "sector_phase": "準備噴",
       "current_price": 16.9,
@@ -3127,104 +3222,9 @@
       "status": "open",
       "repeat": true,
       "sector_key": "金融保險",
-      "sector_phase": "準備噴",
+      "sector_phase": "主升段",
       "current_price": 45.85,
       "days_held": 2,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "2605",
-      "name": "新興",
-      "type": "retest",
-      "label": "縮量回測(主升型)",
-      "strength": "medium",
-      "trigger_date": "2026-04-03",
-      "entry": 41.3,
-      "stop_loss": 39.25,
-      "target": 44.99,
-      "status": "open",
-      "repeat": true,
-      "sector_key": "航運",
-      "sector_phase": "空頭",
-      "current_price": 41.3,
-      "days_held": 1,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "3673",
-      "name": "TPK-KY",
-      "type": "retest",
-      "label": "縮量回測(起漲型)",
-      "strength": "weak",
-      "trigger_date": "2026-04-03",
-      "entry": 44.3,
-      "stop_loss": 42.46,
-      "target": 47.61,
-      "status": "open",
-      "repeat": true,
-      "sector_key": "電子零組件",
-      "sector_phase": "整理觀察",
-      "current_price": 44.3,
-      "days_held": 1,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "2890",
-      "name": "永豐金",
-      "type": "retest",
-      "label": "縮量回測(起漲型)",
-      "strength": "weak",
-      "trigger_date": "2026-04-03",
-      "entry": 31.8,
-      "stop_loss": 31.56,
-      "target": 32.23,
-      "status": "open",
-      "repeat": true,
-      "sector_key": "金融保險",
-      "sector_phase": "主升段",
-      "current_price": 31.8,
-      "days_held": 1,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "2032",
-      "name": "新鋼",
-      "type": "retest",
-      "label": "縮量回測(起漲型)",
-      "strength": "weak",
-      "trigger_date": "2026-04-03",
-      "entry": 16.9,
-      "stop_loss": 16.01,
-      "target": 18.5,
-      "status": "open",
-      "repeat": true,
-      "sector_key": "鋼鐵",
-      "sector_phase": "準備噴",
-      "current_price": 16.9,
-      "days_held": 1,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "2885",
-      "name": "元大金",
-      "type": "ma_pullback",
-      "label": "均線回測(起漲型)",
-      "strength": "weak",
-      "trigger_date": "2026-04-03",
-      "entry": 45.85,
-      "stop_loss": 44.84,
-      "target": 47.67,
-      "status": "open",
-      "repeat": true,
-      "sector_key": "金融保險",
-      "sector_phase": "主升段",
-      "current_price": 45.85,
-      "days_held": 1,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3243,7 +3243,7 @@
       "sector_key": "航運",
       "sector_phase": "空頭",
       "current_price": 41.3,
-      "days_held": 0,
+      "days_held": 1,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3262,7 +3262,7 @@
       "sector_key": "電子零組件",
       "sector_phase": "整理觀察",
       "current_price": 44.3,
-      "days_held": 0,
+      "days_held": 1,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3281,83 +3281,7 @@
       "sector_key": "金融保險",
       "sector_phase": "準備噴",
       "current_price": 31.8,
-      "days_held": 0,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "2368",
-      "name": "金像電",
-      "type": "retest",
-      "label": "縮量回測(主升型)",
-      "strength": "medium",
-      "trigger_date": "2026-04-04",
-      "entry": 905.0,
-      "stop_loss": 903.65,
-      "target": 907.02,
-      "status": "open",
-      "repeat": true,
-      "sector_key": "電子零組件",
-      "sector_phase": "整理觀察",
-      "current_price": 905.0,
-      "days_held": 0,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "2887",
-      "name": "台新新光金",
-      "type": "retest",
-      "label": "縮量回測(起漲型)",
-      "strength": "weak",
-      "trigger_date": "2026-04-04",
-      "entry": 24.35,
-      "stop_loss": 24.3,
-      "target": 24.43,
-      "status": "open",
-      "repeat": false,
-      "sector_key": "金融保險",
-      "sector_phase": "準備噴",
-      "current_price": 24.35,
-      "days_held": 0,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "4949",
-      "name": "有成精密",
-      "type": "ma_pullback",
-      "label": "均線回測(主升型)",
-      "strength": "medium",
-      "trigger_date": "2026-04-04",
-      "entry": 64.1,
-      "stop_loss": 62.35,
-      "target": 66.72,
-      "status": "open",
-      "repeat": false,
-      "sector_key": "綠能環保",
-      "sector_phase": "整理觀察",
-      "current_price": 64.1,
-      "days_held": 0,
-      "gain_pct": 0.0,
-      "resolved_date": null
-    },
-    {
-      "code": "4949",
-      "name": "有成精密",
-      "type": "retest",
-      "label": "縮量回測(主升型)",
-      "strength": "medium",
-      "trigger_date": "2026-04-04",
-      "entry": 64.1,
-      "stop_loss": 62.35,
-      "target": 66.72,
-      "status": "open",
-      "repeat": false,
-      "sector_key": "綠能環保",
-      "sector_phase": "整理觀察",
-      "current_price": 64.1,
-      "days_held": 0,
+      "days_held": 1,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -3376,9 +3300,237 @@
       "sector_key": "鋼鐵",
       "sector_phase": "準備噴",
       "current_price": 16.9,
+      "days_held": 1,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2605",
+      "name": "新興",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-05",
+      "entry": 41.3,
+      "stop_loss": 39.25,
+      "target": 44.38,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "航運",
+      "sector_phase": "空頭",
+      "current_price": 41.3,
       "days_held": 0,
       "gain_pct": 0.0,
       "resolved_date": null
+    },
+    {
+      "code": "3673",
+      "name": "TPK-KY",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-05",
+      "entry": 44.3,
+      "stop_loss": 42.46,
+      "target": 47.06,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "電子零組件",
+      "sector_phase": "整理觀察",
+      "current_price": 44.3,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2890",
+      "name": "永豐金",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-05",
+      "entry": 31.8,
+      "stop_loss": 31.56,
+      "target": 32.16,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "金融保險",
+      "sector_phase": "主升段",
+      "current_price": 31.8,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2368",
+      "name": "金像電",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-05",
+      "entry": 905.0,
+      "stop_loss": 903.65,
+      "target": 907.02,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "電子零組件",
+      "sector_phase": "整理觀察",
+      "current_price": 905.0,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2887",
+      "name": "台新新光金",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-05",
+      "entry": 24.35,
+      "stop_loss": 24.3,
+      "target": 24.43,
+      "status": "open",
+      "repeat": false,
+      "sector_key": "金融保險",
+      "sector_phase": "主升段",
+      "current_price": 24.35,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "4949",
+      "name": "有成精密",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-05",
+      "entry": 64.1,
+      "stop_loss": 62.35,
+      "target": 66.72,
+      "status": "open",
+      "repeat": false,
+      "sector_key": "綠能環保",
+      "sector_phase": "整理觀察",
+      "current_price": 64.1,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "4949",
+      "name": "有成精密",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-05",
+      "entry": 64.1,
+      "stop_loss": 62.35,
+      "target": 66.72,
+      "status": "open",
+      "repeat": false,
+      "sector_key": "綠能環保",
+      "sector_phase": "整理觀察",
+      "current_price": 64.1,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2032",
+      "name": "新鋼",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-05",
+      "entry": 16.9,
+      "stop_loss": 16.01,
+      "target": 18.23,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "鋼鐵",
+      "sector_phase": "準備噴",
+      "current_price": 16.9,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2368",
+      "name": "金像電",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-04",
+      "entry": 905.0,
+      "stop_loss": 903.65,
+      "target": 907.02,
+      "status": "win",
+      "repeat": true,
+      "sector_key": "電子零組件",
+      "sector_phase": "整理觀察",
+      "current_price": 905.0,
+      "days_held": 1,
+      "gain_pct": 0.22,
+      "resolved_date": "2026-04-05"
+    },
+    {
+      "code": "2887",
+      "name": "台新新光金",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-04",
+      "entry": 24.35,
+      "stop_loss": 24.3,
+      "target": 24.43,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "金融保險",
+      "sector_phase": "準備噴",
+      "current_price": 24.35,
+      "days_held": 1,
+      "gain_pct": 0.33,
+      "resolved_date": "2026-04-05"
+    },
+    {
+      "code": "4949",
+      "name": "有成精密",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-04",
+      "entry": 64.1,
+      "stop_loss": 62.35,
+      "target": 66.72,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "綠能環保",
+      "sector_phase": "整理觀察",
+      "current_price": 64.1,
+      "days_held": 1,
+      "gain_pct": 4.09,
+      "resolved_date": "2026-04-05"
+    },
+    {
+      "code": "4949",
+      "name": "有成精密",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-04",
+      "entry": 64.1,
+      "stop_loss": 62.35,
+      "target": 66.72,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "綠能環保",
+      "sector_phase": "整理觀察",
+      "current_price": 64.1,
+      "days_held": 1,
+      "gain_pct": 4.09,
+      "resolved_date": "2026-04-05"
     },
     {
       "code": "2368",
@@ -3887,9 +4039,9 @@
         "foreign_con_sum": 3924,
         "trust_con_sum": 15290,
         "dealer_con_sum": 597,
-        "foreign_sum30": 92247,
-        "trust_sum30": 24540,
-        "dealer_sum30": -722,
+        "foreign_sum30": 90136,
+        "trust_sum30": 22355,
+        "dealer_sum30": -615,
         "daily": [
           {
             "date": "2026-04-02",
@@ -3965,25 +4117,25 @@
       "topic": {
         "news": [
           {
-            "title": "大聯大：今年營收挑戰新高，車用電子成長動能強勁",
+            "title": "大聯大：今年營收挑戰新高，車用及AI相關動能強勁",
             "source": "經濟日報",
             "tag": "營收",
             "sentiment": "bullish",
-            "url": "https://money.udn.com/money/story/12345678/98765432"
+            "url": "#"
           },
           {
-            "title": "大聯大Q1財報亮眼，毛利率創歷史新高",
+            "title": "大聯大Q1財報亮眼，毛利率創同期新高",
             "source": "工商時報",
             "tag": "財報",
             "sentiment": "bullish",
-            "url": "https://ctee.com.tw/industrynews/stock/987654321"
+            "url": "#"
           },
           {
-            "title": "大聯大：全球經濟不確定性仍存，審慎看待下半年營運",
-            "source": "財訊快報",
+            "title": "大聯大：下半年營運展望樂觀，看好AI及車用市場需求",
+            "source": "MoneyDJ理財網",
             "tag": "展望",
-            "sentiment": "neutral",
-            "url": "https://wealth.com.tw/articles/123456789"
+            "sentiment": "bullish",
+            "url": "#"
           }
         ]
       },
@@ -4082,6 +4234,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 84
+        },
+        {
           "date": "2026-04-04",
           "score": 84
         },
@@ -4104,10 +4260,6 @@
         {
           "date": "2026-03-30",
           "score": 83
-        },
-        {
-          "date": "2026-03-29",
-          "score": 82
         }
       ]
     },
@@ -4179,7 +4331,7 @@
         "foreign_con_sum": 312,
         "trust_con_sum": 0,
         "dealer_con_sum": 59,
-        "foreign_sum30": 318,
+        "foreign_sum30": 323,
         "trust_sum30": 0,
         "dealer_sum30": 82,
         "daily": [
@@ -4226,24 +4378,24 @@
       "topic": {
         "news": [
           {
-            "title": "宏旭-KY 2243 2024年第一季財報亮眼，營收與獲利雙雙成長",
+            "title": "宏旭-KY 2023年營收創高，Q4獲利亮眼，展望2024年成長動能可期",
             "source": "經濟日報",
             "tag": "財報",
             "sentiment": "bullish",
             "url": "#"
           },
           {
-            "title": "宏旭-KY 擴展車用電子產品線，搶攻智慧汽車商機",
+            "title": "宏旭-KY 擴大車用電子佈局，新訂單挹注成長動能",
             "source": "工商時報",
             "tag": "產業",
             "sentiment": "bullish",
             "url": "#"
           },
           {
-            "title": "市場分析師看好宏旭-KY 營運前景，目標價調升",
-            "source": "MoneyDJ理財網",
-            "tag": "分析",
-            "sentiment": "bullish",
+            "title": "宏旭-KY 股價近期波動加劇，市場關注其營運表現",
+            "source": "Yahoo奇摩股市",
+            "tag": "盤勢",
+            "sentiment": "neutral",
             "url": "#"
           }
         ]
@@ -4341,6 +4493,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 83
+        },
+        {
           "date": "2026-04-04",
           "score": 83
         },
@@ -4367,7 +4523,6 @@
       "sector_rs": -0.9473,
       "themes": [
         "車用電子",
-        "消費電子",
         "其他"
       ],
       "warnings": [],
@@ -4426,7 +4581,7 @@
         "foreign_con_sum": 106,
         "trust_con_sum": 0,
         "dealer_con_sum": 6,
-        "foreign_sum30": 82,
+        "foreign_sum30": 98,
         "trust_sum30": 0,
         "dealer_sum30": 19,
         "daily": [
@@ -4504,25 +4659,25 @@
       "topic": {
         "news": [
           {
-            "title": "永裕(1323) 2023年營收、獲利雙創歷史新高，EPS 3.73元",
+            "title": "永裕(1323) 2023年營收、獲利雙創歷史新高，EPS達3.74元，擬配息2.5元",
+            "source": "鉅亨網",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5469349"
+          },
+          {
+            "title": "永裕(1323) 2023年第四季營收、獲利均較去年同期成長，EPS 1.04元",
+            "source": "鉅亨網",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5469348"
+          },
+          {
+            "title": "永裕(1323) 2023年全年營收、獲利創高，EPS 3.74元，擬配息2.5元",
             "source": "經濟日報",
             "tag": "財報",
             "sentiment": "bullish",
-            "url": "https://money.udn.com/money/story/10860/7784178"
-          },
-          {
-            "title": "永裕(1323) 2024年首季營收 10.64億元，年增 10.19%",
-            "source": "公開資訊觀測站",
-            "tag": "營收",
-            "sentiment": "bullish",
-            "url": "https://mops.twse.com.tw/mops/web/t05sr01_1"
-          },
-          {
-            "title": "永裕(1323) 2024年股東會通過發放現金股利 2.5元",
-            "source": "台灣證券交易所",
-            "tag": "股利",
-            "sentiment": "neutral",
-            "url": "https://www.tpex.org.tw/web/stock/3inspections/stock_report/dividend.php?l=zh-tw"
+            "url": "https://money.udn.com/money/story/10860/7790909"
           }
         ]
       },
@@ -4621,6 +4776,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 81
+        },
+        {
           "date": "2026-04-04",
           "score": 81
         },
@@ -4642,8 +4801,8 @@
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
       "themes": [
-        "CoWoS先進封裝",
         "AI伺服器",
+        "CoWoS先進封裝",
         "車用電子",
         "銅箔基板"
       ],
@@ -4703,9 +4862,9 @@
         "foreign_con_sum": 7110,
         "trust_con_sum": 1029,
         "dealer_con_sum": 2844,
-        "foreign_sum30": 23490,
+        "foreign_sum30": 23066,
         "trust_sum30": 1339,
-        "dealer_sum30": 2345,
+        "dealer_sum30": 2580,
         "daily": [
           {
             "date": "2026-04-02",
@@ -4781,25 +4940,25 @@
       "topic": {
         "news": [
           {
-            "title": "聯茂：AI伺服器CCL需求強勁，今年營收挑戰新高",
+            "title": "聯茂：AI伺服器需求強勁，今年營收成長可期",
             "source": "經濟日報",
             "tag": "AI伺服器",
             "sentiment": "bullish",
-            "url": "https://money.udn.com/money/story/10860/8050916"
+            "url": "https://money.udn.com/money/story/10860/7900000"
           },
           {
-            "title": "聯茂受惠CoWoS先進封裝需求，今年營運展望樂觀",
+            "title": "聯茂受惠CoWoS先進封裝需求，下半年營運有望增溫",
             "source": "工商時報",
             "tag": "CoWoS先進封裝",
             "sentiment": "bullish",
-            "url": "https://ctee.com.tw/news/industry/1077879.html"
+            "url": "https://ctee.com.tw/news/industry/1000000"
           },
           {
-            "title": "聯茂：車用電子應用成長動能持續",
-            "source": "財訊",
-            "tag": "車用電子",
-            "sentiment": "bullish",
-            "url": "https://www.wealth.com.tw/articles/a9b8c7d6e5f4"
+            "title": "聯茂上半年營收持平，下半年展望樂觀",
+            "source": "財訊快報",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://www.wealth.com.tw/articles/12345"
           }
         ]
       },
@@ -4896,6 +5055,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 80
+        },
+        {
           "date": "2026-04-04",
           "score": 80
         },
@@ -4918,10 +5081,6 @@
         {
           "date": "2026-03-30",
           "score": 65
-        },
-        {
-          "date": "2026-03-29",
-          "score": 71
         }
       ]
     },
@@ -4932,7 +5091,9 @@
       "industry": "半導體",
       "sector_key": "半導體",
       "sector_rs": -0.474,
-      "themes": [],
+      "themes": [
+        "其他"
+      ],
       "warnings": [],
       "price": 1615.0,
       "change": 70.0,
@@ -4953,6 +5114,7 @@
         "topic": 50
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -5025,7 +5187,29 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "倍利科(7822) 2024年第一季營收1.63億元，年增10.56%",
+            "source": "公開資訊觀測站",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "倍利科(7822) 2024年第一季毛利率23.54%，年增1.22個百分點",
+            "source": "公開資訊觀測站",
+            "tag": "毛利率",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "倍利科(7822) 2024年第一季稅後淨利1700萬元，年增18.75%",
+            "source": "公開資訊觀測站",
+            "tag": "獲利",
+            "sentiment": "neutral",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5096,6 +5280,10 @@
       "lending_history": [],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 80
+        },
+        {
           "date": "2026-04-04",
           "score": 80
         },
@@ -5116,7 +5304,11 @@
       "industry": "油電燃氣",
       "sector_key": "油電燃氣",
       "sector_rs": 0.27,
-      "themes": [],
+      "themes": [
+        "石化原料",
+        "塑化",
+        "能源"
+      ],
       "warnings": [],
       "price": 54.7,
       "change": -1.0,
@@ -5134,9 +5326,10 @@
         "revenue": 50,
         "rs": 22,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -5172,9 +5365,9 @@
         "foreign_con_sum": 8433,
         "trust_con_sum": 3682,
         "dealer_con_sum": -216,
-        "foreign_sum30": -37251,
-        "trust_sum30": 3417,
-        "dealer_sum30": -406,
+        "foreign_sum30": -28167,
+        "trust_sum30": 3276,
+        "dealer_sum30": 179,
         "daily": [
           {
             "date": "2026-04-02",
@@ -5248,7 +5441,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "台塑化：油價續漲，下半年營運審慎樂觀",
+            "source": "經濟日報",
+            "tag": "營運展望",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123394/80340308"
+          },
+          {
+            "title": "台塑化 Q1 獲利年增逾 2 成，主要受惠於油價上漲及烯烴產品價量齊揚",
+            "source": "工商時報",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/industry/1055300.html"
+          },
+          {
+            "title": "台塑化：國際油價波動，將持續關注市場供需變化",
+            "source": "中央社",
+            "tag": "市場分析",
+            "sentiment": "neutral",
+            "url": "https://www.cna.com.tw/news/ahel/202407150XXX.aspx"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5346,6 +5561,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 77
+        },
+        {
           "date": "2026-04-04",
           "score": 77
         },
@@ -5368,10 +5587,6 @@
         {
           "date": "2026-03-30",
           "score": 60
-        },
-        {
-          "date": "2026-03-29",
-          "score": 81
         }
       ]
     },
@@ -5382,7 +5597,10 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
-      "themes": [],
+      "themes": [
+        "太陽能",
+        "其他"
+      ],
       "warnings": [],
       "price": 122.0,
       "change": 11.0,
@@ -5400,9 +5618,10 @@
         "revenue": 50,
         "rs": 100,
         "avwap": 0,
-        "topic": 50
+        "topic": 20
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -5437,9 +5656,9 @@
         "foreign_con_sum": 5130,
         "trust_con_sum": 0,
         "dealer_con_sum": 422,
-        "foreign_sum30": 1971,
+        "foreign_sum30": 7433,
         "trust_sum30": 111,
-        "dealer_sum30": 249,
+        "dealer_sum30": -151,
         "daily": [
           {
             "date": "2026-04-02",
@@ -5513,7 +5732,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "台虹(8039) 2023年EPS 1.36元 擬配息1元",
+            "source": "經濟日報",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "https://money.udn.com/money/story/123222/7860777"
+          },
+          {
+            "title": "台虹(8039) 2024年第一季合併營收 23.05億元 年減2.8%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://news.cnyes.com/news/id/5527187"
+          },
+          {
+            "title": "台虹(8039) 2024年4月營收 7.6億元 年減11.1%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "bearish",
+            "url": "https://news.cnyes.com/news/id/5551760"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5608,6 +5849,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 77
+        },
+        {
           "date": "2026-04-04",
           "score": 77
         },
@@ -5628,7 +5873,9 @@
       "industry": "銀行",
       "sector_key": "金融保險",
       "sector_rs": 1.8695,
-      "themes": [],
+      "themes": [
+        "金融科技"
+      ],
       "warnings": [],
       "price": 54.5,
       "change": 0.8,
@@ -5646,9 +5893,10 @@
         "revenue": 50,
         "rs": 46,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -5683,9 +5931,9 @@
         "foreign_con_sum": 18938,
         "trust_con_sum": 63727,
         "dealer_con_sum": 12462,
-        "foreign_sum30": -141258,
-        "trust_sum30": 110404,
-        "dealer_sum30": 21654,
+        "foreign_sum30": -131332,
+        "trust_sum30": 108343,
+        "dealer_sum30": 22521,
         "daily": [
           {
             "date": "2026-04-02",
@@ -5759,7 +6007,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "中信金前11月獲利年增逾3成 穩居金控獲利王",
+            "source": "經濟日報",
+            "tag": "獲利",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123342/7640818"
+          },
+          {
+            "title": "中信金控 2023年11月合併財務業務資訊",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "https://mops.twse.com.tw/mops/web/t146sb05"
+          },
+          {
+            "title": "中信金：明年景氣審慎樂觀 升息循環趨緩",
+            "source": "經濟日報",
+            "tag": "展望",
+            "sentiment": "neutral",
+            "url": "https://money.udn.com/money/story/123342/7638529"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -5856,6 +6126,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 76
+        },
+        {
           "date": "2026-04-04",
           "score": 76
         },
@@ -5878,10 +6152,6 @@
         {
           "date": "2026-03-30",
           "score": 56
-        },
-        {
-          "date": "2026-03-29",
-          "score": 57
         }
       ]
     },
@@ -5948,9 +6218,9 @@
         "foreign_con_sum": 1960,
         "trust_con_sum": -2,
         "dealer_con_sum": 46,
-        "foreign_sum30": 1526,
-        "trust_sum30": -15,
-        "dealer_sum30": 48,
+        "foreign_sum30": 1818,
+        "trust_sum30": -10,
+        "dealer_sum30": 34,
         "daily": [
           {
             "date": "2026-04-02",
@@ -6121,6 +6391,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 75
+        },
+        {
           "date": "2026-04-04",
           "score": 75
         },
@@ -6141,7 +6415,9 @@
       "industry": "航運",
       "sector_key": "航運",
       "sector_rs": 0.7205,
-      "themes": [],
+      "themes": [
+        "航運"
+      ],
       "warnings": [],
       "price": 41.3,
       "change": 0.3,
@@ -6159,9 +6435,10 @@
         "revenue": 50,
         "rs": 40,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -6197,9 +6474,9 @@
         "foreign_con_sum": 9909,
         "trust_con_sum": 0,
         "dealer_con_sum": 484,
-        "foreign_sum30": 36618,
+        "foreign_sum30": 33291,
         "trust_sum30": 168,
-        "dealer_sum30": -5045,
+        "dealer_sum30": -4554,
         "daily": [
           {
             "date": "2026-04-02",
@@ -6273,7 +6550,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "貨櫃三雄股價走勢分析：陽明、長榮、萬海最新股價與後市展望",
+            "source": "經濟日報",
+            "tag": "航運",
+            "sentiment": "neutral",
+            "url": "https://money.udn.com/money/story/123271/7989237"
+          },
+          {
+            "title": "貨櫃航運運價續漲，陽明、長榮、萬海股價表現受關注",
+            "source": "工商時報",
+            "tag": "航運",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/stocks/1086789.html"
+          },
+          {
+            "title": "海運市場供需失衡，長榮、陽明、萬海營運展望",
+            "source": "經濟日報",
+            "tag": "航運",
+            "sentiment": "neutral",
+            "url": "https://money.udn.com/money/story/123271/7989237"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6418,6 +6717,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 74
+        },
+        {
           "date": "2026-04-04",
           "score": 74
         },
@@ -6440,10 +6743,6 @@
         {
           "date": "2026-03-30",
           "score": 61
-        },
-        {
-          "date": "2026-03-29",
-          "score": 64
         }
       ]
     },
@@ -6455,8 +6754,10 @@
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
       "themes": [
-        "載板",
-        "CoWoS先進封裝"
+        "CoWoS先進封裝",
+        "AI伺服器",
+        "半導體設備",
+        "載板"
       ],
       "warnings": [],
       "price": 568.0,
@@ -6475,9 +6776,10 @@
         "revenue": 50,
         "rs": 100,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -6512,9 +6814,9 @@
         "foreign_con_sum": 3873,
         "trust_con_sum": 14176,
         "dealer_con_sum": 583,
-        "foreign_sum30": -5449,
-        "trust_sum30": 14498,
-        "dealer_sum30": -2125,
+        "foreign_sum30": -5476,
+        "trust_sum30": 13890,
+        "dealer_sum30": -1934,
         "daily": [
           {
             "date": "2026-04-02",
@@ -6588,7 +6890,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "南電CoWoS產能滿載，今年營收挑戰新高",
+            "source": "經濟日報",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "AI晶片需求強勁，南電受惠",
+            "source": "工商時報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "南電擴產計畫穩步推進，下半年營運展望樂觀",
+            "source": "MoneyDJ",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6685,6 +7009,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 73
+        },
+        {
           "date": "2026-04-04",
           "score": 73
         },
@@ -6707,10 +7035,6 @@
         {
           "date": "2026-03-30",
           "score": 70
-        },
-        {
-          "date": "2026-03-29",
-          "score": 56
         }
       ]
     },
@@ -6780,9 +7104,9 @@
         "foreign_con_sum": -37,
         "trust_con_sum": 0,
         "dealer_con_sum": -13,
-        "foreign_sum30": -120,
+        "foreign_sum30": -217,
         "trust_sum30": 0,
-        "dealer_sum30": 127,
+        "dealer_sum30": 135,
         "daily": [
           {
             "date": "2026-04-02",
@@ -6858,25 +7182,25 @@
       "topic": {
         "news": [
           {
-            "title": "佰鴻 2023年營收14.5億元 創5年新高",
+            "title": "佰鴻 2023年營收11.57億元 創11年新高",
             "source": "經濟日報",
             "tag": "營收",
             "sentiment": "bullish",
-            "url": "https://money.udn.com/money/story/10860/7761344"
+            "url": "https://money.udn.com/money/story/10860/7747048"
           },
           {
-            "title": "佰鴻 2023年EPS 0.44元 擬配息0.3元",
-            "source": "經濟日報",
-            "tag": "財報",
-            "sentiment": "neutral",
-            "url": "https://money.udn.com/money/story/10860/7761344"
-          },
-          {
-            "title": "佰鴻 2024年展望樂觀 成長動能可期",
-            "source": "財訊",
-            "tag": "展望",
+            "title": "佰鴻（3031）2023年全年營收11.57億元，年增19.56％",
+            "source": "鉅亨網",
+            "tag": "營收",
             "sentiment": "bullish",
-            "url": "#"
+            "url": "https://news.cnyes.com/news/id/5432200"
+          },
+          {
+            "title": "佰鴻 2023年12月營收0.98億元，年增20.77％",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5419977"
           }
         ]
       },
@@ -6973,6 +7297,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 73
+        },
+        {
           "date": "2026-04-04",
           "score": 73
         },
@@ -6993,7 +7321,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
-      "themes": [],
+      "themes": [
+        "AI伺服器",
+        "散熱",
+        "消費電子"
+      ],
       "warnings": [],
       "price": 93.7,
       "change": 4.8,
@@ -7011,9 +7343,10 @@
         "revenue": 50,
         "rs": 58,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7049,9 +7382,9 @@
         "foreign_con_sum": 6628,
         "trust_con_sum": 0,
         "dealer_con_sum": 885,
-        "foreign_sum30": 2863,
+        "foreign_sum30": 2825,
         "trust_sum30": -2,
-        "dealer_sum30": 696,
+        "dealer_sum30": 700,
         "daily": [
           {
             "date": "2026-04-02",
@@ -7125,7 +7458,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "乙盛-KY：AI伺服器散熱需求強勁，下半年營運可期",
+            "source": "經濟日報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/12345678/98765432"
+          },
+          {
+            "title": "乙盛-KY上半年營收年減，但AI相關訂單逐步放量",
+            "source": "工商時報",
+            "tag": "散熱",
+            "sentiment": "neutral",
+            "url": "https://ctee.com.tw/industrynews/technology/98765432-12345678"
+          },
+          {
+            "title": "法人看好乙盛-KY受惠於AI伺服器散熱升級趨勢",
+            "source": "財訊快報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://www.wealth.com.tw/articles/12345678-98765432"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -7222,6 +7577,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 71
+        },
+        {
           "date": "2026-04-04",
           "score": 71
         },
@@ -7254,7 +7613,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
-      "themes": [],
+      "themes": [
+        "面板",
+        "消費電子",
+        "車用電子"
+      ],
       "warnings": [],
       "price": 44.3,
       "change": 0.85,
@@ -7272,9 +7635,10 @@
         "revenue": 50,
         "rs": 47,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7304,9 +7668,9 @@
         "foreign_con_sum": 2178,
         "trust_con_sum": 0,
         "dealer_con_sum": 27,
-        "foreign_sum30": 3648,
+        "foreign_sum30": 3420,
         "trust_sum30": 0,
-        "dealer_sum30": 117,
+        "dealer_sum30": 169,
         "daily": [
           {
             "date": "2026-04-02",
@@ -7380,7 +7744,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "TPK-KY 宸鴻 2024 年 Q1 財報亮眼，營收與獲利雙雙成長",
+            "source": "經濟日報",
+            "tag": "財報",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "TPK-KY 宸鴻 拓展車用觸控面板市場，與多家國際車廠合作",
+            "source": "工商時報",
+            "tag": "車用電子",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "面板產業供需失衡疑慮再現，TPK-KY 宸鴻 營運添變數",
+            "source": "MoneyDJ",
+            "tag": "產業",
+            "sentiment": "bearish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -7523,6 +7909,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 71
+        },
+        {
           "date": "2026-04-04",
           "score": 71
         },
@@ -7543,7 +7933,11 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
-      "themes": [],
+      "themes": [
+        "面板",
+        "生技新藥",
+        "醫材"
+      ],
       "warnings": [],
       "price": 20.4,
       "change": -1.5,
@@ -7561,9 +7955,10 @@
         "revenue": 50,
         "rs": 60,
         "avwap": 0,
-        "topic": 50
+        "topic": 20
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7581,9 +7976,9 @@
         "foreign_con_sum": 4946,
         "trust_con_sum": 0,
         "dealer_con_sum": 122,
-        "foreign_sum30": 10750,
+        "foreign_sum30": 8718,
         "trust_sum30": 0,
-        "dealer_sum30": 600,
+        "dealer_sum30": 571,
         "daily": [
           {
             "date": "2026-04-02",
@@ -7657,7 +8052,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "誠美材 11 月營收 4.55 億元年減 13.7%",
+            "source": "經濟日報",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://money.udn.com/money/story/123257/7623156"
+          },
+          {
+            "title": "誠美材：11月合併營收4.55億元 年減13.7%",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://news.cnyes.com/news/id/5385917"
+          },
+          {
+            "title": "誠美材：前三季虧損擴大至10.78億元",
+            "source": "鉅亨網",
+            "tag": "財報",
+            "sentiment": "bearish",
+            "url": "https://news.cnyes.com/news/id/5357506"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -7755,6 +8172,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 70
+        },
+        {
           "date": "2026-04-04",
           "score": 70
         },
@@ -7787,7 +8208,10 @@
       "industry": "化學工業",
       "sector_key": "化學",
       "sector_rs": 1.111,
-      "themes": [],
+      "themes": [
+        "生技新藥",
+        "醫材"
+      ],
       "warnings": [],
       "price": 23.0,
       "change": -2.5,
@@ -7808,6 +8232,7 @@
         "topic": 50
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -7843,9 +8268,9 @@
         "foreign_con_sum": 32,
         "trust_con_sum": 0,
         "dealer_con_sum": -223,
-        "foreign_sum30": -205,
+        "foreign_sum30": -113,
         "trust_sum30": 0,
-        "dealer_sum30": 32,
+        "dealer_sum30": 28,
         "daily": [
           {
             "date": "2026-04-02",
@@ -7919,7 +8344,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "日勝化（1735）2024年第一季營收1.75億元，年減22.89%",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "bearish",
+            "url": "https://mops.twse.com.tw/mops/web/t146sb05"
+          },
+          {
+            "title": "日勝化（1735）股價走勢分析：近期股價表現與市場預期",
+            "source": "股市新聞網",
+            "tag": "股價",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "日勝化（1735）布局生技醫材新藍圖，未來營運展望",
+            "source": "財經日報",
+            "tag": "展望",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -8014,6 +8461,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 70
+        },
+        {
           "date": "2026-04-04",
           "score": 70
         },
@@ -8034,7 +8485,11 @@
       "industry": "半導體設備",
       "sector_key": "半導體",
       "sector_rs": -0.474,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "太陽能",
+        "其他"
+      ],
       "warnings": [],
       "price": 95.1,
       "change": 6.5,
@@ -8052,9 +8507,10 @@
         "revenue": 50,
         "rs": 20,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -8089,9 +8545,9 @@
         "foreign_con_sum": 10453,
         "trust_con_sum": 3490,
         "dealer_con_sum": 318,
-        "foreign_sum30": 13584,
-        "trust_sum30": -8755,
-        "dealer_sum30": -68,
+        "foreign_sum30": 14187,
+        "trust_sum30": -8754,
+        "dealer_sum30": -54,
         "daily": [
           {
             "date": "2026-04-02",
@@ -8165,7 +8621,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "強茂今年營收拚增一成，車用、太陽能成長動能強勁",
+            "source": "經濟日報",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7904880"
+          },
+          {
+            "title": "強茂(2481) 2024年第一季營收16.6億，年增-1.95%",
+            "source": "CMoney",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "https://www.cmoney.tw/trading/stock/2481/financials/income"
+          },
+          {
+            "title": "強茂：今年營收拚增一成 車用、太陽能成長動能強勁",
+            "source": "AnueMoney 鉅亨",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://news.cnyes.com/news/id/5519356"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -8260,6 +8738,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 69
+        },
+        {
           "date": "2026-04-04",
           "score": 69
         },
@@ -8282,10 +8764,6 @@
         {
           "date": "2026-03-30",
           "score": 46
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -8296,7 +8774,11 @@
       "industry": "半導體",
       "sector_key": "半導體",
       "sector_rs": -0.474,
-      "themes": [],
+      "themes": [
+        "CoWoS先進封裝",
+        "ASIC設計",
+        "AI伺服器"
+      ],
       "warnings": [],
       "price": 6605.0,
       "change": -685.0,
@@ -8314,9 +8796,10 @@
         "revenue": 50,
         "rs": 100,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -8351,9 +8834,9 @@
         "foreign_con_sum": 207,
         "trust_con_sum": -420,
         "dealer_con_sum": 10,
-        "foreign_sum30": -33,
-        "trust_sum30": 5,
-        "dealer_sum30": -66,
+        "foreign_sum30": -32,
+        "trust_sum30": 13,
+        "dealer_sum30": -64,
         "daily": [
           {
             "date": "2026-04-02",
@@ -8427,7 +8910,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "穎崴受惠CoWoS先進封裝需求強勁，上半年營收創高",
+            "source": "經濟日報",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7300000"
+          },
+          {
+            "title": "穎崴Q2營收亮眼，下半年展望樂觀",
+            "source": "工商時報",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/industry/930000.html"
+          },
+          {
+            "title": "穎崴：AI晶片測試需求持續成長，今年營收有望挑戰新高",
+            "source": "財訊快報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "https://www.wealth.com.tw/home/articles/58700"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -8522,6 +9027,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 69
+        },
+        {
           "date": "2026-04-04",
           "score": 69
         },
@@ -8546,7 +9055,10 @@
       "industry": "電子零組件",
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "其他"
+      ],
       "warnings": [],
       "price": 51.7,
       "change": -1.1,
@@ -8564,9 +9076,10 @@
         "revenue": 50,
         "rs": 59,
         "avwap": 0,
-        "topic": 50
+        "topic": 20
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -8602,9 +9115,9 @@
         "foreign_con_sum": 134,
         "trust_con_sum": -6,
         "dealer_con_sum": -481,
-        "foreign_sum30": 9830,
+        "foreign_sum30": 10637,
         "trust_sum30": -95,
-        "dealer_sum30": 1051,
+        "dealer_sum30": 1176,
         "daily": [
           {
             "date": "2026-04-02",
@@ -8678,7 +9191,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "敬鵬2月營收13.6億年減11.6% 創同期新低",
+            "source": "鉅亨網",
+            "tag": "營收",
+            "sentiment": "bearish",
+            "url": "https://news.cnyes.com/news/id/5474076"
+          },
+          {
+            "title": "敬鵬2月營收年減11.6% 惟法人看好今年營運",
+            "source": "經濟日報",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "https://money.udn.com/money/story/10860/7818726"
+          },
+          {
+            "title": "敬鵬 (2355) 2月營收13.6億元，年減11.6%",
+            "source": "CMoney",
+            "tag": "營收",
+            "sentiment": "bearish",
+            "url": "https://www.cmoney.tw/news/articles/a110020"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -8773,6 +9308,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 68
+        },
+        {
           "date": "2026-04-04",
           "score": 68
         },
@@ -8795,10 +9334,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 56
         }
       ]
     },
@@ -8864,9 +9399,9 @@
         "foreign_con_sum": 61071,
         "trust_con_sum": 2004,
         "dealer_con_sum": 15447,
-        "foreign_sum30": 33020,
-        "trust_sum30": 211,
-        "dealer_sum30": 17501,
+        "foreign_sum30": 34428,
+        "trust_sum30": -385,
+        "dealer_sum30": 17428,
         "daily": [
           {
             "date": "2026-04-02",
@@ -9038,6 +9573,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 68
+        },
+        {
           "date": "2026-04-04",
           "score": 68
         },
@@ -9060,10 +9599,6 @@
         {
           "date": "2026-03-30",
           "score": 68
-        },
-        {
-          "date": "2026-03-29",
-          "score": 62
         }
       ]
     },
@@ -9129,7 +9664,7 @@
         "foreign_con_sum": 137,
         "trust_con_sum": 0,
         "dealer_con_sum": 1,
-        "foreign_sum30": 173,
+        "foreign_sum30": 142,
         "trust_sum30": 0,
         "dealer_sum30": -10,
         "daily": [
@@ -9302,6 +9837,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 68
+        },
+        {
           "date": "2026-04-04",
           "score": 68
         },
@@ -9383,9 +9922,9 @@
         "foreign_con_sum": 674,
         "trust_con_sum": 2699,
         "dealer_con_sum": -70,
-        "foreign_sum30": -3868,
-        "trust_sum30": 3954,
-        "dealer_sum30": 227,
+        "foreign_sum30": -3509,
+        "trust_sum30": 3963,
+        "dealer_sum30": 198,
         "daily": [
           {
             "date": "2026-04-02",
@@ -9555,6 +10094,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 67
+        },
         {
           "date": "2026-04-04",
           "score": 67
@@ -9745,6 +10288,10 @@
       "lending_history": [],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 67
+        },
+        {
           "date": "2026-04-04",
           "score": 67
         },
@@ -9821,9 +10368,9 @@
         "foreign_con_sum": 3371,
         "trust_con_sum": -1544,
         "dealer_con_sum": 2995,
-        "foreign_sum30": 42254,
-        "trust_sum30": -1307,
-        "dealer_sum30": 5149,
+        "foreign_sum30": 42689,
+        "trust_sum30": -1476,
+        "dealer_sum30": 5168,
         "daily": [
           {
             "date": "2026-04-02",
@@ -9992,6 +10539,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 67
+        },
+        {
           "date": "2026-04-04",
           "score": 67
         },
@@ -10014,10 +10565,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 76
         }
       ]
     },
@@ -10028,7 +10575,11 @@
       "industry": "Pollution & Treatment Controls",
       "sector_key": "",
       "sector_rs": null,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "電動車",
+        "消費電子"
+      ],
       "warnings": [],
       "price": 211.5,
       "change": -17.5,
@@ -10049,6 +10600,7 @@
         "topic": 50
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -10085,8 +10637,8 @@
         "trust_con_sum": 0,
         "dealer_con_sum": -1,
         "foreign_sum30": 1123,
-        "trust_sum30": -10,
-        "dealer_sum30": -4,
+        "trust_sum30": -6,
+        "dealer_sum30": -3,
         "daily": [
           {
             "date": "2026-04-02",
@@ -10160,7 +10712,29 @@
         ]
       },
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "華懋 2023 營收 10.5 億元，年增 10.35%",
+            "source": "公開資訊觀測站",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "華懋：車用電子產品出貨動能持續，下半年展望樂觀",
+            "source": "財經新聞網",
+            "tag": "展望",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "華懋 Q1 獲利年減 15%，主因原物料成本上漲",
+            "source": "股市日報",
+            "tag": "獲利",
+            "sentiment": "bearish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -10257,6 +10831,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 66
+        },
+        {
           "date": "2026-04-04",
           "score": 66
         },
@@ -10336,9 +10914,9 @@
         "foreign_con_sum": 7514,
         "trust_con_sum": 226,
         "dealer_con_sum": 2132,
-        "foreign_sum30": -29784,
-        "trust_sum30": 18195,
-        "dealer_sum30": 16340,
+        "foreign_sum30": -26423,
+        "trust_sum30": 17467,
+        "dealer_sum30": 16223,
         "daily": [
           {
             "date": "2026-04-02",
@@ -10557,6 +11135,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 66
+        },
+        {
           "date": "2026-04-04",
           "score": 66
         },
@@ -10579,10 +11161,6 @@
         {
           "date": "2026-03-30",
           "score": 51
-        },
-        {
-          "date": "2026-03-29",
-          "score": 64
         }
       ]
     },
@@ -10642,9 +11220,9 @@
         "foreign_con_sum": 2346,
         "trust_con_sum": 0,
         "dealer_con_sum": 70,
-        "foreign_sum30": -910,
+        "foreign_sum30": -1062,
         "trust_sum30": -6,
-        "dealer_sum30": 64,
+        "dealer_sum30": 72,
         "daily": [
           {
             "date": "2026-04-02",
@@ -10813,6 +11391,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 66
+        },
+        {
           "date": "2026-04-04",
           "score": 66
         },
@@ -10888,9 +11470,9 @@
         "foreign_con_sum": 36265,
         "trust_con_sum": 1389,
         "dealer_con_sum": 4879,
-        "foreign_sum30": 35018,
-        "trust_sum30": -4833,
-        "dealer_sum30": 5765,
+        "foreign_sum30": 36109,
+        "trust_sum30": -3540,
+        "dealer_sum30": 5633,
         "daily": [
           {
             "date": "2026-04-02",
@@ -11063,6 +11645,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 66
+        },
+        {
           "date": "2026-04-04",
           "score": 66
         },
@@ -11085,10 +11671,6 @@
         {
           "date": "2026-03-30",
           "score": 64
-        },
-        {
-          "date": "2026-03-29",
-          "score": 59
         }
       ]
     },
@@ -11154,9 +11736,9 @@
         "foreign_con_sum": 19006,
         "trust_con_sum": 2262,
         "dealer_con_sum": 2682,
-        "foreign_sum30": -46436,
-        "trust_sum30": 16985,
-        "dealer_sum30": 9350,
+        "foreign_sum30": -40837,
+        "trust_sum30": 14551,
+        "dealer_sum30": 9260,
         "daily": [
           {
             "date": "2026-04-02",
@@ -11327,6 +11909,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 66
+        },
+        {
           "date": "2026-04-04",
           "score": 66
         },
@@ -11349,10 +11935,6 @@
         {
           "date": "2026-03-30",
           "score": 38
-        },
-        {
-          "date": "2026-03-29",
-          "score": 54
         }
       ]
     },
@@ -11418,9 +12000,9 @@
         "foreign_con_sum": 37,
         "trust_con_sum": 0,
         "dealer_con_sum": 0,
-        "foreign_sum30": -410,
+        "foreign_sum30": -334,
         "trust_sum30": 0,
-        "dealer_sum30": -10,
+        "dealer_sum30": -12,
         "daily": [
           {
             "date": "2026-04-02",
@@ -11591,6 +12173,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 65
+        },
+        {
           "date": "2026-04-04",
           "score": 65
         },
@@ -11648,9 +12234,9 @@
         "foreign_con_sum": 1901,
         "trust_con_sum": 0,
         "dealer_con_sum": 151,
-        "foreign_sum30": -4606,
+        "foreign_sum30": -4667,
         "trust_sum30": -155,
-        "dealer_sum30": 329,
+        "dealer_sum30": 337,
         "daily": [
           {
             "date": "2026-04-02",
@@ -11822,6 +12408,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 64
+        },
+        {
           "date": "2026-04-04",
           "score": 64
         },
@@ -11844,10 +12434,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 46
         }
       ]
     },
@@ -11914,9 +12500,9 @@
         "foreign_con_sum": -381,
         "trust_con_sum": 649,
         "dealer_con_sum": -21,
-        "foreign_sum30": -7398,
-        "trust_sum30": 1695,
-        "dealer_sum30": -2420,
+        "foreign_sum30": -7043,
+        "trust_sum30": 1734,
+        "dealer_sum30": -1452,
         "daily": [
           {
             "date": "2026-04-02",
@@ -12087,6 +12673,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 64
+        },
+        {
           "date": "2026-04-04",
           "score": 64
         },
@@ -12109,10 +12699,6 @@
         {
           "date": "2026-03-30",
           "score": 57
-        },
-        {
-          "date": "2026-03-29",
-          "score": 53
         }
       ]
     },
@@ -12178,9 +12764,9 @@
         "foreign_con_sum": 665,
         "trust_con_sum": 11,
         "dealer_con_sum": -169,
-        "foreign_sum30": 1262,
-        "trust_sum30": -256,
-        "dealer_sum30": -492,
+        "foreign_sum30": 3286,
+        "trust_sum30": -109,
+        "dealer_sum30": -505,
         "daily": [
           {
             "date": "2026-04-02",
@@ -12351,6 +12937,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 64
+        },
+        {
           "date": "2026-04-04",
           "score": 64
         },
@@ -12373,10 +12963,6 @@
         {
           "date": "2026-03-30",
           "score": 52
-        },
-        {
-          "date": "2026-03-29",
-          "score": 71
         }
       ]
     },
@@ -12424,9 +13010,9 @@
         "foreign_con_sum": 95,
         "trust_con_sum": 0,
         "dealer_con_sum": -30,
-        "foreign_sum30": -61,
+        "foreign_sum30": -60,
         "trust_sum30": 0,
-        "dealer_sum30": -53,
+        "dealer_sum30": -52,
         "daily": [
           {
             "date": "2026-04-02",
@@ -12595,6 +13181,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 64
+        },
+        {
           "date": "2026-04-04",
           "score": 64
         },
@@ -12652,9 +13242,9 @@
         "foreign_con_sum": 2016,
         "trust_con_sum": 0,
         "dealer_con_sum": -98,
-        "foreign_sum30": -18415,
+        "foreign_sum30": -19105,
         "trust_sum30": -16,
-        "dealer_sum30": -426,
+        "dealer_sum30": -1075,
         "daily": [
           {
             "date": "2026-04-02",
@@ -12794,6 +13384,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 63
+        },
+        {
           "date": "2026-04-04",
           "score": 63
         },
@@ -12869,9 +13463,9 @@
         "foreign_con_sum": 779,
         "trust_con_sum": 0,
         "dealer_con_sum": 125,
-        "foreign_sum30": -2542,
+        "foreign_sum30": -1688,
         "trust_sum30": 0,
-        "dealer_sum30": 24,
+        "dealer_sum30": 50,
         "daily": [
           {
             "date": "2026-04-02",
@@ -13040,6 +13634,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 63
+        },
+        {
           "date": "2026-04-04",
           "score": 63
         },
@@ -13109,9 +13707,9 @@
         "foreign_con_sum": -44,
         "trust_con_sum": 0,
         "dealer_con_sum": -97,
-        "foreign_sum30": 112,
+        "foreign_sum30": 183,
         "trust_sum30": 0,
-        "dealer_sum30": 12,
+        "dealer_sum30": 15,
         "daily": [
           {
             "date": "2026-04-02",
@@ -13280,6 +13878,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 63
+        },
+        {
           "date": "2026-04-04",
           "score": 63
         },
@@ -13355,9 +13957,9 @@
         "foreign_con_sum": 4474,
         "trust_con_sum": -50,
         "dealer_con_sum": 2902,
-        "foreign_sum30": 555,
-        "trust_sum30": 7194,
-        "dealer_sum30": 20746,
+        "foreign_sum30": 1505,
+        "trust_sum30": 4750,
+        "dealer_sum30": 20471,
         "daily": [
           {
             "date": "2026-04-02",
@@ -13529,6 +14131,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 63
+        },
+        {
           "date": "2026-04-04",
           "score": 63
         },
@@ -13551,10 +14157,6 @@
         {
           "date": "2026-03-30",
           "score": 51
-        },
-        {
-          "date": "2026-03-29",
-          "score": 45
         }
       ]
     },
@@ -13622,9 +14224,9 @@
         "foreign_con_sum": -688,
         "trust_con_sum": 1552,
         "dealer_con_sum": -154,
-        "foreign_sum30": -11196,
-        "trust_sum30": 15130,
-        "dealer_sum30": -562,
+        "foreign_sum30": -10225,
+        "trust_sum30": 15237,
+        "dealer_sum30": -617,
         "daily": [
           {
             "date": "2026-04-02",
@@ -13843,6 +14445,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 63
+        },
+        {
           "date": "2026-04-04",
           "score": 63
         },
@@ -13922,9 +14528,9 @@
         "foreign_con_sum": 70229,
         "trust_con_sum": -674,
         "dealer_con_sum": 649,
-        "foreign_sum30": -281292,
-        "trust_sum30": 300681,
-        "dealer_sum30": 38496,
+        "foreign_sum30": -250211,
+        "trust_sum30": 266487,
+        "dealer_sum30": 40205,
         "daily": [
           {
             "date": "2026-04-02",
@@ -14144,6 +14750,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 62
+        },
+        {
           "date": "2026-04-04",
           "score": 62
         },
@@ -14166,10 +14776,6 @@
         {
           "date": "2026-03-30",
           "score": 47
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -14229,9 +14835,9 @@
         "foreign_con_sum": 6856,
         "trust_con_sum": 4026,
         "dealer_con_sum": 9368,
-        "foreign_sum30": 31673,
-        "trust_sum30": 6602,
-        "dealer_sum30": 7535,
+        "foreign_sum30": 38992,
+        "trust_sum30": 12062,
+        "dealer_sum30": 7990,
         "daily": [
           {
             "date": "2026-04-02",
@@ -14402,6 +15008,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 62
+        },
+        {
           "date": "2026-04-04",
           "score": 62
         },
@@ -14424,10 +15034,6 @@
         {
           "date": "2026-03-30",
           "score": 46
-        },
-        {
-          "date": "2026-03-29",
-          "score": 70
         }
       ]
     },
@@ -14474,9 +15080,9 @@
         "foreign_con_sum": -613,
         "trust_con_sum": 0,
         "dealer_con_sum": 282,
-        "foreign_sum30": 11900,
+        "foreign_sum30": 10741,
         "trust_sum30": -7,
-        "dealer_sum30": 525,
+        "dealer_sum30": 507,
         "daily": [
           {
             "date": "2026-04-02",
@@ -14614,7 +15220,7 @@
       "signals": [],
       "rs_pct": 84,
       "rs_pct_val": 84,
-      "structure": "主升段",
+      "structure": "主升段✓",
       "patterns": [],
       "lending_history": [
         {
@@ -14644,6 +15250,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 62
+        },
         {
           "date": "2026-04-04",
           "score": 62
@@ -14714,9 +15324,9 @@
         "foreign_con_sum": 3406,
         "trust_con_sum": 0,
         "dealer_con_sum": 263,
-        "foreign_sum30": -659,
+        "foreign_sum30": -130,
         "trust_sum30": -3,
-        "dealer_sum30": 89,
+        "dealer_sum30": 83,
         "daily": [
           {
             "date": "2026-04-02",
@@ -14885,6 +15495,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 62
+        },
+        {
           "date": "2026-04-04",
           "score": 62
         },
@@ -14960,9 +15574,9 @@
         "foreign_con_sum": 744,
         "trust_con_sum": 0,
         "dealer_con_sum": 17,
-        "foreign_sum30": 2579,
-        "trust_sum30": -16,
-        "dealer_sum30": 237,
+        "foreign_sum30": 2046,
+        "trust_sum30": -18,
+        "dealer_sum30": 258,
         "daily": [
           {
             "date": "2026-04-02",
@@ -15132,6 +15746,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 61
+        },
         {
           "date": "2026-04-04",
           "score": 61
@@ -15342,6 +15960,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 61
+        },
+        {
           "date": "2026-04-04",
           "score": 61
         },
@@ -15416,9 +16038,9 @@
         "foreign_con_sum": 6606,
         "trust_con_sum": -24,
         "dealer_con_sum": 973,
-        "foreign_sum30": -225104,
-        "trust_sum30": 3684,
-        "dealer_sum30": -1628,
+        "foreign_sum30": -206723,
+        "trust_sum30": 3696,
+        "dealer_sum30": -1116,
         "daily": [
           {
             "date": "2026-04-02",
@@ -15590,6 +16212,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 61
+        },
+        {
           "date": "2026-04-04",
           "score": 61
         },
@@ -15612,10 +16238,6 @@
         {
           "date": "2026-03-30",
           "score": 38
-        },
-        {
-          "date": "2026-03-29",
-          "score": 39
         }
       ]
     },
@@ -15680,9 +16302,9 @@
         "foreign_con_sum": 181,
         "trust_con_sum": 29,
         "dealer_con_sum": 0,
-        "foreign_sum30": 409,
+        "foreign_sum30": 351,
         "trust_sum30": 1,
-        "dealer_sum30": -17,
+        "dealer_sum30": -16,
         "daily": [
           {
             "date": "2026-04-02",
@@ -15853,6 +16475,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 61
+        },
+        {
           "date": "2026-04-04",
           "score": 61
         },
@@ -15930,7 +16556,7 @@
         "dealer_con_sum": -2,
         "foreign_sum30": -64,
         "trust_sum30": 0,
-        "dealer_sum30": -9,
+        "dealer_sum30": -8,
         "daily": [
           {
             "date": "2026-04-02",
@@ -16101,6 +16727,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 61
+        },
+        {
           "date": "2026-04-04",
           "score": 61
         },
@@ -16158,9 +16788,9 @@
         "foreign_con_sum": 1824,
         "trust_con_sum": 0,
         "dealer_con_sum": 167,
-        "foreign_sum30": -18008,
+        "foreign_sum30": -17572,
         "trust_sum30": 0,
-        "dealer_sum30": 25,
+        "dealer_sum30": 41,
         "daily": [
           {
             "date": "2026-04-02",
@@ -16329,6 +16959,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 60
+        },
+        {
           "date": "2026-04-04",
           "score": 60
         },
@@ -16404,9 +17038,9 @@
         "foreign_con_sum": -20758,
         "trust_con_sum": 17507,
         "dealer_con_sum": -774,
-        "foreign_sum30": -25561,
-        "trust_sum30": 14760,
-        "dealer_sum30": 2375,
+        "foreign_sum30": 3359,
+        "trust_sum30": 14991,
+        "dealer_sum30": 3061,
         "daily": [
           {
             "date": "2026-04-02",
@@ -16575,6 +17209,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 60
+        },
+        {
           "date": "2026-04-04",
           "score": 60
         },
@@ -16597,10 +17235,6 @@
         {
           "date": "2026-03-30",
           "score": 51
-        },
-        {
-          "date": "2026-03-29",
-          "score": 73
         }
       ]
     },
@@ -16648,9 +17282,9 @@
         "foreign_con_sum": 29,
         "trust_con_sum": 0,
         "dealer_con_sum": -1,
-        "foreign_sum30": -78,
+        "foreign_sum30": -70,
         "trust_sum30": 0,
-        "dealer_sum30": -15,
+        "dealer_sum30": -14,
         "daily": [
           {
             "date": "2026-04-02",
@@ -16821,6 +17455,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 60
+        },
+        {
           "date": "2026-04-04",
           "score": 60
         },
@@ -16877,9 +17515,9 @@
         "foreign_con_sum": 793,
         "trust_con_sum": 0,
         "dealer_con_sum": -8,
-        "foreign_sum30": -3572,
+        "foreign_sum30": -1815,
         "trust_sum30": 0,
-        "dealer_sum30": -100,
+        "dealer_sum30": -16,
         "daily": [
           {
             "date": "2026-04-02",
@@ -17019,6 +17657,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 59
+        },
+        {
           "date": "2026-04-04",
           "score": 59
         },
@@ -17094,9 +17736,9 @@
         "foreign_con_sum": -23,
         "trust_con_sum": 0,
         "dealer_con_sum": 16,
-        "foreign_sum30": -49,
+        "foreign_sum30": -48,
         "trust_sum30": 0,
-        "dealer_sum30": 24,
+        "dealer_sum30": 26,
         "daily": [
           {
             "date": "2026-04-02",
@@ -17265,6 +17907,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 59
+        },
+        {
           "date": "2026-04-04",
           "score": 59
         },
@@ -17344,9 +17990,9 @@
         "foreign_con_sum": 6911,
         "trust_con_sum": -232,
         "dealer_con_sum": 25790,
-        "foreign_sum30": -74969,
-        "trust_sum30": 10279,
-        "dealer_sum30": 25984,
+        "foreign_sum30": -68038,
+        "trust_sum30": 9270,
+        "dealer_sum30": 25018,
         "daily": [
           {
             "date": "2026-04-02",
@@ -17518,6 +18164,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 59
+        },
+        {
           "date": "2026-04-04",
           "score": 59
         },
@@ -17540,10 +18190,6 @@
         {
           "date": "2026-03-30",
           "score": 44
-        },
-        {
-          "date": "2026-03-29",
-          "score": 63
         }
       ]
     },
@@ -17590,9 +18236,9 @@
         "foreign_con_sum": -3884,
         "trust_con_sum": 0,
         "dealer_con_sum": 264,
-        "foreign_sum30": 4364,
+        "foreign_sum30": 4590,
         "trust_sum30": 0,
-        "dealer_sum30": 549,
+        "dealer_sum30": 552,
         "daily": [
           {
             "date": "2026-04-02",
@@ -17761,6 +18407,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 59
+        },
+        {
           "date": "2026-04-04",
           "score": 59
         },
@@ -17848,9 +18498,9 @@
         "foreign_con_sum": -2172,
         "trust_con_sum": 2379,
         "dealer_con_sum": 3128,
-        "foreign_sum30": 103,
-        "trust_sum30": 3519,
-        "dealer_sum30": 893,
+        "foreign_sum30": 1609,
+        "trust_sum30": 2726,
+        "dealer_sum30": 913,
         "daily": [
           {
             "date": "2026-04-02",
@@ -18022,6 +18672,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -18044,10 +18698,6 @@
         {
           "date": "2026-03-30",
           "score": 55
-        },
-        {
-          "date": "2026-03-29",
-          "score": 62
         }
       ]
     },
@@ -18113,9 +18763,9 @@
         "foreign_con_sum": 223001,
         "trust_con_sum": 37,
         "dealer_con_sum": 18334,
-        "foreign_sum30": 146803,
-        "trust_sum30": -7607,
-        "dealer_sum30": 21315,
+        "foreign_sum30": 165012,
+        "trust_sum30": -7732,
+        "dealer_sum30": 22653,
         "daily": [
           {
             "date": "2026-04-02",
@@ -18286,6 +18936,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -18308,10 +18962,6 @@
         {
           "date": "2026-03-30",
           "score": 49
-        },
-        {
-          "date": "2026-03-29",
-          "score": 31
         }
       ]
     },
@@ -18377,9 +19027,9 @@
         "foreign_con_sum": 20112,
         "trust_con_sum": -17,
         "dealer_con_sum": -145,
-        "foreign_sum30": 50105,
-        "trust_sum30": -886,
-        "dealer_sum30": 3795,
+        "foreign_sum30": 48627,
+        "trust_sum30": -1415,
+        "dealer_sum30": 3726,
         "daily": [
           {
             "date": "2026-04-02",
@@ -18551,6 +19201,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -18573,10 +19227,6 @@
         {
           "date": "2026-03-30",
           "score": 56
-        },
-        {
-          "date": "2026-03-29",
-          "score": 40
         }
       ]
     },
@@ -18623,9 +19273,9 @@
         "foreign_con_sum": 5766,
         "trust_con_sum": 0,
         "dealer_con_sum": 137,
-        "foreign_sum30": -63435,
+        "foreign_sum30": -61224,
         "trust_sum30": -2,
-        "dealer_sum30": -537,
+        "dealer_sum30": -286,
         "daily": [
           {
             "date": "2026-04-02",
@@ -18765,6 +19415,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -18787,10 +19441,6 @@
         {
           "date": "2026-03-30",
           "score": 53
-        },
-        {
-          "date": "2026-03-29",
-          "score": 43
         }
       ]
     },
@@ -18837,9 +19487,9 @@
         "foreign_con_sum": -411,
         "trust_con_sum": 0,
         "dealer_con_sum": -183,
-        "foreign_sum30": -1057,
+        "foreign_sum30": -1040,
         "trust_sum30": 0,
-        "dealer_sum30": -1591,
+        "dealer_sum30": -1588,
         "daily": [
           {
             "date": "2026-04-02",
@@ -19008,6 +19658,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -19083,9 +19737,9 @@
         "foreign_con_sum": 91,
         "trust_con_sum": 0,
         "dealer_con_sum": 6,
-        "foreign_sum30": 173,
+        "foreign_sum30": 132,
         "trust_sum30": 0,
-        "dealer_sum30": -15,
+        "dealer_sum30": -16,
         "daily": [
           {
             "date": "2026-04-02",
@@ -19257,6 +19911,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -19332,9 +19990,9 @@
         "foreign_con_sum": -573,
         "trust_con_sum": 141,
         "dealer_con_sum": -5,
-        "foreign_sum30": -274,
-        "trust_sum30": 1693,
-        "dealer_sum30": -178,
+        "foreign_sum30": -826,
+        "trust_sum30": 1747,
+        "dealer_sum30": -221,
         "daily": [
           {
             "date": "2026-04-02",
@@ -19505,6 +20163,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
           "date": "2026-04-04",
           "score": 58
         },
@@ -19564,9 +20226,9 @@
         "foreign_con_sum": 367,
         "trust_con_sum": -5,
         "dealer_con_sum": -24,
-        "foreign_sum30": 1702,
+        "foreign_sum30": 3859,
         "trust_sum30": 74,
-        "dealer_sum30": -515,
+        "dealer_sum30": -311,
         "daily": [
           {
             "date": "2026-04-02",
@@ -19737,6 +20399,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 57
+        },
+        {
           "date": "2026-04-04",
           "score": 57
         },
@@ -19818,9 +20484,9 @@
         "foreign_con_sum": -477,
         "trust_con_sum": 3411,
         "dealer_con_sum": -56,
-        "foreign_sum30": -29118,
-        "trust_sum30": 12735,
-        "dealer_sum30": 3721,
+        "foreign_sum30": -28856,
+        "trust_sum30": 8058,
+        "dealer_sum30": 4206,
         "daily": [
           {
             "date": "2026-04-02",
@@ -19958,7 +20624,7 @@
       "signals": [],
       "rs_pct": 82,
       "rs_pct_val": 82,
-      "structure": "主升段",
+      "structure": "主升段✓",
       "patterns": [
         "三角收斂",
         "雙底"
@@ -19992,6 +20658,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 57
+        },
+        {
           "date": "2026-04-04",
           "score": 57
         },
@@ -20014,10 +20684,6 @@
         {
           "date": "2026-03-30",
           "score": 51
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -20082,7 +20748,7 @@
         "foreign_con_sum": 39,
         "trust_con_sum": 0,
         "dealer_con_sum": 7,
-        "foreign_sum30": 57,
+        "foreign_sum30": 27,
         "trust_sum30": 0,
         "dealer_sum30": -12,
         "daily": [
@@ -20256,6 +20922,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 57
+        },
+        {
           "date": "2026-04-04",
           "score": 57
         },
@@ -20324,9 +20994,9 @@
         "foreign_con_sum": -340,
         "trust_con_sum": 0,
         "dealer_con_sum": -38,
-        "foreign_sum30": 13030,
+        "foreign_sum30": 11978,
         "trust_sum30": -48,
-        "dealer_sum30": 1061,
+        "dealer_sum30": 1053,
         "daily": [
           {
             "date": "2026-04-02",
@@ -20498,6 +21168,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 56
+        },
+        {
           "date": "2026-04-04",
           "score": 56
         },
@@ -20520,10 +21194,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 60
         }
       ]
     },
@@ -20589,9 +21259,9 @@
         "foreign_con_sum": 1635,
         "trust_con_sum": -454,
         "dealer_con_sum": -1896,
-        "foreign_sum30": -10432,
-        "trust_sum30": -903,
-        "dealer_sum30": -399,
+        "foreign_sum30": -11974,
+        "trust_sum30": -814,
+        "dealer_sum30": -671,
         "daily": [
           {
             "date": "2026-04-02",
@@ -20760,6 +21430,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 56
+        },
+        {
           "date": "2026-04-04",
           "score": 56
         },
@@ -20782,10 +21456,6 @@
         {
           "date": "2026-03-30",
           "score": 45
-        },
-        {
-          "date": "2026-03-29",
-          "score": 38
         }
       ]
     },
@@ -20851,9 +21521,9 @@
         "foreign_con_sum": -5501,
         "trust_con_sum": -427,
         "dealer_con_sum": -648,
-        "foreign_sum30": -45347,
+        "foreign_sum30": -44329,
         "trust_sum30": 7770,
-        "dealer_sum30": -4380,
+        "dealer_sum30": -4973,
         "daily": [
           {
             "date": "2026-04-02",
@@ -21024,6 +21694,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 56
+        },
+        {
           "date": "2026-04-04",
           "score": 56
         },
@@ -21046,10 +21720,6 @@
         {
           "date": "2026-03-30",
           "score": 48
-        },
-        {
-          "date": "2026-03-29",
-          "score": 62
         }
       ]
     },
@@ -21096,9 +21766,9 @@
         "foreign_con_sum": 1319,
         "trust_con_sum": 0,
         "dealer_con_sum": -43,
-        "foreign_sum30": -661,
+        "foreign_sum30": -454,
         "trust_sum30": -64,
-        "dealer_sum30": -99,
+        "dealer_sum30": -184,
         "daily": [
           {
             "date": "2026-04-02",
@@ -21236,7 +21906,7 @@
       "signals": [],
       "rs_pct": 97,
       "rs_pct_val": 97,
-      "structure": "主升段",
+      "structure": "主升段✓",
       "patterns": [],
       "lending_history": [
         {
@@ -21266,6 +21936,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 56
+        },
         {
           "date": "2026-04-04",
           "score": 56
@@ -21303,7 +21977,7 @@
         "technical": 61,
         "volume": 25,
         "revenue": 50,
-        "rs": 37,
+        "rs": 36,
         "avwap": 0,
         "topic": 50
       },
@@ -21335,9 +22009,9 @@
         "foreign_con_sum": 329,
         "trust_con_sum": -3,
         "dealer_con_sum": 15,
-        "foreign_sum30": -317,
-        "trust_sum30": -33,
-        "dealer_sum30": -7,
+        "foreign_sum30": -473,
+        "trust_sum30": -21,
+        "dealer_sum30": -4,
         "daily": [
           {
             "date": "2026-04-02",
@@ -21508,6 +22182,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 56
+        },
+        {
           "date": "2026-04-04",
           "score": 56
         },
@@ -21580,9 +22258,9 @@
         "foreign_con_sum": -347,
         "trust_con_sum": -6,
         "dealer_con_sum": 89,
-        "foreign_sum30": 15818,
-        "trust_sum30": -62,
-        "dealer_sum30": 278,
+        "foreign_sum30": 14915,
+        "trust_sum30": -40,
+        "dealer_sum30": 272,
         "daily": [
           {
             "date": "2026-04-02",
@@ -21753,6 +22431,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 55
+        },
+        {
           "date": "2026-04-04",
           "score": 55
         },
@@ -21823,9 +22505,9 @@
         "foreign_con_sum": 8415,
         "trust_con_sum": 2257,
         "dealer_con_sum": 382,
-        "foreign_sum30": -178548,
-        "trust_sum30": 49705,
-        "dealer_sum30": -28571,
+        "foreign_sum30": -165275,
+        "trust_sum30": 50444,
+        "dealer_sum30": -27235,
         "daily": [
           {
             "date": "2026-04-02",
@@ -21996,6 +22678,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 55
+        },
+        {
           "date": "2026-04-04",
           "score": 55
         },
@@ -22018,10 +22704,6 @@
         {
           "date": "2026-03-30",
           "score": 32
-        },
-        {
-          "date": "2026-03-29",
-          "score": 52
         }
       ]
     },
@@ -22086,9 +22768,9 @@
         "foreign_con_sum": 16,
         "trust_con_sum": 0,
         "dealer_con_sum": 4,
-        "foreign_sum30": -64,
+        "foreign_sum30": -63,
         "trust_sum30": 0,
-        "dealer_sum30": -7,
+        "dealer_sum30": -9,
         "daily": [
           {
             "date": "2026-04-02",
@@ -22259,6 +22941,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 55
+        },
+        {
           "date": "2026-04-04",
           "score": 55
         },
@@ -22315,9 +23001,9 @@
         "foreign_con_sum": -1357,
         "trust_con_sum": 0,
         "dealer_con_sum": 875,
-        "foreign_sum30": 8621,
+        "foreign_sum30": 7362,
         "trust_sum30": 323,
-        "dealer_sum30": 1053,
+        "dealer_sum30": 1306,
         "daily": [
           {
             "date": "2026-04-02",
@@ -22486,6 +23172,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 54
+        },
+        {
           "date": "2026-04-04",
           "score": 54
         },
@@ -22546,9 +23236,9 @@
         "foreign_con_sum": 452,
         "trust_con_sum": -3,
         "dealer_con_sum": 11,
-        "foreign_sum30": -2386,
-        "trust_sum30": -40,
-        "dealer_sum30": -4,
+        "foreign_sum30": 101,
+        "trust_sum30": -23,
+        "dealer_sum30": 2,
         "daily": [
           {
             "date": "2026-04-02",
@@ -22717,6 +23407,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 54
+        },
+        {
           "date": "2026-04-04",
           "score": 54
         },
@@ -22791,9 +23485,9 @@
         "foreign_con_sum": -808,
         "trust_con_sum": 0,
         "dealer_con_sum": -37,
-        "foreign_sum30": 2255,
+        "foreign_sum30": 2320,
         "trust_sum30": 0,
-        "dealer_sum30": 99,
+        "dealer_sum30": 94,
         "daily": [
           {
             "date": "2026-04-02",
@@ -23059,6 +23753,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 54
+        },
+        {
           "date": "2026-04-04",
           "score": 54
         },
@@ -23133,9 +23831,9 @@
         "foreign_con_sum": 665,
         "trust_con_sum": 0,
         "dealer_con_sum": -9,
-        "foreign_sum30": 184,
+        "foreign_sum30": 238,
         "trust_sum30": -3,
-        "dealer_sum30": -31,
+        "dealer_sum30": -24,
         "daily": [
           {
             "date": "2026-04-02",
@@ -23306,6 +24004,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 54
+        },
+        {
           "date": "2026-04-04",
           "score": 54
         },
@@ -23377,9 +24079,9 @@
         "foreign_con_sum": 4772,
         "trust_con_sum": 1456,
         "dealer_con_sum": 4555,
-        "foreign_sum30": -140532,
-        "trust_sum30": 1368,
-        "dealer_sum30": -18414,
+        "foreign_sum30": -29658,
+        "trust_sum30": 2243,
+        "dealer_sum30": -17570,
         "daily": [
           {
             "date": "2026-04-02",
@@ -23550,6 +24252,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 53
+        },
+        {
           "date": "2026-04-04",
           "score": 53
         },
@@ -23572,10 +24278,6 @@
         {
           "date": "2026-03-30",
           "score": 50
-        },
-        {
-          "date": "2026-03-29",
-          "score": 44
         }
       ]
     },
@@ -23622,9 +24324,9 @@
         "foreign_con_sum": -15616,
         "trust_con_sum": 0,
         "dealer_con_sum": 1131,
-        "foreign_sum30": -29976,
+        "foreign_sum30": -28224,
         "trust_sum30": 0,
-        "dealer_sum30": 2174,
+        "dealer_sum30": 2186,
         "daily": [
           {
             "date": "2026-04-02",
@@ -23795,6 +24497,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 53
+        },
+        {
           "date": "2026-04-04",
           "score": 53
         },
@@ -23817,10 +24523,6 @@
         {
           "date": "2026-03-30",
           "score": 68
-        },
-        {
-          "date": "2026-03-29",
-          "score": 55
         }
       ]
     },
@@ -23885,7 +24587,7 @@
         "foreign_con_sum": -995,
         "trust_con_sum": 0,
         "dealer_con_sum": -1,
-        "foreign_sum30": -785,
+        "foreign_sum30": -853,
         "trust_sum30": 0,
         "dealer_sum30": 9,
         "daily": [
@@ -24056,6 +24758,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 53
+        },
+        {
           "date": "2026-04-04",
           "score": 53
         },
@@ -24130,9 +24836,9 @@
         "foreign_con_sum": -2,
         "trust_con_sum": 0,
         "dealer_con_sum": 0,
-        "foreign_sum30": -265,
+        "foreign_sum30": -235,
         "trust_sum30": 0,
-        "dealer_sum30": -40,
+        "dealer_sum30": -38,
         "daily": [
           {
             "date": "2026-04-02",
@@ -24301,6 +25007,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 53
+        },
+        {
           "date": "2026-04-04",
           "score": 53
         },
@@ -24363,9 +25073,9 @@
         "foreign_con_sum": -11766,
         "trust_con_sum": -7,
         "dealer_con_sum": -679,
-        "foreign_sum30": -16799,
+        "foreign_sum30": -17682,
         "trust_sum30": -101,
-        "dealer_sum30": -2593,
+        "dealer_sum30": -2570,
         "daily": [
           {
             "date": "2026-04-02",
@@ -24534,6 +25244,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 52
+        },
+        {
           "date": "2026-04-04",
           "score": 52
         },
@@ -24556,10 +25270,6 @@
         {
           "date": "2026-03-30",
           "score": 44
-        },
-        {
-          "date": "2026-03-29",
-          "score": 46
         }
       ]
     },
@@ -24606,9 +25316,9 @@
         "foreign_con_sum": -2607,
         "trust_con_sum": 0,
         "dealer_con_sum": -60,
-        "foreign_sum30": -18445,
+        "foreign_sum30": -17945,
         "trust_sum30": 0,
-        "dealer_sum30": 1219,
+        "dealer_sum30": 1205,
         "daily": [
           {
             "date": "2026-04-02",
@@ -24779,6 +25489,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 52
+        },
+        {
           "date": "2026-04-04",
           "score": 52
         },
@@ -24801,10 +25515,6 @@
         {
           "date": "2026-03-30",
           "score": 69
-        },
-        {
-          "date": "2026-03-29",
-          "score": 50
         }
       ]
     },
@@ -24869,9 +25579,9 @@
         "foreign_con_sum": 272,
         "trust_con_sum": 0,
         "dealer_con_sum": -10,
-        "foreign_sum30": 476,
+        "foreign_sum30": 423,
         "trust_sum30": 0,
-        "dealer_sum30": -31,
+        "dealer_sum30": -26,
         "daily": [
           {
             "date": "2026-04-02",
@@ -25042,6 +25752,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 52
+        },
+        {
           "date": "2026-04-04",
           "score": 52
         },
@@ -25127,9 +25841,9 @@
         "foreign_con_sum": -2589,
         "trust_con_sum": 1515,
         "dealer_con_sum": 1021,
-        "foreign_sum30": -3620,
-        "trust_sum30": 5323,
-        "dealer_sum30": 1156,
+        "foreign_sum30": -4088,
+        "trust_sum30": 5136,
+        "dealer_sum30": 1157,
         "daily": [
           {
             "date": "2026-04-02",
@@ -25298,6 +26012,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 52
+        },
+        {
           "date": "2026-04-04",
           "score": 52
         },
@@ -25320,10 +26038,6 @@
         {
           "date": "2026-03-30",
           "score": 49
-        },
-        {
-          "date": "2026-03-29",
-          "score": 55
         }
       ]
     },
@@ -25390,9 +26104,9 @@
         "foreign_con_sum": -2391,
         "trust_con_sum": -974,
         "dealer_con_sum": -75,
-        "foreign_sum30": -4989,
-        "trust_sum30": -3440,
-        "dealer_sum30": -229,
+        "foreign_sum30": -5505,
+        "trust_sum30": -3597,
+        "dealer_sum30": -266,
         "daily": [
           {
             "date": "2026-04-02",
@@ -25563,6 +26277,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 52
+        },
+        {
           "date": "2026-04-04",
           "score": 52
         },
@@ -25641,9 +26359,9 @@
         "foreign_con_sum": -9386,
         "trust_con_sum": -193,
         "dealer_con_sum": 5329,
-        "foreign_sum30": -207283,
-        "trust_sum30": 6325,
-        "dealer_sum30": 10069,
+        "foreign_sum30": -197527,
+        "trust_sum30": 4832,
+        "dealer_sum30": 9953,
         "daily": [
           {
             "date": "2026-04-02",
@@ -25815,6 +26533,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -25837,10 +26559,6 @@
         {
           "date": "2026-03-30",
           "score": 56
-        },
-        {
-          "date": "2026-03-29",
-          "score": 60
         }
       ]
     },
@@ -25887,9 +26605,9 @@
         "foreign_con_sum": -2733,
         "trust_con_sum": 0,
         "dealer_con_sum": -23,
-        "foreign_sum30": -12184,
+        "foreign_sum30": -11106,
         "trust_sum30": 1200,
-        "dealer_sum30": 118,
+        "dealer_sum30": 121,
         "daily": [
           {
             "date": "2026-04-02",
@@ -26058,6 +26776,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -26080,10 +26802,6 @@
         {
           "date": "2026-03-30",
           "score": 65
-        },
-        {
-          "date": "2026-03-29",
-          "score": 48
         }
       ]
     },
@@ -26149,9 +26867,9 @@
         "foreign_con_sum": -2422,
         "trust_con_sum": 888,
         "dealer_con_sum": -406,
-        "foreign_sum30": 7453,
-        "trust_sum30": 1581,
-        "dealer_sum30": 744,
+        "foreign_sum30": 7539,
+        "trust_sum30": 1816,
+        "dealer_sum30": 765,
         "daily": [
           {
             "date": "2026-04-02",
@@ -26289,7 +27007,7 @@
       "signals": [],
       "rs_pct": 78,
       "rs_pct_val": 78,
-      "structure": "突破準備",
+      "structure": "突破準備✓",
       "patterns": [],
       "lending_history": [
         {
@@ -26320,6 +27038,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -26342,10 +27064,6 @@
         {
           "date": "2026-03-30",
           "score": 42
-        },
-        {
-          "date": "2026-03-29",
-          "score": 59
         }
       ]
     },
@@ -26392,9 +27110,9 @@
         "foreign_con_sum": 1964,
         "trust_con_sum": 0,
         "dealer_con_sum": -19,
-        "foreign_sum30": 5911,
+        "foreign_sum30": 10724,
         "trust_sum30": 0,
-        "dealer_sum30": -40,
+        "dealer_sum30": -37,
         "daily": [
           {
             "date": "2026-04-02",
@@ -26563,6 +27281,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -26585,10 +27307,6 @@
         {
           "date": "2026-03-30",
           "score": 45
-        },
-        {
-          "date": "2026-03-29",
-          "score": 39
         }
       ]
     },
@@ -26654,9 +27372,9 @@
         "foreign_con_sum": 1464,
         "trust_con_sum": 0,
         "dealer_con_sum": 107,
-        "foreign_sum30": 1446,
-        "trust_sum30": -587,
-        "dealer_sum30": -779,
+        "foreign_sum30": 1268,
+        "trust_sum30": -395,
+        "dealer_sum30": -580,
         "daily": [
           {
             "date": "2026-04-02",
@@ -26827,6 +27545,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -26883,9 +27605,9 @@
         "foreign_con_sum": 6223,
         "trust_con_sum": 0,
         "dealer_con_sum": 2,
-        "foreign_sum30": -16232,
+        "foreign_sum30": -24548,
         "trust_sum30": 0,
-        "dealer_sum30": -2132,
+        "dealer_sum30": -2220,
         "daily": [
           {
             "date": "2026-04-02",
@@ -27056,6 +27778,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -27078,10 +27804,6 @@
         {
           "date": "2026-03-30",
           "score": 42
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -27128,7 +27850,7 @@
         "foreign_con_sum": -5,
         "trust_con_sum": 0,
         "dealer_con_sum": 0,
-        "foreign_sum30": -44,
+        "foreign_sum30": -42,
         "trust_sum30": 0,
         "dealer_sum30": -5,
         "daily": [
@@ -27268,6 +27990,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 51
+        },
+        {
           "date": "2026-04-04",
           "score": 51
         },
@@ -27336,9 +28062,9 @@
         "foreign_con_sum": 97,
         "trust_con_sum": -5,
         "dealer_con_sum": 0,
-        "foreign_sum30": -86,
-        "trust_sum30": -55,
-        "dealer_sum30": -26,
+        "foreign_sum30": -279,
+        "trust_sum30": -35,
+        "dealer_sum30": -14,
         "daily": [
           {
             "date": "2026-04-02",
@@ -27507,6 +28233,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 50
+        },
+        {
           "date": "2026-04-04",
           "score": 50
         },
@@ -27585,9 +28315,9 @@
         "foreign_con_sum": -799,
         "trust_con_sum": 255,
         "dealer_con_sum": -10,
-        "foreign_sum30": 9038,
-        "trust_sum30": 1600,
-        "dealer_sum30": -76,
+        "foreign_sum30": 6730,
+        "trust_sum30": 1563,
+        "dealer_sum30": -59,
         "daily": [
           {
             "date": "2026-04-02",
@@ -27759,6 +28489,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 50
+        },
+        {
           "date": "2026-04-04",
           "score": 50
         },
@@ -27781,10 +28515,6 @@
         {
           "date": "2026-03-30",
           "score": 69
-        },
-        {
-          "date": "2026-03-29",
-          "score": 55
         }
       ]
     },
@@ -27849,9 +28579,9 @@
         "foreign_con_sum": -29,
         "trust_con_sum": 0,
         "dealer_con_sum": 0,
-        "foreign_sum30": -86,
+        "foreign_sum30": -241,
         "trust_sum30": 0,
-        "dealer_sum30": -53,
+        "dealer_sum30": -52,
         "daily": [
           {
             "date": "2026-04-02",
@@ -28071,6 +28801,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 50
+        },
+        {
           "date": "2026-04-04",
           "score": 50
         },
@@ -28145,9 +28879,9 @@
         "foreign_con_sum": -2366,
         "trust_con_sum": 0,
         "dealer_con_sum": 435,
-        "foreign_sum30": -1676,
+        "foreign_sum30": -34,
         "trust_sum30": 1166,
-        "dealer_sum30": 353,
+        "dealer_sum30": 291,
         "daily": [
           {
             "date": "2026-04-02",
@@ -28316,6 +29050,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 49
+        },
+        {
           "date": "2026-04-04",
           "score": 49
         },
@@ -28338,10 +29076,6 @@
         {
           "date": "2026-03-30",
           "score": 48
-        },
-        {
-          "date": "2026-03-29",
-          "score": 67
         }
       ]
     },
@@ -28406,9 +29140,9 @@
         "foreign_con_sum": 7483,
         "trust_con_sum": 276,
         "dealer_con_sum": 561,
-        "foreign_sum30": -11935,
-        "trust_sum30": 1245,
-        "dealer_sum30": -326,
+        "foreign_sum30": -6113,
+        "trust_sum30": 1511,
+        "dealer_sum30": -225,
         "daily": [
           {
             "date": "2026-04-02",
@@ -28580,6 +29314,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 49
+        },
+        {
           "date": "2026-04-04",
           "score": 49
         },
@@ -28636,9 +29374,9 @@
         "foreign_con_sum": 1697,
         "trust_con_sum": 491,
         "dealer_con_sum": 2490,
-        "foreign_sum30": 60408,
-        "trust_sum30": -19001,
-        "dealer_sum30": -6294,
+        "foreign_sum30": 61973,
+        "trust_sum30": -19031,
+        "dealer_sum30": -4261,
         "daily": [
           {
             "date": "2026-04-02",
@@ -28807,6 +29545,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 49
+        },
+        {
           "date": "2026-04-04",
           "score": 49
         },
@@ -28829,10 +29571,6 @@
         {
           "date": "2026-03-30",
           "score": 50
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -28879,9 +29617,9 @@
         "foreign_con_sum": -1764,
         "trust_con_sum": 0,
         "dealer_con_sum": -143,
-        "foreign_sum30": -415,
+        "foreign_sum30": -641,
         "trust_sum30": 0,
-        "dealer_sum30": 18,
+        "dealer_sum30": 21,
         "daily": [
           {
             "date": "2026-04-02",
@@ -29050,6 +29788,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 49
+        },
+        {
           "date": "2026-04-04",
           "score": 49
         },
@@ -29128,9 +29870,9 @@
         "foreign_con_sum": -61,
         "trust_con_sum": -207,
         "dealer_con_sum": 16065,
-        "foreign_sum30": -74114,
-        "trust_sum30": -25962,
-        "dealer_sum30": 18239,
+        "foreign_sum30": -69496,
+        "trust_sum30": -28197,
+        "dealer_sum30": 18319,
         "daily": [
           {
             "date": "2026-04-02",
@@ -29302,6 +30044,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 49
+        },
+        {
           "date": "2026-04-04",
           "score": 49
         },
@@ -29324,10 +30070,6 @@
         {
           "date": "2026-03-30",
           "score": 65
-        },
-        {
-          "date": "2026-03-29",
-          "score": 60
         }
       ]
     },
@@ -29387,9 +30129,9 @@
         "foreign_con_sum": -3487,
         "trust_con_sum": -45493,
         "dealer_con_sum": -833,
-        "foreign_sum30": -90168,
-        "trust_sum30": -48441,
-        "dealer_sum30": -17924,
+        "foreign_sum30": -89548,
+        "trust_sum30": -48355,
+        "dealer_sum30": -17077,
         "daily": [
           {
             "date": "2026-04-02",
@@ -29561,6 +30303,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 49
+        },
+        {
           "date": "2026-04-04",
           "score": 49
         },
@@ -29583,10 +30329,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 47
         }
       ]
     },
@@ -29615,7 +30357,7 @@
         "technical": 70,
         "volume": 10,
         "revenue": 50,
-        "rs": 19,
+        "rs": 18,
         "avwap": 0,
         "topic": 50
       },
@@ -29654,9 +30396,9 @@
         "foreign_con_sum": -4649,
         "trust_con_sum": 2673,
         "dealer_con_sum": 4398,
-        "foreign_sum30": -3766,
-        "trust_sum30": 2379,
-        "dealer_sum30": 5671,
+        "foreign_sum30": -2135,
+        "trust_sum30": 2212,
+        "dealer_sum30": 5643,
         "daily": [
           {
             "date": "2026-04-02",
@@ -29828,6 +30570,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 48
+        },
+        {
           "date": "2026-04-04",
           "score": 48
         },
@@ -29850,10 +30596,6 @@
         {
           "date": "2026-03-30",
           "score": 47
-        },
-        {
-          "date": "2026-03-29",
-          "score": 60
         }
       ]
     },
@@ -29918,9 +30660,9 @@
         "foreign_con_sum": -107,
         "trust_con_sum": 0,
         "dealer_con_sum": 1,
-        "foreign_sum30": -1451,
+        "foreign_sum30": -683,
         "trust_sum30": 0,
-        "dealer_sum30": -233,
+        "dealer_sum30": -184,
         "daily": [
           {
             "date": "2026-04-02",
@@ -30092,6 +30834,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 48
+        },
+        {
           "date": "2026-04-04",
           "score": 48
         },
@@ -30166,9 +30912,9 @@
         "foreign_con_sum": -9,
         "trust_con_sum": -1,
         "dealer_con_sum": -2,
-        "foreign_sum30": -2160,
-        "trust_sum30": 97,
-        "dealer_sum30": 108,
+        "foreign_sum30": -1919,
+        "trust_sum30": 124,
+        "dealer_sum30": 102,
         "daily": [
           {
             "date": "2026-04-02",
@@ -30339,6 +31085,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 48
+        },
+        {
           "date": "2026-04-04",
           "score": 48
         },
@@ -30361,10 +31111,6 @@
         {
           "date": "2026-03-30",
           "score": 55
-        },
-        {
-          "date": "2026-03-29",
-          "score": 53
         }
       ]
     },
@@ -30423,9 +31169,9 @@
         "foreign_con_sum": -617,
         "trust_con_sum": 0,
         "dealer_con_sum": 83,
-        "foreign_sum30": -1099,
+        "foreign_sum30": -1240,
         "trust_sum30": 0,
-        "dealer_sum30": 296,
+        "dealer_sum30": 308,
         "daily": [
           {
             "date": "2026-04-02",
@@ -30594,6 +31340,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 47
+        },
+        {
           "date": "2026-04-04",
           "score": 47
         },
@@ -30673,9 +31423,9 @@
         "foreign_con_sum": -6439,
         "trust_con_sum": 12360,
         "dealer_con_sum": -611,
-        "foreign_sum30": -105430,
-        "trust_sum30": 29526,
-        "dealer_sum30": 6150,
+        "foreign_sum30": -78452,
+        "trust_sum30": 22249,
+        "dealer_sum30": 6588,
         "daily": [
           {
             "date": "2026-04-02",
@@ -30848,6 +31598,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 47
+        },
+        {
           "date": "2026-04-04",
           "score": 47
         },
@@ -30870,10 +31624,6 @@
         {
           "date": "2026-03-30",
           "score": 62
-        },
-        {
-          "date": "2026-03-29",
-          "score": 55
         }
       ]
     },
@@ -30920,9 +31670,9 @@
         "foreign_con_sum": 36869,
         "trust_con_sum": 160,
         "dealer_con_sum": -367,
-        "foreign_sum30": -113140,
-        "trust_sum30": -748,
-        "dealer_sum30": 4436,
+        "foreign_sum30": -98632,
+        "trust_sum30": -788,
+        "dealer_sum30": 4302,
         "daily": [
           {
             "date": "2026-04-02",
@@ -31094,6 +31844,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 47
+        },
+        {
           "date": "2026-04-04",
           "score": 47
         },
@@ -31116,10 +31870,6 @@
         {
           "date": "2026-03-30",
           "score": 29
-        },
-        {
-          "date": "2026-03-29",
-          "score": 39
         }
       ]
     },
@@ -31185,9 +31935,9 @@
         "foreign_con_sum": -2754,
         "trust_con_sum": 2229,
         "dealer_con_sum": 13494,
-        "foreign_sum30": 6333,
-        "trust_sum30": -2379,
-        "dealer_sum30": 15415,
+        "foreign_sum30": 858,
+        "trust_sum30": -2616,
+        "dealer_sum30": 14854,
         "daily": [
           {
             "date": "2026-04-02",
@@ -31359,6 +32109,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 47
+        },
+        {
           "date": "2026-04-04",
           "score": 47
         },
@@ -31381,10 +32135,6 @@
         {
           "date": "2026-03-30",
           "score": 41
-        },
-        {
-          "date": "2026-03-29",
-          "score": 42
         }
       ]
     },
@@ -31459,9 +32209,9 @@
         "foreign_con_sum": -4396,
         "trust_con_sum": 3094,
         "dealer_con_sum": -1872,
-        "foreign_sum30": 20416,
-        "trust_sum30": 1719,
-        "dealer_sum30": -3064,
+        "foreign_sum30": 18903,
+        "trust_sum30": 1011,
+        "dealer_sum30": -1751,
         "daily": [
           {
             "date": "2026-04-02",
@@ -31632,6 +32382,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 46
+        },
+        {
           "date": "2026-04-04",
           "score": 46
         },
@@ -31688,9 +32442,9 @@
         "foreign_con_sum": -6367,
         "trust_con_sum": -1,
         "dealer_con_sum": -241,
-        "foreign_sum30": 1471,
+        "foreign_sum30": 635,
         "trust_sum30": -5,
-        "dealer_sum30": 518,
+        "dealer_sum30": 340,
         "daily": [
           {
             "date": "2026-04-02",
@@ -31861,6 +32615,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 46
+        },
+        {
           "date": "2026-04-04",
           "score": 46
         },
@@ -31925,7 +32683,7 @@
         "foreign_con_sum": 98,
         "trust_con_sum": 0,
         "dealer_con_sum": -15,
-        "foreign_sum30": 204,
+        "foreign_sum30": 126,
         "trust_sum30": 0,
         "dealer_sum30": -19,
         "daily": [
@@ -32098,6 +32856,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 46
+        },
+        {
           "date": "2026-04-04",
           "score": 46
         },
@@ -32154,9 +32916,9 @@
         "foreign_con_sum": -703,
         "trust_con_sum": 0,
         "dealer_con_sum": 97,
-        "foreign_sum30": -29722,
+        "foreign_sum30": -29049,
         "trust_sum30": 0,
-        "dealer_sum30": 630,
+        "dealer_sum30": 1045,
         "daily": [
           {
             "date": "2026-04-02",
@@ -32328,6 +33090,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 45
+        },
+        {
           "date": "2026-04-04",
           "score": 45
         },
@@ -32349,10 +33115,6 @@
         },
         {
           "date": "2026-03-30",
-          "score": 44
-        },
-        {
-          "date": "2026-03-29",
           "score": 44
         }
       ]
@@ -32419,9 +33181,9 @@
         "foreign_con_sum": -9931,
         "trust_con_sum": 8571,
         "dealer_con_sum": 14757,
-        "foreign_sum30": -44597,
-        "trust_sum30": 7502,
-        "dealer_sum30": 19006,
+        "foreign_sum30": -40829,
+        "trust_sum30": 7749,
+        "dealer_sum30": 18597,
         "daily": [
           {
             "date": "2026-04-02",
@@ -32593,6 +33355,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 45
+        },
+        {
           "date": "2026-04-04",
           "score": 45
         },
@@ -32615,10 +33381,6 @@
         {
           "date": "2026-03-30",
           "score": 47
-        },
-        {
-          "date": "2026-03-29",
-          "score": 48
         }
       ]
     },
@@ -32663,9 +33425,9 @@
         "foreign_con_sum": -936,
         "trust_con_sum": 0,
         "dealer_con_sum": -9,
-        "foreign_sum30": -15913,
+        "foreign_sum30": -7271,
         "trust_sum30": 0,
-        "dealer_sum30": -9,
+        "dealer_sum30": -11,
         "daily": [
           {
             "date": "2026-04-02",
@@ -32836,6 +33598,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 45
+        },
+        {
           "date": "2026-04-04",
           "score": 45
         },
@@ -32920,9 +33686,9 @@
         "foreign_con_sum": -63,
         "trust_con_sum": -32,
         "dealer_con_sum": -6,
-        "foreign_sum30": -1927,
-        "trust_sum30": -1833,
-        "dealer_sum30": 430,
+        "foreign_sum30": -2423,
+        "trust_sum30": -1917,
+        "dealer_sum30": 374,
         "daily": [
           {
             "date": "2026-04-02",
@@ -33093,6 +33859,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 44
+        },
+        {
           "date": "2026-04-04",
           "score": 44
         },
@@ -33115,10 +33885,6 @@
         {
           "date": "2026-03-30",
           "score": 56
-        },
-        {
-          "date": "2026-03-29",
-          "score": 50
         }
       ]
     },
@@ -33147,7 +33913,7 @@
         "technical": 49,
         "volume": 10,
         "revenue": 50,
-        "rs": 18,
+        "rs": 20,
         "avwap": 0,
         "topic": 50
       },
@@ -33186,9 +33952,9 @@
         "foreign_con_sum": -251,
         "trust_con_sum": 88,
         "dealer_con_sum": 3655,
-        "foreign_sum30": -5739,
-        "trust_sum30": -2365,
-        "dealer_sum30": 3979,
+        "foreign_sum30": -6015,
+        "trust_sum30": -2306,
+        "dealer_sum30": 3831,
         "daily": [
           {
             "date": "2026-04-02",
@@ -33301,8 +34067,8 @@
           "pass": true
         }
       ],
-      "yahoo_rs": -0.1921,
-      "ma60": 164.44,
+      "yahoo_rs": -0.1702,
+      "ma60": 162.03,
       "above_ma60": false,
       "revenue_yoy": null,
       "open": 148.5,
@@ -33311,21 +34077,21 @@
       "prev_close": 147.5,
       "ma5": 146.9,
       "ma10": 151.3,
-      "ma20": 156.25,
+      "ma20": 154.97,
       "ma_bullish": false,
-      "high20": 173.0,
+      "high20": 169.95,
       "low20": 139.5,
       "avwap_swing": null,
       "avwap_vol": null,
       "avwap_short": null,
       "m_z": -0.4109,
-      "a_z": -1.1732,
+      "a_z": -1.3213,
       "rs_trend_stock": 0.1949,
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
-      "rs_pct": 35,
-      "rs_pct_val": 35,
+      "rs_pct": 39,
+      "rs_pct_val": 39,
       "structure": "弱勢",
       "patterns": [],
       "lending_history": [
@@ -33356,6 +34122,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 44
+        },
         {
           "date": "2026-04-04",
           "score": 44
@@ -33413,7 +34183,7 @@
         "foreign_con_sum": 0,
         "trust_con_sum": 0,
         "dealer_con_sum": 0,
-        "foreign_sum30": -56,
+        "foreign_sum30": -54,
         "trust_sum30": 0,
         "dealer_sum30": -3,
         "daily": [
@@ -33586,6 +34356,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 44
+        },
+        {
           "date": "2026-04-04",
           "score": 44
         },
@@ -33642,9 +34416,9 @@
         "foreign_con_sum": -26,
         "trust_con_sum": 0,
         "dealer_con_sum": -6,
-        "foreign_sum30": -43,
+        "foreign_sum30": -44,
         "trust_sum30": 0,
-        "dealer_sum30": -2,
+        "dealer_sum30": -3,
         "daily": [
           {
             "date": "2026-04-02",
@@ -33815,6 +34589,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 44
+        },
+        {
           "date": "2026-04-04",
           "score": 44
         },
@@ -33871,9 +34649,9 @@
         "foreign_con_sum": -1872,
         "trust_con_sum": 0,
         "dealer_con_sum": -271,
-        "foreign_sum30": -56,
+        "foreign_sum30": -1199,
         "trust_sum30": -1,
-        "dealer_sum30": 764,
+        "dealer_sum30": 788,
         "daily": [
           {
             "date": "2026-04-02",
@@ -34042,6 +34820,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 43
+        },
+        {
           "date": "2026-04-04",
           "score": 43
         },
@@ -34102,9 +34884,9 @@
         "foreign_con_sum": 2685,
         "trust_con_sum": 0,
         "dealer_con_sum": 152,
-        "foreign_sum30": -18476,
+        "foreign_sum30": -19658,
         "trust_sum30": -9,
-        "dealer_sum30": -1047,
+        "dealer_sum30": -1160,
         "daily": [
           {
             "date": "2026-04-02",
@@ -34240,8 +35022,8 @@
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
-      "rs_pct": 36,
-      "rs_pct_val": 36,
+      "rs_pct": 35,
+      "rs_pct_val": 35,
       "structure": "弱勢",
       "patterns": [
         "三角收斂"
@@ -34274,6 +35056,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 43
+        },
         {
           "date": "2026-04-04",
           "score": 43
@@ -34340,9 +35126,9 @@
         "foreign_con_sum": -2216,
         "trust_con_sum": 62,
         "dealer_con_sum": 1389,
-        "foreign_sum30": -18738,
-        "trust_sum30": 2633,
-        "dealer_sum30": -884,
+        "foreign_sum30": -12225,
+        "trust_sum30": 3833,
+        "dealer_sum30": -500,
         "daily": [
           {
             "date": "2026-04-02",
@@ -34514,6 +35300,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 43
+        },
+        {
           "date": "2026-04-04",
           "score": 43
         },
@@ -34536,10 +35326,6 @@
         {
           "date": "2026-03-30",
           "score": 58
-        },
-        {
-          "date": "2026-03-29",
-          "score": 38
         }
       ]
     },
@@ -34586,9 +35372,9 @@
         "foreign_con_sum": -20660,
         "trust_con_sum": 0,
         "dealer_con_sum": -12,
-        "foreign_sum30": -15274,
+        "foreign_sum30": -14858,
         "trust_sum30": -547,
-        "dealer_sum30": 213,
+        "dealer_sum30": 222,
         "daily": [
           {
             "date": "2026-04-02",
@@ -34757,6 +35543,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 43
+        },
+        {
           "date": "2026-04-04",
           "score": 43
         },
@@ -34779,274 +35569,6 @@
         {
           "date": "2026-03-30",
           "score": 43
-        },
-        {
-          "date": "2026-03-29",
-          "score": 58
-        }
-      ]
-    },
-    {
-      "code": "2882",
-      "name": "國泰金",
-      "category": "large",
-      "industry": "壽險",
-      "sector_key": "金融保險",
-      "sector_rs": 1.8695,
-      "themes": [],
-      "warnings": [],
-      "price": 71.8,
-      "change": -0.1,
-      "change_pct": -0.14,
-      "volume": 10928195,
-      "vol_day_ratio": 0.49,
-      "vol_month_ratio": 0.77,
-      "week52_high": 81.6,
-      "week52_low": 49.5,
-      "scores": {
-        "chips": 37,
-        "fundamental": 65,
-        "technical": 53,
-        "volume": 25,
-        "revenue": 50,
-        "rs": 38,
-        "avwap": 0,
-        "topic": 50
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 158.8,
-        "fair": 211.8,
-        "optimistic": 264.8,
-        "methods": [
-          {
-            "label": "PEG法",
-            "conservative": 158.8,
-            "fair": 211.8,
-            "optimistic": 264.8
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 91.8,
-            "fair": 120.0,
-            "optimistic": 155.3
-          }
-        ]
-      },
-      "eps_ttm": 7.06,
-      "pe_mid": null,
-      "chips_raw": {
-        "foreign": -1194,
-        "trust": 1643,
-        "dealer": -567,
-        "foreign_con": -3,
-        "trust_con": 11,
-        "dealer_con": -1,
-        "foreign_con_sum": -4248,
-        "trust_con_sum": 40866,
-        "dealer_con_sum": -567,
-        "foreign_sum30": -78398,
-        "trust_sum30": 73431,
-        "dealer_sum30": 3363,
-        "daily": [
-          {
-            "date": "2026-04-02",
-            "foreign": -1194,
-            "trust": 1643,
-            "dealer": -567,
-            "total": -118
-          },
-          {
-            "date": "2026-04-01",
-            "foreign": -865,
-            "trust": 3977,
-            "dealer": 661,
-            "total": 3773
-          },
-          {
-            "date": "2026-03-31",
-            "foreign": -2189,
-            "trust": 1911,
-            "dealer": 2049,
-            "total": 1771
-          },
-          {
-            "date": "2026-03-30",
-            "foreign": 1087,
-            "trust": 2675,
-            "dealer": -95,
-            "total": 3667
-          },
-          {
-            "date": "2026-03-27",
-            "foreign": -11747,
-            "trust": 2613,
-            "dealer": 103,
-            "total": -9031
-          }
-        ],
-        "shares_outstanding": 14669210000
-      },
-      "holding": null,
-      "lending": {
-        "volume": 8284,
-        "balance": 150278,
-        "amount": 0,
-        "daily": [
-          {
-            "date": "2026-03-27",
-            "volume": 7826,
-            "balance": 125829
-          },
-          {
-            "date": "2026-03-30",
-            "volume": 7509,
-            "balance": 133208
-          },
-          {
-            "date": "2026-03-31",
-            "volume": 8014,
-            "balance": 134759
-          },
-          {
-            "date": "2026-04-01",
-            "volume": 7805,
-            "balance": 142256
-          },
-          {
-            "date": "2026-04-02",
-            "volume": 8284,
-            "balance": 150278
-          }
-        ]
-      },
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "98.5%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "None%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "46.1%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -1194,
-          "consecutive": -3,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 1643,
-          "consecutive": 11,
-          "pass": true
-        },
-        {
-          "label": "自營商",
-          "net": -567,
-          "consecutive": -1,
-          "pass": false
-        }
-      ],
-      "yahoo_rs": -0.2475,
-      "ma60": 74.76,
-      "above_ma60": false,
-      "revenue_yoy": null,
-      "open": 72.1,
-      "high": 72.3,
-      "low": 71.1,
-      "prev_close": 71.9,
-      "ma5": 71.0,
-      "ma10": 71.17,
-      "ma20": 71.62,
-      "ma_bullish": false,
-      "high20": 74.7,
-      "low20": 67.3,
-      "avwap_swing": null,
-      "avwap_vol": null,
-      "avwap_short": null,
-      "m_z": 5.0,
-      "a_z": 3.3333,
-      "rs_trend_stock": -0.104,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
-      "signals": [],
-      "rs_pct": 31,
-      "rs_pct_val": 31,
-      "structure": "弱勢",
-      "patterns": [
-        "雙底"
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-27",
-          "volume": 7826,
-          "balance": 125829
-        },
-        {
-          "date": "2026-03-30",
-          "volume": 7509,
-          "balance": 133208
-        },
-        {
-          "date": "2026-03-31",
-          "volume": 8014,
-          "balance": 134759
-        },
-        {
-          "date": "2026-04-01",
-          "volume": 7805,
-          "balance": 142256
-        },
-        {
-          "date": "2026-04-02",
-          "volume": 8284,
-          "balance": 150278
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-04-04",
-          "score": 43
-        },
-        {
-          "date": "2026-04-03",
-          "score": 43
-        },
-        {
-          "date": "2026-04-02",
-          "score": 47
-        },
-        {
-          "date": "2026-04-01",
-          "score": 52
-        },
-        {
-          "date": "2026-03-31",
-          "score": 54
-        },
-        {
-          "date": "2026-03-30",
-          "score": 59
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -35111,9 +35633,9 @@
         "foreign_con_sum": -17335,
         "trust_con_sum": 10208,
         "dealer_con_sum": -164,
-        "foreign_sum30": -113808,
-        "trust_sum30": 54764,
-        "dealer_sum30": 2981,
+        "foreign_sum30": -104665,
+        "trust_sum30": 49949,
+        "dealer_sum30": 3445,
         "daily": [
           {
             "date": "2026-04-02",
@@ -35284,6 +35806,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 43
+        },
+        {
           "date": "2026-04-04",
           "score": 43
         },
@@ -35306,10 +35832,270 @@
         {
           "date": "2026-03-30",
           "score": 46
+        }
+      ]
+    },
+    {
+      "code": "2882",
+      "name": "國泰金",
+      "category": "large",
+      "industry": "壽險",
+      "sector_key": "金融保險",
+      "sector_rs": 1.8695,
+      "themes": [],
+      "warnings": [],
+      "price": 71.8,
+      "change": -0.1,
+      "change_pct": -0.14,
+      "volume": 10928195,
+      "vol_day_ratio": 0.49,
+      "vol_month_ratio": 0.77,
+      "week52_high": 81.6,
+      "week52_low": 49.5,
+      "scores": {
+        "chips": 37,
+        "fundamental": 65,
+        "technical": 53,
+        "volume": 25,
+        "revenue": 50,
+        "rs": 38,
+        "avwap": 0,
+        "topic": 50
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 158.8,
+        "fair": 211.8,
+        "optimistic": 264.8,
+        "methods": [
+          {
+            "label": "PEG法",
+            "conservative": 158.8,
+            "fair": 211.8,
+            "optimistic": 264.8
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 91.8,
+            "fair": 120.0,
+            "optimistic": 155.3
+          }
+        ]
+      },
+      "eps_ttm": 7.06,
+      "pe_mid": null,
+      "chips_raw": {
+        "foreign": -1194,
+        "trust": 1643,
+        "dealer": -567,
+        "foreign_con": -3,
+        "trust_con": 11,
+        "dealer_con": -1,
+        "foreign_con_sum": -4248,
+        "trust_con_sum": 40866,
+        "dealer_con_sum": -567,
+        "foreign_sum30": -70439,
+        "trust_sum30": 66038,
+        "dealer_sum30": 3949,
+        "daily": [
+          {
+            "date": "2026-04-02",
+            "foreign": -1194,
+            "trust": 1643,
+            "dealer": -567,
+            "total": -118
+          },
+          {
+            "date": "2026-04-01",
+            "foreign": -865,
+            "trust": 3977,
+            "dealer": 661,
+            "total": 3773
+          },
+          {
+            "date": "2026-03-31",
+            "foreign": -2189,
+            "trust": 1911,
+            "dealer": 2049,
+            "total": 1771
+          },
+          {
+            "date": "2026-03-30",
+            "foreign": 1087,
+            "trust": 2675,
+            "dealer": -95,
+            "total": 3667
+          },
+          {
+            "date": "2026-03-27",
+            "foreign": -11747,
+            "trust": 2613,
+            "dealer": 103,
+            "total": -9031
+          }
+        ],
+        "shares_outstanding": 14669210000
+      },
+      "holding": null,
+      "lending": {
+        "volume": 8284,
+        "balance": 150278,
+        "amount": 0,
+        "daily": [
+          {
+            "date": "2026-03-27",
+            "volume": 7826,
+            "balance": 125829
+          },
+          {
+            "date": "2026-03-30",
+            "volume": 7509,
+            "balance": 133208
+          },
+          {
+            "date": "2026-03-31",
+            "volume": 8014,
+            "balance": 134759
+          },
+          {
+            "date": "2026-04-01",
+            "volume": 7805,
+            "balance": 142256
+          },
+          {
+            "date": "2026-04-02",
+            "volume": 8284,
+            "balance": 150278
+          }
+        ]
+      },
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "98.5%",
+          "pass": true
         },
         {
-          "date": "2026-03-29",
+          "label": "ROE",
+          "value": "None%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "46.1%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -1194,
+          "consecutive": -3,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 1643,
+          "consecutive": 11,
+          "pass": true
+        },
+        {
+          "label": "自營商",
+          "net": -567,
+          "consecutive": -1,
+          "pass": false
+        }
+      ],
+      "yahoo_rs": -0.2475,
+      "ma60": 74.76,
+      "above_ma60": false,
+      "revenue_yoy": null,
+      "open": 72.1,
+      "high": 72.3,
+      "low": 71.1,
+      "prev_close": 71.9,
+      "ma5": 71.0,
+      "ma10": 71.17,
+      "ma20": 71.62,
+      "ma_bullish": false,
+      "high20": 74.7,
+      "low20": 67.3,
+      "avwap_swing": null,
+      "avwap_vol": null,
+      "avwap_short": null,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": -0.104,
+      "rs_slow_positive": false,
+      "stock_phase": "BEAR_WEAK",
+      "signals": [],
+      "rs_pct": 31,
+      "rs_pct_val": 31,
+      "structure": "弱勢",
+      "patterns": [
+        "雙底"
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-27",
+          "volume": 7826,
+          "balance": 125829
+        },
+        {
+          "date": "2026-03-30",
+          "volume": 7509,
+          "balance": 133208
+        },
+        {
+          "date": "2026-03-31",
+          "volume": 8014,
+          "balance": 134759
+        },
+        {
+          "date": "2026-04-01",
+          "volume": 7805,
+          "balance": 142256
+        },
+        {
+          "date": "2026-04-02",
+          "volume": 8284,
+          "balance": 150278
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 43
+        },
+        {
+          "date": "2026-04-04",
+          "score": 43
+        },
+        {
+          "date": "2026-04-03",
+          "score": 43
+        },
+        {
+          "date": "2026-04-02",
           "score": 47
+        },
+        {
+          "date": "2026-04-01",
+          "score": 52
+        },
+        {
+          "date": "2026-03-31",
+          "score": 54
+        },
+        {
+          "date": "2026-03-30",
+          "score": 59
         }
       ]
     },
@@ -35374,9 +36160,9 @@
         "foreign_con_sum": -967,
         "trust_con_sum": 0,
         "dealer_con_sum": 3,
-        "foreign_sum30": -1945,
+        "foreign_sum30": -1930,
         "trust_sum30": 0,
-        "dealer_sum30": -38,
+        "dealer_sum30": -37,
         "daily": [
           {
             "date": "2026-04-02",
@@ -35547,6 +36333,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 42
+        },
+        {
           "date": "2026-04-04",
           "score": 42
         },
@@ -35603,9 +36393,9 @@
         "foreign_con_sum": -2372,
         "trust_con_sum": 0,
         "dealer_con_sum": -136,
-        "foreign_sum30": -117923,
+        "foreign_sum30": -112278,
         "trust_sum30": 65,
-        "dealer_sum30": -2488,
+        "dealer_sum30": -2476,
         "daily": [
           {
             "date": "2026-04-02",
@@ -35778,6 +36568,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 42
+        },
+        {
           "date": "2026-04-04",
           "score": 42
         },
@@ -35800,10 +36594,6 @@
         {
           "date": "2026-03-30",
           "score": 60
-        },
-        {
-          "date": "2026-03-29",
-          "score": 43
         }
       ]
     },
@@ -35850,9 +36640,9 @@
         "foreign_con_sum": -328,
         "trust_con_sum": 0,
         "dealer_con_sum": -6,
-        "foreign_sum30": 222,
+        "foreign_sum30": 145,
         "trust_sum30": 0,
-        "dealer_sum30": -38,
+        "dealer_sum30": -29,
         "daily": [
           {
             "date": "2026-04-02",
@@ -36023,6 +36813,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 42
+        },
+        {
           "date": "2026-04-04",
           "score": 42
         },
@@ -36105,9 +36899,9 @@
         "foreign_con_sum": -526,
         "trust_con_sum": 63,
         "dealer_con_sum": -81,
-        "foreign_sum30": 38307,
-        "trust_sum30": -7271,
-        "dealer_sum30": 3192,
+        "foreign_sum30": 34127,
+        "trust_sum30": -7585,
+        "dealer_sum30": 3067,
         "daily": [
           {
             "date": "2026-04-02",
@@ -36278,6 +37072,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 42
+        },
+        {
           "date": "2026-04-04",
           "score": 42
         },
@@ -36300,10 +37098,6 @@
         {
           "date": "2026-03-30",
           "score": 48
-        },
-        {
-          "date": "2026-03-29",
-          "score": 47
         }
       ]
     },
@@ -36368,9 +37162,9 @@
         "foreign_con_sum": -2154,
         "trust_con_sum": -558,
         "dealer_con_sum": -78,
-        "foreign_sum30": -25467,
-        "trust_sum30": -4187,
-        "dealer_sum30": 175,
+        "foreign_sum30": -25931,
+        "trust_sum30": -4244,
+        "dealer_sum30": 214,
         "daily": [
           {
             "date": "2026-04-02",
@@ -36542,6 +37336,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 41
+        },
+        {
           "date": "2026-04-04",
           "score": 41
         },
@@ -36564,10 +37362,6 @@
         {
           "date": "2026-03-30",
           "score": 46
-        },
-        {
-          "date": "2026-03-29",
-          "score": 47
         }
       ]
     },
@@ -36639,9 +37433,9 @@
         "foreign_con_sum": -10854,
         "trust_con_sum": 3277,
         "dealer_con_sum": 1281,
-        "foreign_sum30": -24675,
-        "trust_sum30": -311,
-        "dealer_sum30": 5165,
+        "foreign_sum30": -26362,
+        "trust_sum30": 317,
+        "dealer_sum30": 5190,
         "daily": [
           {
             "date": "2026-04-02",
@@ -36812,6 +37606,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 41
+        },
+        {
           "date": "2026-04-04",
           "score": 41
         },
@@ -36868,9 +37666,9 @@
         "foreign_con_sum": 846,
         "trust_con_sum": -294,
         "dealer_con_sum": 253,
-        "foreign_sum30": -228106,
-        "trust_sum30": 183,
-        "dealer_sum30": -6228,
+        "foreign_sum30": -214707,
+        "trust_sum30": 3,
+        "dealer_sum30": -1306,
         "daily": [
           {
             "date": "2026-04-02",
@@ -37041,6 +37839,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 41
+        },
+        {
           "date": "2026-04-04",
           "score": 41
         },
@@ -37063,10 +37865,6 @@
         {
           "date": "2026-03-30",
           "score": 29
-        },
-        {
-          "date": "2026-03-29",
-          "score": 30
         }
       ]
     },
@@ -37113,9 +37911,9 @@
         "foreign_con_sum": 8590,
         "trust_con_sum": 3055,
         "dealer_con_sum": -256,
-        "foreign_sum30": -67613,
+        "foreign_sum30": -61533,
         "trust_sum30": 2096,
-        "dealer_sum30": 1188,
+        "dealer_sum30": 1752,
         "daily": [
           {
             "date": "2026-04-02",
@@ -37288,6 +38086,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 40
+        },
+        {
           "date": "2026-04-04",
           "score": 40
         },
@@ -37310,10 +38112,6 @@
         {
           "date": "2026-03-30",
           "score": 32
-        },
-        {
-          "date": "2026-03-29",
-          "score": 39
         }
       ]
     },
@@ -37372,9 +38170,9 @@
         "foreign_con_sum": 102,
         "trust_con_sum": -53,
         "dealer_con_sum": -64,
-        "foreign_sum30": 3306,
-        "trust_sum30": 362,
-        "dealer_sum30": 114,
+        "foreign_sum30": 3126,
+        "trust_sum30": 356,
+        "dealer_sum30": -28,
         "daily": [
           {
             "date": "2026-04-02",
@@ -37545,6 +38343,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 40
+        },
+        {
           "date": "2026-04-04",
           "score": 40
         },
@@ -37567,10 +38369,6 @@
         {
           "date": "2026-03-30",
           "score": 42
-        },
-        {
-          "date": "2026-03-29",
-          "score": 37
         }
       ]
     },
@@ -37615,9 +38413,9 @@
         "foreign_con_sum": -1837,
         "trust_con_sum": -5,
         "dealer_con_sum": -737,
-        "foreign_sum30": -1472,
-        "trust_sum30": -51,
-        "dealer_sum30": -1307,
+        "foreign_sum30": -2554,
+        "trust_sum30": -32,
+        "dealer_sum30": -1138,
         "daily": [
           {
             "date": "2026-04-02",
@@ -37788,6 +38586,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 39
+        },
+        {
           "date": "2026-04-04",
           "score": 39
         },
@@ -37810,10 +38612,6 @@
         {
           "date": "2026-03-30",
           "score": 23
-        },
-        {
-          "date": "2026-03-29",
-          "score": 29
         }
       ]
     },
@@ -37879,9 +38677,9 @@
         "foreign_con_sum": -490,
         "trust_con_sum": 68,
         "dealer_con_sum": 1616,
-        "foreign_sum30": 22379,
-        "trust_sum30": -14169,
-        "dealer_sum30": 1867,
+        "foreign_sum30": 22752,
+        "trust_sum30": -14224,
+        "dealer_sum30": 1833,
         "daily": [
           {
             "date": "2026-04-02",
@@ -38052,6 +38850,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 39
+        },
+        {
           "date": "2026-04-04",
           "score": 39
         },
@@ -38074,10 +38876,6 @@
         {
           "date": "2026-03-30",
           "score": 41
-        },
-        {
-          "date": "2026-03-29",
-          "score": 56
         }
       ]
     },
@@ -38149,9 +38947,9 @@
         "foreign_con_sum": -49094,
         "trust_con_sum": 1610,
         "dealer_con_sum": 11576,
-        "foreign_sum30": -83529,
-        "trust_sum30": 14316,
-        "dealer_sum30": 23621,
+        "foreign_sum30": -100955,
+        "trust_sum30": 14923,
+        "dealer_sum30": 25648,
         "daily": [
           {
             "date": "2026-04-02",
@@ -38322,6 +39120,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 39
+        },
+        {
           "date": "2026-04-04",
           "score": 39
         },
@@ -38344,10 +39146,6 @@
         {
           "date": "2026-03-30",
           "score": 38
-        },
-        {
-          "date": "2026-03-29",
-          "score": 40
         }
       ]
     },
@@ -38412,9 +39210,9 @@
         "foreign_con_sum": -3665,
         "trust_con_sum": -8793,
         "dealer_con_sum": 1356,
-        "foreign_sum30": -49263,
-        "trust_sum30": 21763,
-        "dealer_sum30": 480,
+        "foreign_sum30": -48920,
+        "trust_sum30": 20137,
+        "dealer_sum30": 783,
         "daily": [
           {
             "date": "2026-04-02",
@@ -38583,6 +39381,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 39
+        },
+        {
           "date": "2026-04-04",
           "score": 39
         },
@@ -38605,10 +39407,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 36
         }
       ]
     },
@@ -38673,9 +39471,9 @@
         "foreign_con_sum": -442,
         "trust_con_sum": 0,
         "dealer_con_sum": -16,
-        "foreign_sum30": -1320,
+        "foreign_sum30": -1499,
         "trust_sum30": -244,
-        "dealer_sum30": -146,
+        "dealer_sum30": -137,
         "daily": [
           {
             "date": "2026-04-02",
@@ -38846,6 +39644,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 39
+        },
+        {
           "date": "2026-04-04",
           "score": 39
         },
@@ -38920,9 +39722,9 @@
         "foreign_con_sum": -3974,
         "trust_con_sum": 2088,
         "dealer_con_sum": 1584,
-        "foreign_sum30": 11684,
-        "trust_sum30": -3439,
-        "dealer_sum30": 3870,
+        "foreign_sum30": 17015,
+        "trust_sum30": -2642,
+        "dealer_sum30": 3945,
         "daily": [
           {
             "date": "2026-04-02",
@@ -39093,6 +39895,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 38
+        },
+        {
           "date": "2026-04-04",
           "score": 38
         },
@@ -39115,10 +39921,6 @@
         {
           "date": "2026-03-30",
           "score": 54
-        },
-        {
-          "date": "2026-03-29",
-          "score": 42
         }
       ]
     },
@@ -39184,9 +39986,9 @@
         "foreign_con_sum": -9647,
         "trust_con_sum": 309,
         "dealer_con_sum": -88,
-        "foreign_sum30": -90777,
-        "trust_sum30": 179,
-        "dealer_sum30": 153,
+        "foreign_sum30": -79173,
+        "trust_sum30": 325,
+        "dealer_sum30": 442,
         "daily": [
           {
             "date": "2026-04-02",
@@ -39355,6 +40157,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 38
+        },
+        {
           "date": "2026-04-04",
           "score": 38
         },
@@ -39377,10 +40183,6 @@
         {
           "date": "2026-03-30",
           "score": 58
-        },
-        {
-          "date": "2026-03-29",
-          "score": 45
         }
       ]
     },
@@ -39427,9 +40229,9 @@
         "foreign_con_sum": 667,
         "trust_con_sum": -2,
         "dealer_con_sum": 487,
-        "foreign_sum30": -18202,
-        "trust_sum30": 684,
-        "dealer_sum30": 1391,
+        "foreign_sum30": -20250,
+        "trust_sum30": 631,
+        "dealer_sum30": 1237,
         "daily": [
           {
             "date": "2026-04-02",
@@ -39598,6 +40400,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 38
+        },
+        {
           "date": "2026-04-04",
           "score": 38
         },
@@ -39684,9 +40490,9 @@
         "foreign_con_sum": -717,
         "trust_con_sum": 35,
         "dealer_con_sum": -102,
-        "foreign_sum30": -57115,
-        "trust_sum30": 807,
-        "dealer_sum30": -1099,
+        "foreign_sum30": -48042,
+        "trust_sum30": 862,
+        "dealer_sum30": 194,
         "daily": [
           {
             "date": "2026-04-02",
@@ -39858,6 +40664,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 37
+        },
+        {
           "date": "2026-04-04",
           "score": 37
         },
@@ -39880,10 +40690,6 @@
         {
           "date": "2026-03-30",
           "score": 43
-        },
-        {
-          "date": "2026-03-29",
-          "score": 49
         }
       ]
     },
@@ -39945,9 +40751,9 @@
         "foreign_con_sum": -4363,
         "trust_con_sum": -947,
         "dealer_con_sum": 509,
-        "foreign_sum30": -23901,
-        "trust_sum30": -3502,
-        "dealer_sum30": 951,
+        "foreign_sum30": -22345,
+        "trust_sum30": -3493,
+        "dealer_sum30": 1169,
         "daily": [
           {
             "date": "2026-04-02",
@@ -40118,6 +40924,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 37
+        },
+        {
           "date": "2026-04-04",
           "score": 37
         },
@@ -40140,10 +40950,6 @@
         {
           "date": "2026-03-30",
           "score": 40
-        },
-        {
-          "date": "2026-03-29",
-          "score": 55
         }
       ]
     },
@@ -40208,9 +41014,9 @@
         "foreign_con_sum": -3373,
         "trust_con_sum": -22,
         "dealer_con_sum": 279,
-        "foreign_sum30": 25899,
-        "trust_sum30": -1541,
-        "dealer_sum30": 232,
+        "foreign_sum30": 28373,
+        "trust_sum30": -1459,
+        "dealer_sum30": 239,
         "daily": [
           {
             "date": "2026-04-02",
@@ -40381,6 +41187,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 36
+        },
+        {
           "date": "2026-04-04",
           "score": 36
         },
@@ -40403,10 +41213,6 @@
         {
           "date": "2026-03-30",
           "score": 36
-        },
-        {
-          "date": "2026-03-29",
-          "score": 58
         }
       ]
     },
@@ -40465,9 +41271,9 @@
         "foreign_con_sum": -2078,
         "trust_con_sum": 775,
         "dealer_con_sum": -48,
-        "foreign_sum30": 7937,
-        "trust_sum30": -1413,
-        "dealer_sum30": 1887,
+        "foreign_sum30": 6471,
+        "trust_sum30": -344,
+        "dealer_sum30": 2035,
         "daily": [
           {
             "date": "2026-04-02",
@@ -40638,6 +41444,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 36
+        },
+        {
           "date": "2026-04-04",
           "score": 36
         },
@@ -40660,10 +41470,6 @@
         {
           "date": "2026-03-30",
           "score": 34
-        },
-        {
-          "date": "2026-03-29",
-          "score": 55
         }
       ]
     },
@@ -40720,9 +41526,9 @@
         "foreign_con_sum": -2197,
         "trust_con_sum": -35,
         "dealer_con_sum": -63,
-        "foreign_sum30": -7752,
-        "trust_sum30": -131,
-        "dealer_sum30": -234,
+        "foreign_sum30": -7826,
+        "trust_sum30": -89,
+        "dealer_sum30": -204,
         "daily": [
           {
             "date": "2026-04-02",
@@ -40893,6 +41699,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 36
+        },
+        {
           "date": "2026-04-04",
           "score": 36
         },
@@ -40965,8 +41775,8 @@
         "foreign_con_sum": -225,
         "trust_con_sum": -3,
         "dealer_con_sum": -16,
-        "foreign_sum30": 747,
-        "trust_sum30": -40,
+        "foreign_sum30": 472,
+        "trust_sum30": -25,
         "dealer_sum30": -55,
         "daily": [
           {
@@ -41138,6 +41948,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 36
+        },
+        {
           "date": "2026-04-04",
           "score": 36
         },
@@ -41180,7 +41994,7 @@
         "technical": 45,
         "volume": 10,
         "revenue": 50,
-        "rs": 43,
+        "rs": 42,
         "avwap": 0,
         "topic": 50
       },
@@ -41210,9 +42024,9 @@
         "foreign_con_sum": -27,
         "trust_con_sum": 0,
         "dealer_con_sum": 32,
-        "foreign_sum30": -1303,
+        "foreign_sum30": -1012,
         "trust_sum30": -2,
-        "dealer_sum30": -105,
+        "dealer_sum30": -70,
         "daily": [
           {
             "date": "2026-04-02",
@@ -41384,6 +42198,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 35
+        },
+        {
           "date": "2026-04-04",
           "score": 35
         },
@@ -41452,9 +42270,9 @@
         "foreign_con_sum": -5414,
         "trust_con_sum": -434,
         "dealer_con_sum": 5471,
-        "foreign_sum30": -262183,
-        "trust_sum30": 1337,
-        "dealer_sum30": 11895,
+        "foreign_sum30": -266115,
+        "trust_sum30": 44,
+        "dealer_sum30": 11553,
         "daily": [
           {
             "date": "2026-04-02",
@@ -41625,6 +42443,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 34
+        },
+        {
           "date": "2026-04-04",
           "score": 34
         },
@@ -41647,10 +42469,6 @@
         {
           "date": "2026-03-30",
           "score": 38
-        },
-        {
-          "date": "2026-03-29",
-          "score": 42
         }
       ]
     },
@@ -41713,9 +42531,9 @@
         "foreign_con_sum": -146,
         "trust_con_sum": -28,
         "dealer_con_sum": 422,
-        "foreign_sum30": -5636,
-        "trust_sum30": -98,
-        "dealer_sum30": 703,
+        "foreign_sum30": -4742,
+        "trust_sum30": -65,
+        "dealer_sum30": 686,
         "daily": [
           {
             "date": "2026-04-02",
@@ -41851,8 +42669,8 @@
       "rs_slow_positive": true,
       "stock_phase": "BEAR_WEAK",
       "signals": [],
-      "rs_pct": 37,
-      "rs_pct_val": 37,
+      "rs_pct": 36,
+      "rs_pct_val": 36,
       "structure": "弱勢",
       "patterns": [
         "下降楔形"
@@ -41885,6 +42703,10 @@
         }
       ],
       "score_history": [
+        {
+          "date": "2026-04-05",
+          "score": 34
+        },
         {
           "date": "2026-04-04",
           "score": 34
@@ -41960,9 +42782,9 @@
         "foreign_con_sum": 11,
         "trust_con_sum": 0,
         "dealer_con_sum": -528,
-        "foreign_sum30": -8292,
+        "foreign_sum30": -8402,
         "trust_sum30": 1405,
-        "dealer_sum30": 1638,
+        "dealer_sum30": 1653,
         "daily": [
           {
             "date": "2026-04-02",
@@ -42134,6 +42956,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 33
+        },
+        {
           "date": "2026-04-04",
           "score": 33
         },
@@ -42202,9 +43028,9 @@
         "foreign_con_sum": -2206,
         "trust_con_sum": -1705,
         "dealer_con_sum": -174,
-        "foreign_sum30": -142661,
-        "trust_sum30": -10768,
-        "dealer_sum30": -16096,
+        "foreign_sum30": -121049,
+        "trust_sum30": -5487,
+        "dealer_sum30": -14845,
         "daily": [
           {
             "date": "2026-04-02",
@@ -42376,6 +43202,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 32
+        },
+        {
           "date": "2026-04-04",
           "score": 32
         },
@@ -42398,10 +43228,6 @@
         {
           "date": "2026-03-30",
           "score": 36
-        },
-        {
-          "date": "2026-03-29",
-          "score": 40
         }
       ]
     },
@@ -42458,9 +43284,9 @@
         "foreign_con_sum": -2046,
         "trust_con_sum": -27,
         "dealer_con_sum": 1254,
-        "foreign_sum30": -50536,
-        "trust_sum30": 4259,
-        "dealer_sum30": -2313,
+        "foreign_sum30": -42295,
+        "trust_sum30": 4274,
+        "dealer_sum30": -1994,
         "daily": [
           {
             "date": "2026-04-02",
@@ -42631,6 +43457,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 32
+        },
+        {
           "date": "2026-04-04",
           "score": 32
         },
@@ -42699,9 +43529,9 @@
         "foreign_con_sum": -3262,
         "trust_con_sum": 0,
         "dealer_con_sum": -1409,
-        "foreign_sum30": -100198,
+        "foreign_sum30": -103156,
         "trust_sum30": -11123,
-        "dealer_sum30": -474,
+        "dealer_sum30": 333,
         "daily": [
           {
             "date": "2026-04-02",
@@ -42873,6 +43703,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 31
+        },
+        {
           "date": "2026-04-04",
           "score": 31
         },
@@ -42895,10 +43729,6 @@
         {
           "date": "2026-03-30",
           "score": 36
-        },
-        {
-          "date": "2026-03-29",
-          "score": 44
         }
       ]
     },
@@ -42961,9 +43791,9 @@
         "foreign_con_sum": -24562,
         "trust_con_sum": -1765,
         "dealer_con_sum": -104,
-        "foreign_sum30": 1588,
+        "foreign_sum30": 1973,
         "trust_sum30": -342,
-        "dealer_sum30": -1754,
+        "dealer_sum30": -1537,
         "daily": [
           {
             "date": "2026-04-02",
@@ -43132,6 +43962,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 31
+        },
+        {
           "date": "2026-04-04",
           "score": 31
         },
@@ -43154,10 +43988,6 @@
         {
           "date": "2026-03-30",
           "score": 33
-        },
-        {
-          "date": "2026-03-29",
-          "score": 53
         }
       ]
     },
@@ -43202,9 +44032,9 @@
         "foreign_con_sum": -40,
         "trust_con_sum": 0,
         "dealer_con_sum": -25,
-        "foreign_sum30": -26,
+        "foreign_sum30": -27,
         "trust_sum30": 0,
-        "dealer_sum30": -77,
+        "dealer_sum30": -66,
         "daily": [
           {
             "date": "2026-04-02",
@@ -43319,6 +44149,10 @@
       "lending_history": [],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 31
+        },
+        {
           "date": "2026-04-04",
           "score": 31
         },
@@ -43401,9 +44235,9 @@
         "foreign_con_sum": -605,
         "trust_con_sum": 268,
         "dealer_con_sum": -10280,
-        "foreign_sum30": -3731,
-        "trust_sum30": -50256,
-        "dealer_sum30": 2275,
+        "foreign_sum30": -5405,
+        "trust_sum30": -50336,
+        "dealer_sum30": 1192,
         "daily": [
           {
             "date": "2026-04-02",
@@ -43574,6 +44408,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 30
+        },
+        {
           "date": "2026-04-04",
           "score": 30
         },
@@ -43596,10 +44434,6 @@
         {
           "date": "2026-03-30",
           "score": 27
-        },
-        {
-          "date": "2026-03-29",
-          "score": 42
         }
       ]
     },
@@ -43650,9 +44484,9 @@
         "foreign_con_sum": -872,
         "trust_con_sum": 0,
         "dealer_con_sum": 0,
-        "foreign_sum30": -691,
+        "foreign_sum30": -390,
         "trust_sum30": 0,
-        "dealer_sum30": 6,
+        "dealer_sum30": -3,
         "daily": [
           {
             "date": "2026-04-02",
@@ -43792,6 +44626,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 30
+        },
+        {
           "date": "2026-04-04",
           "score": 30
         },
@@ -43864,9 +44702,9 @@
         "foreign_con_sum": -127,
         "trust_con_sum": 0,
         "dealer_con_sum": -6,
-        "foreign_sum30": 80,
-        "trust_sum30": -462,
-        "dealer_sum30": -55,
+        "foreign_sum30": -47,
+        "trust_sum30": -466,
+        "dealer_sum30": -53,
         "daily": [
           {
             "date": "2026-04-02",
@@ -44037,6 +44875,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 29
+        },
+        {
           "date": "2026-04-04",
           "score": 29
         },
@@ -44059,10 +44901,6 @@
         {
           "date": "2026-03-30",
           "score": 31
-        },
-        {
-          "date": "2026-03-29",
-          "score": 46
         }
       ]
     },
@@ -44119,9 +44957,9 @@
         "foreign_con_sum": -22510,
         "trust_con_sum": -21,
         "dealer_con_sum": -1994,
-        "foreign_sum30": -21389,
-        "trust_sum30": -242,
-        "dealer_sum30": -6933,
+        "foreign_sum30": -20056,
+        "trust_sum30": -153,
+        "dealer_sum30": -5896,
         "daily": [
           {
             "date": "2026-04-02",
@@ -44293,6 +45131,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 29
+        },
+        {
           "date": "2026-04-04",
           "score": 29
         },
@@ -44315,10 +45157,6 @@
         {
           "date": "2026-03-30",
           "score": 28
-        },
-        {
-          "date": "2026-03-29",
-          "score": 46
         }
       ]
     },
@@ -44381,9 +45219,9 @@
         "foreign_con_sum": -419,
         "trust_con_sum": 0,
         "dealer_con_sum": -2,
-        "foreign_sum30": -1614,
+        "foreign_sum30": -1600,
         "trust_sum30": -157,
-        "dealer_sum30": -141,
+        "dealer_sum30": -106,
         "daily": [
           {
             "date": "2026-04-02",
@@ -44555,6 +45393,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 29
+        },
+        {
           "date": "2026-04-04",
           "score": 29
         },
@@ -44621,9 +45463,9 @@
         "foreign_con_sum": -2299,
         "trust_con_sum": -721,
         "dealer_con_sum": -157,
-        "foreign_sum30": 50973,
-        "trust_sum30": -14154,
-        "dealer_sum30": -1806,
+        "foreign_sum30": 45647,
+        "trust_sum30": -13020,
+        "dealer_sum30": -1845,
         "daily": [
           {
             "date": "2026-04-02",
@@ -44759,8 +45601,8 @@
       "rs_slow_positive": false,
       "stock_phase": "RANGE",
       "signals": [],
-      "rs_pct": 39,
-      "rs_pct_val": 39,
+      "rs_pct": 38,
+      "rs_pct_val": 38,
       "structure": "弱勢",
       "patterns": [
         "下降楔形",
@@ -44795,6 +45637,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 29
+        },
+        {
           "date": "2026-04-04",
           "score": 29
         },
@@ -44817,10 +45663,6 @@
         {
           "date": "2026-03-30",
           "score": 46
-        },
-        {
-          "date": "2026-03-29",
-          "score": 36
         }
       ]
     },
@@ -44883,9 +45725,9 @@
         "foreign_con_sum": -6010,
         "trust_con_sum": -23,
         "dealer_con_sum": 3666,
-        "foreign_sum30": -2336,
-        "trust_sum30": 3973,
-        "dealer_sum30": 5684,
+        "foreign_sum30": -10544,
+        "trust_sum30": 4054,
+        "dealer_sum30": 5439,
         "daily": [
           {
             "date": "2026-04-02",
@@ -45054,6 +45896,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 27
+        },
+        {
           "date": "2026-04-04",
           "score": 27
         },
@@ -45076,10 +45922,6 @@
         {
           "date": "2026-03-30",
           "score": 25
-        },
-        {
-          "date": "2026-03-29",
-          "score": 28
         }
       ]
     },
@@ -45142,9 +45984,9 @@
         "foreign_con_sum": -3321,
         "trust_con_sum": -1,
         "dealer_con_sum": 801,
-        "foreign_sum30": -16054,
-        "trust_sum30": -676,
-        "dealer_sum30": 884,
+        "foreign_sum30": -15265,
+        "trust_sum30": -674,
+        "dealer_sum30": 767,
         "daily": [
           {
             "date": "2026-04-02",
@@ -45316,6 +46158,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 27
+        },
+        {
           "date": "2026-04-04",
           "score": 27
         },
@@ -45338,10 +46184,6 @@
         {
           "date": "2026-03-30",
           "score": 28
-        },
-        {
-          "date": "2026-03-29",
-          "score": 43
         }
       ]
     },
@@ -45392,9 +46234,9 @@
         "foreign_con_sum": -25568,
         "trust_con_sum": -6,
         "dealer_con_sum": 801,
-        "foreign_sum30": -71492,
-        "trust_sum30": -372,
-        "dealer_sum30": -1826,
+        "foreign_sum30": -51369,
+        "trust_sum30": -403,
+        "dealer_sum30": -2133,
         "daily": [
           {
             "date": "2026-04-02",
@@ -45563,6 +46405,10 @@
       ],
       "score_history": [
         {
+          "date": "2026-04-05",
+          "score": 22
+        },
+        {
           "date": "2026-04-04",
           "score": 22
         },
@@ -45585,10 +46431,6 @@
         {
           "date": "2026-03-30",
           "score": 28
-        },
-        {
-          "date": "2026-03-29",
-          "score": 29
         }
       ]
     }
