@@ -748,7 +748,7 @@ def fetch_yahoo(sid):
                 _ma20 = sum(_win) / len(_win)
                 _vwin = vols[max(0, _j-19):_j+1]
                 _v20  = sum(_vwin) / len(_vwin) if _vwin else 1
-                if closes[_j] > _ma20 or vols[_j] / _v20 > 1:
+                if closes[_j] > _ma20 or (_v20 > 0 and vols[_j] / _v20 > 1):
                     _avwap_swing = calc_avwap(closes, highs, lows, vols, _idx_swng)
                     break
 
