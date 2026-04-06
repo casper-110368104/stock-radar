@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-06 09:58",
+  "updated_at": "2026-04-06 18:33",
   "market_regime": {
     "regime": "bull_pullback",
     "taiex": 32572.4,
@@ -1078,7 +1078,7 @@
       "rs_trend": -0.8223,
       "breadth": null,
       "score": 0.459,
-      "sub_phase": "高檔震盪",
+      "sub_phase": "整理觀察",
       "rs_up_days": 1,
       "vector": {
         "dx": 3.8973,
@@ -2616,7 +2616,7 @@
       "sector_key": "航運",
       "sector_phase": "空頭",
       "current_price": 41.3,
-      "days_held": 0,
+      "days_held": 1,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2635,7 +2635,7 @@
       "sector_key": "電子零組件",
       "sector_phase": "整理觀察",
       "current_price": 44.3,
-      "days_held": 0,
+      "days_held": 1,
       "gain_pct": 0.0,
       "resolved_date": null
     },
@@ -2651,6 +2651,82 @@
       "target": 32.16,
       "status": "open",
       "repeat": false,
+      "sector_key": "金融保險",
+      "sector_phase": "準備噴",
+      "current_price": 31.8,
+      "days_held": 1,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2032",
+      "name": "新鋼",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-06",
+      "entry": 16.9,
+      "stop_loss": 16.01,
+      "target": 18.23,
+      "status": "open",
+      "repeat": false,
+      "sector_key": "鋼鐵",
+      "sector_phase": "準備噴",
+      "current_price": 16.9,
+      "days_held": 1,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2605",
+      "name": "新興",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-06",
+      "entry": 41.3,
+      "stop_loss": 39.25,
+      "target": 44.38,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "航運",
+      "sector_phase": "空頭",
+      "current_price": 41.3,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "3673",
+      "name": "TPK-KY",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-06",
+      "entry": 44.3,
+      "stop_loss": 42.46,
+      "target": 47.06,
+      "status": "open",
+      "repeat": true,
+      "sector_key": "電子零組件",
+      "sector_phase": "整理觀察",
+      "current_price": 44.3,
+      "days_held": 0,
+      "gain_pct": 0.0,
+      "resolved_date": null
+    },
+    {
+      "code": "2890",
+      "name": "永豐金",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-06",
+      "entry": 31.8,
+      "stop_loss": 31.56,
+      "target": 32.16,
+      "status": "open",
+      "repeat": true,
       "sector_key": "金融保險",
       "sector_phase": "準備噴",
       "current_price": 31.8,
@@ -2745,13 +2821,89 @@
       "stop_loss": 16.01,
       "target": 18.23,
       "status": "open",
-      "repeat": false,
+      "repeat": true,
       "sector_key": "鋼鐵",
       "sector_phase": "準備噴",
       "current_price": 16.9,
       "days_held": 0,
       "gain_pct": 0.0,
       "resolved_date": null
+    },
+    {
+      "code": "2887",
+      "name": "台新新光金",
+      "type": "retest",
+      "label": "縮量回測(起漲型)",
+      "strength": "weak",
+      "trigger_date": "2026-04-06",
+      "entry": 24.35,
+      "stop_loss": 24.3,
+      "target": 24.43,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "金融保險",
+      "sector_phase": "準備噴",
+      "current_price": 24.35,
+      "days_held": 1,
+      "gain_pct": 0.33,
+      "resolved_date": "2026-04-06"
+    },
+    {
+      "code": "2368",
+      "name": "金像電",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-06",
+      "entry": 905.0,
+      "stop_loss": 903.65,
+      "target": 907.02,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "電子零組件",
+      "sector_phase": "整理觀察",
+      "current_price": 905.0,
+      "days_held": 1,
+      "gain_pct": 0.22,
+      "resolved_date": "2026-04-06"
+    },
+    {
+      "code": "4949",
+      "name": "有成精密",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-06",
+      "entry": 64.1,
+      "stop_loss": 62.35,
+      "target": 66.72,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "綠能環保",
+      "sector_phase": "整理觀察",
+      "current_price": 64.1,
+      "days_held": 1,
+      "gain_pct": 4.09,
+      "resolved_date": "2026-04-06"
+    },
+    {
+      "code": "4949",
+      "name": "有成精密",
+      "type": "retest",
+      "label": "縮量回測(主升型)",
+      "strength": "medium",
+      "trigger_date": "2026-04-06",
+      "entry": 64.1,
+      "stop_loss": 62.35,
+      "target": 66.72,
+      "status": "win",
+      "repeat": false,
+      "sector_key": "綠能環保",
+      "sector_phase": "整理觀察",
+      "current_price": 64.1,
+      "days_held": 1,
+      "gain_pct": 4.09,
+      "resolved_date": "2026-04-06"
     }
   ],
   "stocks": [
@@ -2762,11 +2914,7 @@
       "industry": "電子通路",
       "sector_key": "電子通路",
       "sector_rs": 1.1805,
-      "themes": [
-        "消費電子",
-        "車用電子",
-        "半導體設備"
-      ],
+      "themes": [],
       "warnings": [],
       "price": 88.0,
       "change": -1.9,
@@ -2784,10 +2932,9 @@
         "revenue": 50,
         "rs": 43,
         "avwap": 0,
-        "topic": 90
+        "topic": 50
       },
       "icons": [
-        "📰",
         "💰",
         "📊",
         "🏦"
@@ -2868,29 +3015,7 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": [
-          {
-            "title": "大聯大：AI伺服器需求強勁，今年營收有望挑戰新高",
-            "source": "經濟日報",
-            "tag": "AI伺服器",
-            "sentiment": "bullish",
-            "url": "https://money.udn.com/money/story/10860/7900000"
-          },
-          {
-            "title": "大聯大Q1營收年增逾一成，看好下半年成長動能",
-            "source": "工商時報",
-            "tag": "營收",
-            "sentiment": "bullish",
-            "url": "https://ctee.com.tw/news/industry/1020000.html"
-          },
-          {
-            "title": "大聯大：車用電子需求穩健，長期成長趨勢不變",
-            "source": "財訊",
-            "tag": "車用電子",
-            "sentiment": "bullish",
-            "url": "https://www.wealth.com.tw/articles/12345"
-          }
-        ]
+        "news": []
       },
       "fundamental": [
         {
@@ -3023,7 +3148,11 @@
       "industry": "汽車零組件",
       "sector_key": "汽車",
       "sector_rs": 0.5176,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "消費電子",
+        "其他"
+      ],
       "warnings": [],
       "price": 19.9,
       "change": -2.15,
@@ -3041,9 +3170,10 @@
         "revenue": 50,
         "rs": 40,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -3124,7 +3254,29 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "宏旭-KY 2023年營收創高 展望2024年成長動能強勁",
+            "source": "經濟日報",
+            "tag": "營收",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/10860/7788888"
+          },
+          {
+            "title": "宏旭-KY 擴大產能 搶攻車用電子商機",
+            "source": "工商時報",
+            "tag": "產能",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/industrynews/manufacturing/1086017.html"
+          },
+          {
+            "title": "宏旭-KY 股價近期波動劇烈 投資人應留意風險",
+            "source": "台灣證券交易所",
+            "tag": "股價",
+            "sentiment": "neutral",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -3478,8 +3630,10 @@
       "sector_key": "電子零組件",
       "sector_rs": -0.3902,
       "themes": [
-        "銅箔基板",
-        "CoWoS先進封裝"
+        "CoWoS先進封裝",
+        "AI伺服器",
+        "車用電子",
+        "銅箔基板"
       ],
       "warnings": [],
       "price": 170.0,
@@ -3498,9 +3652,10 @@
         "revenue": 50,
         "rs": 100,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -3581,7 +3736,29 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "聯茂：AI伺服器需求強勁，今年營收挑戰新高",
+            "source": "經濟日報",
+            "tag": "AI伺服器",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "聯茂受惠CoWoS先進封裝擴產，下半年營運可期",
+            "source": "工商時報",
+            "tag": "CoWoS先進封裝",
+            "sentiment": "bullish",
+            "url": "#"
+          },
+          {
+            "title": "聯茂車用電子佈局有成，新訂單挹注成長動能",
+            "source": "MoneyDJ理財網",
+            "tag": "車用電子",
+            "sentiment": "bullish",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -4362,7 +4539,9 @@
       "industry": "銀行",
       "sector_key": "金融保險",
       "sector_rs": 1.8695,
-      "themes": [],
+      "themes": [
+        "金融科技"
+      ],
       "warnings": [],
       "price": 54.5,
       "change": 0.8,
@@ -4380,9 +4559,10 @@
         "revenue": 50,
         "rs": 46,
         "avwap": 0,
-        "topic": 50
+        "topic": 90
       },
       "icons": [
+        "📰",
         "💰",
         "🏦"
       ],
@@ -4462,7 +4642,29 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "中信金股東會通過每股發放1.8元現金股利",
+            "source": "經濟日報",
+            "tag": "股利",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123298/7944246"
+          },
+          {
+            "title": "中信金3月獲利年增逾1倍 信用卡、財管動能強",
+            "source": "經濟日報",
+            "tag": "獲利",
+            "sentiment": "bullish",
+            "url": "https://money.udn.com/money/story/123298/7906017"
+          },
+          {
+            "title": "中信金總經理陳佳文：今年獲利挑戰新高",
+            "source": "工商時報",
+            "tag": "展望",
+            "sentiment": "bullish",
+            "url": "https://ctee.com.tw/news/finance/1069480.html"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -4762,6 +4964,7 @@
           "type": "retest",
           "label": "縮量回測(主升型)",
           "strength": "medium",
+          "strategy": "trend",
           "entry": 41.3,
           "trigger_price": 42.41,
           "stop_loss": 39.25,
@@ -4877,7 +5080,11 @@
       "industry": "化學工業",
       "sector_key": "化學",
       "sector_rs": 1.111,
-      "themes": [],
+      "themes": [
+        "車用電子",
+        "消費電子",
+        "其他"
+      ],
       "warnings": [],
       "price": 71.2,
       "change": 2.5,
@@ -4898,6 +5105,7 @@
         "topic": 50
       },
       "icons": [
+        "📰",
         "💰",
         "📊",
         "🏦"
@@ -4978,7 +5186,29 @@
       "holding": null,
       "lending": null,
       "topic": {
-        "news": []
+        "news": [
+          {
+            "title": "昶昕(8438) 2024年Q1營收 3.66億元",
+            "source": "公開資訊觀測站",
+            "tag": "財報",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "昶昕(8438) 2024年4月營收 1.23億元",
+            "source": "公開資訊觀測站",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "#"
+          },
+          {
+            "title": "昶昕(8438) 2024年5月營收 1.25億元",
+            "source": "公開資訊觀測站",
+            "tag": "營收",
+            "sentiment": "neutral",
+            "url": "#"
+          }
+        ]
       },
       "fundamental": [
         {
@@ -6629,6 +6859,7 @@
           "type": "retest",
           "label": "縮量回測(起漲型)",
           "strength": "weak",
+          "strategy": "swing",
           "entry": 44.3,
           "trigger_price": 44.92,
           "stop_loss": 42.46,
@@ -8049,6 +8280,7 @@
           "type": "retest",
           "label": "縮量回測(起漲型)",
           "strength": "weak",
+          "strategy": "swing",
           "entry": 31.8,
           "trigger_price": 32.16,
           "stop_loss": 31.56,
@@ -11461,6 +11693,7 @@
           "type": "retest",
           "label": "縮量回測(起漲型)",
           "strength": "weak",
+          "strategy": "swing",
           "entry": 24.35,
           "trigger_price": 24.87,
           "stop_loss": 24.3,
@@ -11745,6 +11978,7 @@
           "type": "retest",
           "label": "縮量回測(主升型)",
           "strength": "medium",
+          "strategy": "trend",
           "entry": 905.0,
           "trigger_price": 984.9,
           "stop_loss": 903.65,
@@ -16924,6 +17158,240 @@
       ]
     },
     {
+      "code": "2892",
+      "name": "第一金",
+      "category": "large",
+      "industry": "銀行",
+      "sector_key": "金融保險",
+      "sector_rs": 1.8695,
+      "themes": [],
+      "warnings": [],
+      "price": 28.4,
+      "change": -0.05,
+      "change_pct": -0.18,
+      "volume": 17744734,
+      "vol_day_ratio": 0.85,
+      "vol_month_ratio": 0.66,
+      "week52_high": 30.5,
+      "week52_low": 23.804878,
+      "scores": {
+        "chips": 88,
+        "fundamental": 59,
+        "technical": 53,
+        "volume": 25,
+        "revenue": 50,
+        "rs": 30,
+        "avwap": 0,
+        "topic": 50
+      },
+      "icons": [
+        "💰",
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 24.3,
+        "fair": 31.8,
+        "optimistic": 41.1,
+        "methods": [
+          {
+            "label": "PEG法",
+            "conservative": 21.0,
+            "fair": 28.1,
+            "optimistic": 35.1
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 24.3,
+            "fair": 31.8,
+            "optimistic": 41.1
+          }
+        ]
+      },
+      "eps_ttm": 1.87,
+      "pe_mid": null,
+      "chips_raw": {
+        "foreign": 6609,
+        "trust": -17,
+        "dealer": -145,
+        "foreign_con": 4,
+        "trust_con": -1,
+        "dealer_con": -1,
+        "foreign_con_sum": 20112,
+        "trust_con_sum": -17,
+        "dealer_con_sum": -145,
+        "foreign_sum30": 39529,
+        "trust_sum30": -1678,
+        "dealer_sum30": 3357,
+        "daily": [
+          {
+            "date": "2026-04-02",
+            "foreign": 6609,
+            "trust": -17,
+            "dealer": -145,
+            "total": 6447
+          },
+          {
+            "date": "2026-04-01",
+            "foreign": 7058,
+            "trust": 66,
+            "dealer": 1130,
+            "total": 8254
+          },
+          {
+            "date": "2026-03-31",
+            "foreign": 3283,
+            "trust": 149,
+            "dealer": 1354,
+            "total": 4786
+          },
+          {
+            "date": "2026-03-30",
+            "foreign": 3162,
+            "trust": 274,
+            "dealer": -249,
+            "total": 3187
+          },
+          {
+            "date": "2026-03-27",
+            "foreign": -3057,
+            "trust": 66,
+            "dealer": 183,
+            "total": -2808
+          }
+        ],
+        "shares_outstanding": 14379468650
+      },
+      "holding": null,
+      "lending": null,
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "15.0%",
+          "pass": true
+        },
+        {
+          "label": "ROE",
+          "value": "9.6%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "None%",
+          "pass": false
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": 6609,
+          "consecutive": 4,
+          "pass": true
+        },
+        {
+          "label": "投信",
+          "net": -17,
+          "consecutive": -1,
+          "pass": false
+        },
+        {
+          "label": "自營商",
+          "net": -145,
+          "consecutive": -1,
+          "pass": false
+        }
+      ],
+      "yahoo_rs": -0.3724,
+      "ma60": 29.17,
+      "above_ma60": false,
+      "revenue_yoy": null,
+      "open": 28.45,
+      "high": 28.6,
+      "low": 28.3,
+      "prev_close": 28.45,
+      "ma5": 28.33,
+      "ma10": 28.44,
+      "ma20": 28.72,
+      "ma_bullish": false,
+      "high20": 29.4,
+      "low20": 28.0,
+      "avwap_swing": null,
+      "avwap_vol": null,
+      "avwap_short": null,
+      "m_z": 5.0,
+      "a_z": 3.3333,
+      "rs_trend_stock": -0.09,
+      "rs_slow_positive": false,
+      "stock_phase": "BEAR_WEAK",
+      "signals": [],
+      "rs_pct": 16,
+      "rs_pct_val": 16,
+      "structure": "弱勢",
+      "patterns": [
+        "下降楔形",
+        "矩形整理"
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-27",
+          "volume": 0,
+          "balance": 3614
+        },
+        {
+          "date": "2026-03-30",
+          "volume": 681,
+          "balance": 4295
+        },
+        {
+          "date": "2026-03-31",
+          "volume": 7,
+          "balance": 4187
+        },
+        {
+          "date": "2026-04-01",
+          "volume": 0,
+          "balance": 4187
+        },
+        {
+          "date": "2026-04-02",
+          "volume": 120,
+          "balance": 3741
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-04-06",
+          "score": 59
+        },
+        {
+          "date": "2026-04-05",
+          "score": 58
+        },
+        {
+          "date": "2026-04-04",
+          "score": 58
+        },
+        {
+          "date": "2026-04-03",
+          "score": 58
+        },
+        {
+          "date": "2026-04-02",
+          "score": 58
+        },
+        {
+          "date": "2026-04-01",
+          "score": 60
+        },
+        {
+          "date": "2026-03-31",
+          "score": 59
+        }
+      ]
+    },
+    {
       "code": "3711",
       "name": "日月光投控",
       "category": "large",
@@ -17156,240 +17624,6 @@
         {
           "date": "2026-03-31",
           "score": 45
-        }
-      ]
-    },
-    {
-      "code": "2892",
-      "name": "第一金",
-      "category": "large",
-      "industry": "銀行",
-      "sector_key": "金融保險",
-      "sector_rs": 1.8695,
-      "themes": [],
-      "warnings": [],
-      "price": 28.4,
-      "change": -0.05,
-      "change_pct": -0.18,
-      "volume": 17744734,
-      "vol_day_ratio": 0.85,
-      "vol_month_ratio": 0.66,
-      "week52_high": 30.5,
-      "week52_low": 23.804878,
-      "scores": {
-        "chips": 88,
-        "fundamental": 59,
-        "technical": 53,
-        "volume": 25,
-        "revenue": 50,
-        "rs": 30,
-        "avwap": 0,
-        "topic": 50
-      },
-      "icons": [
-        "💰",
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 24.3,
-        "fair": 31.8,
-        "optimistic": 41.1,
-        "methods": [
-          {
-            "label": "PEG法",
-            "conservative": 21.0,
-            "fair": 28.1,
-            "optimistic": 35.1
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 24.3,
-            "fair": 31.8,
-            "optimistic": 41.1
-          }
-        ]
-      },
-      "eps_ttm": 1.87,
-      "pe_mid": null,
-      "chips_raw": {
-        "foreign": 6609,
-        "trust": -17,
-        "dealer": -145,
-        "foreign_con": 4,
-        "trust_con": -1,
-        "dealer_con": -1,
-        "foreign_con_sum": 20112,
-        "trust_con_sum": -17,
-        "dealer_con_sum": -145,
-        "foreign_sum30": 39529,
-        "trust_sum30": -1678,
-        "dealer_sum30": 3357,
-        "daily": [
-          {
-            "date": "2026-04-02",
-            "foreign": 6609,
-            "trust": -17,
-            "dealer": -145,
-            "total": 6447
-          },
-          {
-            "date": "2026-04-01",
-            "foreign": 7058,
-            "trust": 66,
-            "dealer": 1130,
-            "total": 8254
-          },
-          {
-            "date": "2026-03-31",
-            "foreign": 3283,
-            "trust": 149,
-            "dealer": 1354,
-            "total": 4786
-          },
-          {
-            "date": "2026-03-30",
-            "foreign": 3162,
-            "trust": 274,
-            "dealer": -249,
-            "total": 3187
-          },
-          {
-            "date": "2026-03-27",
-            "foreign": -3057,
-            "trust": 66,
-            "dealer": 183,
-            "total": -2808
-          }
-        ],
-        "shares_outstanding": 14379468650
-      },
-      "holding": null,
-      "lending": null,
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "15.0%",
-          "pass": true
-        },
-        {
-          "label": "ROE",
-          "value": "9.6%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "None%",
-          "pass": false
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": 6609,
-          "consecutive": 4,
-          "pass": true
-        },
-        {
-          "label": "投信",
-          "net": -17,
-          "consecutive": -1,
-          "pass": false
-        },
-        {
-          "label": "自營商",
-          "net": -145,
-          "consecutive": -1,
-          "pass": false
-        }
-      ],
-      "yahoo_rs": -0.3724,
-      "ma60": 29.17,
-      "above_ma60": false,
-      "revenue_yoy": null,
-      "open": 28.45,
-      "high": 28.6,
-      "low": 28.3,
-      "prev_close": 28.45,
-      "ma5": 28.33,
-      "ma10": 28.44,
-      "ma20": 28.72,
-      "ma_bullish": false,
-      "high20": 29.4,
-      "low20": 28.0,
-      "avwap_swing": null,
-      "avwap_vol": null,
-      "avwap_short": null,
-      "m_z": 5.0,
-      "a_z": 3.3333,
-      "rs_trend_stock": -0.09,
-      "rs_slow_positive": false,
-      "stock_phase": "BEAR_WEAK",
-      "signals": [],
-      "rs_pct": 16,
-      "rs_pct_val": 16,
-      "structure": "弱勢",
-      "patterns": [
-        "下降楔形",
-        "矩形整理"
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-27",
-          "volume": 0,
-          "balance": 3614
-        },
-        {
-          "date": "2026-03-30",
-          "volume": 681,
-          "balance": 4295
-        },
-        {
-          "date": "2026-03-31",
-          "volume": 7,
-          "balance": 4187
-        },
-        {
-          "date": "2026-04-01",
-          "volume": 0,
-          "balance": 4187
-        },
-        {
-          "date": "2026-04-02",
-          "volume": 120,
-          "balance": 3741
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-04-06",
-          "score": 59
-        },
-        {
-          "date": "2026-04-05",
-          "score": 58
-        },
-        {
-          "date": "2026-04-04",
-          "score": 58
-        },
-        {
-          "date": "2026-04-03",
-          "score": 58
-        },
-        {
-          "date": "2026-04-02",
-          "score": 58
-        },
-        {
-          "date": "2026-04-01",
-          "score": 60
-        },
-        {
-          "date": "2026-03-31",
-          "score": 59
         }
       ]
     },
@@ -21755,6 +21989,7 @@
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
           "strength": "medium",
+          "strategy": "trend",
           "entry": 64.1,
           "trigger_price": 69.75,
           "stop_loss": 62.35,
@@ -21802,6 +22037,7 @@
           "type": "retest",
           "label": "縮量回測(主升型)",
           "strength": "medium",
+          "strategy": "trend",
           "entry": 64.1,
           "trigger_price": 69.75,
           "stop_loss": 62.35,
@@ -25430,6 +25666,7 @@
           "type": "retest",
           "label": "縮量回測(起漲型)",
           "strength": "weak",
+          "strategy": "swing",
           "entry": 16.9,
           "trigger_price": 17.08,
           "stop_loss": 16.01,
@@ -33069,238 +33306,6 @@
       ]
     },
     {
-      "code": "2412",
-      "name": "中華電",
-      "category": "large",
-      "industry": "電信服務",
-      "sector_key": "通信網路",
-      "sector_rs": 0.2887,
-      "themes": [],
-      "warnings": [],
-      "price": 134.0,
-      "change": 0.0,
-      "change_pct": 0.0,
-      "volume": 7458421,
-      "vol_day_ratio": 0.71,
-      "vol_month_ratio": 1.18,
-      "week52_high": 138.0,
-      "week52_low": 122.0,
-      "scores": {
-        "chips": 37,
-        "fundamental": 66,
-        "technical": 60,
-        "volume": 25,
-        "revenue": 50,
-        "rs": 29,
-        "avwap": 0,
-        "topic": 50
-      },
-      "icons": [
-        "🏦"
-      ],
-      "fair_price": {
-        "conservative": 64.7,
-        "fair": 84.7,
-        "optimistic": 109.6,
-        "methods": [
-          {
-            "label": "PEG法",
-            "conservative": 29.9,
-            "fair": 39.8,
-            "optimistic": 49.8
-          },
-          {
-            "label": "市場PE法",
-            "conservative": 64.7,
-            "fair": 84.7,
-            "optimistic": 109.6
-          }
-        ]
-      },
-      "eps_ttm": 4.98,
-      "pe_mid": null,
-      "chips_raw": {
-        "foreign": -526,
-        "trust": 63,
-        "dealer": -81,
-        "foreign_con": -1,
-        "trust_con": 1,
-        "dealer_con": -1,
-        "foreign_con_sum": -526,
-        "trust_con_sum": 63,
-        "dealer_con_sum": -81,
-        "foreign_sum30": 30345,
-        "trust_sum30": -7711,
-        "dealer_sum30": 2948,
-        "daily": [
-          {
-            "date": "2026-04-02",
-            "foreign": -526,
-            "trust": 63,
-            "dealer": -81,
-            "total": -544
-          },
-          {
-            "date": "2026-04-01",
-            "foreign": 1755,
-            "trust": -3034,
-            "dealer": 643,
-            "total": -636
-          },
-          {
-            "date": "2026-03-31",
-            "foreign": -2093,
-            "trust": -3361,
-            "dealer": 886,
-            "total": -4568
-          },
-          {
-            "date": "2026-03-30",
-            "foreign": -1317,
-            "trust": 109,
-            "dealer": -64,
-            "total": -1272
-          },
-          {
-            "date": "2026-03-27",
-            "foreign": -187,
-            "trust": -69,
-            "dealer": 280,
-            "total": 24
-          }
-        ],
-        "shares_outstanding": 7757446545
-      },
-      "holding": null,
-      "lending": null,
-      "topic": {
-        "news": []
-      },
-      "fundamental": [
-        {
-          "label": "EPS年增率",
-          "value": "3.6%",
-          "pass": false
-        },
-        {
-          "label": "ROE",
-          "value": "10.1%",
-          "pass": false
-        },
-        {
-          "label": "負債比",
-          "value": "8.7%",
-          "pass": true
-        }
-      ],
-      "chips": [
-        {
-          "label": "外資",
-          "net": -526,
-          "consecutive": -1,
-          "pass": false
-        },
-        {
-          "label": "投信",
-          "net": 63,
-          "consecutive": 1,
-          "pass": true
-        },
-        {
-          "label": "自營商",
-          "net": -81,
-          "consecutive": -1,
-          "pass": false
-        }
-      ],
-      "yahoo_rs": -0.374,
-      "ma60": 134.09,
-      "above_ma60": false,
-      "revenue_yoy": null,
-      "open": 134.5,
-      "high": 134.5,
-      "low": 133.5,
-      "prev_close": 134.0,
-      "ma5": 133.8,
-      "ma10": 134.05,
-      "ma20": 135.1,
-      "ma_bullish": false,
-      "high20": 137.5,
-      "low20": 133.0,
-      "avwap_swing": null,
-      "avwap_vol": null,
-      "avwap_short": null,
-      "m_z": 5.0,
-      "a_z": 3.3339,
-      "rs_trend_stock": -0.2391,
-      "rs_slow_positive": true,
-      "stock_phase": "BEAR_WEAK",
-      "signals": [],
-      "rs_pct": 16,
-      "rs_pct_val": 16,
-      "structure": "弱勢",
-      "patterns": [
-        "雙底"
-      ],
-      "lending_history": [
-        {
-          "date": "2026-03-27",
-          "volume": 234,
-          "balance": 28141
-        },
-        {
-          "date": "2026-03-30",
-          "volume": 696,
-          "balance": 28751
-        },
-        {
-          "date": "2026-03-31",
-          "volume": 786,
-          "balance": 29286
-        },
-        {
-          "date": "2026-04-01",
-          "volume": 37,
-          "balance": 29279
-        },
-        {
-          "date": "2026-04-02",
-          "volume": 30,
-          "balance": 28918
-        }
-      ],
-      "score_history": [
-        {
-          "date": "2026-04-06",
-          "score": 43
-        },
-        {
-          "date": "2026-04-05",
-          "score": 42
-        },
-        {
-          "date": "2026-04-04",
-          "score": 42
-        },
-        {
-          "date": "2026-04-03",
-          "score": 42
-        },
-        {
-          "date": "2026-04-02",
-          "score": 42
-        },
-        {
-          "date": "2026-04-01",
-          "score": 60
-        },
-        {
-          "date": "2026-03-31",
-          "score": 41
-        }
-      ]
-    },
-    {
       "code": "2303",
       "name": "聯電",
       "category": "large",
@@ -33536,6 +33541,238 @@
         {
           "date": "2026-03-31",
           "score": 40
+        }
+      ]
+    },
+    {
+      "code": "2412",
+      "name": "中華電",
+      "category": "large",
+      "industry": "電信服務",
+      "sector_key": "通信網路",
+      "sector_rs": 0.2887,
+      "themes": [],
+      "warnings": [],
+      "price": 134.0,
+      "change": 0.0,
+      "change_pct": 0.0,
+      "volume": 7458421,
+      "vol_day_ratio": 0.71,
+      "vol_month_ratio": 1.18,
+      "week52_high": 138.0,
+      "week52_low": 122.0,
+      "scores": {
+        "chips": 37,
+        "fundamental": 66,
+        "technical": 60,
+        "volume": 25,
+        "revenue": 50,
+        "rs": 29,
+        "avwap": 0,
+        "topic": 50
+      },
+      "icons": [
+        "🏦"
+      ],
+      "fair_price": {
+        "conservative": 64.7,
+        "fair": 84.7,
+        "optimistic": 109.6,
+        "methods": [
+          {
+            "label": "PEG法",
+            "conservative": 29.9,
+            "fair": 39.8,
+            "optimistic": 49.8
+          },
+          {
+            "label": "市場PE法",
+            "conservative": 64.7,
+            "fair": 84.7,
+            "optimistic": 109.6
+          }
+        ]
+      },
+      "eps_ttm": 4.98,
+      "pe_mid": null,
+      "chips_raw": {
+        "foreign": -526,
+        "trust": 63,
+        "dealer": -81,
+        "foreign_con": -1,
+        "trust_con": 1,
+        "dealer_con": -1,
+        "foreign_con_sum": -526,
+        "trust_con_sum": 63,
+        "dealer_con_sum": -81,
+        "foreign_sum30": 30345,
+        "trust_sum30": -7711,
+        "dealer_sum30": 2948,
+        "daily": [
+          {
+            "date": "2026-04-02",
+            "foreign": -526,
+            "trust": 63,
+            "dealer": -81,
+            "total": -544
+          },
+          {
+            "date": "2026-04-01",
+            "foreign": 1755,
+            "trust": -3034,
+            "dealer": 643,
+            "total": -636
+          },
+          {
+            "date": "2026-03-31",
+            "foreign": -2093,
+            "trust": -3361,
+            "dealer": 886,
+            "total": -4568
+          },
+          {
+            "date": "2026-03-30",
+            "foreign": -1317,
+            "trust": 109,
+            "dealer": -64,
+            "total": -1272
+          },
+          {
+            "date": "2026-03-27",
+            "foreign": -187,
+            "trust": -69,
+            "dealer": 280,
+            "total": 24
+          }
+        ],
+        "shares_outstanding": 7757446545
+      },
+      "holding": null,
+      "lending": null,
+      "topic": {
+        "news": []
+      },
+      "fundamental": [
+        {
+          "label": "EPS年增率",
+          "value": "3.6%",
+          "pass": false
+        },
+        {
+          "label": "ROE",
+          "value": "10.1%",
+          "pass": false
+        },
+        {
+          "label": "負債比",
+          "value": "8.7%",
+          "pass": true
+        }
+      ],
+      "chips": [
+        {
+          "label": "外資",
+          "net": -526,
+          "consecutive": -1,
+          "pass": false
+        },
+        {
+          "label": "投信",
+          "net": 63,
+          "consecutive": 1,
+          "pass": true
+        },
+        {
+          "label": "自營商",
+          "net": -81,
+          "consecutive": -1,
+          "pass": false
+        }
+      ],
+      "yahoo_rs": -0.374,
+      "ma60": 134.09,
+      "above_ma60": false,
+      "revenue_yoy": null,
+      "open": 134.5,
+      "high": 134.5,
+      "low": 133.5,
+      "prev_close": 134.0,
+      "ma5": 133.8,
+      "ma10": 134.05,
+      "ma20": 135.1,
+      "ma_bullish": false,
+      "high20": 137.5,
+      "low20": 133.0,
+      "avwap_swing": null,
+      "avwap_vol": null,
+      "avwap_short": null,
+      "m_z": 5.0,
+      "a_z": 3.3339,
+      "rs_trend_stock": -0.2391,
+      "rs_slow_positive": true,
+      "stock_phase": "BEAR_WEAK",
+      "signals": [],
+      "rs_pct": 16,
+      "rs_pct_val": 16,
+      "structure": "弱勢",
+      "patterns": [
+        "雙底"
+      ],
+      "lending_history": [
+        {
+          "date": "2026-03-27",
+          "volume": 234,
+          "balance": 28141
+        },
+        {
+          "date": "2026-03-30",
+          "volume": 696,
+          "balance": 28751
+        },
+        {
+          "date": "2026-03-31",
+          "volume": 786,
+          "balance": 29286
+        },
+        {
+          "date": "2026-04-01",
+          "volume": 37,
+          "balance": 29279
+        },
+        {
+          "date": "2026-04-02",
+          "volume": 30,
+          "balance": 28918
+        }
+      ],
+      "score_history": [
+        {
+          "date": "2026-04-06",
+          "score": 43
+        },
+        {
+          "date": "2026-04-05",
+          "score": 42
+        },
+        {
+          "date": "2026-04-04",
+          "score": 42
+        },
+        {
+          "date": "2026-04-03",
+          "score": 42
+        },
+        {
+          "date": "2026-04-02",
+          "score": 42
+        },
+        {
+          "date": "2026-04-01",
+          "score": 60
+        },
+        {
+          "date": "2026-03-31",
+          "score": 41
         }
       ]
     },
