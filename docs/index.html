@@ -719,13 +719,13 @@ function _trendPlanHtml(sg){
   var capAmt=Math.round(totalCapital*ps/100);
   var initAmt=Math.round(capAmt*0.5);
   var entryRef=sg.trigger_price||sg.entry;
-  var R=+(sg.entry-sg.stop_loss).toFixed(2);
+  var R=+(entryRef-sg.stop_loss).toFixed(2);
   var trailStop=sg.stop_loss;  // 初始追蹤停損 = 原始停損（AVWAP or MA）
   var addOnPrice=sg.ma20||null;  // 加碼點：MA20 回測
   var fullShares=entryRef>0?Math.floor(capAmt/entryRef/1000)*1000:0;
   var uid='tp'+Math.random().toString(36).slice(2,7);
   // 三個追蹤停損移動點
-  var T1=sg.target||(R>0?+(sg.entry+R).toFixed(2):null);
+  var T1=R>0?+(entryRef+R*(sg.rr||2)).toFixed(2):null;
   var T2=(R>0&&T1)?+(+T1+R).toFixed(2):null;
   var body='<div style="padding:8px 10px;font-size:11px">'+
     // 建倉行
@@ -746,7 +746,7 @@ function _trendPlanHtml(sg){
         '</div>'+
         (T1?'<div style="display:flex;align-items:center;gap:5px">'+
           '<span style="font-size:9px;color:var(--text3);min-width:32px">+1R後</span>'+
-          '<span style="color:var(--red);font-weight:600">$'+sg.entry+'</span>'+
+          '<span style="color:var(--red);font-weight:600">$'+entryRef+'</span>'+
           '<span style="font-size:10px;color:var(--text3)">移至成本（$'+T1+' 參考）</span>'+
         '</div>':'')+
         (T2?'<div style="display:flex;align-items:center;gap:5px">'+
@@ -791,8 +791,8 @@ function _swingPlanHtml(sg){
   var ps=_calcPosSz(sg);
   var capAmt=Math.round(totalCapital*ps/100);
   var entryRef=sg.trigger_price||sg.entry;
-  var R=+(sg.entry-sg.stop_loss).toFixed(2);
-  var T1=sg.target||(R>0?+(sg.entry+R).toFixed(2):null);
+  var R=+(entryRef-sg.stop_loss).toFixed(2);
+  var T1=R>0?+(entryRef+R*(sg.rr||1.5)).toFixed(2):null;
   var fullShares=entryRef>0?Math.floor(capAmt/entryRef/1000)*1000:0;
   var uid='tp'+Math.random().toString(36).slice(2,7);
   var body='<div style="padding:8px 10px;font-size:11px">'+
