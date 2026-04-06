@@ -484,10 +484,19 @@ def calc_signals(yahoo, stock_phase="RANGE", rs_pct=50):
         atr = yahoo.get("atr_14")
         atr_stop = round(entry - 2 * atr, 2) if atr else None
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
+        _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+        _SWING_TYPES = {"false_breakdown", "ma60_support"}
+        if type_ in _TREND_TYPES:
+            _strategy = "trend"
+        elif type_ in _SWING_TYPES:
+            _strategy = "swing"
+        else:
+            _strategy = "swing" if _strength == "weak" else "trend"
         return {
             "type":               type_,
             "label":              label,
             "strength":           _strength,
+            "strategy":           _strategy,
             "entry":              round(entry, 2),
             "stop_loss":          round(stop, 2),
             "target":             target,

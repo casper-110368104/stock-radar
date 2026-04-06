@@ -2225,10 +2225,20 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
         _buf = _TRIGGER_BUFFER.get(type_, 0.003)
         trigger_price = round(_today_high * (1 + _buf), 2)
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
+        # 策略分類：趨勢跟蹤 vs 短線交易
+        _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+        _SWING_TYPES = {"false_breakdown", "ma60_support"}
+        if type_ in _TREND_TYPES:
+            _strategy = "trend"
+        elif type_ in _SWING_TYPES:
+            _strategy = "swing"
+        else:  # ma_pullback, retest：強度決定策略
+            _strategy = "swing" if _strength == "weak" else "trend"
         return {
             "type":          type_,
             "label":         label,
             "strength":      _strength,
+            "strategy":      _strategy,
             "entry":         round(entry, 2),
             "trigger_price": trigger_price,
             "stop_loss":     round(stop,  2),
