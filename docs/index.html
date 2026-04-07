@@ -1605,7 +1605,11 @@ function renderExpansion(){
   if(!app) return;
   var list=_sortExpList((expansionData.stocks||[]).slice());
   if(!list.length){
-    app.innerHTML='<div class="exp-empty">📭 尚無資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
+    var _ss=expansionData.sample_size||0;
+    var _emptyMsg=_ss>0
+      ? '📉 本次掃描 '+_ss+' 支均未符合訊號條件<br><span style="font-size:11px;color:var(--text3)">市場環境偏弱（'+expansionData.updated_at+'），待下次掃描更新</span>'
+      : '📭 尚無資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span>';
+    app.innerHTML='<div class="exp-empty">'+_emptyMsg+'</div>';
     return;
   }
   var failBanner = expansionData.scan_failed
@@ -1620,7 +1624,11 @@ function renderExpansionInApp(){
   if(!app) return;
   var list=(expansionData.stocks||[]).slice();
   if(!list.length){
-    app.innerHTML='<div class="empty">📭 尚無隨機500股資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
+    var _ss=expansionData.sample_size||0;
+    var _emptyMsg=_ss>0
+      ? '<div style="text-align:center;padding:40px 20px;font-size:13px;color:var(--text2)">📉 本次掃描 '+_ss+' 支均未符合訊號條件<br><span style="font-size:11px;color:var(--text3)">市場環境偏弱（'+expansionData.updated_at+'），待下次掃描更新</span></div>'
+      : '<div class="empty">📭 尚無隨機500股資料<br><span style="font-size:11px">待 GitHub Actions 執行後自動產生</span></div>';
+    app.innerHTML=_emptyMsg;
     return;
   }
   if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
