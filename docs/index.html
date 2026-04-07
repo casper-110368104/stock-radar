@@ -1632,6 +1632,7 @@ function renderExpansionInApp(){
     return;
   }
   if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
+  if(sigStrat!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return sg.strategy===sigStrat;});});
   if(curPattern!=='all') list=list.filter(function(s){return(s.patterns||[]).indexOf(curPattern)>=0;});
   var SORD={'strong':0,'medium':1,'weak':2};
   list.sort(function(a,b){return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));});
