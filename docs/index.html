@@ -1744,50 +1744,103 @@ function renderMacroFull(){
       '空頭'    :{label:'空頭',    color:'#ef4444',bg:'rgba(239,68,68,.07)',   border:'rgba(239,68,68,.25)',  desc:'空頭結構 全面弱勢'},
       '整理觀察':{label:'整理觀察',color:'#6b7280',bg:'rgba(107,114,128,.07)',border:'rgba(107,114,128,.25)',desc:'過渡中性 條件不明確'}
     };
-    var groups={'準備噴':[],'主升段':[],'主升回檔':[],'高檔震盪':[],'空頭':[],'整理觀察':[]};
+    // Build RRG item list
+    var rrgItems=[];
     sdKeys.forEach(function(name){
       var d=sectorData[name];
-      var sp=d&&d.sub_phase;
-      if(sp&&groups[sp]) groups[sp].push({name:name,rs:d.rs,rs_mom:d.rs_mom,sub_phase:sp,acceleration:d.acceleration||0,rs_up_days:d.rs_up_days||0,vector:d.vector||{},trend:d.trend||[]});
+      if(d) rrgItems.push({name:name,rs:+(d.rs||0),rs_mom:+(d.rs_mom||0),sub_phase:d.sub_phase||'整理觀察',acceleration:+(d.acceleration||0),vector:d.vector||{dx:0,dy:0},trend:d.trend||[]});
     });
+    window._rrgItems=rrgItems;
+
+    // RRG scatter plot: X=RS, Y=rs_mom, 4 quadrants
+    var svgW=320,svgH=288;
+    var _pt=24,_pr=12,_pb=26,_pl=30;
+    var _pw=svgW-_pl-_pr,_ph=svgH-_pt-_pb;
+    var _xMin=-2.1,_xMax=2.9,_yMin=-14,_yMax=12;
+    function _rmx(v){return _pl+(v-_xMin)/(_xMax-_xMin)*_pw;}
+    function _rmy(v){var c=Math.max(_yMin,Math.min(_yMax,v));return _pt+_ph-(c-_yMin)/(_yMax-_yMin)*_ph;}
+    var _cx=_rmx(0),_cy=_rmy(0);
+
+    var svg='<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;display:block">';
+
+    // Quadrant backgrounds (TL=轉強/Improving, TR=領先/Leading, BL=落後/Lagging, BR=轉弱/Weakening)
+    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(59,130,246,.055)"/>';
+    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_pt+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(34,197,94,.055)"/>';
+    svg+='<rect x="'+_pl+'" y="'+_cy.toFixed(1)+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(239,68,68,.055)"/>';
+    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_cy.toFixed(1)+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(245,158,11,.055)"/>';
+
+    // Quadrant labels
+    svg+='<text x="'+((_pl+_cx)/2).toFixed(1)+'" y="'+(_pt+11)+'" text-anchor="middle" font-size="8.5" fill="rgba(59,130,246,.5)" font-weight="700">轉強</text>';
+    svg+='<text x="'+((_cx+svgW-_pr)/2).toFixed(1)+'" y="'+(_pt+11)+'" text-anchor="middle" font-size="8.5" fill="rgba(34,197,94,.5)" font-weight="700">領先</text>';
+    svg+='<text x="'+((_pl+_cx)/2).toFixed(1)+'" y="'+(svgH-_pb-3)+'" text-anchor="middle" font-size="8.5" fill="rgba(239,68,68,.5)" font-weight="700">落後</text>';
+    svg+='<text x="'+((_cx+svgW-_pr)/2).toFixed(1)+'" y="'+(svgH-_pb-3)+'" text-anchor="middle" font-size="8.5" fill="rgba(245,158,11,.5)" font-weight="700">轉弱</text>';
+
+    // Center cross lines
+    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.15)" stroke-width="1"/>';
+    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.15)" stroke-width="1"/>';
+
+    // Axis labels
+    svg+='<text x="'+(svgW-_pr-1)+'" y="'+(_cy-3).toFixed(1)+'" text-anchor="end" font-size="7" fill="#555">RS →</text>';
+    svg+='<text x="'+(_cx+3).toFixed(1)+'" y="'+(_pt+6)+'" font-size="7" fill="#555">M ↑</text>';
+
+    // X ticks
+    [-1,0,1,2].forEach(function(v){
+      var tx=_rmx(v);
+      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+3)+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
+      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+10)+'" text-anchor="middle" font-size="7" fill="#555">'+v+'</text>';
+    });
+    // Y ticks
+    [-10,-5,0,5,10].forEach(function(v){
+      var ty=_rmy(v);
+      svg+='<line x1="'+(_pl-3)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
+      svg+='<text x="'+(_pl-4)+'" y="'+(ty+3).toFixed(1)+'" text-anchor="end" font-size="7" fill="#555">'+v+'</text>';
+    });
+
+    // Sector dots with vector arrows
+    rrgItems.forEach(function(s,i){
+      var x=_rmx(s.rs),y=_rmy(s.rs_mom);
+      var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
+      var dvx=s.vector.dx||0,dvy=s.vector.dy||0;
+      // Arrow: scaled delta → pixel space, normalized to max 20px
+      if(Math.abs(dvx)>0.001||Math.abs(dvy)>0.001){
+        var pvx=dvx/(_xMax-_xMin)*_pw;
+        var pvy=-dvy/(_yMax-_yMin)*_ph;
+        var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
+        var sc2=Math.min(1,20/plen);
+        var tx2=(x-pvx*sc2).toFixed(1),ty2=(y-pvy*sc2).toFixed(1);
+        var nx=pvx/plen,ny=pvy/plen;
+        var px3=-ny*2.5,py3=nx*2.5;
+        // Arrow shaft
+        svg+='<line x1="'+tx2+'" y1="'+ty2+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.5" stroke-opacity=".5"/>';
+        // Arrowhead triangle at tip
+        var hx=(x-nx*5).toFixed(1),hy=(y-ny*5).toFixed(1);
+        svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(+hx+px3).toFixed(1)+','+(+hy+py3).toFixed(1)+' '+(+hx-px3).toFixed(1)+','+(+hy-py3).toFixed(1)+'" fill="'+col+'" fill-opacity=".6"/>';
+      }
+      // Dot
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4.5" fill="'+col+'" fill-opacity=".88" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>';
+      // Label: first 2 chars
+      svg+='<text x="'+(x+6).toFixed(1)+'" y="'+(y+3).toFixed(1)+'" font-size="7.5" fill="rgba(210,210,210,.85)">'+s.name.substring(0,2)+'</text>';
+      // Transparent hit target
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="10" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
+    });
+    svg+='</svg>';
+
+    // Phase legend chips
+    var legend='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;justify-content:center">';
+    ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
+      var col=phases[ph]?phases[ph].color:'#6b7280';
+      legend+='<span style="font-size:9px;color:'+col+';padding:1px 6px;border-radius:4px;border:1px solid '+col+'33;opacity:.85">'+ph+'</span>';
+    });
+    legend+='</div>';
+
     h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
-        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
+        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖（RRG）</div>'+
         '<button onclick="goView(\'expansion\')" style="background:rgba(245,197,24,.08);border:.5px solid rgba(245,197,24,.3);color:var(--gold);font-size:10px;padding:3px 9px;border-radius:8px;cursor:pointer;font-weight:600">🎲 隨機500</button>'+
       '</div>'+
-      '<div style="display:flex;flex-direction:column;gap:8px">';
-    ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
-      var p=phases[ph],list=groups[ph]||[];
-      list.sort(function(a,b){return b.rs_mom-a.rs_mom;});
-      // 每個象限：左側標籤（可點開/關整排）+ 右側產業小卡片橫向排列
-      h+='<div style="display:flex;align-items:flex-start;gap:8px">'+
-        '<div data-phase="'+ph+'" onclick="togRowSectors(this)" style="cursor:pointer;flex-shrink:0;width:52px;background:'+p.bg+';border:1px solid '+p.border+';border-radius:8px;padding:6px 4px;text-align:center;align-self:flex-start;user-select:none">'+
-          '<div style="color:'+p.color+';font-weight:700;font-size:11px;line-height:1.3">'+ph+'</div>'+
-          '<div class="phase-arr" style="font-size:8px;color:'+p.color+';opacity:.55;margin-top:3px">▼</div>'+
-        '</div>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">';
-      list.forEach(function(s,idx){
-        var accel=s.acceleration||0;
-        var accArr=accel>0.05?'▲':accel<-0.05?'▼':'─';
-        var accColor=accel>0.05?'#22c55e':accel<-0.05?'#ef4444':'#9ca3af';
-        var tid='sqc'+ph+idx;
-        // 固定寬度小卡片：產業名（截短）+ M值 + 加速箭頭
-        h+='<div style="width:66px;flex-shrink:0;background:var(--bg);border:1px solid '+p.border+';border-radius:7px;overflow:hidden">'+
-          '<div data-tid="'+tid+'" onclick="togSector(this)" style="cursor:pointer;padding:4px 5px">'+
-            '<div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">'+s.name+'</div>'+
-            '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">'+
-              '<span style="font-size:9px;color:'+p.color+';font-weight:700">M '+s.rs_mom.toFixed(2)+'</span>'+
-              '<span style="color:'+accColor+';font-weight:800;font-size:10px">'+accArr+'</span>'+
-            '</div>'+
-          '</div>'+
-          '<div id="'+tid+'" style="display:none;padding:2px 5px 5px" data-trend="'+encodeURIComponent(JSON.stringify(s.trend))+'" data-color="'+p.color+'" data-sector="'+s.name+'"></div>'+
-        '</div>';
-      });
-      if(!list.length) h+='<div style="color:#6b7280;font-size:11px;padding:4px 0">無資料</div>';
-      h+='</div></div>';
-    });
-    h+='</div>'+
-      '<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">RS=產業漲幅-大盤漲幅 ｜ M=RS/MA10 ｜ A=加速度3日均 ｜ <span style="color:#22c55e">▲</span>加速 <span style="color:#ef4444">▼</span>減速 ｜ TWSE</div>'+
+      svg+
+      legend+
+      '<div style="font-size:9.5px;color:var(--text3);text-align:center;margin-top:5px">點點看詳情 ｜ X=RS（相對強度）Y=M（動能）箭頭=近期方向</div>'+
     '</div>';
   }
 
@@ -1803,6 +1856,12 @@ function togSector(row){
   var color=el.getAttribute('data-color')||'#22c55e';
   var sector=el.getAttribute('data-sector')||'';
   openSCM(sector,trend,color);
+}
+function _rrgClick(idx){
+  var s=(window._rrgItems||[])[idx];
+  if(!s) return;
+  var phaseColors={'準備噴':'#3b82f6','主升段':'#22c55e','主升回檔':'#f97316','高檔震盪':'#f59e0b','空頭':'#ef4444','整理觀察':'#6b7280'};
+  openSCM(s.name,s.trend,phaseColors[s.sub_phase]||'#6b7280');
 }
 
 function openSCM(sector,trend,color){
