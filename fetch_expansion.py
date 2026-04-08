@@ -301,14 +301,16 @@ def fetch_yahoo_data(code):
         # ── Anchored VWAP 三線 ─────────────────────────────
         n = len(closes)
 
-        # avwap_swing：60日最低點錨定，永遠計算（不需要結構確認）
+        # avwap_swing：60日最低點錨定（NaN-safe）
         _base60   = max(0, n - 60)
-        idx_swing = _base60 + lows[_base60:].index(min(lows[_base60:]))
+        _safe_lows60 = [v if v == v else float('inf') for v in lows[_base60:]]
+        idx_swing = _base60 + _safe_lows60.index(min(_safe_lows60))
         avwap_swing = calc_avwap(closes, highs, lows, volumes, idx_swing)
 
-        # avwap_vol：20日最大量那天錨定，永遠計算（移除出貨過濾）
+        # avwap_vol：20日最大量那天錨定（NaN-safe）
         _base20 = max(0, n - 20)
-        idx_vol = _base20 + volumes[_base20:].index(max(volumes[_base20:]))
+        _safe_vols20 = [v if v == v else 0 for v in volumes[_base20:]]
+        idx_vol = _base20 + _safe_vols20.index(max(_safe_vols20))
         avwap_vol = calc_avwap(closes, highs, lows, volumes, idx_vol)
 
         # avwap_short：最近20日內，最近一個「局部低點+後3日有反彈確認」的 index

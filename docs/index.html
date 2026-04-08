@@ -1763,94 +1763,109 @@ function renderMacroFull(){
     window._rrgItems=rrgItems;
 
     // RRG scatter plot: X=RS, Y=rs_mom, 4 quadrants
-    var svgW=320,svgH=288;
-    var _pt=24,_pr=12,_pb=26,_pl=30;
+    var svgW=340,svgH=308;
+    var _pt=30,_pr=16,_pb=28,_pl=36;
     var _pw=svgW-_pl-_pr,_ph=svgH-_pt-_pb;
-    var _xMin=-2.1,_xMax=2.9,_yMin=-14,_yMax=12;
+    var _xMin=-2.2,_xMax=3.0,_yMin=-14,_yMax=12;
     function _rmx(v){return _pl+(v-_xMin)/(_xMax-_xMin)*_pw;}
     function _rmy(v){var c=Math.max(_yMin,Math.min(_yMax,v));return _pt+_ph-(c-_yMin)/(_yMax-_yMin)*_ph;}
     var _cx=_rmx(0),_cy=_rmy(0);
 
-    var svg='<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;display:block">';
+    var svg='<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;display:block;overflow:visible">';
 
-    // Quadrant backgrounds (TL=轉強/Improving, TR=領先/Leading, BL=落後/Lagging, BR=轉弱/Weakening)
-    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(59,130,246,.055)"/>';
-    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_pt+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(34,197,94,.055)"/>';
-    svg+='<rect x="'+_pl+'" y="'+_cy.toFixed(1)+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(239,68,68,.055)"/>';
-    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_cy.toFixed(1)+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(245,158,11,.055)"/>';
+    // Plot area background
+    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+_pw+'" height="'+_ph+'" fill="rgba(0,0,0,.18)" rx="4"/>';
 
-    // Quadrant labels
-    svg+='<text x="'+((_pl+_cx)/2).toFixed(1)+'" y="'+(_pt+11)+'" text-anchor="middle" font-size="8.5" fill="rgba(59,130,246,.5)" font-weight="700">轉強</text>';
-    svg+='<text x="'+((_cx+svgW-_pr)/2).toFixed(1)+'" y="'+(_pt+11)+'" text-anchor="middle" font-size="8.5" fill="rgba(34,197,94,.5)" font-weight="700">領先</text>';
-    svg+='<text x="'+((_pl+_cx)/2).toFixed(1)+'" y="'+(svgH-_pb-3)+'" text-anchor="middle" font-size="8.5" fill="rgba(239,68,68,.5)" font-weight="700">落後</text>';
-    svg+='<text x="'+((_cx+svgW-_pr)/2).toFixed(1)+'" y="'+(svgH-_pb-3)+'" text-anchor="middle" font-size="8.5" fill="rgba(245,158,11,.5)" font-weight="700">轉弱</text>';
+    // Quadrant backgrounds — stronger fill
+    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(59,130,246,.09)" rx="4"/>';
+    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_pt+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(34,197,94,.09)"/>';
+    svg+='<rect x="'+_pl+'" y="'+_cy.toFixed(1)+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(239,68,68,.09)"/>';
+    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_cy.toFixed(1)+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(245,158,11,.09)" rx="4"/>';
 
-    // Center cross lines
-    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.15)" stroke-width="1"/>';
-    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.15)" stroke-width="1"/>';
+    // Quadrant corner labels
+    svg+='<text x="'+(+_pl+5)+'" y="'+(_pt+13)+'" font-size="9.5" fill="rgba(99,160,255,.7)" font-weight="700" font-family="sans-serif">▲ 轉強</text>';
+    svg+='<text x="'+(svgW-_pr-5)+'" y="'+(_pt+13)+'" text-anchor="end" font-size="9.5" fill="rgba(74,222,128,.7)" font-weight="700" font-family="sans-serif">領先 ▶</text>';
+    svg+='<text x="'+(+_pl+5)+'" y="'+(svgH-_pb-4)+'" font-size="9.5" fill="rgba(248,113,113,.7)" font-weight="700" font-family="sans-serif">◀ 落後</text>';
+    svg+='<text x="'+(svgW-_pr-5)+'" y="'+(svgH-_pb-4)+'" text-anchor="end" font-size="9.5" fill="rgba(251,191,36,.7)" font-weight="700" font-family="sans-serif">轉弱 ▼</text>';
 
-    // Axis labels
-    svg+='<text x="'+(svgW-_pr-1)+'" y="'+(_cy-3).toFixed(1)+'" text-anchor="end" font-size="7" fill="#555">RS →</text>';
-    svg+='<text x="'+(_cx+3).toFixed(1)+'" y="'+(_pt+6)+'" font-size="7" fill="#555">M ↑</text>';
+    // Center dashed lines
+    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.2)" stroke-width=".8" stroke-dasharray="4,3"/>';
+    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.2)" stroke-width=".8" stroke-dasharray="4,3"/>';
 
-    // X ticks
+    // Axis tick labels
     [-1,0,1,2].forEach(function(v){
       var tx=_rmx(v);
-      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+3)+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
-      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+10)+'" text-anchor="middle" font-size="7" fill="#555">'+v+'</text>';
+      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+3)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
+      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+11)+'" text-anchor="middle" font-size="7.5" fill="rgba(160,160,160,.7)" font-family="sans-serif">'+v+'</text>';
     });
-    // Y ticks
     [-10,-5,0,5,10].forEach(function(v){
       var ty=_rmy(v);
-      svg+='<line x1="'+(_pl-3)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
-      svg+='<text x="'+(_pl-4)+'" y="'+(ty+3).toFixed(1)+'" text-anchor="end" font-size="7" fill="#555">'+v+'</text>';
+      svg+='<line x1="'+(_pl-3)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
+      svg+='<text x="'+(_pl-5)+'" y="'+(ty+3).toFixed(1)+'" text-anchor="end" font-size="7.5" fill="rgba(160,160,160,.7)" font-family="sans-serif">'+v+'</text>';
     });
+    // Axis labels
+    svg+='<text x="'+(svgW-_pr)+'" y="'+(_cy+10).toFixed(1)+'" text-anchor="end" font-size="7" fill="rgba(130,130,130,.6)" font-family="sans-serif">RS →</text>';
+    svg+='<text x="'+(_cx+4).toFixed(1)+'" y="'+(_pt-4)+'" font-size="7" fill="rgba(130,130,130,.6)" font-family="sans-serif">M ↑</text>';
 
-    // Sector dots with vector arrows
-    rrgItems.forEach(function(s,i){
+    // Draw arrows first (layer below dots)
+    rrgItems.forEach(function(s){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
       var dvx=s.vector.dx||0,dvy=s.vector.dy||0;
-      // Arrow: scaled delta → pixel space, normalized to max 20px
-      if(Math.abs(dvx)>0.001||Math.abs(dvy)>0.001){
-        var pvx=dvx/(_xMax-_xMin)*_pw;
-        var pvy=-dvy/(_yMax-_yMin)*_ph;
-        var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
-        var sc2=Math.min(1,20/plen);
-        var tx2=(x-pvx*sc2).toFixed(1),ty2=(y-pvy*sc2).toFixed(1);
-        var nx=pvx/plen,ny=pvy/plen;
-        var px3=-ny*2.5,py3=nx*2.5;
-        // Arrow shaft
-        svg+='<line x1="'+tx2+'" y1="'+ty2+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.5" stroke-opacity=".5"/>';
-        // Arrowhead triangle at tip
-        var hx=(x-nx*5).toFixed(1),hy=(y-ny*5).toFixed(1);
-        svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(+hx+px3).toFixed(1)+','+(+hy+py3).toFixed(1)+' '+(+hx-px3).toFixed(1)+','+(+hy-py3).toFixed(1)+'" fill="'+col+'" fill-opacity=".6"/>';
-      }
-      // Dot
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4.5" fill="'+col+'" fill-opacity=".88" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>';
-      // Label: first 2 chars
-      svg+='<text x="'+(x+6).toFixed(1)+'" y="'+(y+3).toFixed(1)+'" font-size="7.5" fill="rgba(210,210,210,.85)">'+s.name.substring(0,2)+'</text>';
-      // Transparent hit target
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="10" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
+      if(Math.abs(dvx)<0.001&&Math.abs(dvy)<0.001) return;
+      var pvx=dvx/(_xMax-_xMin)*_pw, pvy=-dvy/(_yMax-_yMin)*_ph;
+      var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
+      var sc2=Math.min(1,24/plen);
+      var ax=(x-pvx*sc2).toFixed(1),ay=(y-pvy*sc2).toFixed(1);
+      var nx=pvx/plen,ny=pvy/plen;
+      // Arrow shaft (tail to dot)
+      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.8" stroke-opacity=".45"/>';
+      // Arrowhead: solid triangle at dot
+      var hbx=(x-nx*6),hby=(y-ny*6);
+      var px3=-ny*3,py3=nx*3;
+      svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".65"/>';
+    });
+
+    // Draw dots + labels
+    rrgItems.forEach(function(s,i){
+      var x=_rmx(s.rs),y=_rmy(s.rs_mom);
+      var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
+      var clamped=(s.rs_mom<_yMin||s.rs_mom>_yMax);
+      // Outer glow ring
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7.5" fill="'+col+'" fill-opacity=".12"/>';
+      // Main dot
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="'+col+'" fill-opacity="'+(clamped?.55:.9)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
+      // Smart label positioning: right side if in left half, else left side
+      var onRight=(x<_cx);
+      var lx=onRight?(x+8):(x-8);
+      var anchor=onRight?'start':'end';
+      var label=s.name.length>3?s.name.substring(0,3):s.name;
+      // Label text shadow (white blur)
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="8" font-family="sans-serif" fill="rgba(0,0,0,.6)" stroke="rgba(0,0,0,.5)" stroke-width="2" paint-order="stroke">'+label+'</text>';
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="8" font-family="sans-serif" fill="rgba(225,225,225,.92)">'+label+'</text>';
+      // Clickable overlay
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="11" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
     });
     svg+='</svg>';
 
-    // Phase legend chips
-    var legend='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;justify-content:center">';
+    // Compact phase legend (2 rows)
+    var legend='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;justify-content:center">';
     ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
       var col=phases[ph]?phases[ph].color:'#6b7280';
-      legend+='<span style="font-size:9px;color:'+col+';padding:1px 6px;border-radius:4px;border:1px solid '+col+'33;opacity:.85">'+ph+'</span>';
+      legend+='<span style="font-size:8.5px;color:'+col+';padding:1px 7px;border-radius:10px;background:'+col+'18;border:1px solid '+col+'44;font-weight:600">'+ph+'</span>';
     });
     legend+='</div>';
 
-    h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
+    h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖（RRG）</div>'+
+        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
         '<button onclick="goView(\'expansion\')" style="background:rgba(245,197,24,.08);border:.5px solid rgba(245,197,24,.3);color:var(--gold);font-size:10px;padding:3px 9px;border-radius:8px;cursor:pointer;font-weight:600">🎲 隨機500</button>'+
       '</div>'+
+      '<div style="background:var(--bg3);border-radius:10px;padding:8px 6px">'+
       svg+
+      '</div>'+
       legend+
-      '<div style="font-size:9.5px;color:var(--text3);text-align:center;margin-top:5px">點點看詳情 ｜ X=RS（相對強度）Y=M（動能）箭頭=近期方向</div>'+
+      '<div style="font-size:9px;color:var(--text3);text-align:center;margin-top:6px;opacity:.7">點點看詳情 ｜ X=RS（相對強度）Y=M（動能）箭頭=近期方向</div>'+
     '</div>';
   }
 
