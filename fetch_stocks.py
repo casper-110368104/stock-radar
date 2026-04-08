@@ -2207,7 +2207,7 @@ def calc_signals(yahoo, chips, rs_pct=50, stock_phase="RANGE",
         target = round(entry + risk * rr, 2)
         # ATR 動態停損（2×ATR，提供波動性調整的替代停損）
         atr = yahoo.get("atr_14")
-        atr_stop = round(entry - 2 * atr, 2) if atr else None
+        atr_stop = round(entry - 2 * atr, 2) if atr is not None else None
         # 觸發進場價：今日高點 × (1 + buffer)，隔日突破才確認進場
         _TRIGGER_BUFFER = {
             "breakout":        0.002,
