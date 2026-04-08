@@ -225,23 +225,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .range-fill{position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--green))}
 .range-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;top:-3px;transform:translateX(-50%);box-shadow:0 0 0 2px var(--bg)}
 
-/* ─ News ─ */
-.news-summary{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
-.npill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:11px}
-.nbull{background:rgba(0,200,150,.1);color:var(--green)}
-.nbear{background:rgba(255,92,92,.1);color:var(--red)}
-.nneut{background:rgba(255,255,255,.06);color:var(--text3)}
-.news-item{padding:8px 0;border-bottom:.5px solid var(--border)}
-.news-item:last-child{border-bottom:none}
-.news-meta{display:flex;align-items:center;gap:5px;margin-bottom:3px;flex-wrap:wrap}
-.ntag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;background:rgba(74,158,255,.1);color:var(--blue)}
-.nsent{font-size:10px;padding:2px 5px;border-radius:4px;font-weight:600}
-.sent-bullish{background:rgba(0,200,150,.1);color:var(--green)}
-.sent-bearish{background:rgba(255,92,92,.1);color:var(--red)}
-.sent-neutral{background:rgba(255,255,255,.06);color:var(--text3)}
-.nsrc{font-size:10px;color:var(--text3)}
-.ntext{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:3px}
-.nlink{font-size:11px;color:var(--blue);text-decoration:none}
 
 /* ─ Settings panel ─ */
 .pov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;backdrop-filter:blur(4px)}
@@ -1642,7 +1625,7 @@ function renderExpansionInApp(){
     return;
   }
   if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
-  if(sigStrat!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return sg.strategy===sigStrat;});});
+  if(sigStrat!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){var isTr=_isTrendSignal(sg);return sigStrat==='trend'?isTr:!isTr;});});
   if(curPattern!=='all') list=list.filter(function(s){return(s.patterns||[]).indexOf(curPattern)>=0;});
   var SORD={'strong':0,'medium':1,'weak':2};
   list.sort(function(a,b){return Math.min.apply(null,a.signals.map(function(s){return SORD[s.strength]||9;}))-Math.min.apply(null,b.signals.map(function(s){return SORD[s.strength]||9;}));});
@@ -1870,16 +1853,6 @@ function renderMacroFull(){
   el.innerHTML=h;
 }
 
-function togSector(row){
-  var tid=row.getAttribute('data-tid');
-  var el=document.getElementById(tid);
-  if(!el) return;
-  var trend=[];
-  try{trend=JSON.parse(decodeURIComponent(el.getAttribute('data-trend')||'%5B%5D'));}catch(e){}
-  var color=el.getAttribute('data-color')||'#22c55e';
-  var sector=el.getAttribute('data-sector')||'';
-  openSCM(sector,trend,color);
-}
 function _rrgClick(idx){
   var s=(window._rrgItems||[])[idx];
   if(!s) return;
@@ -2244,6 +2217,7 @@ function render(){
   if(filterMA60) list=list.filter(function(s){return s.above_ma60===true;});
   if(filterSignal) list=list.filter(function(s){return s.signals&&s.signals.length>0;});
   if(sigTF!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){return _sgTF(sg)===sigTF;});});
+  if(sigStrat!=='all') list=list.filter(function(s){return(s.signals||[]).some(function(sg){var isTr=_isTrendSignal(sg);return sigStrat==='trend'?isTr:!isTr;});});
   if(curPattern!=='all') list=list.filter(function(s){return(s.patterns||[]).indexOf(curPattern)>=0;});
   if(q) list=list.filter(function(s){return s.code.indexOf(q)>=0||s.name.indexOf(q)>=0;});
 
@@ -2370,7 +2344,7 @@ function rCard(s){
     var sp=s.scores||{},raw=s.chips_raw||{};
     function radarSvg(sc){
       var dims=['籌碼','基本面','技術面','量能','月營收','RS'],vals=[sc.chips||0,sc.fundamental||0,sc.technical||0,sc.volume||0,sc.revenue||0,sc.rs||0];
-      var cx=65,cy=65,r=42,n=5,W=130,H=130;
+      var cx=65,cy=65,r=42,n=dims.length,W=130,H=130;
       var svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">';
       // 背景網格
       [0.25,0.5,0.75,1].forEach(function(ratio){
@@ -2714,26 +2688,6 @@ function rTech(s){
   if(!th&&!avwapH) return '<div style="font-size:13px;color:var(--text3);text-align:center;padding:18px 0">該股暫無技術分析資料（歷史資料不足）</div>';
   return th+avwapH;
 }
-function rNews(news){
-  if(!news||!news.length)return '<div style="font-size:13px;color:var(--text3)">暫無相關新聞</div>';
-  var bull=0,bear=0,neut=0;
-  news.forEach(function(n){if(n.sentiment==='bullish')bull++;else if(n.sentiment==='bearish')bear++;else neut++;});
-  var sm='<div class="news-summary">'+
-    (bull?'<span class="npill nbull">📈 利多 '+bull+'</span>':'')+
-    (bear?'<span class="npill nbear">📉 利空 '+bear+'</span>':'')+
-    (neut?'<span class="npill nneut">➖ 中立 '+neut+'</span>':'')+
-  '</div>';
-  var it=news.map(function(n){
-    var sc2=n.sentiment||'neutral',st=sc2==='bullish'?'利多':sc2==='bearish'?'利空':'中立';
-    var lk=n.url&&n.url!=='#'?'<a class="nlink" href="'+n.url+'" target="_blank">閱讀原文 →</a>':'';
-    return '<div class="news-item">'+
-      '<div class="news-meta"><span class="ntag">'+(n.tag||'新聞')+'</span><span class="nsent sent-'+sc2+'">'+st+'</span><span class="nsrc">'+(n.source||'')+'</span></div>'+
-      '<div class="ntext">'+(n.title||'')+'</div>'+lk+
-    '</div>';
-  }).join('');
-  return sm+it;
-}
-
 function rSignals(s){
   var sigs=(s.signals||[]).filter(function(sg){
     if(sigTF!=='all'&&_sgTF(sg)!==sigTF) return false;
