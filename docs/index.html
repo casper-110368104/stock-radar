@@ -1763,8 +1763,8 @@ function renderMacroFull(){
     window._rrgItems=rrgItems;
 
     // RRG scatter plot: X=RS, Y=rs_mom, 4 quadrants
-    var svgW=340,svgH=308;
-    var _pt=30,_pr=16,_pb=28,_pl=36;
+    var svgW=480,svgH=420;
+    var _pt=36,_pr=20,_pb=34,_pl=44;
     var _pw=svgW-_pl-_pr,_ph=svgH-_pt-_pb;
     var _xMin=-2.2,_xMax=3.0,_yMin=-14,_yMax=12;
     function _rmx(v){return _pl+(v-_xMin)/(_xMax-_xMin)*_pw;}
@@ -1776,36 +1776,36 @@ function renderMacroFull(){
     // Plot area background
     svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+_pw+'" height="'+_ph+'" fill="rgba(0,0,0,.18)" rx="4"/>';
 
-    // Quadrant backgrounds — stronger fill
+    // Quadrant backgrounds
     svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(59,130,246,.09)" rx="4"/>';
     svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_pt+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(34,197,94,.09)"/>';
     svg+='<rect x="'+_pl+'" y="'+_cy.toFixed(1)+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(239,68,68,.09)"/>';
     svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_cy.toFixed(1)+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(245,158,11,.09)" rx="4"/>';
 
     // Quadrant corner labels
-    svg+='<text x="'+(+_pl+5)+'" y="'+(_pt+13)+'" font-size="9.5" fill="rgba(99,160,255,.7)" font-weight="700" font-family="sans-serif">▲ 轉強</text>';
-    svg+='<text x="'+(svgW-_pr-5)+'" y="'+(_pt+13)+'" text-anchor="end" font-size="9.5" fill="rgba(74,222,128,.7)" font-weight="700" font-family="sans-serif">領先 ▶</text>';
-    svg+='<text x="'+(+_pl+5)+'" y="'+(svgH-_pb-4)+'" font-size="9.5" fill="rgba(248,113,113,.7)" font-weight="700" font-family="sans-serif">◀ 落後</text>';
-    svg+='<text x="'+(svgW-_pr-5)+'" y="'+(svgH-_pb-4)+'" text-anchor="end" font-size="9.5" fill="rgba(251,191,36,.7)" font-weight="700" font-family="sans-serif">轉弱 ▼</text>';
+    svg+='<text x="'+(+_pl+7)+'" y="'+(_pt+16)+'" font-size="11" fill="rgba(99,160,255,.75)" font-weight="700" font-family="sans-serif">▲ 轉強</text>';
+    svg+='<text x="'+(svgW-_pr-7)+'" y="'+(_pt+16)+'" text-anchor="end" font-size="11" fill="rgba(74,222,128,.75)" font-weight="700" font-family="sans-serif">領先 ▶</text>';
+    svg+='<text x="'+(+_pl+7)+'" y="'+(svgH-_pb-5)+'" font-size="11" fill="rgba(248,113,113,.75)" font-weight="700" font-family="sans-serif">◀ 落後</text>';
+    svg+='<text x="'+(svgW-_pr-7)+'" y="'+(svgH-_pb-5)+'" text-anchor="end" font-size="11" fill="rgba(251,191,36,.75)" font-weight="700" font-family="sans-serif">轉弱 ▼</text>';
 
     // Center dashed lines
-    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.2)" stroke-width=".8" stroke-dasharray="4,3"/>';
-    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.2)" stroke-width=".8" stroke-dasharray="4,3"/>';
+    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="5,4"/>';
+    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="5,4"/>';
 
     // Axis tick labels
-    [-1,0,1,2].forEach(function(v){
+    [-2,-1,0,1,2].forEach(function(v){
       var tx=_rmx(v);
-      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+3)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
-      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+11)+'" text-anchor="middle" font-size="7.5" fill="rgba(160,160,160,.7)" font-family="sans-serif">'+v+'</text>';
+      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+4)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
+      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+13)+'" text-anchor="middle" font-size="9" fill="rgba(160,160,160,.75)" font-family="sans-serif">'+v+'</text>';
     });
     [-10,-5,0,5,10].forEach(function(v){
       var ty=_rmy(v);
-      svg+='<line x1="'+(_pl-3)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
-      svg+='<text x="'+(_pl-5)+'" y="'+(ty+3).toFixed(1)+'" text-anchor="end" font-size="7.5" fill="rgba(160,160,160,.7)" font-family="sans-serif">'+v+'</text>';
+      svg+='<line x1="'+(_pl-4)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
+      svg+='<text x="'+(_pl-6)+'" y="'+(ty+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="rgba(160,160,160,.75)" font-family="sans-serif">'+v+'</text>';
     });
     // Axis labels
-    svg+='<text x="'+(svgW-_pr)+'" y="'+(_cy+10).toFixed(1)+'" text-anchor="end" font-size="7" fill="rgba(130,130,130,.6)" font-family="sans-serif">RS →</text>';
-    svg+='<text x="'+(_cx+4).toFixed(1)+'" y="'+(_pt-4)+'" font-size="7" fill="rgba(130,130,130,.6)" font-family="sans-serif">M ↑</text>';
+    svg+='<text x="'+(svgW-_pr)+'" y="'+(_cy+12).toFixed(1)+'" text-anchor="end" font-size="8.5" fill="rgba(130,130,130,.65)" font-family="sans-serif">RS →</text>';
+    svg+='<text x="'+(_cx+5).toFixed(1)+'" y="'+(_pt-5)+'" font-size="8.5" fill="rgba(130,130,130,.65)" font-family="sans-serif">M ↑</text>';
 
     // Draw arrows first (layer below dots)
     rrgItems.forEach(function(s){
@@ -1815,44 +1815,42 @@ function renderMacroFull(){
       if(Math.abs(dvx)<0.001&&Math.abs(dvy)<0.001) return;
       var pvx=dvx/(_xMax-_xMin)*_pw, pvy=-dvy/(_yMax-_yMin)*_ph;
       var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
-      var sc2=Math.min(1,24/plen);
+      var sc2=Math.min(1,30/plen);
       var ax=(x-pvx*sc2).toFixed(1),ay=(y-pvy*sc2).toFixed(1);
       var nx=pvx/plen,ny=pvy/plen;
-      // Arrow shaft (tail to dot)
-      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.8" stroke-opacity=".45"/>';
-      // Arrowhead: solid triangle at dot
-      var hbx=(x-nx*6),hby=(y-ny*6);
-      var px3=-ny*3,py3=nx*3;
-      svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".65"/>';
+      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="2" stroke-opacity=".5"/>';
+      var hbx=(x-nx*7),hby=(y-ny*7);
+      var px3=-ny*3.5,py3=nx*3.5;
+      svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".7"/>';
     });
 
-    // Draw dots + labels
+    // Draw dots + labels (larger for bigger chart)
     rrgItems.forEach(function(s,i){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
       var clamped=(s.rs_mom<_yMin||s.rs_mom>_yMax);
       // Outer glow ring
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7.5" fill="'+col+'" fill-opacity=".12"/>';
-      // Main dot
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="'+col+'" fill-opacity="'+(clamped?.55:.9)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
-      // Smart label positioning: right side if in left half, else left side
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="9" fill="'+col+'" fill-opacity=".14"/>';
+      // Main dot (slightly larger)
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6" fill="'+col+'" fill-opacity="'+(clamped?.55:.9)+'" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>';
+      // Smart label positioning
       var onRight=(x<_cx);
-      var lx=onRight?(x+8):(x-8);
+      var lx=onRight?(x+10):(x-10);
       var anchor=onRight?'start':'end';
       var label=s.name.length>3?s.name.substring(0,3):s.name;
-      // Label text shadow (white blur)
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="8" font-family="sans-serif" fill="rgba(0,0,0,.6)" stroke="rgba(0,0,0,.5)" stroke-width="2" paint-order="stroke">'+label+'</text>';
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="8" font-family="sans-serif" fill="rgba(225,225,225,.92)">'+label+'</text>';
-      // Clickable overlay
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="11" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
+      // Shadow + label
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(0,0,0,.7)" stroke="rgba(0,0,0,.6)" stroke-width="2.5" paint-order="stroke">'+label+'</text>';
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(230,230,230,.95)">'+label+'</text>';
+      // Clickable overlay (larger hit area)
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="13" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
     });
     svg+='</svg>';
 
-    // Compact phase legend (2 rows)
-    var legend='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;justify-content:center">';
+    // Phase legend
+    var legend='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center">';
     ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
       var col=phases[ph]?phases[ph].color:'#6b7280';
-      legend+='<span style="font-size:8.5px;color:'+col+';padding:1px 7px;border-radius:10px;background:'+col+'18;border:1px solid '+col+'44;font-weight:600">'+ph+'</span>';
+      legend+='<span style="font-size:9px;color:'+col+';padding:2px 8px;border-radius:10px;background:'+col+'18;border:1px solid '+col+'44;font-weight:600">'+ph+'</span>';
     });
     legend+='</div>';
 
@@ -2262,8 +2260,48 @@ function render(){
   });
 
   var app=document.getElementById('app');
-  if(!list.length){app.innerHTML='<div class="empty">沒有符合條件的股票</div>';return;}
+  if(!list.length){app.innerHTML='<div class="empty">'+(curTab==='watch'?'尚未追蹤任何股票（點股票卡片右上角 ★ 加入）':'沒有符合條件的股票')+'</div>';return;}
+  if(curTab==='watch'){app.innerHTML=list.map(rWatchCard).join('');return;}
   app.innerHTML=list.map(rCard).join('');
+}
+
+// ── 追蹤清單卡片（Watch Tab 專用）─────────────────────────────────
+function rWatchCard(s){
+  var up=s.change_pct>=0,sgn=up?'+':'',pc=up?'var(--green)':'var(--red)';
+  var phaseBadge=_phaseBadge(s.stock_phase);
+  // 產業輪動相位 badge
+  var secBadge='';
+  var _sd=s.sector_key&&sectorData[s.sector_key];
+  if(_sd){
+    var _sp=_sd.sub_phase||'',_ac=_sd.acceleration||0;
+    var _arr=_ac>0.05?'▲':_ac<-0.05?'▼':'─';
+    var _arc=_ac>0.05?'#22c55e':_ac<-0.05?'#ef4444':'#9ca3af';
+    var _spbg={'準備噴':'rgba(59,130,246,.18)','主升段':'rgba(34,197,94,.18)','高檔震盪':'rgba(245,158,11,.18)','空頭':'rgba(239,68,68,.18)'}[_sp]||'rgba(100,100,100,.12)';
+    secBadge='<span style="font-size:9px;background:'+_spbg+';padding:1px 6px;border-radius:4px;white-space:nowrap">'+_sp+' <span style="color:'+_arc+';font-weight:700">'+_arr+'</span></span>';
+  }
+  // AVWAP 距離
+  var avHtml='';
+  if(s.price>0){
+    var avParts=[];
+    if(s.avwap_swing>0){var _d=(s.price-s.avwap_swing)/s.avwap_swing*100,_c=_d>=0?'var(--green)':'var(--red)';avParts.push('趨勢 <span style="color:'+_c+'">$'+s.avwap_swing+' ('+(_d>=0?'+':'')+_d.toFixed(1)+'%)</span>');}
+    if(s.avwap_vol  >0){var _d=(s.price-s.avwap_vol  )/s.avwap_vol  *100,_c=_d>=0?'var(--green)':'var(--red)';avParts.push('主力 <span style="color:'+_c+'">$'+s.avwap_vol+' ('+(_d>=0?'+':'')+_d.toFixed(1)+'%)</span>');}
+    if(s.avwap_short>0){var _d=(s.price-s.avwap_short)/s.avwap_short*100,_c=_d>=0?'var(--green)':'var(--red)';avParts.push('短線 <span style="color:'+_c+'">$'+s.avwap_short+' ('+(_d>=0?'+':'')+_d.toFixed(1)+'%)</span>');}
+    if(avParts.length) avHtml='<div style="font-size:10px;color:var(--text3);margin-top:5px;display:flex;flex-wrap:wrap;gap:8px"><span>AVWAP</span>'+avParts.map(function(p){return '<span>'+p+'</span>';}).join('')+'</div>';
+  }
+  // 訊號 + 完整交易計劃（含加碼點 MA20）
+  var sigsHtml=rSignals(s);
+  return '<div style="background:var(--bg2);border-radius:12px;border:1px solid var(--border);padding:12px 14px;margin-bottom:10px">'+
+    '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px">'+
+      '<span style="font-size:11px;font-weight:700;background:var(--bg4);padding:2px 7px;border-radius:4px;color:var(--text3)">'+s.code+'</span>'+
+      '<span style="font-size:14px;font-weight:800">'+s.name+'</span>'+
+      phaseBadge+secBadge+
+      '<span style="margin-left:auto;font-size:14px;font-weight:800">$'+(s.price||'-')+'</span>'+
+      '<span style="font-size:12px;color:'+pc+';font-weight:700">'+sgn+(s.change_pct||0)+'%</span>'+
+      '<button onclick="togW(\''+s.code+'\',event)" style="font-size:10px;padding:2px 8px;border-radius:6px;background:rgba(239,68,68,.1);border:.5px solid rgba(239,68,68,.3);color:#ef4444;cursor:pointer;white-space:nowrap">✕ 移除</button>'+
+    '</div>'+
+    avHtml+
+    '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">'+sigsHtml+'</div>'+
+  '</div>';
 }
 
 function rCard(s){
