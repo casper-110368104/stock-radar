@@ -740,10 +740,15 @@ function _trendPlanHtml(sg){
       '<div style="font-size:9px;color:var(--text3);margin-bottom:4px">追蹤停損（浮動，不設固定目標）</div>'+
       '<div style="display:flex;flex-direction:column;gap:3px">'+
         '<div style="display:flex;align-items:center;gap:5px">'+
-          '<span style="font-size:9px;color:var(--text3);min-width:32px">初始</span>'+
+          '<span style="font-size:9px;color:var(--text3);min-width:32px">技術</span>'+
           '<span style="color:var(--red);font-weight:600">$'+trailStop+'</span>'+
-          '<span style="font-size:10px;color:var(--text3)">（起漲AVWAP/關鍵均線）</span>'+
+          '<span style="font-size:10px;color:var(--text3)">收盤跌破出清（AVWAP/均線）</span>'+
         '</div>'+
+        (sg.atr_stop!=null?'<div style="display:flex;align-items:center;gap:5px">'+
+          '<span style="font-size:9px;color:var(--text3);min-width:32px">ATR</span>'+
+          '<span style="color:var(--red);font-weight:600;opacity:.75">$'+sg.atr_stop+'</span>'+
+          '<span style="font-size:10px;color:var(--text3)">盤中低點破位即出</span>'+
+        '</div>':'')+
         (T1?'<div style="display:flex;align-items:center;gap:5px">'+
           '<span style="font-size:9px;color:var(--text3);min-width:32px">+1R後</span>'+
           '<span style="color:var(--red);font-weight:600">$'+entryRef+'</span>'+
@@ -767,9 +772,9 @@ function _trendPlanHtml(sg){
     // 出場條件
     '<div style="border-top:1px solid var(--border);padding-top:6px">'+
       '<div style="font-size:9px;color:var(--text3);margin-bottom:4px">出場條件（任一觸發）</div>'+
-      '<div style="display:flex;flex-direction:column;gap:2px;color:var(--text2)">'+
-        '<div>☐ 起漲 AVWAP 跌破（$'+trailStop+' 以下）</div>'+
-        '<div>☐ MA20 失守且收盤確認</div>'+
+      '<div style="display:flex;flex-direction:column;gap:2px;color:var(--text2);font-size:10px">'+
+        '<div>☐ 收盤 &lt; <span style="color:var(--red)">$'+trailStop+'</span>（技術停損結構破壞）</div>'+
+        (sg.atr_stop!=null?'<div>☐ 盤中低點 &lt; <span style="color:var(--red);opacity:.75">$'+sg.atr_stop+'</span>（ATR波動停損）</div>':'')+
         '<div>☐ 個股相位由 BULL 轉弱</div>'+
       '</div>'+
     '</div>'+
@@ -803,13 +808,18 @@ function _swingPlanHtml(sg){
       (fullShares?'<div><div style="font-size:9px;color:var(--text3)">≈股數</div><div style="font-size:11px;color:var(--text2)">'+fullShares+'股</div></div>':'')+
     '</div>'+
     '<div style="border-top:1px solid var(--border);padding-top:6px">'+
-      '<div style="font-size:9px;color:var(--text3);margin-bottom:4px">固定出場計劃（停損不移動）</div>'+
+      '<div style="font-size:9px;color:var(--text3);margin-bottom:4px">固定出場計劃</div>'+
       '<div style="display:flex;flex-direction:column;gap:3px">'+
         '<div style="display:flex;align-items:center;gap:5px">'+
-          '<span style="font-size:10px;color:var(--text3);min-width:24px">停損</span>'+
+          '<span style="font-size:10px;color:var(--text3);min-width:40px">技術停損</span>'+
           '<span style="color:var(--red);font-weight:600">$'+sg.stop_loss+'</span>'+
-          '<span style="font-size:10px;color:var(--text3)">→ 全出不猶豫</span>'+
+          '<span style="font-size:10px;color:var(--text3)">收盤跌破全出</span>'+
         '</div>'+
+        (sg.atr_stop!=null?'<div style="display:flex;align-items:center;gap:5px">'+
+          '<span style="font-size:10px;color:var(--text3);min-width:40px">ATR停損</span>'+
+          '<span style="color:var(--red);font-weight:600;opacity:.75">$'+sg.atr_stop+'</span>'+
+          '<span style="font-size:10px;color:var(--text3)">盤中低破即出</span>'+
+        '</div>':'')+
         (T1?'<div style="display:flex;align-items:center;gap:5px">'+
           '<span style="font-size:10px;color:var(--text3);min-width:24px">T1</span>'+
           '<span style="color:var(--green);font-weight:600">$'+T1+'</span>'+
