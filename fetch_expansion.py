@@ -474,7 +474,7 @@ def calc_signals(yahoo, stock_phase="RANGE", rs_pct=50):
         trigger_price = round(_today_high * (1 + _TRIGGER_BUFFER.get(type_, 0.003)), 2)
         # atr_stop
         atr = yahoo.get("atr_14")
-        atr_stop = round(entry - 2 * atr, 2) if atr else None
+        atr_stop = round(entry - 2 * atr, 2) if atr is not None else None
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
         _SWING_TYPES = {"false_breakdown", "ma60_support"}

@@ -708,12 +708,12 @@ function _isTrendSignal(sg){
     ((sg.type==='ma_pullback'||sg.type==='retest')&&sg.strength==='medium');
 }
 
-function _tradePlanHtml(sg){
-  return _isTrendSignal(sg)?_trendPlanHtml(sg):_swingPlanHtml(sg);
+function _tradePlanHtml(sg,stock){
+  return _isTrendSignal(sg)?_trendPlanHtml(sg,stock):_swingPlanHtml(sg,stock);
 }
 
 // 趨勢跟蹤計劃（追蹤停損、加碼、讓利奔跑）
-function _trendPlanHtml(sg){
+function _trendPlanHtml(sg,stock){
   var ps=_calcPosSz(sg);
   var initPs=Math.round(ps*5)/10;  // 首批 50%（四捨五入到0.1）
   var capAmt=Math.round(totalCapital*ps/100);
@@ -721,7 +721,7 @@ function _trendPlanHtml(sg){
   var entryRef=sg.trigger_price||sg.entry;
   var R=+(entryRef-sg.stop_loss).toFixed(2);
   var trailStop=sg.stop_loss;  // 初始追蹤停損 = 原始停損（AVWAP or MA）
-  var addOnPrice=sg.ma20||null;  // 加碼點：MA20 回測
+  var addOnPrice=(stock&&stock.ma20)||null;  // 加碼點：MA20 回測（來自母股物件）
   var fullShares=entryRef>0?Math.floor(capAmt/entryRef/1000)*1000:0;
   var uid='tp'+Math.random().toString(36).slice(2,7);
   // 三個追蹤停損移動點
@@ -792,7 +792,7 @@ function _trendPlanHtml(sg){
 }
 
 // 短線交易計劃（固定目標，快進快出）
-function _swingPlanHtml(sg){
+function _swingPlanHtml(sg,stock){
   var ps=_calcPosSz(sg);
   var capAmt=Math.round(totalCapital*ps/100);
   var entryRef=sg.trigger_price||sg.entry;
@@ -1355,7 +1355,7 @@ function rExpCard(s,pfx){
         '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+sg.target+'</span></div>'+
         '<div class="exp-sig-px">RR <span>1:'+sg.rr+'</span></div>'+
       '</div>'+
-      _tradePlanHtml(sg)+
+      _tradePlanHtml(sg,s)+
     '</div>';
   }).join('');
   var volTag=s.vol_ratio>=2?'<span style="color:var(--orange);font-weight:700">量比 '+s.vol_ratio+'x 🔥</span>':'量比 '+(s.vol_ratio||'-')+'x';
@@ -2580,9 +2580,9 @@ function rVol(s){
   // AVWAP 摘要（緊湊版，完整版在技術頁）
   var avRow='';
   var avItems=[];
-  if(s.avwap_swing>0){var _d=(s.price-s.avwap_swing)/s.avwap_swing*100;avItems.push({lbl:'趨勢',val:s.avwap_swing,d:_d});}
-  if(s.avwap_vol  >0){var _d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avItems.push({lbl:'主力',val:s.avwap_vol,  d:_d});}
-  if(s.avwap_short>0){var _d=(s.price-s.avwap_short)/s.avwap_short*100;avItems.push({lbl:'短線',val:s.avwap_short,d:_d});}
+  if(s.price>0&&s.avwap_swing>0){var _d=(s.price-s.avwap_swing)/s.avwap_swing*100;avItems.push({lbl:'趨勢',val:s.avwap_swing,d:_d});}
+  if(s.price>0&&s.avwap_vol  >0){var _d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avItems.push({lbl:'主力',val:s.avwap_vol,  d:_d});}
+  if(s.price>0&&s.avwap_short>0){var _d=(s.price-s.avwap_short)/s.avwap_short*100;avItems.push({lbl:'短線',val:s.avwap_short,d:_d});}
   if(avItems.length){
     var avCells=avItems.map(function(a){
       var c=a.d>=0?'var(--green)':'var(--red)',sg=a.d>=0?'+':'';
@@ -2632,9 +2632,9 @@ function rTech(s){
   }
   // AVWAP 支撐位
   var avwapH='',avArr=[];
-  if(s.avwap_swing>0){var d=(s.price-s.avwap_swing)/s.avwap_swing*100;avArr.push({lbl:'趨勢AVWAP',sub:'60日低點起錨',val:s.avwap_swing,dist:d});}
-  if(s.avwap_vol  >0){var d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avArr.push({lbl:'主力AVWAP',sub:'20日最大量起錨',val:s.avwap_vol,  dist:d});}
-  if(s.avwap_short>0){var d=(s.price-s.avwap_short)/s.avwap_short*100;avArr.push({lbl:'短線AVWAP',sub:'近期低點起錨', val:s.avwap_short,dist:d});}
+  if(s.price>0&&s.avwap_swing>0){var d=(s.price-s.avwap_swing)/s.avwap_swing*100;avArr.push({lbl:'趨勢AVWAP',sub:'60日低點起錨',val:s.avwap_swing,dist:d});}
+  if(s.price>0&&s.avwap_vol  >0){var d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avArr.push({lbl:'主力AVWAP',sub:'20日最大量起錨',val:s.avwap_vol,  dist:d});}
+  if(s.price>0&&s.avwap_short>0){var d=(s.price-s.avwap_short)/s.avwap_short*100;avArr.push({lbl:'短線AVWAP',sub:'近期低點起錨', val:s.avwap_short,dist:d});}
   if(avArr.length){
     var acols=avArr.map(function(a){
       var ac=a.dist>=0?'var(--green)':'var(--red)',asign=a.dist>=0?'+':'';
@@ -2768,7 +2768,7 @@ function rSignals(s){
         '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
         atrHtml+
       '</div>'+
-      _tradePlanHtml(sg)+
+      _tradePlanHtml(sg,s)+
       confHtml+
     '</div>';
   }).join('');
