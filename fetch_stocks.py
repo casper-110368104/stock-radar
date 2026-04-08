@@ -1996,11 +1996,16 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
             rec["current_price"] = current_price
             rec["gain_pct"]      = round((current_price - rec["entry"]) / rec["entry"] * 100, 2)
         rec["days_held"] = days_held
-        today_high = (today_high_map or {}).get(code, current_price)
-        today_low  = (today_low_map  or {}).get(code, current_price)
-        today_open = (today_open_map or {}).get(code, current_price)
+        today_high  = (today_high_map or {}).get(code, current_price)
+        today_low   = (today_low_map  or {}).get(code, current_price)
+        today_open  = (today_open_map or {}).get(code, current_price)
+        today_close = current_price  # 收盤價
         hit_target = today_high is not None and today_high >= rec["target"]
-        hit_stop   = today_low  is not None and today_low  <= rec["stop_loss"]
+        # 雙觸發停損：技術停損（收盤確認）或 ATR停損（盤中破位即出）
+        _atr_stop_v   = rec.get("atr_stop")
+        hit_tech_stop = today_close is not None and today_close <= rec["stop_loss"]
+        hit_atr_stop  = bool(_atr_stop_v and today_low is not None and today_low <= _atr_stop_v)
+        hit_stop      = hit_tech_stop or hit_atr_stop
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
