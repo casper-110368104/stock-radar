@@ -11,7 +11,7 @@
   --bg:#0d0d0f;--bg2:#141416;--bg3:#1c1c20;--bg4:#252528;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
   --text:#f0f0f2;--text2:#b0b0b8;--text3:#60606a;
-  --green:#00c896;--red:#ff5c5c;--orange:#ff9f43;--blue:#4a9eff;--gold:#f5c518;
+  --green:#00c896;--red:#ff5c5c;--orange:#ff9f43;--blue:#4a9eff;--gold:#f5c518;--purple:#a78bfa;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;overscroll-behavior:none}
@@ -1754,10 +1754,14 @@ function renderMacroFull(){
     function _rmy(v){var c=Math.max(_yMin,Math.min(_yMax,v));return _pt+_ph-(c-_yMin)/(_yMax-_yMin)*_ph;}
     var _cx=_rmx(0),_cy=_rmy(0);
 
+    // Clamp both axes so no dot escapes the plot area
+    function _rmx(v){var c=Math.max(_xMin,Math.min(_xMax,v));return _pl+(c-_xMin)/(_xMax-_xMin)*_pw;}
+
     var svg='<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;display:block;overflow:visible">';
 
-    // Defs: subtle radial gradient per quadrant
+    // Defs: radial gradients + clipPath for plot area
     svg+='<defs>';
+    svg+='<clipPath id="rrg-clip"><rect x="'+_pl+'" y="'+_pt+'" width="'+_pw+'" height="'+_ph+'"/></clipPath>';
     svg+='<radialGradient id="qg-tl" cx="0%" cy="0%" r="100%"><stop offset="0%" stop-color="#3b82f6" stop-opacity=".18"/><stop offset="100%" stop-color="#3b82f6" stop-opacity=".03"/></radialGradient>';
     svg+='<radialGradient id="qg-tr" cx="100%" cy="0%" r="100%"><stop offset="0%" stop-color="#22c55e" stop-opacity=".18"/><stop offset="100%" stop-color="#22c55e" stop-opacity=".03"/></radialGradient>';
     svg+='<radialGradient id="qg-bl" cx="0%" cy="100%" r="100%"><stop offset="0%" stop-color="#ef4444" stop-opacity=".18"/><stop offset="100%" stop-color="#ef4444" stop-opacity=".03"/></radialGradient>';
@@ -1817,40 +1821,43 @@ function renderMacroFull(){
     _qlabel(_pl+6,    svgH-_pb-8,'start', '#f87171', '◁', '落後');
     _qlabel(svgW-_pr-6,svgH-_pb-8,'end', '#fbbf24', '▽', '轉弱');
 
-    // Draw arrows (below dots)
+    // Draw arrows + dot glows clipped to plot area
+    svg+='<g clip-path="url(#rrg-clip)">';
     rrgItems.forEach(function(s){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
       var dvx=s.vector.dx||0,dvy=s.vector.dy||0;
-      if(Math.abs(dvx)<0.001&&Math.abs(dvy)<0.001) return;
-      var pvx=dvx/(_xMax-_xMin)*_pw, pvy=-dvy/(_yMax-_yMin)*_ph;
-      var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
-      var sc2=Math.min(1,32/plen);
-      var ax=(x-pvx*sc2).toFixed(1),ay=(y-pvy*sc2).toFixed(1);
-      var nx=pvx/plen,ny=pvy/plen;
-      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.8" stroke-opacity=".55" stroke-linecap="round"/>';
-      var hbx=(x-nx*8),hby=(y-ny*8);
-      var px3=-ny*4,py3=nx*4;
-      svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".75"/>';
+      if(Math.abs(dvx)>=0.001||Math.abs(dvy)>=0.001){
+        var pvx=dvx/(_xMax-_xMin)*_pw, pvy=-dvy/(_yMax-_yMin)*_ph;
+        var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
+        var sc2=Math.min(1,32/plen);
+        var ax=(x-pvx*sc2).toFixed(1),ay=(y-pvy*sc2).toFixed(1);
+        var nx=pvx/plen,ny=pvy/plen;
+        svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.8" stroke-opacity=".55" stroke-linecap="round"/>';
+        var hbx=(x-nx*8),hby=(y-ny*8);
+        var px3=-ny*4,py3=nx*4;
+        svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".75"/>';
+      }
+      // 3-layer glow (clipped)
+      var clamped=(s.rs_mom<_yMin||s.rs_mom>_yMax||s.rs<_xMin||s.rs>_xMax);
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="'+col+'" fill-opacity=".07"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="9"  fill="'+col+'" fill-opacity=".15"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5.5" fill="'+col+'" fill-opacity="'+(clamped?.55:.92)+'" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>';
     });
+    svg+='</g>';
 
-    // Draw dots + labels
+    // Labels + hit areas (outside clip so text stays readable at edges)
     rrgItems.forEach(function(s,i){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
-      var clamped=(s.rs_mom<_yMin||s.rs_mom>_yMax);
-      // 3-layer glow
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="'+col+'" fill-opacity=".07"/>';
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="9"  fill="'+col+'" fill-opacity=".15"/>';
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5.5" fill="'+col+'" fill-opacity="'+(clamped?.5:.92)+'" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>';
-      // Label
-      var onRight=(x<_cx);
-      var lx=onRight?(x+12):(x-12);
-      var anchor=onRight?'start':'end';
+      // Clamp label position to stay inside chart
+      var lx,anchor;
+      if(x<(_pl+_pw*0.5)){lx=Math.max(x+10,_pl+4);anchor='start';}
+      else{lx=Math.min(x-10,_pl+_pw-4);anchor='end';}
+      var ly=Math.max(_pt+8,Math.min(y+3.5,svgH-_pb-3));
       var label=s.name.length>3?s.name.substring(0,3):s.name;
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" stroke="rgba(0,0,0,.75)" stroke-width="3" paint-order="stroke" stroke-linejoin="round">'+label+'</text>';
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(235,235,240,.95)">'+label+'</text>';
-      // Hit area
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" stroke="rgba(0,0,0,.8)" stroke-width="3" paint-order="stroke" stroke-linejoin="round">'+label+'</text>';
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(235,235,240,.95)">'+label+'</text>';
       svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
     });
     svg+='</svg>';
@@ -1874,7 +1881,7 @@ function renderMacroFull(){
         '</div>'+
         '<button onclick="goView(\'expansion\')" style="display:flex;align-items:center;gap:5px;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.22);color:var(--gold);font-size:11px;padding:5px 11px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:-.1px">🎲 隨機500</button>'+
       '</div>'+
-      '<div style="background:rgba(0,0,0,.2);border-radius:12px;padding:8px 6px;border:1px solid rgba(255,255,255,.045)">'+
+      '<div style="background:rgba(0,0,0,.2);border-radius:12px;padding:8px 6px;border:1px solid rgba(255,255,255,.045);overflow:hidden">'+
       svg+
       '</div>'+
       legend+
