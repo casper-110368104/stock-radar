@@ -70,11 +70,11 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     _mm_ok    = avwap_vol   is None or price >= avwap_vol
     _short_ok = avwap_short is None or price >= avwap_short
 
-    # BULL 型態動能額外條件：M>1.2 且 RS 斜率向上 且 產業RS≥0
+    # BULL 型態動能額外條件：M>1.2 且 RS 斜率向上 且 產業RS≥0（中性產業允許）
     _bull_momentum = (stock_phase != "BULL") or (
         m_z_val is not None and m_z_val > 1.2 and
         rs_trend_val is not None and rs_trend_val > 0 and
-        (sector_rs is None or sector_rs > 0)
+        (sector_rs is None or sector_rs >= 0)
     )
 
     # 大盤相位過濾
