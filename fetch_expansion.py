@@ -394,188 +394,9 @@ def fetch_yahoo_data(code):
         return None
 
 
-# ── 4. 訊號偵測（純技術面，不依賴籌碼）─────────────────────
 
-_RR_MAP = {
-    "BULL":          3.0,
-    "BULL_PULLBACK": 2.0,
-    "RANGE":         1.5,
-    "BEAR_WEAK":     1.5,
-    "BEAR_STRONG":   1.0,
-}
-
-_ALLOWED_SIGNALS = {
-    "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base", "retest", "ma60_support"},
-    "BULL_PULLBACK": {"ma_pullback", "retest"},
-    "RANGE":         {"ma_pullback", "retest", "ma60_support"},
-    "BEAR_WEAK":     {"false_breakdown", "retest"},
-    "BEAR_STRONG":   {"false_breakdown"},
-}
-
-
-def calc_signals(yahoo, stock_phase="RANGE", rs_pct=50):
-    signals   = []
-    price     = yahoo.get("price")     or 0
-    high20    = yahoo.get("high20")
-    low20     = yahoo.get("low20")
-    prev_low20= yahoo.get("prev_low20")
-    prev_close= yahoo.get("prev_close")
-    ma5       = yahoo.get("ma5")
-    ma10      = yahoo.get("ma10")
-    ma20      = yahoo.get("ma20")
-    ma60      = yahoo.get("ma60")
-    vol_day      = yahoo.get("vol_day_ratio") or 1.0
-    avwap_swing  = yahoo.get("avwap_swing")
-    avwap_vol    = yahoo.get("avwap_vol")
-    avwap_short  = yahoo.get("avwap_short")
-    m_z_val      = yahoo.get("m_z")
-    rs_trend_val = yahoo.get("rs_trend")
-
-    if not price:
-        return []
-
-    # AVWAP 狀態標記
-    _trend_ok  = avwap_swing is None or price >= avwap_swing
-    _mm_ok     = avwap_vol   is None or price >= avwap_vol
-    _short_ok  = avwap_short is None or price >= avwap_short
-
-    # BULL 型態動能額外條件（收緊：m_z_val > 1.2）
-    _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 1.2 and
-        rs_trend_val is not None and rs_trend_val > 0
-    )
-
-    # confirmation_flags（expansion 無籌碼分與大盤相位，共 4 項）
-    _conf_flags = [
-        {"lbl": "RS強勢",     "sub": "RS百分位≥70",        "ok": rs_pct >= 70},
-        {"lbl": "量能擴張",   "sub": "日量比>1.3×",         "ok": vol_day > 1.3},
-        {"lbl": "個股多頭",   "sub": "個股相位=BULL",        "ok": stock_phase == "BULL"},
-        {"lbl": "均量線對齊", "sub": "三條AVWAP均低於現價",  "ok": bool(
-            avwap_swing and avwap_vol and avwap_short
-            and price >= avwap_swing and price >= avwap_vol and price >= avwap_short)},
-    ]
-    _confirmations = sum(f["ok"] for f in _conf_flags)
-
-    def _sig(type_, label, strength, entry, stop, reason):
-        # 型態篩選
-        if type_ not in _ALLOWED_SIGNALS.get(stock_phase, _ALLOWED_SIGNALS["RANGE"]):
-            return None
-        _strength = strength
-        _reason   = reason
-        if not _trend_ok:
-            _strength = {"strong": "medium", "medium": "weak"}.get(strength, strength)
-            _reason   = reason + "；⚠️趨勢破 AVWAP"
-        if _mm_ok and avwap_vol:
-            _reason = _reason + "；主力未跑✓"
-        risk = round(entry - stop, 2) if stop else 0
-        if risk <= 0:
-            return None
-        # 動態 RR
-        rr = _RR_MAP.get(stock_phase, 2.0)
-        if avwap_swing and price >= avwap_swing:
-            rr *= 1.2
-        elif avwap_short and price < avwap_short:
-            rr *= 0.7
-        rr = round(rr, 2)
-        target = round(entry + risk * rr, 2)
-        # trigger_price
-        _TRIGGER_BUFFER = {"breakout": 0.002, "high_base": 0.003,
-                           "false_breakdown": 0.003, "ma_pullback": 0.005,
-                           "retest": 0.005, "ma60_support": 0.005}
-        _today_high = yahoo.get("high") or entry
-        trigger_price = round(_today_high * (1 + _TRIGGER_BUFFER.get(type_, 0.003)), 2)
-        # atr_stop
-        atr = yahoo.get("atr_14")
-        atr_stop = round(entry - 2 * atr, 2) if atr is not None else None
-        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
-        _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
-        _SWING_TYPES = {"false_breakdown", "ma60_support"}
-        if type_ in _TREND_TYPES:
-            _strategy = "trend"
-        elif type_ in _SWING_TYPES:
-            _strategy = "swing"
-        else:
-            _strategy = "swing" if _strength == "weak" else "trend"
-        return {
-            "type":               type_,
-            "label":              label,
-            "strength":           _strength,
-            "strategy":           _strategy,
-            "entry":              round(entry, 2),
-            "stop_loss":          round(stop, 2),
-            "target":             target,
-            "risk":               risk,
-            "rr":                 rr,
-            "reason":             _reason,
-            "trigger_price":      trigger_price,
-            "atr_stop":           atr_stop,
-            "timeframe":          _TF.get(type_, "medium"),
-            "confirmations":      _confirmations,
-            "confirmation_flags": _conf_flags,
-        }
-
-    # 1. 突破：收盤突破20日高 + 量比≥1.5 + 短線節奏健康 + BULL動能確認
-    if high20 and price > high20 and vol_day >= 1.5 and _short_ok and _bull_momentum:
-        s = _sig("breakout", "突破", "strong", price, low20 or price * 0.95,
-                 f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x")
-        if s: signals.append(s)
-
-    # 2. 假跌破：加 rs_pct ≥ 50，強度改 medium
-    if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20 and rs_pct >= 50:
-        s = _sig("false_breakdown", "假跌破", "medium", price, round(low20 * 0.98, 2),
-                 f"昨收({prev_close})跌破前20日低，今收({price})強力收復，RS百分位{rs_pct}")
-        if s: signals.append(s)
-
-    # 3a. 均線回測 A（起漲型）：RS 40~60 + rs_trend>0
-    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
-        dist_ma20 = (price - ma20) / ma20
-        if 0 <= dist_ma20 <= 0.03 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
-            s = _sig("ma_pullback", "均線回測(起漲型)", "weak", price, ma20,
-                     f"均線多頭，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
-            if s: signals.append(s)
-
-    # 3b. 均線回測 B（主升型）：RS ≥ 60
-    if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
-        dist_ma20 = (price - ma20) / ma20
-        if 0 <= dist_ma20 <= 0.03 and rs_pct >= 60:
-            s = _sig("ma_pullback", "均線回測(主升型)", "medium", price, ma20,
-                     f"均線多頭，RS百分位{rs_pct}(≥60)")
-            if s: signals.append(s)
-
-    # 4. 強整再突：緊貼20日高（距離≤5%）+ 收盤 > MA5 + 短線節奏健康 + BULL動能確認
-    if high20 and ma5 and price > ma5 and _short_ok and _bull_momentum:
-        dist = (high20 - price) / high20
-        if 0 <= dist <= 0.05:
-            s = _sig("high_base", "強整再突", "medium", price,
-                     ma10 or round(price * 0.95, 2),
-                     f"緊貼20日高({high20})整理，量比{vol_day:.1f}x")
-            if s: signals.append(s)
-
-    # 5a. 縮量回測 A（起漲型）：RS 40~60 + rs_trend>0 + 縮量
-    if ma10 and ma20 and price > ma20:
-        dist_ma10 = abs(price - ma10) / ma10
-        if dist_ma10 <= 0.02 and vol_day < 1.0 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
-            s = _sig("retest", "縮量回測(起漲型)", "weak", price, ma20,
-                     f"縮量({vol_day:.1f}x)回測MA10，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
-            if s: signals.append(s)
-
-    # 5b. 縮量回測 B（主升型）：RS ≥ 60 + 縮量
-    if ma10 and ma20 and price > ma20:
-        dist_ma10 = abs(price - ma10) / ma10
-        if dist_ma10 <= 0.02 and vol_day < 1.0 and rs_pct >= 60:
-            s = _sig("retest", "縮量回測(主升型)", "medium", price, ma20,
-                     f"縮量({vol_day:.1f}x)回測MA10，RS百分位{rs_pct}(≥60)")
-            if s: signals.append(s)
-
-    # 6. MA60支撐：rs_pct ≥ 55
-    if ma60 and rs_pct >= 55:
-        dist = (price - ma60) / ma60
-        if 0 <= dist <= 0.02:
-            s = _sig("ma60_support", "MA60支撐", "weak", price, round(ma60 * 0.97, 2),
-                     f"收盤({price})貼近MA60({ma60})，RS百分位{rs_pct}")
-            if s: signals.append(s)
-
-    return signals
+# ── 4. 訊號偵測（邏輯已移至 signals.py，確保與個股雷達完全一致）─────────────
+from signals import calc_signals
 
 
 # ── 5. 圖形型態偵測 ──────────────────────────────────────────────
@@ -942,16 +763,20 @@ def main():
         _write_scan_failed("TWSE API 無回應或回傳非 JSON 資料")
         sys.exit(0)
 
-    # Step 1b: 產業對照表（先從 stocks.json 建 fallback，再嘗試 opendata API）
-    print("\n[1b] 抓取產業分類對照表...")
-    industry_map = {}
+    # Step 1b: 產業對照表 + 大盤相位（從 stocks.json 讀取）
+    print("\n[1b] 抓取產業分類對照表 + 大盤相位...")
+    industry_map  = {}
+    _market_regime_str = "range"  # 預設中性
     try:
         with open("docs/stocks.json", encoding="utf-8") as _f:
             _sj = json.load(_f)
         for _s in _sj.get("stocks", []):
             if _s.get("sector_key"):
                 industry_map[_s["code"]] = _s["sector_key"]
-        print(f"  [industry] stocks.json fallback：{len(industry_map)} 檔")
+        # 從 stocks.json 取大盤相位（由 fetch_stocks.py fetch_market_regime 計算）
+        _mr = _sj.get("market_regime", {})
+        _market_regime_str = (_mr.get("regime") or "range").lower()
+        print(f"  [industry] stocks.json fallback：{len(industry_map)} 檔　大盤相位：{_market_regime_str}")
     except Exception:
         pass
     # 嘗試從 opendata API 補齊其餘股票
@@ -1065,7 +890,8 @@ def main():
         yahoo["rs_pct"]      = rs_pct
         yahoo["stock_phase"] = phase
 
-        signals = calc_signals(yahoo, stock_phase=phase, rs_pct=rs_pct)
+        signals = calc_signals(yahoo, rs_pct=rs_pct, stock_phase=phase,
+                               market_regime=_market_regime_str)
         if not signals:
             no_sig += 1
             continue
