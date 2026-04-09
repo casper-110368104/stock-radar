@@ -924,6 +924,20 @@ def main():
     print("\n[1] 抓取 TWSE 全市場資料...")
     all_stocks = fetch_all_twse_stocks()
     if not all_stocks:
+        # fallback：TWSE API 失敗時，從 stocks.json 建立基本候選池（166 檔）
+        print("  [fallback] TWSE API 失敗，嘗試從 stocks.json 建立候選池...")
+        try:
+            with open("docs/stocks.json", encoding="utf-8") as _fb:
+                _fb_data = json.load(_fb)
+            all_stocks = [
+                {"code": s["code"], "name": s["name"]}
+                for s in _fb_data.get("stocks", [])
+                if s.get("price", 0) >= MIN_PRICE
+            ]
+            print(f"  [fallback] 使用 stocks.json 候選池：{len(all_stocks)} 檔")
+        except Exception as _e:
+            print(f"  [fallback] 讀取 stocks.json 失敗：{_e}")
+    if not all_stocks:
         print("  無法取得市場資料，寫入失敗狀態，保留舊資料。")
         _write_scan_failed("TWSE API 無回應或回傳非 JSON 資料")
         sys.exit(0)
