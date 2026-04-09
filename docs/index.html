@@ -1852,31 +1852,60 @@ function renderMacroFull(){
     });
     svg+='</g>';
 
-    // Labels + hit areas (outside clip so text stays readable at edges)
+    // 只保留點擊熱區（圖上不顯示文字標籤，改由下方象限卡片呈現）
     rrgItems.forEach(function(s,i){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
-      var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
-      // Clamp label position to stay inside chart
-      var lx,anchor;
-      if(x<(_pl+_pw*0.5)){lx=Math.max(x+10,_pl+4);anchor='start';}
-      else{lx=Math.min(x-10,_pl+_pw-4);anchor='end';}
-      var ly=Math.max(_pt+8,Math.min(y+3.5,svgH-_pb-3));
-      var label=s.name.length>3?s.name.substring(0,3):s.name;
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" stroke="rgba(0,0,0,.8)" stroke-width="3" paint-order="stroke" stroke-linejoin="round">'+label+'</text>';
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(235,235,240,.95)">'+label+'</text>';
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="16" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
     });
     svg+='</svg>';
 
-    // Phase legend — scrollable row
-    var legend='<div style="display:flex;gap:6px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-top:10px">';
-    ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
-      var col=phases[ph]?phases[ph].color:'#6b7280';
-      legend+='<span style="flex-shrink:0;font-size:10px;color:'+col+';padding:3px 10px;border-radius:12px;background:'+col+'15;border:1px solid '+col+'35;font-weight:600;letter-spacing:.3px">'+ph+'</span>';
+    // ── 象限卡片（圖下方，替代混亂的圖內標籤）────────────────────────
+    var _QUADS=[
+      {label:'▶ 領先',col:'#4ade80',bg:'rgba(34,197,94,.07)',border:'rgba(34,197,94,.2)',
+       fn:function(s){return s.rs>=0&&s.rs_mom>=0;},desc:'RS強 + 動能強'},
+      {label:'△ 轉強',col:'#63a0ff',bg:'rgba(99,160,255,.07)',border:'rgba(99,160,255,.2)',
+       fn:function(s){return s.rs<0&&s.rs_mom>=0;},desc:'RS弱 但動能轉升'},
+      {label:'▽ 轉弱',col:'#fbbf24',bg:'rgba(251,191,36,.07)',border:'rgba(251,191,36,.2)',
+       fn:function(s){return s.rs>=0&&s.rs_mom<0;},desc:'RS強 但動能轉降'},
+      {label:'◁ 落後',col:'#f87171',bg:'rgba(248,113,113,.07)',border:'rgba(248,113,113,.15)',
+       fn:function(s){return s.rs<0&&s.rs_mom<0;},desc:'RS弱 + 動能弱'},
+    ];
+    var quadHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px">';
+    _QUADS.forEach(function(q){
+      var items=rrgItems.filter(q.fn).sort(function(a,b){return b.rs-a.rs;});
+      if(!items.length){
+        quadHtml+='<div style="background:'+q.bg+';border:1px solid '+q.border+';border-radius:10px;padding:10px;opacity:.4">'+
+          '<div style="font-size:11px;font-weight:700;color:'+q.col+'">'+q.label+'</div>'+
+          '<div style="font-size:10px;color:var(--text3);margin-top:4px">本期無類股</div>'+
+        '</div>';
+        return;
+      }
+      quadHtml+='<div style="background:'+q.bg+';border:1px solid '+q.border+';border-radius:10px;padding:9px 10px">';
+      quadHtml+='<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:7px">'+
+        '<span style="font-size:11px;font-weight:700;color:'+q.col+'">'+q.label+'</span>'+
+        '<span style="font-size:9px;color:var(--text3)">'+q.desc+'</span>'+
+        '<span style="margin-left:auto;font-size:9px;color:var(--text3)">'+items.length+'個</span>'+
+      '</div>';
+      quadHtml+=items.map(function(s){
+        var idx=rrgItems.indexOf(s);
+        var c=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
+        var mom=s.rs_mom||0;
+        var momArrow=mom>1?'▲▲':mom>0.2?'▲':mom<-1?'▼▼':mom<-0.2?'▼':'─';
+        var momClr=mom>0.2?'#4ade80':mom<-0.2?'#f87171':'#9ca3af';
+        var rsStr=(s.rs>0?'+':'')+s.rs.toFixed(1);
+        return '<div onclick="_rrgClick('+idx+')" style="display:flex;align-items:center;gap:6px;padding:4px 5px;border-radius:6px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:rgba(0,0,0,0)" '+
+          'onmouseenter="this.style.background=\'rgba(255,255,255,.07)\'" onmouseleave="this.style.background=\'transparent\'">'+
+          '<span style="width:7px;height:7px;border-radius:50%;background:'+c+';flex-shrink:0;box-shadow:0 0 4px '+c+'88"></span>'+
+          '<span style="font-size:11px;color:rgba(220,225,235,.95);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</span>'+
+          '<span style="font-size:9px;color:var(--text3);min-width:28px;text-align:right">'+rsStr+'</span>'+
+          '<span style="font-size:9px;color:'+momClr+';min-width:14px;text-align:center;font-weight:700">'+momArrow+'</span>'+
+        '</div>';
+      }).join('');
+      quadHtml+='</div>';
     });
-    legend+='</div>';
+    quadHtml+='</div>';
 
-    h+='<div style="background:linear-gradient(160deg,rgba(30,30,36,1) 0%,rgba(20,20,22,1) 100%);border-radius:16px;border:1px solid rgba(255,255,255,.09);padding:16px;margin-bottom:10px;box-shadow:0 4px 24px rgba(0,0,0,.35)">'+
+    h+='<div style="background:linear-gradient(160deg,rgba(28,28,34,1) 0%,rgba(18,18,22,1) 100%);border-radius:16px;border:1px solid rgba(255,255,255,.08);padding:16px;margin-bottom:10px;box-shadow:0 6px 28px rgba(0,0,0,.4)">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
         '<div style="display:flex;align-items:center;gap:8px">'+
           '<div style="width:28px;height:28px;border-radius:8px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px">🗺️</div>'+
@@ -1887,11 +1916,11 @@ function renderMacroFull(){
         '</div>'+
         '<button onclick="goView(\'expansion\')" style="display:flex;align-items:center;gap:5px;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.22);color:var(--gold);font-size:11px;padding:5px 11px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:-.1px">🎲 隨機500</button>'+
       '</div>'+
-      '<div style="background:rgba(0,0,0,.2);border-radius:12px;padding:8px 6px;border:1px solid rgba(255,255,255,.045);overflow:hidden">'+
+      '<div style="background:rgba(0,0,0,.22);border-radius:12px;padding:6px 4px 4px;border:1px solid rgba(255,255,255,.04);overflow:hidden">'+
       svg+
       '</div>'+
-      legend+
-      '<div style="font-size:9.5px;color:var(--text3);text-align:center;margin-top:8px;opacity:.6;letter-spacing:.2px">點擊查看詳情 · X = RS 相對強度 · Y = 動能 · 箭頭 = 近期方向</div>'+
+      quadHtml+
+      '<div style="font-size:9px;color:var(--text3);text-align:center;margin-top:10px;opacity:.5;letter-spacing:.3px">點擊類股查看詳情 · X = RS 相對強度 · Y = 動能 · 箭頭 = 近期方向</div>'+
     '</div>';
   }
 
