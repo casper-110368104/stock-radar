@@ -1747,7 +1747,7 @@ function renderMacroFull(){
 
     // RRG scatter plot: X=RS, Y=rs_mom, 4 quadrants
     var svgW=480,svgH=420;
-    var _pt=36,_pr=20,_pb=34,_pl=44;
+    var _pt=40,_pr=24,_pb=36,_pl=46;
     var _pw=svgW-_pl-_pr,_ph=svgH-_pt-_pb;
     var _xMin=-2.2,_xMax=3.0,_yMin=-14,_yMax=12;
     function _rmx(v){return _pl+(v-_xMin)/(_xMax-_xMin)*_pw;}
@@ -1756,41 +1756,68 @@ function renderMacroFull(){
 
     var svg='<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;display:block;overflow:visible">';
 
-    // Plot area background
-    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+_pw+'" height="'+_ph+'" fill="rgba(0,0,0,.18)" rx="4"/>';
+    // Defs: subtle radial gradient per quadrant
+    svg+='<defs>';
+    svg+='<radialGradient id="qg-tl" cx="0%" cy="0%" r="100%"><stop offset="0%" stop-color="#3b82f6" stop-opacity=".18"/><stop offset="100%" stop-color="#3b82f6" stop-opacity=".03"/></radialGradient>';
+    svg+='<radialGradient id="qg-tr" cx="100%" cy="0%" r="100%"><stop offset="0%" stop-color="#22c55e" stop-opacity=".18"/><stop offset="100%" stop-color="#22c55e" stop-opacity=".03"/></radialGradient>';
+    svg+='<radialGradient id="qg-bl" cx="0%" cy="100%" r="100%"><stop offset="0%" stop-color="#ef4444" stop-opacity=".18"/><stop offset="100%" stop-color="#ef4444" stop-opacity=".03"/></radialGradient>';
+    svg+='<radialGradient id="qg-br" cx="100%" cy="100%" r="100%"><stop offset="0%" stop-color="#f59e0b" stop-opacity=".18"/><stop offset="100%" stop-color="#f59e0b" stop-opacity=".03"/></radialGradient>';
+    svg+='</defs>';
 
-    // Quadrant backgrounds
-    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(59,130,246,.09)" rx="4"/>';
-    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_pt+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(_cy-_pt).toFixed(1)+'" fill="rgba(34,197,94,.09)"/>';
-    svg+='<rect x="'+_pl+'" y="'+_cy.toFixed(1)+'" width="'+(_cx-_pl).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(239,68,68,.09)"/>';
-    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_cy.toFixed(1)+'" width="'+(svgW-_pr-_cx).toFixed(1)+'" height="'+(svgH-_pb-_cy).toFixed(1)+'" fill="rgba(245,158,11,.09)" rx="4"/>';
+    // Plot area base
+    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+_pw+'" height="'+_ph+'" fill="rgba(0,0,0,.25)" rx="6"/>';
 
-    // Quadrant corner labels
-    svg+='<text x="'+(+_pl+7)+'" y="'+(_pt+16)+'" font-size="11" fill="rgba(99,160,255,.75)" font-weight="700" font-family="sans-serif">▲ 轉強</text>';
-    svg+='<text x="'+(svgW-_pr-7)+'" y="'+(_pt+16)+'" text-anchor="end" font-size="11" fill="rgba(74,222,128,.75)" font-weight="700" font-family="sans-serif">領先 ▶</text>';
-    svg+='<text x="'+(+_pl+7)+'" y="'+(svgH-_pb-5)+'" font-size="11" fill="rgba(248,113,113,.75)" font-weight="700" font-family="sans-serif">◀ 落後</text>';
-    svg+='<text x="'+(svgW-_pr-7)+'" y="'+(svgH-_pb-5)+'" text-anchor="end" font-size="11" fill="rgba(251,191,36,.75)" font-weight="700" font-family="sans-serif">轉弱 ▼</text>';
+    // Quadrant gradient fills
+    var _qw1=(_cx-_pl).toFixed(1),_qh1=(_cy-_pt).toFixed(1);
+    var _qw2=(svgW-_pr-_cx).toFixed(1),_qh2=(svgH-_pb-_cy).toFixed(1);
+    svg+='<rect x="'+_pl+'" y="'+_pt+'" width="'+_qw1+'" height="'+_qh1+'" fill="url(#qg-tl)" rx="6"/>';
+    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_pt+'" width="'+_qw2+'" height="'+_qh1+'" fill="url(#qg-tr)" rx="6"/>';
+    svg+='<rect x="'+_pl+'" y="'+_cy.toFixed(1)+'" width="'+_qw1+'" height="'+_qh2+'" fill="url(#qg-bl)" rx="6"/>';
+    svg+='<rect x="'+_cx.toFixed(1)+'" y="'+_cy.toFixed(1)+'" width="'+_qw2+'" height="'+_qh2+'" fill="url(#qg-br)" rx="6"/>';
 
-    // Center dashed lines
-    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="5,4"/>';
-    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="5,4"/>';
+    // Subtle grid lines
+    [-2,-1,1,2].forEach(function(v){
+      var tx=_rmx(v);
+      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+_pt+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.055)" stroke-width="1"/>';
+    });
+    [-10,-5,5,10].forEach(function(v){
+      var ty=_rmy(v);
+      svg+='<line x1="'+_pl+'" y1="'+ty.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.055)" stroke-width="1"/>';
+    });
+
+    // Center axes (bright dashed)
+    svg+='<line x1="'+_pl+'" y1="'+_cy.toFixed(1)+'" x2="'+(svgW-_pr)+'" y2="'+_cy.toFixed(1)+'" stroke="rgba(255,255,255,.28)" stroke-width="1" stroke-dasharray="6,4"/>';
+    svg+='<line x1="'+_cx.toFixed(1)+'" y1="'+_pt+'" x2="'+_cx.toFixed(1)+'" y2="'+(svgH-_pb)+'" stroke="rgba(255,255,255,.28)" stroke-width="1" stroke-dasharray="6,4"/>';
 
     // Axis tick labels
     [-2,-1,0,1,2].forEach(function(v){
       var tx=_rmx(v);
-      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+4)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
-      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+13)+'" text-anchor="middle" font-size="9" fill="rgba(160,160,160,.75)" font-family="sans-serif">'+v+'</text>';
+      svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(svgH-_pb)+'" x2="'+tx.toFixed(1)+'" y2="'+(svgH-_pb+4)+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
+      svg+='<text x="'+tx.toFixed(1)+'" y="'+(svgH-_pb+14)+'" text-anchor="middle" font-size="9" fill="rgba(150,150,160,.7)" font-family="sans-serif">'+v+'</text>';
     });
     [-10,-5,0,5,10].forEach(function(v){
       var ty=_rmy(v);
-      svg+='<line x1="'+(_pl-4)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.25)" stroke-width="1"/>';
-      svg+='<text x="'+(_pl-6)+'" y="'+(ty+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="rgba(160,160,160,.75)" font-family="sans-serif">'+v+'</text>';
+      svg+='<line x1="'+(_pl-4)+'" y1="'+ty.toFixed(1)+'" x2="'+_pl+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
+      svg+='<text x="'+(_pl-7)+'" y="'+(ty+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="rgba(150,150,160,.7)" font-family="sans-serif">'+v+'</text>';
     });
-    // Axis labels
-    svg+='<text x="'+(svgW-_pr)+'" y="'+(_cy+12).toFixed(1)+'" text-anchor="end" font-size="8.5" fill="rgba(130,130,130,.65)" font-family="sans-serif">RS →</text>';
-    svg+='<text x="'+(_cx+5).toFixed(1)+'" y="'+(_pt-5)+'" font-size="8.5" fill="rgba(130,130,130,.65)" font-family="sans-serif">M ↑</text>';
 
-    // Draw arrows first (layer below dots)
+    // Axis end labels
+    svg+='<text x="'+(svgW-_pr-2)+'" y="'+(_cy-5).toFixed(1)+'" text-anchor="end" font-size="8.5" fill="rgba(140,140,150,.6)" font-family="sans-serif">RS →</text>';
+    svg+='<text x="'+(_cx+5).toFixed(1)+'" y="'+(_pt-6)+'" font-size="8.5" fill="rgba(140,140,150,.6)" font-family="sans-serif">M ↑</text>';
+
+    // Quadrant label badges (pill with background)
+    function _qlabel(x,y,anchor,col,icon,text){
+      var tw=text.length*7+18,th=18,rx=7;
+      var bx=anchor==='end'?(x-tw):x;
+      svg+='<rect x="'+bx.toFixed(1)+'" y="'+(y-13)+'" width="'+tw+'" height="'+th+'" rx="'+rx+'" fill="'+col+'" fill-opacity=".13" stroke="'+col+'" stroke-opacity=".3" stroke-width=".8"/>';
+      svg+='<text x="'+(anchor==='end'?x-5:x+5)+'" y="'+(y+1)+'" text-anchor="'+anchor+'" font-size="10" fill="'+col+'" fill-opacity=".9" font-weight="700" font-family="sans-serif">'+icon+' '+text+'</text>';
+    }
+    _qlabel(_pl+6,    _pt+20,    'start', '#63a0ff', '△', '轉強');
+    _qlabel(svgW-_pr-6,_pt+20,  'end',   '#4ade80', '▶', '領先');
+    _qlabel(_pl+6,    svgH-_pb-8,'start', '#f87171', '◁', '落後');
+    _qlabel(svgW-_pr-6,svgH-_pb-8,'end', '#fbbf24', '▽', '轉弱');
+
+    // Draw arrows (below dots)
     rrgItems.forEach(function(s){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
@@ -1798,55 +1825,60 @@ function renderMacroFull(){
       if(Math.abs(dvx)<0.001&&Math.abs(dvy)<0.001) return;
       var pvx=dvx/(_xMax-_xMin)*_pw, pvy=-dvy/(_yMax-_yMin)*_ph;
       var plen=Math.sqrt(pvx*pvx+pvy*pvy)||1;
-      var sc2=Math.min(1,30/plen);
+      var sc2=Math.min(1,32/plen);
       var ax=(x-pvx*sc2).toFixed(1),ay=(y-pvy*sc2).toFixed(1);
       var nx=pvx/plen,ny=pvy/plen;
-      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="2" stroke-opacity=".5"/>';
-      var hbx=(x-nx*7),hby=(y-ny*7);
-      var px3=-ny*3.5,py3=nx*3.5;
-      svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".7"/>';
+      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.8" stroke-opacity=".55" stroke-linecap="round"/>';
+      var hbx=(x-nx*8),hby=(y-ny*8);
+      var px3=-ny*4,py3=nx*4;
+      svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".75"/>';
     });
 
-    // Draw dots + labels (larger for bigger chart)
+    // Draw dots + labels
     rrgItems.forEach(function(s,i){
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
       var clamped=(s.rs_mom<_yMin||s.rs_mom>_yMax);
-      // Outer glow ring
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="9" fill="'+col+'" fill-opacity=".14"/>';
-      // Main dot (slightly larger)
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6" fill="'+col+'" fill-opacity="'+(clamped?.55:.9)+'" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>';
-      // Smart label positioning
+      // 3-layer glow
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="'+col+'" fill-opacity=".07"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="9"  fill="'+col+'" fill-opacity=".15"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5.5" fill="'+col+'" fill-opacity="'+(clamped?.5:.92)+'" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>';
+      // Label
       var onRight=(x<_cx);
-      var lx=onRight?(x+10):(x-10);
+      var lx=onRight?(x+12):(x-12);
       var anchor=onRight?'start':'end';
       var label=s.name.length>3?s.name.substring(0,3):s.name;
-      // Shadow + label
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(0,0,0,.7)" stroke="rgba(0,0,0,.6)" stroke-width="2.5" paint-order="stroke">'+label+'</text>';
-      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(230,230,230,.95)">'+label+'</text>';
-      // Clickable overlay (larger hit area)
-      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="13" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" stroke="rgba(0,0,0,.75)" stroke-width="3" paint-order="stroke" stroke-linejoin="round">'+label+'</text>';
+      svg+='<text x="'+lx.toFixed(1)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="'+anchor+'" font-size="9.5" font-family="sans-serif" fill="rgba(235,235,240,.95)">'+label+'</text>';
+      // Hit area
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
     });
     svg+='</svg>';
 
-    // Phase legend
-    var legend='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center">';
+    // Phase legend — scrollable row
+    var legend='<div style="display:flex;gap:6px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-top:10px">';
     ['準備噴','主升段','主升回檔','高檔震盪','空頭','整理觀察'].forEach(function(ph){
       var col=phases[ph]?phases[ph].color:'#6b7280';
-      legend+='<span style="font-size:9px;color:'+col+';padding:2px 8px;border-radius:10px;background:'+col+'18;border:1px solid '+col+'44;font-weight:600">'+ph+'</span>';
+      legend+='<span style="flex-shrink:0;font-size:10px;color:'+col+';padding:3px 10px;border-radius:12px;background:'+col+'15;border:1px solid '+col+'35;font-weight:600;letter-spacing:.3px">'+ph+'</span>';
     });
     legend+='</div>';
 
-    h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px">🗺️ 產業輪動地圖</div>'+
-        '<button onclick="goView(\'expansion\')" style="background:rgba(245,197,24,.08);border:.5px solid rgba(245,197,24,.3);color:var(--gold);font-size:10px;padding:3px 9px;border-radius:8px;cursor:pointer;font-weight:600">🎲 隨機500</button>'+
+    h+='<div style="background:linear-gradient(160deg,rgba(30,30,36,1) 0%,rgba(20,20,22,1) 100%);border-radius:16px;border:1px solid rgba(255,255,255,.09);padding:16px;margin-bottom:10px;box-shadow:0 4px 24px rgba(0,0,0,.35)">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+        '<div style="display:flex;align-items:center;gap:8px">'+
+          '<div style="width:28px;height:28px;border-radius:8px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px">🗺️</div>'+
+          '<div>'+
+            '<div style="font-size:13px;font-weight:700;color:rgba(240,240,242,.95);letter-spacing:-.2px">產業輪動地圖</div>'+
+            '<div style="font-size:10px;color:var(--text3);margin-top:1px">Relative Rotation Graph</div>'+
+          '</div>'+
+        '</div>'+
+        '<button onclick="goView(\'expansion\')" style="display:flex;align-items:center;gap:5px;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.22);color:var(--gold);font-size:11px;padding:5px 11px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:-.1px">🎲 隨機500</button>'+
       '</div>'+
-      '<div style="background:var(--bg3);border-radius:10px;padding:8px 6px">'+
+      '<div style="background:rgba(0,0,0,.2);border-radius:12px;padding:8px 6px;border:1px solid rgba(255,255,255,.045)">'+
       svg+
       '</div>'+
       legend+
-      '<div style="font-size:9px;color:var(--text3);text-align:center;margin-top:6px;opacity:.7">點點看詳情 ｜ X=RS（相對強度）Y=M（動能）箭頭=近期方向</div>'+
+      '<div style="font-size:9.5px;color:var(--text3);text-align:center;margin-top:8px;opacity:.6;letter-spacing:.2px">點擊查看詳情 · X = RS 相對強度 · Y = 動能 · 箭頭 = 近期方向</div>'+
     '</div>';
   }
 
