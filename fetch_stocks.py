@@ -2101,10 +2101,8 @@ def calc_warnings(chips, yahoo, vol_month_ratio):
     return warnings
 
 
-# ── 5b. 買點訊號偵測（邏輯移至 signals.py，此處保留函式簽名供 IDE 參考）──────
-# calc_signals imported from signals.py at top of file
-# Signature: calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
-#                         market_regime="range", composite_score=0, structure="")
+# ── 5b. 買點訊號偵測（邏輯移至 signals.py）──────────────────────────────
+# from signals import calc_signals  ← already imported at top of file
 
 # ── 6. 評分（各項 0~100）─────────────────────────────────────────
 
