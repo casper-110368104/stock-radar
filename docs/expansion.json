@@ -1,1 +1,1 @@
-{"updated_at":"2026-04-09 08:15","scan_failed":true,"sample_size":488,"signal_count":0,"backtest_stats":{},"signal_tracking":[],"stocks":[],"scan_failed_at":"2026-04-09 09:07","scan_failed_reason":"TWSE API 無回應或回傳非 JSON 資料"}
+{"updated_at":"2026-04-09 12:42","scan_failed":false,"sample_size":489,"signal_count":0,"backtest_stats":{},"signal_tracking":[],"stocks":[]}
