@@ -609,14 +609,19 @@ def aggregate_backtest_stats(all_results):
         total   = decided + b["inconclusive"]
         if total < 5:
             continue
+        wr    = round(b["wins"] / decided, 3) if decided > 0 else 0.5
+        avg_g = round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0
+        avg_l = round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0
+        ev    = round(wr * avg_g + (1 - wr) * avg_l, 2)
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         stats[t] = {
             "label":             SIGNAL_LABELS.get(t, t),
             "timeframe":         _TF.get(t, "medium"),
             "count":             total,
-            "win_rate":          round(b["wins"] / decided, 3) if decided > 0 else 0.5,
-            "avg_gain_pct":      round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0,
-            "avg_loss_pct":      round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0,
+            "win_rate":          wr,
+            "avg_gain_pct":      avg_g,
+            "avg_loss_pct":      avg_l,
+            "expected_value":    ev,
             "inconclusive_rate": round(b["inconclusive"] / total,   3) if total > 0 else 0.0,
         }
     return stats
@@ -662,8 +667,12 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
         elif hit_stop:
             rec["status"]   = "loss"; rec["resolved_date"] = today_str
             rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
-        elif days_held >= 20:
-            rec["status"] = "expired"; rec["resolved_date"] = today_str
+        else:
+            # 趨勢訊號最長 15 日；短線訊號最長 5 日（快進快出）
+            _TREND = {"breakout", "high_base", "trend_cont"}
+            max_hold = 15 if rec.get("type") in _TREND else 5
+            if days_held >= max_hold:
+                rec["status"] = "expired"; rec["resolved_date"] = today_str
 
         updated.append(rec)
 

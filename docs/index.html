@@ -691,12 +691,12 @@ function _isTrendSignal(sg){
     ((sg.type==='ma_pullback'||sg.type==='retest')&&sg.strength==='medium');
 }
 
-function _tradePlanHtml(sg,stock){
-  return _isTrendSignal(sg)?_trendPlanHtml(sg,stock):_swingPlanHtml(sg,stock);
+function _tradePlanHtml(sg,stock,forceOpen){
+  return _isTrendSignal(sg)?_trendPlanHtml(sg,stock,forceOpen):_swingPlanHtml(sg,stock,forceOpen);
 }
 
 // 趨勢跟蹤計劃（追蹤停損、加碼、讓利奔跑）
-function _trendPlanHtml(sg,stock){
+function _trendPlanHtml(sg,stock,forceOpen){
   var ps=_calcPosSz(sg);
   var initPs=Math.round(ps*5)/10;  // 首批 50%（四捨五入到0.1）
   var capAmt=Math.round(totalCapital*ps/100);
@@ -762,6 +762,7 @@ function _trendPlanHtml(sg,stock){
       '</div>'+
     '</div>'+
   '</div>';
+  var open=forceOpen?'block':'none';
   return '<div style="margin-top:7px;border:1px solid rgba(99,179,237,.35);border-radius:8px;overflow:hidden">'+
     '<div onclick="var b=document.getElementById(\''+uid+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\'" '+
       'style="cursor:pointer;padding:5px 10px;background:rgba(99,179,237,.08);display:flex;align-items:center;gap:7px">'+
@@ -770,12 +771,12 @@ function _trendPlanHtml(sg,stock){
       '<span style="font-size:10px;color:var(--text3)">首批 50%　追蹤停損</span>'+
       '<span style="font-size:10px;color:var(--text3);margin-left:auto">▼</span>'+
     '</div>'+
-    '<div id="'+uid+'" style="display:none">'+body+'</div>'+
+    '<div id="'+uid+'" style="display:'+open+'">'+body+'</div>'+
   '</div>';
 }
 
 // 短線交易計劃（固定目標，快進快出）
-function _swingPlanHtml(sg,stock){
+function _swingPlanHtml(sg,stock,forceOpen){
   var ps=_calcPosSz(sg);
   var capAmt=Math.round(totalCapital*ps/100);
   var entryRef=sg.trigger_price||sg.entry;
@@ -812,6 +813,7 @@ function _swingPlanHtml(sg,stock){
       '</div>'+
     '</div>'+
   '</div>';
+  var open=forceOpen?'block':'none';
   return '<div style="margin-top:7px;border:1px solid rgba(245,158,11,.35);border-radius:8px;overflow:hidden">'+
     '<div onclick="var b=document.getElementById(\''+uid+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\'" '+
       'style="cursor:pointer;padding:5px 10px;background:rgba(245,158,11,.08);display:flex;align-items:center;gap:7px">'+
@@ -820,7 +822,7 @@ function _swingPlanHtml(sg,stock){
       '<span style="font-size:10px;color:var(--text3)">全倉　固定目標</span>'+
       '<span style="font-size:10px;color:var(--text3);margin-left:auto">▼</span>'+
     '</div>'+
-    '<div id="'+uid+'" style="display:none">'+body+'</div>'+
+    '<div id="'+uid+'" style="display:'+open+'">'+body+'</div>'+
   '</div>';
 }
 
@@ -1505,14 +1507,18 @@ function _renderBtStats(stats){
       var c=pct>=60?'var(--green)':pct>=50?'var(--orange)':'var(--red)';
       var gainLbl=s.avg_gain_pct>0?'+'+s.avg_gain_pct+'%':'';
       var lossLbl=s.avg_loss_pct<0?s.avg_loss_pct+'%':'';
+      var ev=s.expected_value!=null?s.expected_value:null;
+      var evClr=ev==null?'var(--text3)':ev>0?'var(--green)':ev>-1?'var(--orange)':'var(--red)';
+      var evLbl=ev!=null?(ev>=0?'+':'')+ev+'%':'';
       return '<div class="bt-row">'+
         '<div class="bt-sig-label">'+(s.label||k)+'</div>'+
         '<div class="bt-bar-wrap"><div class="bt-bar" style="width:'+barW+'px;background:'+c+'"></div></div>'+
         '<div class="bt-pct" style="color:'+c+'">'+pct+'%</div>'+
-        '<div class="bt-count" style="display:flex;gap:6px">'+
+        '<div class="bt-count" style="display:flex;gap:6px;flex-wrap:wrap">'+
           '<span style="color:var(--text3)">'+s.count+'筆</span>'+
           (gainLbl?'<span style="color:var(--green);font-size:10px">獲利均'+gainLbl+'</span>':'')+
           (lossLbl?'<span style="color:var(--red);font-size:10px">虧損均'+lossLbl+'</span>':'')+
+          (evLbl?'<span style="color:'+evClr+';font-size:10px;font-weight:600">EV '+evLbl+'</span>':'')+
         '</div>'+
       '</div>';
     }).join('');
@@ -2278,11 +2284,12 @@ function render(){
   app.innerHTML=list.map(rCard).join('');
 }
 
-// ── 追蹤清單卡片（Watch Tab 專用）─────────────────────────────────
+// ── 持倉監控卡片（Watch Tab 專用）─────────────────────────────────
 function rWatchCard(s){
   var up=s.change_pct>=0,sgn=up?'+':'',pc=up?'var(--green)':'var(--red)';
   var phaseBadge=_phaseBadge(s.stock_phase);
-  // 產業輪動相位 badge
+
+  // 產業輪動 badge
   var secBadge='';
   var _sd=s.sector_key&&sectorData[s.sector_key];
   if(_sd){
@@ -2292,28 +2299,93 @@ function rWatchCard(s){
     var _spbg={'準備噴':'rgba(59,130,246,.18)','主升段':'rgba(34,197,94,.18)','高檔震盪':'rgba(245,158,11,.18)','空頭':'rgba(239,68,68,.18)'}[_sp]||'rgba(100,100,100,.12)';
     secBadge='<span style="font-size:9px;background:'+_spbg+';padding:1px 6px;border-radius:4px;white-space:nowrap">'+_sp+' <span style="color:'+_arc+';font-weight:700">'+_arr+'</span></span>';
   }
-  // AVWAP 距離
-  var avHtml='';
-  if(s.price>0){
-    var avParts=[];
-    if(s.avwap_swing>0){var _d=(s.price-s.avwap_swing)/s.avwap_swing*100,_c=_d>=0?'var(--green)':'var(--red)';avParts.push('趨勢 <span style="color:'+_c+'">$'+s.avwap_swing+' ('+(_d>=0?'+':'')+_d.toFixed(1)+'%)</span>');}
-    if(s.avwap_vol  >0){var _d=(s.price-s.avwap_vol  )/s.avwap_vol  *100,_c=_d>=0?'var(--green)':'var(--red)';avParts.push('主力 <span style="color:'+_c+'">$'+s.avwap_vol+' ('+(_d>=0?'+':'')+_d.toFixed(1)+'%)</span>');}
-    if(s.avwap_short>0){var _d=(s.price-s.avwap_short)/s.avwap_short*100,_c=_d>=0?'var(--green)':'var(--red)';avParts.push('短線 <span style="color:'+_c+'">$'+s.avwap_short+' ('+(_d>=0?'+':'')+_d.toFixed(1)+'%)</span>');}
-    if(avParts.length) avHtml='<div style="font-size:10px;color:var(--text3);margin-top:5px;display:flex;flex-wrap:wrap;gap:8px"><span>AVWAP</span>'+avParts.map(function(p){return '<span>'+p+'</span>';}).join('')+'</div>';
+
+  // ── 停損警示（取所有訊號中最高的停損價，最危險）──
+  var allSigs=(s.signals||[]).filter(function(sg){return sg.stop_loss>0;});
+  var hasTrendSig=(s.signals||[]).some(_isTrendSignal);
+  var stopBanner='';
+  if(allSigs.length && s.price>0){
+    var worst=allSigs.slice().sort(function(a,b){return b.stop_loss-a.stop_loss;})[0];
+    var dist=(s.price-worst.stop_loss)/s.price*100;
+    var broken=dist<0;
+    var warn=dist<2;
+    var clr=broken?'var(--red)':warn?'var(--orange)':'var(--green)';
+    var bk=broken?'rgba(239,68,68,.18)':warn?'rgba(245,158,11,.12)':'rgba(34,197,94,.08)';
+    var lbl=broken?'🚨 已跌破停損':warn?'⚠️ 接近停損':'✅ 停損安全';
+    stopBanner='<div style="display:flex;align-items:center;gap:10px;background:'+bk+';border-radius:8px;padding:7px 10px;margin-bottom:6px">'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--text3)">技術停損</div>'+
+        '<div style="font-size:14px;font-weight:800;color:'+clr+'">$'+worst.stop_loss+'</div>'+
+      '</div>'+
+      '<div style="width:1px;height:28px;background:var(--border)"></div>'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--text3)">距停損</div>'+
+        '<div style="font-size:14px;font-weight:800;color:'+clr+'">'+(dist>=0?dist.toFixed(1)+'%':'跌破')+'</div>'+
+      '</div>'+
+      (worst.atr_stop?'<div style="width:1px;height:28px;background:var(--border)"></div><div><div style="font-size:9px;color:var(--text3)">ATR停損</div><div style="font-size:12px;font-weight:700;color:var(--red);opacity:.8">$'+worst.atr_stop+'</div></div>':'')+
+      '<div style="margin-left:auto;font-size:11px;font-weight:700;color:'+clr+'">'+lbl+'</div>'+
+    '</div>';
   }
-  // 訊號 + 完整交易計劃（含加碼點 MA20）
-  var sigsHtml=rSignals(s);
+
+  // ── 加碼機會（趨勢訊號才有加碼邏輯：回測 MA20）──
+  var addOnBanner='';
+  if(hasTrendSig && s.ma20 && s.price>0){
+    var maDist=(s.price-s.ma20)/s.ma20*100;
+    var atLevel=maDist>=-1&&maDist<=3;
+    var below=maDist<-1;
+    var maClr=atLevel?'var(--orange)':below?'var(--red)':'var(--text2)';
+    var maBk=atLevel?'rgba(245,158,11,.12)':'var(--bg3)';
+    var maLbl=atLevel?'🟡 加碼時機':'';
+    addOnBanner='<div style="display:flex;align-items:center;gap:10px;background:'+maBk+';border-radius:8px;padding:7px 10px;margin-bottom:6px">'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--text3)">加碼點 (MA20)</div>'+
+        '<div style="font-size:14px;font-weight:800;color:'+maClr+'">$'+s.ma20.toFixed(2)+'</div>'+
+      '</div>'+
+      '<div style="width:1px;height:28px;background:var(--border)"></div>'+
+      '<div>'+
+        '<div style="font-size:9px;color:var(--text3)">距加碼</div>'+
+        '<div style="font-size:14px;font-weight:800;color:'+maClr+'">'+(maDist>=0?'+':'')+maDist.toFixed(1)+'%</div>'+
+      '</div>'+
+      (maLbl?'<div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--orange)">'+maLbl+'</div>':'')+
+    '</div>';
+  }
+
+  // ── AVWAP 健康度 ──
+  var avRows=[];
+  if(s.price>0){
+    var _avDefs=[{k:'avwap_swing',l:'趨勢AVWAP'},{k:'avwap_vol',l:'主力AVWAP'},{k:'avwap_short',l:'短線AVWAP'}];
+    _avDefs.forEach(function(av){
+      var v=s[av.k];
+      if(v>0){
+        var _d=(s.price-v)/v*100,_c=_d>=0?'var(--green)':'var(--red)';
+        avRows.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:.5px solid var(--border)">'+
+          '<span style="font-size:10px;color:var(--text3)">'+av.l+'</span>'+
+          '<span style="font-size:10px">$'+v+'　<span style="color:'+_c+';font-weight:600">'+(_d>=0?'+':'')+_d.toFixed(1)+'%</span></span>'+
+        '</div>');
+      }
+    });
+  }
+  var avHtml=avRows.length?'<div style="background:var(--bg3);border-radius:8px;padding:7px 10px;margin-bottom:8px">'+
+    '<div style="font-size:9px;color:var(--text3);margin-bottom:4px;font-weight:600;letter-spacing:.5px">AVWAP 錨點</div>'+
+    avRows.join('')+
+  '</div>':'';
+
+  // ── 訊號（交易計劃全部展開）──
+  var sigsHtml=rSignals(s,{expandPlans:true});
+
   return '<div style="background:var(--bg2);border-radius:12px;border:1px solid var(--border);padding:12px 14px;margin-bottom:10px">'+
-    '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px">'+
+    '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px">'+
       '<span style="font-size:11px;font-weight:700;background:var(--bg4);padding:2px 7px;border-radius:4px;color:var(--text3)">'+s.code+'</span>'+
       '<span style="font-size:14px;font-weight:800">'+s.name+'</span>'+
       phaseBadge+secBadge+
-      '<span style="margin-left:auto;font-size:14px;font-weight:800">$'+(s.price||'-')+'</span>'+
+      '<span style="margin-left:auto;font-size:15px;font-weight:800">$'+(s.price||'-')+'</span>'+
       '<span style="font-size:12px;color:'+pc+';font-weight:700">'+sgn+(s.change_pct||0)+'%</span>'+
       '<button onclick="togW(\''+s.code+'\',event)" style="font-size:10px;padding:2px 8px;border-radius:6px;background:rgba(239,68,68,.1);border:.5px solid rgba(239,68,68,.3);color:#ef4444;cursor:pointer;white-space:nowrap">✕ 移除</button>'+
     '</div>'+
+    stopBanner+
+    addOnBanner+
     avHtml+
-    '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">'+sigsHtml+'</div>'+
+    (sigsHtml?'<div style="border-top:1px solid var(--border);padding-top:8px">'+sigsHtml+'</div>':'')+
   '</div>';
 }
 
@@ -2727,7 +2799,9 @@ function rTech(s){
   if(!th&&!avwapH) return '<div style="font-size:13px;color:var(--text3);text-align:center;padding:18px 0">該股暫無技術分析資料（歷史資料不足）</div>';
   return th+avwapH;
 }
-function rSignals(s){
+function rSignals(s,opts){
+  opts=opts||{};
+  var expandPlans=opts.expandPlans||false;
   var sigs=(s.signals||[]).filter(function(sg){
     if(sigTF!=='all'&&_sgTF(sg)!==sigTF) return false;
     if(sigStrat!=='all'){var isTr=_isTrendSignal(sg);if(sigStrat==='trend'&&!isTr)return false;if(sigStrat==='swing'&&isTr)return false;}
@@ -2799,7 +2873,7 @@ function rSignals(s){
         '<div class="sig-px">報酬/風險 <span>1:'+sg.rr+'</span></div>'+
         atrHtml+
       '</div>'+
-      _tradePlanHtml(sg,s)+
+      _tradePlanHtml(sg,s,expandPlans)+
       confHtml+
     '</div>';
   }).join('');

@@ -1925,12 +1925,28 @@ def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
     }
 
 
+_BT_TREND_TYPES = {"breakout", "high_base", "trend_cont"}  # 趨勢：追蹤停損，無固定目標
+
 def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase="RANGE"):
-    """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單"""
+    """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單
+
+    趨勢訊號（breakout/high_base/trend_cont）：
+      - 最大持有 15 日
+      - 勝：價格達到 entry+1R（=entry+(entry-stop)）前未跌破停損 → 可移停至成本
+      - 敗：價格跌破 stop_loss
+      - inconclusive：15 日未決定
+
+    短線訊號（其他）：
+      - 最大持有 5 日（快進快出）
+      - 勝：價格達到 target 前未跌破停損
+      - 敗：價格跌破 stop_loss
+      - inconclusive：5 日未決定
+    """
     n = len(closes)
     if n < 77:
         return []
     results = []
+    import math as _math
     for i in range(62, n - 15):
         snapshot = _bt_yahoo_snapshot(closes, highs, lows, volumes, i)
         if not snapshot:
@@ -1939,35 +1955,42 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
             entry  = sig["entry"]
             stop   = sig["stop_loss"]
             target = sig["target"]
-            if target <= entry or entry <= stop:
+            if entry <= 0 or entry <= stop:
                 continue
+            is_trend = sig["type"] in _BT_TREND_TYPES
+            # 趨勢訊號：目標 = entry+1R（追蹤停損的第一個里程碑）
+            # 短線訊號：目標 = sig["target"]（固定 T1）
+            R = entry - stop
+            win_target = (entry + R) if is_trend else target
+            if win_target <= entry:
+                continue
+            max_days  = 15 if is_trend else 5
+            final_idx = min(i + max_days, n - 1)
             outcome   = "inconclusive"
-            final_idx = min(i + 15, n - 1)
             for d in range(1, final_idx - i + 1):
                 fh = highs[i + d]
                 fl = lows[i + d]
                 fo = opens[i + d] if opens and (i + d) < len(opens) else closes[i + d]
-                hit_t = fh >= target
+                hit_t = fh >= win_target
                 hit_s = fl <= stop
                 if hit_t and hit_s:
-                    mid = (target + stop) / 2
+                    mid = (win_target + stop) / 2
                     outcome = "win" if fo >= mid else "loss"
                     break
                 elif hit_t:
                     outcome = "win";  break
                 elif hit_s:
                     outcome = "loss"; break
-            day5_close = closes[min(i + 5, n - 1)]
-            import math
-            if math.isnan(day5_close) or day5_close <= 0:
+            # inconclusive：用到期日收盤價計算浮動損益
+            expire_close = closes[min(i + max_days, n - 1)]
+            if _math.isnan(expire_close) or expire_close <= 0:
                 continue
-            # gain_pct：win/loss 用確定的出場價計算，inconclusive 用第5日收盤
             if outcome == "win":
-                gain_pct = round((target - entry) / entry * 100, 2)
+                gain_pct = round((win_target - entry) / entry * 100, 2)
             elif outcome == "loss":
-                gain_pct = round((stop   - entry) / entry * 100, 2)
+                gain_pct = round((stop - entry) / entry * 100, 2)
             else:
-                gain_pct = round((day5_close - entry) / entry * 100, 2)
+                gain_pct = round((expire_close - entry) / entry * 100, 2)
             results.append({
                 "type":     sig["type"],
                 "outcome":  outcome,
@@ -1999,14 +2022,20 @@ def bt_aggregate_stats(all_results):
         total   = decided + b["inconclusive"]
         if total < 5:
             continue
+        wr      = round(b["wins"] / decided, 3) if decided > 0 else 0.5
+        avg_g   = round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0
+        avg_l   = round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0
+        # 期望值 EV = WR × avg_gain + (1-WR) × avg_loss（百分比）
+        ev      = round(wr * avg_g + (1 - wr) * avg_l, 2)
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
         stats[t] = {
             "label":             _SIGNAL_LABELS_BT.get(t, t),
             "timeframe":         _TF.get(t, "medium"),
             "count":             total,
-            "win_rate":          round(b["wins"] / decided, 3) if decided > 0 else 0.5,
-            "avg_gain_pct":      round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0,
-            "avg_loss_pct":      round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0,
+            "win_rate":          wr,
+            "avg_gain_pct":      avg_g,
+            "avg_loss_pct":      avg_l,
+            "expected_value":    ev,
             "inconclusive_rate": round(b["inconclusive"] / total,   3) if total > 0 else 0.0,
         }
     return stats
@@ -2051,8 +2080,11 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         elif hit_stop:
             rec["status"]   = "loss";    rec["resolved_date"] = today_str
             rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
-        elif days_held >= 20:
-            rec["status"] = "expired"; rec["resolved_date"] = today_str
+        else:
+            # 到期判斷：趨勢訊號最長 15 日，短線訊號最長 5 日
+            max_hold = 15 if rec.get("type") in _BT_TREND_TYPES else 5
+            if days_held >= max_hold:
+                rec["status"] = "expired"; rec["resolved_date"] = today_str
         updated.append(rec)
     # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
     open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
