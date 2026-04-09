@@ -699,6 +699,19 @@ def fetch_yahoo(sid):
             highs  = hist["High"].tolist()
             lows   = hist["Low"].tolist()
             opens  = hist["Open"].tolist()
+
+            # Forward-fill NaN OHLC（yfinance 部分版本對 .TW 回傳 NaN，導致 MA=0、AVWAP=None）
+            _lc = _lh = _ll = _lo = None
+            for _i in range(len(closes)):
+                if closes[_i] == closes[_i] and closes[_i] > 0: _lc = closes[_i]
+                if highs [_i] == highs [_i] and highs [_i] > 0: _lh = highs [_i]
+                if lows  [_i] == lows  [_i] and lows  [_i] > 0: _ll = lows  [_i]
+                if opens [_i] == opens [_i] and opens [_i] > 0: _lo = opens [_i]
+                if _lc is not None: closes[_i] = _lc
+                if _lh is not None: highs [_i] = _lh
+                if _ll is not None: lows  [_i] = _ll
+                if _lo is not None: opens [_i] = _lo
+
             if len(closes) >= 2:
                 result["open"]       = round(opens[-1],  2)
                 result["high"]       = round(highs[-1],  2)
