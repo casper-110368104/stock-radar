@@ -200,8 +200,15 @@ def calc_avwap(closes, highs, lows, volumes, anchor_idx):
     cum_tv, cum_v = 0.0, 0.0
     for i in range(anchor_idx, len(closes)):
         h, l, c, v = highs[i], lows[i], closes[i], volumes[i]
+        # pd.NA（整數欄位）會讓 math.isnan() 丟 TypeError，用 float() 先轉換
+        try:
+            h, l, c, v = float(h), float(l), float(c), float(v)
+        except (TypeError, ValueError):
+            continue
         if math.isnan(h) or math.isnan(l) or math.isnan(c) or math.isnan(v):
             continue  # 跳過 NaN bar（除權日/資料缺口），避免 nan→0.0 寫入 JSON
+        if v < 0:
+            continue
         tp = (h + l + c) / 3.0
         cum_tv += tp * v
         cum_v  += v

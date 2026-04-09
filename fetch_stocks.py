@@ -387,8 +387,15 @@ def calc_avwap(closes, highs, lows, volumes, anchor_idx):
     cum_tv, cum_v = 0.0, 0.0
     for i in range(anchor_idx, len(closes)):
         h, l, c, v = highs[i], lows[i], closes[i], volumes[i]
+        # pd.NA（整數欄位）會讓 math.isnan() 丟 TypeError，用 float() 先轉換
+        try:
+            h, l, c, v = float(h), float(l), float(c), float(v)
+        except (TypeError, ValueError):
+            continue
         if math.isnan(h) or math.isnan(l) or math.isnan(c) or math.isnan(v):
             continue  # 跳過 NaN bar（除權日/資料缺口），避免 nan→0.0 寫入 JSON
+        if v < 0:
+            continue
         tp = (h + l + c) / 3.0
         cum_tv += tp * v
         cum_v  += v
@@ -701,17 +708,25 @@ def fetch_yahoo(sid):
             lows   = hist["Low"].tolist()
             opens  = hist["Open"].tolist()
 
-            # Forward-fill NaN OHLC（yfinance 部分版本對 .TW 回傳 NaN，導致 MA=0、AVWAP=None）
+            # Forward-fill NaN OHLCV（yfinance 部分版本對 .TW 回傳 NaN/pd.NA，導致 MA=0、AVWAP=None）
+            # Volume 欄位為整數型態，pd.NA 不是 float；用 float() 轉換後再判斷
             _lc = _lh = _ll = _lo = None
+            _lv = 0
             for _i in range(len(closes)):
                 if closes[_i] == closes[_i] and closes[_i] > 0: _lc = closes[_i]
                 if highs [_i] == highs [_i] and highs [_i] > 0: _lh = highs [_i]
                 if lows  [_i] == lows  [_i] and lows  [_i] > 0: _ll = lows  [_i]
                 if opens [_i] == opens [_i] and opens [_i] > 0: _lo = opens [_i]
+                try:
+                    _vf = float(vols[_i])
+                    if _vf >= 0: _lv = _vf
+                except (TypeError, ValueError):
+                    pass
                 if _lc is not None: closes[_i] = _lc
                 if _lh is not None: highs [_i] = _lh
                 if _ll is not None: lows  [_i] = _ll
                 if _lo is not None: opens [_i] = _lo
+                vols[_i] = _lv
 
             if len(closes) >= 2:
                 result["open"]       = round(opens[-1],  2)
