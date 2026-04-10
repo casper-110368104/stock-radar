@@ -290,17 +290,25 @@ def fetch_yahoo_data(code):
         volumes = hist["Volume"].tolist()
         opens   = hist["Open"].tolist()
 
-        # Forward-fill NaN OHLC（yfinance 部分版本對 .TW 回傳 NaN，導致 MA=0、AVWAP=None）
+        # Forward-fill NaN OHLCV（yfinance 部分版本對 .TW 回傳 NaN/pd.NA，導致 MA=0、AVWAP=None）
+        # Volume 欄位為整數型態，pd.NA 不是 float；sum() 遇到 pd.NA 會拋 TypeError
         _lc = _lh = _ll = _lo = None
+        _lv = 0
         for _i in range(len(closes)):
             if closes[_i] == closes[_i] and closes[_i] > 0: _lc = closes[_i]
             if highs [_i] == highs [_i] and highs [_i] > 0: _lh = highs [_i]
             if lows  [_i] == lows  [_i] and lows  [_i] > 0: _ll = lows  [_i]
             if opens [_i] == opens [_i] and opens [_i] > 0: _lo = opens [_i]
+            try:
+                _vf = float(volumes[_i])
+                if _vf >= 0: _lv = _vf
+            except (TypeError, ValueError):
+                pass
             if _lc is not None: closes[_i] = _lc
             if _lh is not None: highs [_i] = _lh
             if _ll is not None: lows  [_i] = _ll
             if _lo is not None: opens [_i] = _lo
+            volumes[_i] = _lv
 
         price      = round(closes[-1], 2)
         prev_close = round(closes[-2], 2) if len(closes) >= 2 else price
@@ -826,16 +834,25 @@ def main():
     except Exception:
         pass
 
-    # Step 1c: 預先抓基準指數（^TWII，供 RS 計算）
+    # Step 1c: 預先抓基準指數（^TWII，供 RS 計算）— 最多重試 3 次
     print("\n[1c] 抓取基準指數（^TWII）歷史...")
     global _bm_closes_exp
-    try:
-        _bm = yf.Ticker("^TWII").history(period="2y")
-        _bm_closes_exp = _bm["Close"].tolist() if not _bm.empty else []
-        print(f"  基準指數：{len(_bm_closes_exp)} 日資料")
-    except Exception as e:
-        print(f"  基準指數抓取失敗：{e}")
-        _bm_closes_exp = []
+    _bm_closes_exp = []
+    for _attempt in range(3):
+        try:
+            _bm = yf.Ticker("^TWII").history(period="2y")
+            if not _bm.empty:
+                _bm_closes_exp = _bm["Close"].tolist()
+                print(f"  基準指數：{len(_bm_closes_exp)} 日資料（嘗試 {_attempt+1}）")
+                break
+            print(f"  基準指數空資料（嘗試 {_attempt+1}），等待重試...")
+        except Exception as e:
+            print(f"  基準指數抓取失敗（嘗試 {_attempt+1}）：{e}")
+        time.sleep(5)
+    if not _bm_closes_exp:
+        print("  ⚠️  無法取得 TWII 基準資料，RS 計算將全部跳過 → 幾乎不會產生訊號，放棄本次掃描。")
+        _write_scan_failed("^TWII 基準指數抓取失敗（3次重試後仍為空）")
+        sys.exit(0)
 
     # Step 3: 隨機抽樣
     sample_n = min(SAMPLE_SIZE, len(candidates))
