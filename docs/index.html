@@ -1372,7 +1372,7 @@ function rExpCard(s,pfx){
       if(s.avwap_swing>0) av.push(_avItem('趨勢',s.avwap_swing));
       if(s.avwap_vol  >0) av.push(_avItem('主力',s.avwap_vol));
       if(s.avwap_short>0) av.push(_avItem('短線',s.avwap_short));
-      return av.length?'<br><span style="font-size:10px;color:var(--text3)">AVWAP　</span>'+av.join('　'):'';
+      return '<br><span style="font-size:10px;color:var(--text3)">AVWAP　</span>'+(av.length?av.join('　'):'<span style="color:var(--text3);opacity:.6">資料更新中…</span>');
     }())+
     '</div>'+
   '</div>';
@@ -2391,6 +2391,11 @@ function rWatchCard(s){
           '<span style="font-size:10px;color:var(--text3)">'+av.l+'</span>'+
           '<span style="font-size:10px">$'+v+'　<span style="color:'+_c+';font-weight:600">'+(_d>=0?'+':'')+_d.toFixed(1)+'%</span></span>'+
         '</div>');
+      } else {
+        avRows.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:.5px solid var(--border)">'+
+          '<span style="font-size:10px;color:var(--text3)">'+av.l+'</span>'+
+          '<span style="font-size:10px;color:var(--text3);opacity:.5">資料更新中…</span>'+
+        '</div>');
       }
     });
   }
@@ -2732,27 +2737,33 @@ function rVol(s){
   // AVWAP 摘要（緊湊版，完整版在技術頁）
   var avRow='';
   var avItems=[];
-  if(s.price>0&&s.avwap_swing>0){var _d=(s.price-s.avwap_swing)/s.avwap_swing*100;avItems.push({lbl:'趨勢',val:s.avwap_swing,d:_d});}
-  if(s.price>0&&s.avwap_vol  >0){var _d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avItems.push({lbl:'主力',val:s.avwap_vol,  d:_d});}
-  if(s.price>0&&s.avwap_short>0){var _d=(s.price-s.avwap_short)/s.avwap_short*100;avItems.push({lbl:'短線',val:s.avwap_short,d:_d});}
-  if(avItems.length){
-    var avCells=avItems.map(function(a){
-      var c=a.d>=0?'var(--green)':'var(--red)',sg=a.d>=0?'+':'';
-      return '<div style="text-align:center">'+
-        '<div style="font-size:9px;color:var(--text3)">'+a.lbl+'AVWAP</div>'+
-        '<div style="font-size:12px;font-weight:700;color:'+c+'">$'+a.val.toFixed(1)+'</div>'+
-        '<div style="font-size:9px;color:'+c+'">'+sg+a.d.toFixed(1)+'%</div>'+
-      '</div>';
-    }).join('');
-    var avAllAbove=avItems.every(function(a){return a.d>=0;});
-    var avBadge=avAllAbove?'<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:rgba(34,197,94,.15);color:#22c55e;margin-left:4px">全線支撐</span>':'';
-    avRow='<div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:8px">'+
-      '<div style="display:flex;align-items:center;margin-bottom:5px">'+
-        '<span style="font-size:10px;color:var(--text3)">📍 AVWAP 支撐位</span>'+avBadge+
-      '</div>'+
-      '<div style="display:grid;grid-template-columns:repeat('+avItems.length+',1fr);gap:4px">'+avCells+'</div>'+
+  var _avDefs3=[{k:'avwap_swing',l:'趨勢'},{k:'avwap_vol',l:'主力'},{k:'avwap_short',l:'短線'}];
+  _avDefs3.forEach(function(def){
+    var v=s[def.k];
+    if(s.price>0&&v>0){var _d=(s.price-v)/v*100;avItems.push({lbl:def.l,val:v,d:_d,na:false});}
+    else{avItems.push({lbl:def.l,val:null,d:null,na:true});}
+  });
+  var avCells=avItems.map(function(a){
+    if(a.na) return '<div style="text-align:center">'+
+      '<div style="font-size:9px;color:var(--text3)">'+a.lbl+'AVWAP</div>'+
+      '<div style="font-size:12px;font-weight:700;color:var(--text3)">—</div>'+
+      '<div style="font-size:9px;color:var(--text3);opacity:.5">更新中</div>'+
     '</div>';
-  }
+    var c=a.d>=0?'var(--green)':'var(--red)',sg=a.d>=0?'+':'';
+    return '<div style="text-align:center">'+
+      '<div style="font-size:9px;color:var(--text3)">'+a.lbl+'AVWAP</div>'+
+      '<div style="font-size:12px;font-weight:700;color:'+c+'">$'+a.val.toFixed(1)+'</div>'+
+      '<div style="font-size:9px;color:'+c+'">'+sg+a.d.toFixed(1)+'%</div>'+
+    '</div>';
+  }).join('');
+  var avAllAbove=avItems.every(function(a){return !a.na&&a.d>=0;});
+  var avBadge=avAllAbove?'<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:rgba(34,197,94,.15);color:#22c55e;margin-left:4px">全線支撐</span>':'';
+  avRow='<div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:8px">'+
+    '<div style="display:flex;align-items:center;margin-bottom:5px">'+
+      '<span style="font-size:10px;color:var(--text3)">📍 AVWAP 支撐位</span>'+avBadge+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">'+avCells+'</div>'+
+  '</div>';
   return vh+rh+avRow;
 }
 function rTech(s){
@@ -2784,11 +2795,21 @@ function rTech(s){
   }
   // AVWAP 支撐位
   var avwapH='',avArr=[];
-  if(s.price>0&&s.avwap_swing>0){var d=(s.price-s.avwap_swing)/s.avwap_swing*100;avArr.push({lbl:'趨勢AVWAP',sub:'60日低點起錨',val:s.avwap_swing,dist:d});}
-  if(s.price>0&&s.avwap_vol  >0){var d=(s.price-s.avwap_vol  )/s.avwap_vol  *100;avArr.push({lbl:'主力AVWAP',sub:'20日最大量起錨',val:s.avwap_vol,  dist:d});}
-  if(s.price>0&&s.avwap_short>0){var d=(s.price-s.avwap_short)/s.avwap_short*100;avArr.push({lbl:'短線AVWAP',sub:'近期低點起錨', val:s.avwap_short,dist:d});}
+  var _avDefs2=[{k:'avwap_swing',l:'趨勢AVWAP',s:'60日低點起錨'},{k:'avwap_vol',l:'主力AVWAP',s:'20日最大量起錨'},{k:'avwap_short',l:'短線AVWAP',s:'近期低點起錨'}];
+  _avDefs2.forEach(function(def){
+    var v=s[def.k];
+    if(s.price>0&&v>0){var d=(s.price-v)/v*100;avArr.push({lbl:def.l,sub:def.s,val:v,dist:d});}
+    else{avArr.push({lbl:def.l,sub:def.s,val:null,dist:null});}
+  });
   if(avArr.length){
     var acols=avArr.map(function(a){
+      if(a.val===null){
+        return '<div class="tech-box">'+
+          '<div class="tech-lbl">'+a.lbl+'</div>'+
+          '<div class="tech-val" style="color:var(--text3)">—</div>'+
+          '<div class="tech-sub" style="color:var(--text3);opacity:.5">資料更新中</div>'+
+        '</div>';
+      }
       var ac=a.dist>=0?'var(--green)':'var(--red)',asign=a.dist>=0?'+':'';
       return '<div class="tech-box">'+
         '<div class="tech-lbl">'+a.lbl+'</div>'+
@@ -2796,8 +2817,8 @@ function rTech(s){
         '<div class="tech-sub" style="color:'+ac+'">'+asign+a.dist.toFixed(1)+'%　'+a.sub+'</div>'+
       '</div>';
     }).join('');
-    var allAbove=avArr.every(function(a){return a.dist>=0;});
-    var allBelow=avArr.every(function(a){return a.dist<0;});
+    var allAbove=avArr.every(function(a){return a.dist!==null&&a.dist>=0;});
+    var allBelow=avArr.every(function(a){return a.dist!==null&&a.dist<0;});
     var alignBadge='';
     if(avArr.length>=2){
       if(allAbove) alignBadge='<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(34,197,94,.15);color:#22c55e;margin-left:6px">全線支撐 ✓</span>';
