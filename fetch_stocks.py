@@ -688,6 +688,15 @@ def fetch_yahoo(sid):
         if len(hist) >= 20:
             vols = hist["Volume"].tolist()
             closes = hist["Close"].tolist()
+            # 先 forward-fill volume（pd.NA 整數欄位會讓 int()/sum() 拋 TypeError）
+            _lv_pre = 0
+            for _pi in range(len(vols)):
+                try:
+                    _vf = float(vols[_pi])
+                    if _vf >= 0: _lv_pre = _vf
+                except (TypeError, ValueError):
+                    pass
+                vols[_pi] = _lv_pre
             today_vol = vols[-1] if vols else 0
             result["volume"] = int(today_vol)
 
