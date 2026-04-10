@@ -584,18 +584,21 @@ def classify_structure(yahoo, stock_phase, sector_phase=""):
 
 
 def calc_atr(highs, lows, closes, period=14):
-    """計算近 period 日 Average True Range"""
+    """計算近 period 日 Average True Range（pd.NA / NaN safe）"""
     if len(closes) < period + 1:
         return None
     trs = []
     for i in range(1, len(closes)):
-        tr = max(
-            highs[i] - lows[i],
-            abs(highs[i] - closes[i - 1]),
-            abs(lows[i]  - closes[i - 1]),
-        )
-        trs.append(tr)
-    return round(sum(trs[-period:]) / period, 2)
+        try:
+            h = float(highs[i]); l = float(lows[i]); c0 = float(closes[i - 1])
+            if math.isnan(h) or math.isnan(l) or math.isnan(c0):
+                continue
+            tr = max(h - l, abs(h - c0), abs(l - c0))
+            trs.append(tr)
+        except (TypeError, ValueError):
+            continue
+    valid = [t for t in trs[-period:] if not math.isnan(t)]
+    return round(sum(valid) / len(valid), 2) if valid else None
 
 
 def fetch_yahoo(sid):
@@ -722,15 +725,27 @@ def fetch_yahoo(sid):
             _lc = _lh = _ll = _lo = None
             _lv = 0
             for _i in range(len(closes)):
-                if closes[_i] == closes[_i] and closes[_i] > 0: _lc = closes[_i]
-                if highs [_i] == highs [_i] and highs [_i] > 0: _lh = highs [_i]
-                if lows  [_i] == lows  [_i] and lows  [_i] > 0: _ll = lows  [_i]
-                if opens [_i] == opens [_i] and opens [_i] > 0: _lo = opens [_i]
+                # 用 float() 轉換，可同時處理 float NaN 和 pd.NA（不像 v==v 對 pd.NA 會 TypeError）
+                try:
+                    _cf = float(closes[_i])
+                    if not math.isnan(_cf) and _cf > 0: _lc = _cf
+                except (TypeError, ValueError): pass
+                try:
+                    _hf = float(highs[_i])
+                    if not math.isnan(_hf) and _hf > 0: _lh = _hf
+                except (TypeError, ValueError): pass
+                try:
+                    _lf = float(lows[_i])
+                    if not math.isnan(_lf) and _lf > 0: _ll = _lf
+                except (TypeError, ValueError): pass
+                try:
+                    _of = float(opens[_i])
+                    if not math.isnan(_of) and _of > 0: _lo = _of
+                except (TypeError, ValueError): pass
                 try:
                     _vf = float(vols[_i])
                     if _vf >= 0: _lv = _vf
-                except (TypeError, ValueError):
-                    pass
+                except (TypeError, ValueError): pass
                 if _lc is not None: closes[_i] = _lc
                 if _lh is not None: highs [_i] = _lh
                 if _ll is not None: lows  [_i] = _ll
@@ -776,34 +791,40 @@ def fetch_yahoo(sid):
 
             # ── Anchored VWAP 三線 ─────────────────────────
             _n = len(closes)
+            try:
+                def _safe_float(x, default):
+                    try: f = float(x); return default if math.isnan(f) else f
+                    except (TypeError, ValueError): return default
 
-            # avwap_swing：60日最低點錨定（NaN-safe：用 v==v 排除 NaN）
-            _base60   = max(0, _n - 60)
-            _safe_lows60 = [v if v == v else float('inf') for v in lows[_base60:]]
-            _idx_swng = _base60 + _safe_lows60.index(min(_safe_lows60))
-            _avwap_swing = calc_avwap(closes, highs, lows, vols, _idx_swng)
+                # avwap_swing：60日最低點錨定
+                _base60   = max(0, _n - 60)
+                _safe_lows60 = [_safe_float(v, float('inf')) for v in lows[_base60:]]
+                _idx_swng = _base60 + _safe_lows60.index(min(_safe_lows60))
+                _avwap_swing = calc_avwap(closes, highs, lows, vols, _idx_swng)
 
-            # avwap_vol：20日最大量那天錨定（NaN-safe）
-            _base20  = max(0, _n - 20)
-            _safe_vols20 = [v if v == v else 0 for v in vols[_base20:]]
-            _idx_vol = _base20 + _safe_vols20.index(max(_safe_vols20))
-            _avwap_vol = calc_avwap(closes, highs, lows, vols, _idx_vol)
+                # avwap_vol：20日最大量那天錨定
+                _base20  = max(0, _n - 20)
+                _safe_vols20 = [_safe_float(v, 0) for v in vols[_base20:]]
+                _idx_vol = _base20 + _safe_vols20.index(max(_safe_vols20))
+                _avwap_vol = calc_avwap(closes, highs, lows, vols, _idx_vol)
 
-            # avwap_short：近20日最近一個局部低點+後3日有反彈確認
-            _avwap_short = None
-            for _j in range(_n - 2, _base20 - 1, -1):
-                if _j < 1:
-                    break
-                if lows[_j] > lows[_j-1] or lows[_j] > lows[min(_j+1, _n-1)]:
-                    continue
-                _ahead = closes[_j+1:min(_j+4, _n)]
-                if len(_ahead) >= 2 and sum(1 for c in _ahead if c > lows[_j]) >= 2:
-                    _avwap_short = calc_avwap(closes, highs, lows, vols, _j)
-                    break
+                # avwap_short：近20日最近一個局部低點+後3日有反彈確認
+                _avwap_short = None
+                for _j in range(_n - 2, _base20 - 1, -1):
+                    if _j < 1:
+                        break
+                    if lows[_j] > lows[_j-1] or lows[_j] > lows[min(_j+1, _n-1)]:
+                        continue
+                    _ahead = closes[_j+1:min(_j+4, _n)]
+                    if len(_ahead) >= 2 and sum(1 for c in _ahead if c > lows[_j]) >= 2:
+                        _avwap_short = calc_avwap(closes, highs, lows, vols, _j)
+                        break
 
-            result["avwap_swing"] = _avwap_swing
-            result["avwap_vol"]   = _avwap_vol
-            result["avwap_short"] = _avwap_short
+                result["avwap_swing"] = _avwap_swing
+                result["avwap_vol"]   = _avwap_vol
+                result["avwap_short"] = _avwap_short
+            except Exception as _avwap_e:
+                print(f"      [WARN] {sid} AVWAP 計算失敗：{_avwap_e}")
 
             # 歷史PE分位數（近1年收盤/EPS TTM）
             if result["eps_ttm"] and result["eps_ttm"] > 0:
