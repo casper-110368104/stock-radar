@@ -6,7 +6,7 @@
 不使用 FinMind / Gemini，完全不消耗付費 API 額度。
 """
 
-import requests, json, time, os, random, sys
+import requests, json, time, os, random, sys, math
 import yfinance as yf
 from datetime import datetime
 
@@ -290,24 +290,34 @@ def fetch_yahoo_data(code):
         volumes = hist["Volume"].tolist()
         opens   = hist["Open"].tolist()
 
-        # Forward-fill NaN OHLCV（yfinance 部分版本對 .TW 回傳 NaN/pd.NA，導致 MA=0、AVWAP=None）
-        # Volume 欄位為整數型態，pd.NA 不是 float；sum() 遇到 pd.NA 會拋 TypeError
+        # Forward-fill NaN OHLCV — 用 float() 取代 v==v，同時處理 float NaN 與 pd.NA
         _lc = _lh = _ll = _lo = None
         _lv = 0
         for _i in range(len(closes)):
-            if closes[_i] == closes[_i] and closes[_i] > 0: _lc = closes[_i]
-            if highs [_i] == highs [_i] and highs [_i] > 0: _lh = highs [_i]
-            if lows  [_i] == lows  [_i] and lows  [_i] > 0: _ll = lows  [_i]
-            if opens [_i] == opens [_i] and opens [_i] > 0: _lo = opens [_i]
+            try:
+                _cf = float(closes[_i])
+                if not math.isnan(_cf) and _cf > 0: _lc = _cf
+            except (TypeError, ValueError): pass
+            try:
+                _hf = float(highs[_i])
+                if not math.isnan(_hf) and _hf > 0: _lh = _hf
+            except (TypeError, ValueError): pass
+            try:
+                _lf = float(lows[_i])
+                if not math.isnan(_lf) and _lf > 0: _ll = _lf
+            except (TypeError, ValueError): pass
+            try:
+                _of = float(opens[_i])
+                if not math.isnan(_of) and _of > 0: _lo = _of
+            except (TypeError, ValueError): pass
             try:
                 _vf = float(volumes[_i])
                 if _vf >= 0: _lv = _vf
-            except (TypeError, ValueError):
-                pass
-            if _lc is not None: closes[_i] = _lc
-            if _lh is not None: highs [_i] = _lh
-            if _ll is not None: lows  [_i] = _ll
-            if _lo is not None: opens [_i] = _lo
+            except (TypeError, ValueError): pass
+            if _lc is not None: closes[_i]  = _lc
+            if _lh is not None: highs[_i]   = _lh
+            if _ll is not None: lows[_i]    = _ll
+            if _lo is not None: opens[_i]   = _lo
             volumes[_i] = _lv
 
         price      = round(closes[-1], 2)
@@ -328,15 +338,18 @@ def fetch_yahoo_data(code):
         # ── Anchored VWAP 三線 ─────────────────────────────
         n = len(closes)
 
-        # avwap_swing：60日最低點錨定（NaN-safe）
+        # avwap_swing：60日最低點錨定
+        def _sf(x, d):
+            try: f=float(x); return d if math.isnan(f) else f
+            except (TypeError, ValueError): return d
         _base60   = max(0, n - 60)
-        _safe_lows60 = [v if v == v else float('inf') for v in lows[_base60:]]
+        _safe_lows60 = [_sf(v, float('inf')) for v in lows[_base60:]]
         idx_swing = _base60 + _safe_lows60.index(min(_safe_lows60))
         avwap_swing = calc_avwap(closes, highs, lows, volumes, idx_swing)
 
-        # avwap_vol：20日最大量那天錨定（NaN-safe）
+        # avwap_vol：20日最大量那天錨定
         _base20 = max(0, n - 20)
-        _safe_vols20 = [v if v == v else 0 for v in volumes[_base20:]]
+        _safe_vols20 = [_sf(v, 0) for v in volumes[_base20:]]
         idx_vol = _base20 + _safe_vols20.index(max(_safe_vols20))
         avwap_vol = calc_avwap(closes, highs, lows, volumes, idx_vol)
 
