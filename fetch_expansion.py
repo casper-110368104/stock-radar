@@ -767,7 +767,7 @@ def main():
             with open("docs/stocks.json", encoding="utf-8") as _fb:
                 _fb_data = json.load(_fb)
             all_stocks = [
-                {"code": s["code"], "name": s["name"]}
+                {"code": s["code"], "name": s["name"], "price": s.get("price", 0)}
                 for s in _fb_data.get("stocks", [])
                 if s.get("price", 0) >= MIN_PRICE
             ]
