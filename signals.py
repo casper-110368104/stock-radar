@@ -13,6 +13,12 @@ _RR_MAP = {
     "BEAR_STRONG":   1.0,
 }
 
+# ATR 止損乘數：趨勢訊號給更大空間，短線訊號更緊；熊市全面縮緊
+_ATR_MULT = {
+    "trend": {"bull": 2.5, "bull_pullback": 2.0, "range": 2.0, "bear": 1.5},
+    "swing": {"bull": 1.5, "bull_pullback": 1.2, "range": 1.2, "bear": 1.0},
+}
+
 _ALLOWED_SIGNALS = {
     "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base",
                       "retest", "ma60_support", "trend_cont"},
@@ -132,9 +138,10 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             rr *= 0.7
         rr = round(rr, 2)
         target = round(entry + risk * rr, 2)
-        # ATR 動態停損
+        # ATR 動態停損（乘數依策略類型 + 大盤相位差異化）
         atr = yahoo.get("atr_14")
-        atr_stop = round(entry - 2 * atr, 2) if atr is not None else None
+        _atr_mult = _ATR_MULT[_strategy].get(market_regime, 2.0)
+        atr_stop = round(entry - _atr_mult * atr, 2) if atr is not None else None
         # 觸發進場價：今日高 × (1 + buffer)
         _TRIGGER_BUFFER = {
             "breakout":        0.002,
@@ -194,7 +201,7 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
         dist_ma20 = (price - ma20) / ma20
         if 0 <= dist_ma20 <= 0.03 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
-            s = _sig("ma_pullback", "均線回測(起漲型)", "weak", price, ma20,
+            s = _sig("ma_pullback", "均線回測(起漲型)", "weak", price, round(ma20 * 0.99, 2),
                      f"均線多頭，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
             if s: signals.append(s)
 
@@ -202,7 +209,7 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     if ma5 and ma10 and ma20 and ma5 > ma10 > ma20 and price > 0:
         dist_ma20 = (price - ma20) / ma20
         if 0 <= dist_ma20 <= 0.03 and rs_pct >= 60:
-            s = _sig("ma_pullback", "均線回測(主升型)", "medium", price, ma20,
+            s = _sig("ma_pullback", "均線回測(主升型)", "medium", price, round(ma20 * 0.99, 2),
                      f"均線多頭，RS百分位{rs_pct}(≥60)")
             if s: signals.append(s)
 
@@ -219,7 +226,7 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     if ma10 and ma20 and price > ma20:
         dist_ma10 = abs(price - ma10) / ma10
         if dist_ma10 <= 0.02 and vol_day < 1.0 and 40 <= rs_pct < 60 and rs_trend_val is not None and rs_trend_val > 0:
-            s = _sig("retest", "縮量回測(起漲型)", "weak", price, ma20,
+            s = _sig("retest", "縮量回測(起漲型)", "weak", price, round(ma20 * 0.99, 2),
                      f"縮量({vol_day:.1f}x)回測MA10({ma10})，RS百分位{rs_pct}(40~60)，RS斜率剛翻正")
             if s: signals.append(s)
 
@@ -227,7 +234,7 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     if ma10 and ma20 and price > ma20:
         dist_ma10 = abs(price - ma10) / ma10
         if dist_ma10 <= 0.02 and vol_day < 1.0 and rs_pct >= 60:
-            s = _sig("retest", "縮量回測(主升型)", "medium", price, ma20,
+            s = _sig("retest", "縮量回測(主升型)", "medium", price, round(ma20 * 0.99, 2),
                      f"縮量({vol_day:.1f}x)回測MA10({ma10})，RS百分位{rs_pct}(≥60)")
             if s: signals.append(s)
 
