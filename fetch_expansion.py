@@ -788,7 +788,16 @@ def main():
             with open("docs/stocks.json", encoding="utf-8") as _fb:
                 _fb_data = json.load(_fb)
             all_stocks = [
-                {"code": s["code"], "name": s["name"], "price": s.get("price", 0)}
+                {
+                    "code":    s["code"],
+                    "name":    s["name"],
+                    "price":   s.get("price", 0),
+                    "chg_pct": s.get("change_pct", 0),
+                    "high":    s.get("high",  s.get("price", 0)),
+                    "low":     s.get("low",   s.get("price", 0)),
+                    "open":    s.get("open",  s.get("price", 0)),
+                    "vol":     s.get("volume", 0),
+                }
                 for s in _fb_data.get("stocks", [])
                 if s.get("price", 0) >= MIN_PRICE
             ]
@@ -950,7 +959,7 @@ def main():
             "code":        code,
             "name":        name,
             "price":       yahoo["price"],
-            "chg_pct":     s["chg_pct"],
+            "chg_pct":     s.get("chg_pct", 0),
             "vol_ratio":   yahoo["vol_day_ratio"],
             "ma5":         yahoo["ma5"],
             "ma20":        yahoo["ma20"],
