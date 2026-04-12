@@ -7,7 +7,7 @@
   - Gemini：新聞標籤 + 情緒 + 概念題材
 """
 
-import requests, json, time, os, yfinance as yf
+import requests, json, time, os, math, yfinance as yf
 from datetime import datetime, timedelta
 from signals import calc_signals
 
