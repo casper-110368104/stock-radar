@@ -584,7 +584,10 @@ def classify_structure(yahoo, stock_phase, sector_phase=""):
 
 
 def calc_atr(highs, lows, closes, period=14):
-    """計算近 period 日 Average True Range（pd.NA / NaN safe）"""
+    """計算近 period 日 Average True Range（pd.NA / NaN safe）
+    若 highs/lows 資料不足（yfinance 除權調整後可能全 NaN），
+    fallback 用 close-to-close 絕對差當近似 ATR。
+    """
     if len(closes) < period + 1:
         return None
     trs = []
@@ -598,7 +601,18 @@ def calc_atr(highs, lows, closes, period=14):
         except (TypeError, ValueError):
             continue
     valid = [t for t in trs[-period:] if not math.isnan(t)]
-    return round(sum(valid) / len(valid), 2) if valid else None
+    if valid:
+        return round(sum(valid) / len(valid), 2)
+    # Fallback：用 close-to-close 差值近似（yfinance H/L 全 NaN 時）
+    cc = []
+    for i in range(max(1, len(closes) - period), len(closes)):
+        try:
+            c1 = float(closes[i]); c0 = float(closes[i - 1])
+            if not (math.isnan(c1) or math.isnan(c0)):
+                cc.append(abs(c1 - c0))
+        except (TypeError, ValueError):
+            continue
+    return round(sum(cc) / len(cc), 2) if cc else None
 
 
 def fetch_yahoo(sid):
