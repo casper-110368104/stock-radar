@@ -551,6 +551,8 @@ def calc_yahoo_snapshot(closes, highs, lows, volumes, i):
 
 def backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase="RANGE"):
     """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單"""
+    from execution_model import build_trade_execution, should_take_trade
+
     n = len(closes)
     if n < 77:   # 62（MA60需求）+ 15（評估窗口）
         return []
@@ -561,24 +563,57 @@ def backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase="RA
         if not snapshot:
             continue
         for sig in calc_signals(snapshot, stock_phase=stock_phase):
-            entry  = sig["entry"]
-            stop   = sig["stop_loss"]
-            target = sig["target"]
-            if target <= entry or entry <= stop:
+            if sig["target"] <= sig["entry"] or sig["entry"] <= sig["stop_loss"]:
                 continue
 
-            # 最快第 1 日起，第 5 日先做判斷；5 日未解決繼續等到第 15 日
-            # 同日高觸目標且低觸停損：用開盤價判斷方向（開盤 >= 中點 → 先漲 → win）
+            # 次日開盤作為進場參考（離散市場：當日訊號次日才能執行）
+            next_i = i + 1
+            if next_i >= n:
+                continue
+            next_open = opens[next_i] if opens and next_i < len(opens) else closes[next_i]
+
+            avwap_swing = snapshot.get("avwap_swing") or sig["entry"]
+            avwap_vol   = snapshot.get("avwap_vol")   or avwap_swing
+
+            exec_result = build_trade_execution(
+                trigger_price = sig["trigger_price"],
+                open_price    = next_open,
+                high          = highs[next_i],
+                low           = lows[next_i],
+                stop_price    = sig["stop_loss"],
+                target_price  = sig["target"],
+                ma20          = snapshot.get("ma20") or sig["entry"],
+                avwap_swing   = avwap_swing,
+                avwap_vol     = avwap_vol,
+                volume_ratio  = snapshot.get("vol_day_ratio") or 1.0,
+            )
+
+            # 未觸發（次日開盤低於 trigger）
+            if exec_result.entry_price is None:
+                continue
+
+            # 進場決策：LARGE_GAP 過濾 + RR 過濾 + entry_score 分倉
+            should_trade, position_size = should_take_trade(exec_result, sig["type"])
+            if not should_trade:
+                continue
+
+            adj_entry  = exec_result.entry_price
+            adj_stop   = exec_result.stop_price
+            adj_target = exec_result.target_price
+
+            # 追蹤結果：趨勢型最長 15 日，其餘 5 日
+            _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+            max_hold  = 15 if sig["type"] in _TREND_TYPES else 5
             outcome   = "inconclusive"
-            final_idx = min(i + 15, n - 1)
+            final_idx = min(i + max_hold, n - 1)
             for d in range(1, final_idx - i + 1):
                 fh = highs[i + d]
                 fl = lows[i + d]
                 fo = opens[i + d] if opens and (i + d) < len(opens) else closes[i + d]
-                hit_t = fh >= target
-                hit_s = fl <= stop
+                hit_t = fh >= adj_target
+                hit_s = fl <= adj_stop
                 if hit_t and hit_s:
-                    mid = (target + stop) / 2
+                    mid = (adj_target + adj_stop) / 2
                     outcome = "win" if fo >= mid else "loss"
                     break
                 elif hit_t:
@@ -587,21 +622,25 @@ def backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase="RA
                     outcome = "loss"; break
 
             day5_close = closes[min(i + 5, n - 1)]
-            import math
             if math.isnan(day5_close) or day5_close <= 0:
                 continue
-            # gain_pct：win/loss 用確定的出場價計算，inconclusive 用第5日收盤
+
             if outcome == "win":
-                gain_pct = round((target - entry) / entry * 100, 2)
+                gain_pct = round((adj_target - adj_entry) / adj_entry * 100, 2)
             elif outcome == "loss":
-                gain_pct = round((stop   - entry) / entry * 100, 2)
+                gain_pct = round((adj_stop   - adj_entry) / adj_entry * 100, 2)
             else:
-                gain_pct = round((day5_close - entry) / entry * 100, 2)
+                gain_pct = round((day5_close - adj_entry) / adj_entry * 100, 2)
 
             results.append({
-                "type":     sig["type"],
-                "outcome":  outcome,
-                "gain_pct": gain_pct,
+                "type":          sig["type"],
+                "outcome":       outcome,
+                "gain_pct":      gain_pct,
+                "gap_type":      exec_result.gap_type,
+                "slippage":      exec_result.slippage,
+                "actual_rr":     round(exec_result.actual_rr, 2),
+                "entry_score":   exec_result.entry_score,
+                "position_size": position_size,
             })
     return results
 
@@ -876,15 +915,14 @@ def main():
         _write_scan_failed("^TWII 基準指數抓取失敗（3次重試後仍為空）")
         sys.exit(0)
 
-    # Step 3: 隨機抽樣
-    sample_n = min(SAMPLE_SIZE, len(candidates))
-    sample   = random.sample(candidates, sample_n)
-    print(f"\n[3] 隨機抽取 {sample_n} 檔，開始掃描...\n")
+    # Step 3: 全市場掃描（#5：移除隨機抽樣，改為全掃）
+    sample   = candidates
+    sample_n = len(sample)
+    print(f"\n[3] 全市場掃描：{sample_n} 檔，開始掃描...\n")
 
     # Step 4a: 逐股抓取資料（暫不計算訊號，RS 排名需全部掃描後才能排）
     STRENGTH_ORDER = {"strong": 0, "medium": 1, "weak": 2}
-    scanned      = []    # 成功抓到資料的暫存
-    raw_histories = {}   # code → (closes, highs, lows, volumes, opens) 供回測用
+    scanned = []    # 成功抓到資料的暫存
     no_data = 0
 
     for i, s in enumerate(sample):
@@ -898,14 +936,12 @@ def main():
             time.sleep(0.3)
             continue
 
-        # 取出原始序列供回測，不存入 JSON
-        raw_closes  = yahoo.pop("_closes",  [])
-        raw_highs   = yahoo.pop("_highs",   [])
-        raw_lows    = yahoo.pop("_lows",    [])
-        raw_volumes = yahoo.pop("_volumes", [])
-        raw_opens   = yahoo.pop("_opens",   [])
-        if raw_closes:
-            raw_histories[code] = (raw_closes, raw_highs, raw_lows, raw_volumes, raw_opens)
+        # 捨棄原始序列（不再做歷史回測）
+        yahoo.pop("_closes",  None)
+        yahoo.pop("_highs",   None)
+        yahoo.pop("_lows",    None)
+        yahoo.pop("_volumes", None)
+        yahoo.pop("_opens",   None)
 
         print("資料✓")
         scanned.append({"code": code, "name": name, "s": s, "yahoo": yahoo})
@@ -988,18 +1024,24 @@ def main():
         -len(x["signals"])
     ))
 
-    # Step 6: 歷史勝率回測
-    print(f"\n[6] 計算歷史訊號勝率（{len(raw_histories)} 支股票）...")
-    _phase_map_bt = {sc["code"]: sc["yahoo"].get("stock_phase", "RANGE") for sc in scanned}
-    all_bt = []
-    for code, (cls, hgh, lws, vols, opn) in raw_histories.items():
-        sp = _phase_map_bt.get(code, "RANGE")
-        all_bt.extend(backtest_one_stock(cls, hgh, lws, vols, opens=opn, stock_phase=sp))
-    backtest_stats = aggregate_backtest_stats(all_bt)
-    total_samples  = sum(v["count"] for v in backtest_stats.values())
-    print(f"  回測樣本：{len(all_bt)} 筆，有效訊號類型：{len(backtest_stats)} 種，總樣本：{total_samples}")
+    # Step 5b: 市場擁擠度（#6）
+    # 各訊號類型出現次數 / 有資料股數，>15% 代表該訊號當日擁擠
+    _sig_counts: dict = {}
+    for _r in results:
+        for _sg in _r["signals"]:
+            _sig_counts[_sg["type"]] = _sig_counts.get(_sg["type"], 0) + 1
+    _total_scanned = max(len(scanned), 1)
+    crowding_index = {
+        t: round(cnt / _total_scanned, 3)
+        for t, cnt in _sig_counts.items()
+    }
+    _crowded = [t for t, v in crowding_index.items() if v > 0.15]
+    if _crowded:
+        print(f"  [擁擠度] 高擁擠訊號（>15%）：{_crowded}")
+    else:
+        print(f"  [擁擠度] 無高擁擠訊號")
 
-    # Step 7: 更新信號追蹤
+    # Step 6: 更新信號追蹤
     today_str       = datetime.now().strftime("%Y-%m-%d")
     today_price_map = {s["code"]: s["price"]                for s in all_stocks}
     today_high_map  = {s["code"]: s.get("high", s["price"])  for s in all_stocks}
@@ -1026,7 +1068,7 @@ def main():
         "scan_failed":     False,
         "sample_size":     sample_n,
         "signal_count":    len(results),
-        "backtest_stats":  backtest_stats,
+        "crowding_index":  crowding_index,
         "signal_tracking": signal_tracking,
         "stocks":          results,
     }
