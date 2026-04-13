@@ -1219,17 +1219,17 @@ function renderBacktest(){
   var app=document.getElementById('bt-app');
   if(!app) return;
   var secStyle='font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:8px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px';
-  var stocksHtml=_renderBtStats(stocksBtStats)+_renderBtTracking(stocksBtTracking)+_renderPatternStats(stocks);
-  var expHtml=_renderBtStats(expansionData.backtest_stats)+_renderBtTracking(expansionData.signal_tracking)+_renderPatternStats(expansionData.stocks||[]);
+  var stocksHtml=_renderBtTracking(stocksBtTracking,'bts');
+  var expHtml=_renderBtTracking(expansionData.signal_tracking,'bte');
   app.innerHTML=
     _renderEquityCurve()+
     '<div style="'+secStyle+';margin-top:16px;display:flex;justify-content:space-between;align-items:center">'+
       '<span>📈 個股選股雷達</span>'+
       '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 清空追蹤</button>'+
     '</div>'+
-    (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無個股回測資料</div>')+
-    '<div style="'+secStyle+';margin-top:16px">🎲 隨機500股掃描</div>'+
-    (expHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無隨機500股回測資料</div>');
+    (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無追蹤記錄</div>')+
+    '<div style="'+secStyle+';margin-top:16px">🌐 全市場掃描</div>'+
+    (expHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無追蹤記錄</div>');
 }
 
 // ── 隨機500股 ──────────────────────────────────────────────
@@ -1540,10 +1540,17 @@ function _renderBtStats(stats){
   '</div>';
 }
 
-function _renderBtTracking(tracking){
+function _togBtCard(id){
+  var card=document.getElementById(id);
+  if(card) card.classList.toggle('open');
+}
+
+function _renderBtTracking(tracking,idPfx){
   if(!tracking||!tracking.length) return '';
+  idPfx=idPfx||'bt';
   var SI={open:'⏳',win:'✅',loss:'🔴',expired:'⚪'};
   var SL={open:'追蹤中',win:'達標',loss:'停損',expired:'超時'};
+  var SC={open:'var(--text3)',win:'var(--green)',loss:'var(--red)',expired:'var(--text3)'};
   var cnt={all:tracking.length,open:0,win:0,loss:0,expired:0};
   tracking.forEach(function(t){if(cnt[t.status]!==undefined) cnt[t.status]++;});
   var tabs=[
@@ -1555,45 +1562,61 @@ function _renderBtTracking(tracking){
   ].map(function(tab,i){
     return '<span class="bt-ftab'+(i===0?' active':'')+'" data-status="'+tab.k+'" onclick="_btFilter(this)">'+tab.label+' '+cnt[tab.k]+'</span>';
   }).join('');
-  var items=tracking.map(function(t){
+
+  var cards=tracking.map(function(t,idx){
     var g=t.gain_pct||0;
     var gs=(g>=0?'+':'')+g.toFixed(1)+'%';
     var gc=g>0?'var(--green)':g<0?'var(--red)':'var(--text3)';
-    var dayStr=t.status==='open'?'第'+(t.days_held||0)+'日':(SL[t.status]||t.status)+((t.resolved_date)?' '+t.resolved_date.slice(5):'');
-    var phaseOk=/主升|噴/.test(t.sector_phase||'');
-    var phaseBg=phaseOk?'rgba(34,197,94,.15)':'rgba(120,120,120,.15)';
-    var phaseC=phaseOk?'var(--green)':'var(--text3)';
-    return '<div class="bt-track-item" data-status="'+(t.status||'open')+'" data-code="'+(t.code||'')+'" data-name="'+(t.name||'')+'">'+
-      '<div class="bt-ti-r1">'+
-        '<span style="font-size:13px">'+(SI[t.status]||'⚪')+'</span>'+
-        '<span style="font-size:12px;font-weight:700">'+(t.repeat?'🔁 ':'')+t.label+'</span>'+
-        (t.sector_phase?'<span class="bt-ti-phase" style="background:'+phaseBg+';color:'+phaseC+'">'+t.sector_phase+'</span>':'')+
-        '<span class="bt-ti-r1-right">'+
-          '<span style="font-size:10px;font-weight:600;background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--text3)">'+t.code+'</span>'+
-          '<span style="font-size:12px;font-weight:700">'+t.name+'</span>'+
-        '</span>'+
+    var st=t.strength||'weak';
+    var statClr=SC[t.status]||'var(--text3)';
+    var dayStr=t.status==='open'
+      ?'第'+(t.days_held||0)+'日'
+      :(SL[t.status]||t.status)+(t.resolved_date?' '+t.resolved_date.slice(5):'');
+    var cid=idPfx+'-'+idx;
+    return '<div class="exp-card bt-track-item" id="'+cid+'" data-status="'+(t.status||'open')+'" data-code="'+(t.code||'')+'" data-name="'+(t.name||'')+'">'+
+      '<div class="exp-hdr" onclick="_togBtCard(\''+cid+'\')" style="cursor:pointer">'+
+        '<div class="exp-meta">'+
+          '<span class="exp-code">'+t.code+'</span>'+
+          '<span class="exp-name">'+t.name+'</span>'+
+          '<span class="exp-sig-badge '+st+'">'+t.label+'</span>'+
+          (t.repeat?'<span style="font-size:9px;color:var(--text3)">🔁</span>':'')+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:6px">'+
+          '<div class="exp-right">'+
+            '<div style="font-size:12px;font-weight:700">'+SI[t.status]+' $'+(t.current_price||'-')+'</div>'+
+            '<div class="exp-chg" style="color:'+gc+'">'+gs+'</div>'+
+          '</div>'+
+          '<span class="exp-chevron">▼</span>'+
+        '</div>'+
       '</div>'+
-      '<div class="bt-ti-r2">'+
-        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">進場</div><div class="bt-ti-cell-val">$'+t.entry+'</div></div>'+
-        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">目標</div><div class="bt-ti-cell-val" style="color:var(--green)">$'+t.target+'</div></div>'+
-        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">停損</div><div class="bt-ti-cell-val" style="color:var(--red)">$'+t.stop_loss+'</div></div>'+
-      '</div>'+
-      '<div class="bt-ti-r3">'+
-        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">現價</div><div class="bt-ti-cell-val">$'+(t.current_price||'-')+'</div></div>'+
-        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">損益</div><div class="bt-ti-cell-val" style="color:'+gc+'">'+gs+'</div></div>'+
-        '<div class="bt-ti-cell"><div class="bt-ti-cell-label">追蹤</div><div class="bt-ti-cell-val">'+dayStr+'</div></div>'+
+      '<div class="exp-signals">'+
+        '<div class="exp-sig '+st+'">'+
+          '<div class="exp-sig-head">'+
+            '<span class="exp-sig-badge '+st+'">'+(st==='strong'?'強':st==='medium'?'中':'弱')+'</span>'+
+            '<span class="exp-sig-label">'+t.label+'</span>'+
+            '<span style="margin-left:auto;font-size:10px;color:'+statClr+'">'+dayStr+'</span>'+
+          '</div>'+
+          '<div class="exp-sig-prices">'+
+            '<div class="exp-sig-px">進場 <span>$'+t.entry+'</span></div>'+
+            '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span></div>'+
+            '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+t.stop_loss+'</span></div>'+
+            '<div class="exp-sig-px">現價 <span style="color:'+gc+'">$'+(t.current_price||'-')+'</span></div>'+
+          '</div>'+
+          (t.trigger_date?'<div class="exp-sig-reason" style="margin-top:5px">觸發日：'+t.trigger_date+(t.sector_phase?' ∙ 類股：'+t.sector_phase:'')+'</div>':'')+
+        '</div>'+
       '</div>'+
     '</div>';
   }).join('');
-  return '<div class="bt-card" style="margin-top:12px">'+
+
+  return '<div class="bt-card" style="margin-top:8px">'+
     '<div class="bt-card-hdr open">'+
-      '<div class="bt-title" style="margin-bottom:0">🎯 信號追蹤 <span class="bt-sub">（近'+tracking.length+'筆，追蹤期最長20日）</span></div>'+
+      '<div class="bt-title" style="margin-bottom:0">🎯 訊號追蹤 <span class="bt-sub">（'+tracking.length+'筆）</span></div>'+
       '<button class="bt-toggle-btn" onclick="_btToggle(this)">▾</button>'+
     '</div>'+
     '<div class="bt-card-body">'+
       '<div class="bt-filter-bar">'+tabs+'</div>'+
       '<div class="bt-search-wrap">🔍 <input class="bt-search-input" placeholder="搜尋代號或名稱…" oninput="_btSearch(this)"></div>'+
-      items+
+      cards+
       '<div class="bt-no-result">沒有符合條件的記錄</div>'+
     '</div>'+
   '</div>';

@@ -922,8 +922,7 @@ def main():
 
     # Step 4a: 逐股抓取資料（暫不計算訊號，RS 排名需全部掃描後才能排）
     STRENGTH_ORDER = {"strong": 0, "medium": 1, "weak": 2}
-    scanned      = []    # 成功抓到資料的暫存
-    raw_histories = {}   # code → (closes, highs, lows, volumes, opens) 供回測用
+    scanned = []    # 成功抓到資料的暫存
     no_data = 0
 
     for i, s in enumerate(sample):
@@ -937,14 +936,12 @@ def main():
             time.sleep(0.3)
             continue
 
-        # 取出原始序列供回測，不存入 JSON
-        raw_closes  = yahoo.pop("_closes",  [])
-        raw_highs   = yahoo.pop("_highs",   [])
-        raw_lows    = yahoo.pop("_lows",    [])
-        raw_volumes = yahoo.pop("_volumes", [])
-        raw_opens   = yahoo.pop("_opens",   [])
-        if raw_closes:
-            raw_histories[code] = (raw_closes, raw_highs, raw_lows, raw_volumes, raw_opens)
+        # 捨棄原始序列（不再做歷史回測）
+        yahoo.pop("_closes",  None)
+        yahoo.pop("_highs",   None)
+        yahoo.pop("_lows",    None)
+        yahoo.pop("_volumes", None)
+        yahoo.pop("_opens",   None)
 
         print("資料✓")
         scanned.append({"code": code, "name": name, "s": s, "yahoo": yahoo})
@@ -1044,18 +1041,7 @@ def main():
     else:
         print(f"  [擁擠度] 無高擁擠訊號")
 
-    # Step 6: 歷史勝率回測
-    print(f"\n[6] 計算歷史訊號勝率（{len(raw_histories)} 支股票）...")
-    _phase_map_bt = {sc["code"]: sc["yahoo"].get("stock_phase", "RANGE") for sc in scanned}
-    all_bt = []
-    for code, (cls, hgh, lws, vols, opn) in raw_histories.items():
-        sp = _phase_map_bt.get(code, "RANGE")
-        all_bt.extend(backtest_one_stock(cls, hgh, lws, vols, opens=opn, stock_phase=sp))
-    backtest_stats = aggregate_backtest_stats(all_bt)
-    total_samples  = sum(v["count"] for v in backtest_stats.values())
-    print(f"  回測樣本：{len(all_bt)} 筆，有效訊號類型：{len(backtest_stats)} 種，總樣本：{total_samples}")
-
-    # Step 7: 更新信號追蹤
+    # Step 6: 更新信號追蹤
     today_str       = datetime.now().strftime("%Y-%m-%d")
     today_price_map = {s["code"]: s["price"]                for s in all_stocks}
     today_high_map  = {s["code"]: s.get("high", s["price"])  for s in all_stocks}
@@ -1083,7 +1069,6 @@ def main():
         "sample_size":     sample_n,
         "signal_count":    len(results),
         "crowding_index":  crowding_index,
-        "backtest_stats":  backtest_stats,
         "signal_tracking": signal_tracking,
         "stocks":          results,
     }
