@@ -116,20 +116,45 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         # 個股型態篩選
         if type_ not in _ALLOWED_SIGNALS.get(stock_phase, _ALLOWED_SIGNALS["RANGE"]):
             return None
+
+        # ── 策略類型（必須在 ATR 計算前確定，修正原本 UnboundLocalError）──
+        _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+        _SWING_TYPES = {"false_breakdown", "ma60_support"}
+        if type_ in _TREND_TYPES:
+            _strategy = "trend"
+        elif type_ in _SWING_TYPES:
+            _strategy = "swing"
+        else:  # ma_pullback, retest：強度決定策略
+            _strategy = "swing" if strength == "weak" else "trend"
+
         _strength = strength
         _reason   = reason
+
+        # ── AVWAP 破位處理（#4 更決策化）──
+        # 趨勢型訊號（breakout/trend_cont）：直接封鎖，不產生訊號
+        # 其他訊號：降一級強度並附加警告
+        if not _trend_ok:
+            if type_ in ("breakout", "trend_cont"):
+                return None
+            _strength = {"strong": "medium", "medium": "weak"}.get(_strength, _strength)
+            _reason   = reason + "；⚠️趨勢破 AVWAP"
+
         # 大盤熊市：訊號強度上限降為 weak
         if _market_bear:
             _strength = "weak"
-        # AVWAP 破位：降一級強度
-        if not _trend_ok:
-            _strength = {"strong": "medium", "medium": "weak"}.get(_strength, _strength)
-            _reason   = reason + "；⚠️趨勢破 AVWAP"
+
+        # 主力成本（avwap_vol）備註
         if _mm_ok and avwap_vol:
             _reason = _reason + "；主力未跑✓"
+
+        # ── 確認旗標加成（#2）：≥5 項確認 → 強度升一級 ──
+        if _confirmations >= 5 and not _market_bear:
+            _strength = {"weak": "medium", "medium": "strong"}.get(_strength, _strength)
+
         risk = round(entry - stop, 2) if stop else 0
         if risk <= 0:
             return None
+
         # 動態 RR（AVWAP 位置微調）
         rr = _RR_MAP.get(stock_phase, 2.0)
         if avwap_swing and price >= avwap_swing:
@@ -138,10 +163,20 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             rr *= 0.7
         rr = round(rr, 2)
         target = round(entry + risk * rr, 2)
-        # ATR 動態停損（乘數依策略類型 + 大盤相位差異化）
+
+        # ── ATR 動態停損（#3）──
+        # 取 ATR停損 與 固定停損 中較寬者（避免正常波動震出；ATR=None 時沿用固定停損）
         atr = yahoo.get("atr_14")
         _atr_mult = _ATR_MULT[_strategy].get(market_regime, 2.0)
         atr_stop = round(entry - _atr_mult * atr, 2) if atr is not None else None
+        if atr_stop is not None and atr_stop < stop:
+            # ATR 停損更寬，重算 risk/target
+            stop   = atr_stop
+            risk   = round(entry - stop, 2)
+            if risk <= 0:
+                return None
+            target = round(entry + risk * rr, 2)
+
         # 觸發進場價：今日高 × (1 + buffer)
         _TRIGGER_BUFFER = {
             "breakout":        0.002,
@@ -155,14 +190,6 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         _today_high = yahoo.get("high") or entry
         trigger_price = round(_today_high * (1 + _TRIGGER_BUFFER.get(type_, 0.003)), 2)
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
-        _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
-        _SWING_TYPES = {"false_breakdown", "ma60_support"}
-        if type_ in _TREND_TYPES:
-            _strategy = "trend"
-        elif type_ in _SWING_TYPES:
-            _strategy = "swing"
-        else:  # ma_pullback, retest：強度決定策略
-            _strategy = "swing" if _strength == "weak" else "trend"
         return {
             "type":               type_,
             "label":              label,
