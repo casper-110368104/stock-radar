@@ -1983,16 +1983,16 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
     """對單支股票的歷史資料逐日跑訊號偵測，回傳各訊號的結果清單
 
     趨勢訊號（breakout/high_base/trend_cont）：
-      - 最大持有 15 日
-      - 勝：價格達到 entry+1R（=entry+(entry-stop)）前未跌破停損 → 可移停至成本
-      - 敗：價格跌破 stop_loss
-      - inconclusive：15 日未決定
-
-    短線訊號（其他）：
-      - 最大持有 5 日（快進快出）
+      - 最大持有 25 日（台股輪動周期 20-40 日）
       - 勝：價格達到 target 前未跌破停損
       - 敗：價格跌破 stop_loss
-      - inconclusive：5 日未決定
+      - inconclusive：25 日未決定
+
+    短線訊號（其他）：
+      - 最大持有 8 日
+      - 勝：價格達到 target 前未跌破停損
+      - 敗：價格跌破 stop_loss
+      - inconclusive：8 日未決定
     """
     n = len(closes)
     if n < 77:
@@ -2010,14 +2010,17 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
         "false_breakdown": 0.05,
     }
     _SLIP = 0.002  # 滑價估計
-    for i in range(62, n - 16):   # n-16：確保 i+1+15 不超界
+    for i in range(62, n - 26):   # n-26：確保 i+1+25 不超界（max_hold=25）
         snapshot = _bt_yahoo_snapshot(closes, highs, lows, volumes, i)
         if not snapshot:
             continue
         ni = i + 1   # 進場日 index
         next_open = opens[ni] if opens and ni < len(opens) else closes[ni]
         next_high = highs[ni]
-        for sig in calc_signals(snapshot, {}, 50, stock_phase=stock_phase):
+        # composite_score=50（中性）：讓弱股過濾條件（>0 and <45）不觸發
+        # 回測中無法取得歷史評分，用中性值讓技術條件完整運作
+        for sig in calc_signals(snapshot, {}, 50, stock_phase=stock_phase,
+                                composite_score=50):
             entry   = sig["entry"]
             stop    = sig["stop_loss"]
             target  = sig["target"]
@@ -2049,7 +2052,7 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
             win_target = target
             if win_target <= actual_entry:
                 continue
-            max_days  = 15 if is_trend else 5
+            max_days  = 25 if is_trend else 8
             final_idx = min(ni + max_days, n - 1)
             outcome   = "inconclusive"
             for d in range(1, final_idx - ni + 1):
