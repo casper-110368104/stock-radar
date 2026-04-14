@@ -708,11 +708,17 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
 
         rec["days_held"] = days_held
 
-        today_high = (today_high_map or {}).get(code, current_price)
-        today_low  = (today_low_map  or {}).get(code, current_price)
-        today_open = (today_open_map or {}).get(code, current_price)
+        today_high  = (today_high_map or {}).get(code, current_price)
+        today_low   = (today_low_map  or {}).get(code, current_price)
+        today_open  = (today_open_map or {}).get(code, current_price)
+        today_close = current_price
+
         hit_target = today_high is not None and today_high >= rec["target"]
-        hit_stop   = today_low  is not None and today_low  <= rec["stop_loss"]
+        # 雙停損：技術停損（收盤確認）或 ATR停損（盤中破位即出）
+        _atr_stop_v   = rec.get("atr_stop")
+        hit_tech_stop = today_close is not None and today_close <= rec["stop_loss"]
+        hit_atr_stop  = bool(_atr_stop_v and today_low is not None and today_low <= _atr_stop_v)
+        hit_stop      = hit_tech_stop or hit_atr_stop
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
@@ -736,22 +742,27 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
 
         updated.append(rec)
 
-    # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
+    # 加入今日新訊號
+    # repeat=True：同代號同類型已有 open 記錄（重複訊號，跳過）
+    # is_pyramid=True：同代號但不同類型已有 open 記錄（加碼機會）
     # expansion 每日新增上限：取最強前 20 筆（strong > medium > weak）
     _STRENGTH_ORD = {"strong": 0, "medium": 1, "weak": 2}
-    open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    open_keys     = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    open_codes    = {r["code"] for r in updated if r.get("status") == "open"}
 
     new_candidates = []
     for stock in today_results:
         code = stock["code"]
         name = stock["name"]
         for sig in stock.get("signals", []):
-            new_candidates.append((stock, sig, (code, sig["type"]) in open_keys))
+            is_repeat  = (code, sig["type"]) in open_keys
+            is_pyramid = (not is_repeat) and (code in open_codes)
+            new_candidates.append((stock, sig, is_repeat, is_pyramid))
 
     new_candidates.sort(key=lambda x: _STRENGTH_ORD.get(x[1].get("strength", "weak"), 2))
     new_candidates = new_candidates[:20]   # 每日新增上限 20 筆
 
-    for stock, sig, is_repeat in new_candidates:
+    for stock, sig, is_repeat, is_pyramid in new_candidates:
         code        = stock["code"]
         name        = stock["name"]
         entry_price = today_price_map.get(code, sig["entry"])
@@ -766,9 +777,11 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             "trigger_date":  today_str,
             "entry":         sig["entry"],
             "stop_loss":     sig["stop_loss"],
+            "atr_stop":      sig.get("atr_stop"),
             "target":        sig["target"],
             "status":        "open",
             "repeat":        is_repeat,
+            "is_pyramid":    is_pyramid,
             "sector_key":    sk,
             "sector_phase":  sdata.get("sub_phase", ""),
             "current_price": round(entry_price, 2),

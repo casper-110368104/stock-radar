@@ -2130,15 +2130,19 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
             if days_held >= max_hold:
                 rec["status"] = "expired"; rec["resolved_date"] = today_str
         updated.append(rec)
-    # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
-    open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    # 加入今日新訊號
+    # repeat=True：同代號同類型已有 open 記錄（重複訊號）
+    # is_pyramid=True：同代號但不同類型已有 open 記錄（加碼機會）
+    open_keys  = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    open_codes = {r["code"] for r in updated if r.get("status") == "open"}
     for stock in today_results:
         code = stock["code"]
         for sig in stock.get("signals", []):
-            ep        = today_price_map.get(code, sig["entry"])
-            is_repeat = (code, sig["type"]) in open_keys
-            sk        = stock.get("sector_key", "")
-            sdata     = (sector_rotation or {}).get(sk, {})
+            ep         = today_price_map.get(code, sig["entry"])
+            is_repeat  = (code, sig["type"]) in open_keys
+            is_pyramid = (not is_repeat) and (code in open_codes)
+            sk         = stock.get("sector_key", "")
+            sdata      = (sector_rotation or {}).get(sk, {})
             updated.append({
                 "code":          code,
                 "name":          stock.get("name", code),
@@ -2148,9 +2152,11 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
                 "trigger_date":  today_str,
                 "entry":         sig["entry"],
                 "stop_loss":     sig["stop_loss"],
+                "atr_stop":      sig.get("atr_stop"),
                 "target":        sig["target"],
                 "status":        "open",
                 "repeat":        is_repeat,
+                "is_pyramid":    is_pyramid,
                 "sector_key":    sk,
                 "sector_phase":  sdata.get("sub_phase", ""),
                 "current_price": round(ep, 2),
