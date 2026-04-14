@@ -1209,11 +1209,69 @@ function _setECTab(t){
 }
 
 function _clearBtData(){
-  if(!confirm('確定清空所有回測追蹤記錄？（僅清除畫面顯示，JSON 資料需透過 reset_tracking.py 重置）')) return;
-  stocksBtStats={};
-  stocksBtTracking=[];
-  if(expansionData){expansionData.backtest_stats={};expansionData.signal_tracking=[];}
-  renderBacktest();
+  var token=(localStorage.getItem('gh_token')||'').trim();
+  if(!token){
+    token=(prompt(
+      '首次使用永久重置功能\n\n'+
+      '請輸入 GitHub Personal Access Token：\n'+
+      '（Fine-grained PAT → casper-110368104/stock-radar → Contents: Read & Write）\n\n'+
+      '輸入後會記住，下次不需再輸入。\n'+
+      '（日後想更換 token 可在瀏覽器 DevTools → Application → localStorage 刪除 gh_token）'
+    )||'').trim();
+    if(!token) return;
+    localStorage.setItem('gh_token',token);
+  }
+  if(!confirm('確定永久清空所有追蹤記錄？\n\n此操作會直接更新 GitHub 上的 JSON 檔案，無法還原。')) return;
+  _doPermanentReset(token);
+}
+
+async function _doPermanentReset(token){
+  var btn=document.querySelector('[onclick="_clearBtData()"]');
+  if(btn){btn.disabled=true;btn.textContent='⏳ 重置中...';}
+  var base='https://api.github.com/repos/casper-110368104/stock-radar/contents/';
+  var branch='main';
+  var hdrs={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  try{
+    for(var _f of ['docs/stocks.json','docs/expansion.json']){
+      var gr=await fetch(base+_f+'?ref='+branch,{headers:hdrs});
+      if(gr.status===404) continue; // 檔案不存在，跳過
+      if(gr.status===401||gr.status===403){
+        localStorage.removeItem('gh_token');
+        throw new Error('Token 無效（'+gr.status+'），已清除，請重試。');
+      }
+      if(!gr.ok) throw new Error('讀取 '+_f+' 失敗：'+gr.status);
+      var fd=await gr.json();
+      // 解碼（處理 UTF-8 中文）
+      var bytes=Uint8Array.from(atob(fd.content.replace(/\s/g,'')),function(c){return c.charCodeAt(0);});
+      var data=JSON.parse(new TextDecoder().decode(bytes));
+      data.signal_tracking=[];
+      data.backtest_stats={};
+      // 編碼回 base64
+      var enc=new TextEncoder().encode(JSON.stringify(data,null,2));
+      var b64str='';
+      enc.forEach(function(b){b64str+=String.fromCharCode(b);});
+      var pr=await fetch(base+_f,{
+        method:'PUT',
+        headers:Object.assign({'Content-Type':'application/json'},hdrs),
+        body:JSON.stringify({
+          message:'Reset tracking ('+new Date().toISOString().slice(0,10)+')',
+          content:btoa(b64str),sha:fd.sha,branch:branch
+        })
+      });
+      if(!pr.ok){
+        var pe=await pr.json().catch(function(){return{};});
+        throw new Error('更新 '+_f+' 失敗：'+pr.status+(pe.message?' — '+pe.message:''));
+      }
+    }
+    stocksBtStats={};stocksBtTracking=[];
+    if(expansionData){expansionData.backtest_stats={};expansionData.signal_tracking=[];}
+    renderBacktest();
+    alert('✅ 追蹤記錄已永久清空（GitHub main 已更新）');
+  }catch(e){
+    alert('❌ 失敗：'+e.message);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🗑 永久重置';}
+  }
 }
 function renderBacktest(){
   var app=document.getElementById('bt-app');
@@ -1225,7 +1283,7 @@ function renderBacktest(){
     _renderEquityCurve()+
     '<div style="'+secStyle+';margin-top:16px;display:flex;justify-content:space-between;align-items:center">'+
       '<span>📈 個股選股雷達</span>'+
-      '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 清空追蹤</button>'+
+      '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 永久重置</button>'+
     '</div>'+
     (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無追蹤記錄</div>')+
     '<div style="'+secStyle+';margin-top:16px">🌐 全市場掃描</div>'+
