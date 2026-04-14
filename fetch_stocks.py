@@ -1082,6 +1082,41 @@ def fetch_mops_revenue():
             print(f"  [月營收] MOPS {typek} {year_roc}/{month} → {ok} 檔")
         except Exception as e:
             print(f"  [月營收] MOPS {typek} 失敗：{e}")
+
+    if result:
+        return result
+
+    # ── 最終備援：FinMind（GitHub Actions DNS 解析不到 .tw 時使用）──────
+    if not FINMIND_TOKEN:
+        print("  [月營收] 無 FINMIND_TOKEN，略過")
+        return result
+
+    print("  [月營收] 所有 .tw 來源失敗，改用 FinMind 備援...")
+    try:
+        from datetime import date, timedelta
+        last_month = date.today().replace(day=1) - timedelta(days=1)
+        start_date = last_month.replace(day=1).strftime("%Y-%m-%d")
+        res = requests.get(FINMIND_URL, params={
+            "dataset":    "TaiwanStockMonthRevenue",
+            "start_date": start_date,
+            "token":      FINMIND_TOKEN,
+        }, timeout=30)
+        rows = res.json().get("data", [])
+        ok = 0
+        for row in rows:
+            code = str(row.get("stock_id", "")).strip()
+            if not (code.isdigit() and len(code) == 4):
+                continue
+            rev_cur  = row.get("revenue", 0) or 0
+            rev_prev = row.get("revenue_last_year", 0) or 0
+            if rev_prev > 0:
+                yoy = round((rev_cur - rev_prev) / rev_prev * 100, 1)
+                result[code] = yoy
+                ok += 1
+        print(f"  [月營收] FinMind → {ok} 檔")
+    except Exception as e:
+        print(f"  [月營收] FinMind 失敗：{e}")
+
     return result
 
 
