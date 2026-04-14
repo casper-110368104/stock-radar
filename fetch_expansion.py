@@ -687,26 +687,37 @@ def aggregate_backtest_stats(all_results):
     return stats
 
 
-def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None, market_regime="range"):
-    """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
+def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str,
+                           prev_archive=None, sector_rotation=None,
+                           today_high_map=None, today_low_map=None, today_open_map=None,
+                           market_regime="range"):
+    """更新追蹤清單；回傳 (signal_tracking, signal_archive)。
+    signal_tracking：open 全留 + 最近 60 筆已結算（UI 顯示用）
+    signal_archive ：所有已結算記錄永久保留（供事後優化分析用）
+    """
     import copy
+    _TREND = {"breakout", "high_base", "trend_cont"}
+    archive = list(prev_archive or [])
     updated = []
 
-    # 更新舊記錄
     for rec in prev_tracking:
-        rec = copy.copy(rec)   # 避免修改原始輸入
+        rec = copy.copy(rec)
         if rec.get("status") != "open":
             updated.append(rec)
             continue
         code          = rec["code"]
         current_price = today_price_map.get(code)
         days_held     = rec.get("days_held", 0) + 1
-
-        # 使用 trigger_price 作為成本基準（比訊號日收盤更接近實際 fill）
         _fill = rec.get("trigger_price") or rec["entry"]
         if current_price is not None:
             rec["current_price"] = current_price
-            rec["gain_pct"]      = round((current_price - _fill) / _fill * 100, 2)
+            _cg = round((current_price - _fill) / _fill * 100, 2)
+            rec["gain_pct"] = _cg
+            if _cg > rec.get("max_gain_pct", 0.0):
+                rec["max_gain_pct"]    = _cg
+                rec["day_of_max_gain"] = days_held
+            if _cg < rec.get("max_loss_pct", 0.0):
+                rec["max_loss_pct"] = _cg
 
         rec["days_held"] = days_held
 
@@ -716,7 +727,6 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
         today_close = current_price
 
         hit_target = today_high is not None and today_high >= rec["target"]
-        # 雙停損：技術停損（收盤確認）或 ATR停損（盤中破位即出）
         _atr_stop_v   = rec.get("atr_stop")
         hit_tech_stop = today_close is not None and today_close <= rec["stop_loss"]
         hit_atr_stop  = bool(_atr_stop_v and today_low is not None and today_low <= _atr_stop_v)
@@ -724,24 +734,29 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
-                rec["status"]   = "win";  rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
+                rec["status"]      = "win";  rec["resolved_date"] = today_str
+                rec["gain_pct"]    = round((rec["target"]    - _fill) / _fill * 100, 2)
+                rec["exit_reason"] = "target_hit"
             else:
-                rec["status"]   = "loss"; rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+                rec["status"]      = "loss"; rec["resolved_date"] = today_str
+                rec["gain_pct"]    = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+                rec["exit_reason"] = "atr_stop_hit" if hit_atr_stop else "stop_hit"
         elif hit_target:
-            rec["status"]   = "win";  rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
+            rec["status"]      = "win";  rec["resolved_date"] = today_str
+            rec["gain_pct"]    = round((rec["target"]    - _fill) / _fill * 100, 2)
+            rec["exit_reason"] = "target_hit"
         elif hit_stop:
-            rec["status"]   = "loss"; rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+            rec["status"]      = "loss"; rec["resolved_date"] = today_str
+            rec["gain_pct"]    = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+            rec["exit_reason"] = "atr_stop_hit" if hit_atr_stop and not hit_tech_stop else "stop_hit"
         else:
-            # 趨勢訊號最長 15 日；短線訊號最長 5 日（快進快出）
-            _TREND = {"breakout", "high_base", "trend_cont"}
             max_hold = 15 if rec.get("type") in _TREND else 5
             if days_held >= max_hold:
-                rec["status"] = "expired"; rec["resolved_date"] = today_str
+                rec["status"]      = "expired"; rec["resolved_date"] = today_str
+                rec["exit_reason"] = "expired"
 
+        if rec.get("status") != "open":
+            archive.append(copy.copy(rec))
         updated.append(rec)
 
     # 加入今日新訊號
@@ -816,14 +831,18 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             "market_regime_at_trigger":  market_regime,
         })
 
-    # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
     open_recs   = [r for r in updated if r.get("status") == "open"]
     closed_recs = sorted(
         [r for r in updated if r.get("status") != "open"],
         key=lambda x: x.get("resolved_date") or "",
         reverse=True,
     )
-    return open_recs + closed_recs[:60]
+    for r in open_recs:
+        r.setdefault("max_gain_pct",    0.0)
+        r.setdefault("max_loss_pct",    0.0)
+        r.setdefault("day_of_max_gain", 0)
+        r.setdefault("exit_reason",     None)
+    return open_recs + closed_recs[:60], archive
 
 
 # ── 掃描失敗時保留舊資料並標記 ──────────────────────────────
@@ -926,11 +945,13 @@ def main():
 
     # 載入舊的追蹤清單（掃描前先讀，避免掃描失敗時遺失）
     prev_tracking = []
+    prev_archive  = []
     try:
         with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
             old_json = json.load(f)
         prev_tracking = old_json.get("signal_tracking", [])
-        print(f"  [tracking] 讀取舊追蹤清單：{len(prev_tracking)} 筆")
+        prev_archive  = old_json.get("signal_archive",  [])
+        print(f"  [tracking] 讀取舊追蹤清單：{len(prev_tracking)} 筆 | archive：{len(prev_archive)} 筆")
     except Exception:
         pass
 
@@ -1093,15 +1114,17 @@ def main():
             _sector_rotation = json.load(_f).get("sector_rotation", {})
     except Exception:
         pass
-    signal_tracking = update_signal_tracking(prev_tracking, today_price_map, results, today_str,
-                                             sector_rotation=_sector_rotation,
-                                             today_high_map=today_high_map,
-                                             today_low_map=today_low_map,
-                                             today_open_map=today_open_map,
-                                             market_regime=_market_regime_str)
+    signal_tracking, signal_archive = update_signal_tracking(
+        prev_tracking, today_price_map, results, today_str,
+        prev_archive=prev_archive,
+        sector_rotation=_sector_rotation,
+        today_high_map=today_high_map,
+        today_low_map=today_low_map,
+        today_open_map=today_open_map,
+        market_regime=_market_regime_str)
     open_cnt   = sum(1 for r in signal_tracking if r.get("status") == "open")
     closed_cnt = len(signal_tracking) - open_cnt
-    print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{closed_cnt} 筆")
+    print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{closed_cnt} 筆 | archive累計：{len(signal_archive)} 筆")
 
     output = {
         "updated_at":      datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -1110,6 +1133,7 @@ def main():
         "signal_count":    len(results),
         "crowding_index":  crowding_index,
         "signal_tracking": signal_tracking,
+        "signal_archive":  signal_archive,
         "stocks":          results,
     }
 

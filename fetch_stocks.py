@@ -1994,29 +1994,63 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
         return []
     results = []
     import math as _math
-    for i in range(62, n - 15):
+    # 各訊號類型允許的最大跳空幅度（超過不追）
+    _GAP_LIMIT = {
+        "breakout":        0.04,
+        "trend_cont":      0.04,
+        "high_base":       0.03,
+        "ma_pullback":     0.015,
+        "retest":          0.015,
+        "ma60_support":    0.02,
+        "false_breakdown": 0.05,
+    }
+    _SLIP = 0.002  # 滑價估計
+    for i in range(62, n - 16):   # n-16：確保 i+1+15 不超界
         snapshot = _bt_yahoo_snapshot(closes, highs, lows, volumes, i)
         if not snapshot:
             continue
+        ni = i + 1   # 進場日 index
+        next_open = opens[ni] if opens and ni < len(opens) else closes[ni]
+        next_high = highs[ni]
         for sig in calc_signals(snapshot, {}, 50, stock_phase=stock_phase):
-            entry  = sig["entry"]
-            stop   = sig["stop_loss"]
-            target = sig["target"]
+            entry   = sig["entry"]
+            stop    = sig["stop_loss"]
+            target  = sig["target"]
+            trigger = sig.get("trigger_price", entry)
             if entry <= 0 or entry <= stop:
                 continue
-            is_trend = sig["type"] in _BT_TREND_TYPES
-            # 統一使用 signals.py 計算的 target（與 forward tracking 一致）
-            # 趨勢訊號給 15 日持有時間（追蹤停損空間），短線訊號 5 日
+            # ── 觸發模擬：隔日開盤/盤中是否碰到 trigger_price ──
+            gap_limit = _GAP_LIMIT.get(sig["type"], 0.02)
+            if next_open > trigger:
+                gap_pct = (next_open - trigger) / trigger
+                if gap_pct > gap_limit:
+                    continue                           # 跳空過大，不追
+                actual_entry = round(next_open * (1 + _SLIP), 2)
+                entry_type   = "gap_up"
+            elif next_high >= trigger:
+                gap_pct      = 0.0
+                actual_entry = round(trigger * (1 + _SLIP), 2)
+                entry_type   = "intraday"
+            else:
+                continue                              # 當日未觸發，跳過
+            # 以實際進場價重算 RR（跳空可能讓 RR 劣化）
+            actual_risk = actual_entry - stop
+            if actual_risk <= 0:
+                continue
+            actual_rr = round((target - actual_entry) / actual_risk, 2)
+            if actual_rr < 1.2:
+                continue                              # 重算後 RR 不足，不進
+            is_trend   = sig["type"] in _BT_TREND_TYPES
             win_target = target
-            if win_target <= entry:
+            if win_target <= actual_entry:
                 continue
             max_days  = 15 if is_trend else 5
-            final_idx = min(i + max_days, n - 1)
+            final_idx = min(ni + max_days, n - 1)
             outcome   = "inconclusive"
-            for d in range(1, final_idx - i + 1):
-                fh = highs[i + d]
-                fl = lows[i + d]
-                fo = opens[i + d] if opens and (i + d) < len(opens) else closes[i + d]
+            for d in range(1, final_idx - ni + 1):
+                fh = highs[ni + d]
+                fl = lows[ni + d]
+                fo = opens[ni + d] if opens and (ni + d) < len(opens) else closes[ni + d]
                 hit_t = fh >= win_target
                 hit_s = fl <= stop
                 if hit_t and hit_s:
@@ -2027,69 +2061,109 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
                     outcome = "win";  break
                 elif hit_s:
                     outcome = "loss"; break
-            # inconclusive：用到期日收盤價計算浮動損益
-            expire_close = closes[min(i + max_days, n - 1)]
+            expire_close = closes[min(ni + max_days, n - 1)]
             if _math.isnan(expire_close) or expire_close <= 0:
                 continue
             if outcome == "win":
-                gain_pct = round((win_target - entry) / entry * 100, 2)
+                gain_pct = round((win_target    - actual_entry) / actual_entry * 100, 2)
             elif outcome == "loss":
-                gain_pct = round((stop - entry) / entry * 100, 2)
+                gain_pct = round((stop          - actual_entry) / actual_entry * 100, 2)
             else:
-                gain_pct = round((expire_close - entry) / entry * 100, 2)
+                gain_pct = round((expire_close  - actual_entry) / actual_entry * 100, 2)
             results.append({
-                "type":     sig["type"],
-                "outcome":  outcome,
-                "gain_pct": gain_pct,
+                "type":         sig["type"],
+                "outcome":      outcome,
+                "gain_pct":     gain_pct,
+                "entry_type":   entry_type,         # gap_up | intraday
+                "gap_pct":      round(gap_pct, 4),
+                "actual_rr":    actual_rr,
+                "confirmations": sig.get("confirmations", 0),
+                "strength":     sig["strength"],
             })
     return results
 
 
 def bt_aggregate_stats(all_results):
-    """彙整回測結果，回傳各訊號類型的勝率統計"""
+    """彙整回測結果，回傳各訊號類型的勝率統計（含確認數分組）"""
     from collections import defaultdict
-    buckets = defaultdict(lambda: {
-        "wins": 0, "losses": 0, "inconclusive": 0,
-        "gain_sum": 0.0, "loss_sum": 0.0,
-    })
-    for r in all_results:
-        t = r["type"]
+
+    def _empty():
+        return {"wins": 0, "losses": 0, "inconclusive": 0, "gain_sum": 0.0, "loss_sum": 0.0}
+
+    def _conf_group(c):
+        return "0-1" if c <= 1 else "2-3" if c <= 3 else "4-5" if c <= 5 else "6"
+
+    def _add(b, r):
         if r["outcome"] == "win":
-            buckets[t]["wins"]     += 1
-            buckets[t]["gain_sum"] += r["gain_pct"]
+            b["wins"]     += 1; b["gain_sum"] += r["gain_pct"]
         elif r["outcome"] == "loss":
-            buckets[t]["losses"]   += 1
-            buckets[t]["loss_sum"] += r["gain_pct"]
+            b["losses"]   += 1; b["loss_sum"] += r["gain_pct"]
         else:
-            buckets[t]["inconclusive"] += 1
-    stats = {}
-    for t, b in buckets.items():
+            b["inconclusive"] += 1
+
+    def _calc(b):
         decided = b["wins"] + b["losses"]
         total   = decided + b["inconclusive"]
-        if total < 5:
+        if total < 3:
+            return None
+        wr    = round(b["wins"] / decided, 3) if decided > 0 else 0.5
+        avg_g = round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0
+        avg_l = round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0
+        return {"count": total, "win_rate": wr,
+                "avg_gain_pct": avg_g, "avg_loss_pct": avg_l,
+                "expected_value": round(wr * avg_g + (1 - wr) * avg_l, 2),
+                "inconclusive_rate": round(b["inconclusive"] / total, 3)}
+
+    buckets      = defaultdict(_empty)    # key: type
+    conf_buckets = defaultdict(_empty)    # key: (type, conf_group)
+    entry_buckets = defaultdict(_empty)   # key: (type, entry_type)
+
+    for r in all_results:
+        t  = r["type"]
+        cg = _conf_group(r.get("confirmations", 0))
+        et = r.get("entry_type", "intraday")
+        _add(buckets[t], r)
+        _add(conf_buckets[(t, cg)], r)
+        _add(entry_buckets[(t, et)], r)
+
+    _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
+    stats = {}
+    for t, b in buckets.items():
+        s = _calc(b)
+        if not s or s["count"] < 5:
             continue
-        wr      = round(b["wins"] / decided, 3) if decided > 0 else 0.5
-        avg_g   = round(b["gain_sum"] / b["wins"],   2) if b["wins"]   > 0 else 0.0
-        avg_l   = round(b["loss_sum"] / b["losses"], 2) if b["losses"] > 0 else 0.0
-        # 期望值 EV = WR × avg_gain + (1-WR) × avg_loss（百分比）
-        ev      = round(wr * avg_g + (1 - wr) * avg_l, 2)
-        _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
+        # 確認數分組
+        by_conf = {}
+        for cg in ("0-1", "2-3", "4-5", "6"):
+            cs = _calc(conf_buckets[(t, cg)])
+            if cs:
+                by_conf[cg] = cs
+        # 進場類型分組（gap_up vs intraday）
+        by_entry = {}
+        for et in ("gap_up", "intraday"):
+            es = _calc(entry_buckets[(t, et)])
+            if es:
+                by_entry[et] = es
         stats[t] = {
             "label":             _SIGNAL_LABELS_BT.get(t, t),
             "timeframe":         _TF.get(t, "medium"),
-            "count":             total,
-            "win_rate":          wr,
-            "avg_gain_pct":      avg_g,
-            "avg_loss_pct":      avg_l,
-            "expected_value":    ev,
-            "inconclusive_rate": round(b["inconclusive"] / total,   3) if total > 0 else 0.0,
+            **s,
+            "by_confirmations":  by_conf,
+            "by_entry_type":     by_entry,
         }
     return stats
 
 
-def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None, market_regime="range"):
-    """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
+                       prev_archive=None, sector_rotation=None,
+                       today_high_map=None, today_low_map=None, today_open_map=None,
+                       market_regime="range"):
+    """更新追蹤清單；回傳 (signal_tracking, signal_archive)。
+    signal_tracking：open 記錄（不限）+ 最近 60 筆已結算（供 UI 顯示）
+    signal_archive ：所有已結算記錄永久保留（供事後優化分析用）
+    """
     import copy
+    archive = list(prev_archive or [])
     updated = []
     for rec in prev_tracking:
         rec = copy.copy(rec)
@@ -2098,18 +2172,23 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         code          = rec["code"]
         current_price = today_price_map.get(code)
         days_held     = rec.get("days_held", 0) + 1
-        # 使用 trigger_price 作為成本基準（比訊號日收盤更接近實際 fill）
         _fill = rec.get("trigger_price") or rec["entry"]
         if current_price is not None:
             rec["current_price"] = current_price
-            rec["gain_pct"]      = round((current_price - _fill) / _fill * 100, 2)
+            _cg = round((current_price - _fill) / _fill * 100, 2)
+            rec["gain_pct"] = _cg
+            # 持倉期間最大獲利 / 最大虧損追蹤
+            if _cg > rec.get("max_gain_pct", 0.0):
+                rec["max_gain_pct"]    = _cg
+                rec["day_of_max_gain"] = days_held
+            if _cg < rec.get("max_loss_pct", 0.0):
+                rec["max_loss_pct"] = _cg
         rec["days_held"] = days_held
         today_high  = (today_high_map or {}).get(code, current_price)
         today_low   = (today_low_map  or {}).get(code, current_price)
         today_open  = (today_open_map or {}).get(code, current_price)
-        today_close = current_price  # 收盤價
+        today_close = current_price
         hit_target = today_high is not None and today_high >= rec["target"]
-        # 雙觸發停損：技術停損（收盤確認）或 ATR停損（盤中破位即出）
         _atr_stop_v   = rec.get("atr_stop")
         hit_tech_stop = today_close is not None and today_close <= rec["stop_loss"]
         hit_atr_stop  = bool(_atr_stop_v and today_low is not None and today_low <= _atr_stop_v)
@@ -2117,22 +2196,29 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
-                rec["status"]   = "win";  rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
+                rec["status"]      = "win";  rec["resolved_date"] = today_str
+                rec["gain_pct"]    = round((rec["target"]    - _fill) / _fill * 100, 2)
+                rec["exit_reason"] = "target_hit"
             else:
-                rec["status"]   = "loss"; rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+                rec["status"]      = "loss"; rec["resolved_date"] = today_str
+                rec["gain_pct"]    = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+                rec["exit_reason"] = "atr_stop_hit" if hit_atr_stop else "stop_hit"
         elif hit_target:
-            rec["status"]   = "win";     rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
+            rec["status"]      = "win";  rec["resolved_date"] = today_str
+            rec["gain_pct"]    = round((rec["target"]    - _fill) / _fill * 100, 2)
+            rec["exit_reason"] = "target_hit"
         elif hit_stop:
-            rec["status"]   = "loss";    rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+            rec["status"]      = "loss"; rec["resolved_date"] = today_str
+            rec["gain_pct"]    = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
+            rec["exit_reason"] = "atr_stop_hit" if hit_atr_stop and not hit_tech_stop else "stop_hit"
         else:
-            # 到期判斷：趨勢訊號最長 15 日，短線訊號最長 5 日
             max_hold = 15 if rec.get("type") in _BT_TREND_TYPES else 5
             if days_held >= max_hold:
-                rec["status"] = "expired"; rec["resolved_date"] = today_str
+                rec["status"]      = "expired"; rec["resolved_date"] = today_str
+                rec["exit_reason"] = "expired"
+        # 剛結算的記錄存入 archive（永久保留，供優化分析）
+        if rec.get("status") != "open":
+            archive.append(copy.copy(rec))
         updated.append(rec)
     # 加入今日新訊號
     # repeat=True：同代號同類型已有 open 記錄（重複訊號）
@@ -2189,14 +2275,21 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
                 "vol_ratio_at_trigger":     round(stock.get("vol_day_ratio", 1.0) or 1.0, 2),
                 "market_regime_at_trigger": market_regime,
             })
-    # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
+    # signal_tracking：open 全留 + 最近 60 筆已結算（UI 顯示用）
+    # signal_archive ：所有已結算記錄（archive 已在上方累積，此處只做排序）
     open_recs   = [r for r in updated if r.get("status") == "open"]
     closed_recs = sorted(
         [r for r in updated if r.get("status") != "open"],
         key=lambda x: x.get("resolved_date") or "",
         reverse=True,
     )
-    return open_recs + closed_recs[:60]
+    # 新訊號（今日加入的 open 記錄）初始化 max_gain/loss 欄位
+    for r in open_recs:
+        r.setdefault("max_gain_pct",    0.0)
+        r.setdefault("max_loss_pct",    0.0)
+        r.setdefault("day_of_max_gain", 0)
+        r.setdefault("exit_reason",     None)
+    return open_recs + closed_recs[:60], archive
 
 
 # ── 5b. 警示訊號 ──────────────────────────────────────────────────
@@ -2901,26 +2994,30 @@ def main():
     # ── 信號追蹤更新
     today_str  = datetime.now().strftime("%Y-%m-%d")
     prev_tracking = []
+    prev_archive  = []
     try:
         if os.path.exists(OUTPUT_PATH):
             with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
                 _old = json.load(f)
             prev_tracking = _old.get("signal_tracking", [])
-            print(f"  [tracking] 舊追蹤：{len(prev_tracking)} 筆")
+            prev_archive  = _old.get("signal_archive",  [])
+            print(f"  [tracking] 舊追蹤：{len(prev_tracking)} 筆 | 歷史archive：{len(prev_archive)} 筆")
     except Exception:
         pass
     today_price_map = {r["code"]: r.get("price") for r in results if r.get("price")}
     today_high_map  = {r["code"]: r.get("high")  for r in results if r.get("high")}
     today_low_map   = {r["code"]: r.get("low")   for r in results if r.get("low")}
     today_open_map  = {r["code"]: r.get("open")  for r in results if r.get("open")}
-    signal_tracking = bt_update_tracking(prev_tracking, today_price_map, results, today_str,
-                                          sector_rotation=_sector_rotation,
-                                          today_high_map=today_high_map,
-                                          today_low_map=today_low_map,
-                                          today_open_map=today_open_map,
-                                          market_regime=_market_regime.get("regime", "range"))
+    signal_tracking, signal_archive = bt_update_tracking(
+        prev_tracking, today_price_map, results, today_str,
+        prev_archive=prev_archive,
+        sector_rotation=_sector_rotation,
+        today_high_map=today_high_map,
+        today_low_map=today_low_map,
+        today_open_map=today_open_map,
+        market_regime=_market_regime.get("regime", "range"))
     open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
-    print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
+    print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆 | archive累計：{len(signal_archive)} 筆")
 
     # 補完 Gemini 後重新排序
     results.sort(key=total_score, reverse=True)
@@ -2966,6 +3063,7 @@ def main():
         "futures_oi":      futures_oi,
         "backtest_stats":  backtest_stats,
         "signal_tracking": signal_tracking,
+        "signal_archive":  signal_archive,
         "stocks":          results
     }
     # allow_nan=False 確保 NaN/Inf 不寫入（瀏覽器 JSON.parse 不支援）

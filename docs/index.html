@@ -1764,7 +1764,15 @@ function _renderBtTracking(tracking,idPfx){
             '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+t.stop_loss+'</span></div>'+
             '<div class="exp-sig-px">現價 <span style="color:'+gc+'">$'+(t.current_price||'-')+'</span></div>'+
           '</div>'+
-          (t.confirmation_flags&&t.confirmation_flags.length?'<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px">'+t.confirmation_flags.map(function(f){return '<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(0,200,150,.12);color:var(--green)">'+escapeHtml(f)+'</span>';}).join('')+'</div>':'')+'
+          (t.confirmation_flags&&t.confirmation_flags.length?'<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px">'+t.confirmation_flags.map(function(f){return '<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(0,200,150,.12);color:var(--green)">'+escapeHtml(f)+'</span>';}).join('')+'</div>':'')+
+          (t.status!=='open'?(function(){
+            var _xLbl={'target_hit':'達目標','stop_hit':'技術停損','atr_stop_hit':'ATR停損','expired':'時間到期'};
+            var parts=[];
+            if(t.max_gain_pct&&t.max_gain_pct>0) parts.push('峰值 <span style="color:var(--green)">+'+t.max_gain_pct.toFixed(1)+'%</span>'+(t.day_of_max_gain?' (第'+t.day_of_max_gain+'日)':''));
+            if(t.max_loss_pct&&t.max_loss_pct<0) parts.push('最深 <span style="color:var(--red)">'+t.max_loss_pct.toFixed(1)+'%</span>');
+            if(t.exit_reason) parts.push(_xLbl[t.exit_reason]||t.exit_reason);
+            return parts.length?'<div style="margin-top:4px;font-size:10px;color:var(--text3)">'+parts.join(' ∙ ')+'</div>':'';
+          })():'')+'
           posHtml+
           (t.trigger_date?'<div class="exp-sig-reason" style="margin-top:5px">觸發日：'+t.trigger_date+(t.sector_phase?' ∙ 類股：'+t.sector_phase:'')+'</div>':'')+
           (t.market_regime_at_trigger?'<div class="exp-sig-reason">大盤相位：'+t.market_regime_at_trigger+' ∙ RS：'+t.rs_pct_at_trigger+'% ∙ 量比：'+t.vol_ratio_at_trigger+'</div>':'')+
