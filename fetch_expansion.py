@@ -601,9 +601,9 @@ def backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase="RA
             adj_stop   = exec_result.stop_price
             adj_target = exec_result.target_price
 
-            # 追蹤結果：趨勢型最長 15 日，其餘 5 日
+            # 追蹤結果：趨勢型最長 25 日（台股輪動周期約20-40日），其餘 8 日
             _TREND_TYPES = {"breakout", "high_base", "trend_cont"}
-            max_hold  = 15 if sig["type"] in _TREND_TYPES else 5
+            max_hold  = 25 if sig["type"] in _TREND_TYPES else 8
             outcome   = "inconclusive"
             final_idx = min(i + max_hold, n - 1)
             for d in range(1, final_idx - i + 1):
@@ -750,7 +750,7 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             rec["gain_pct"]    = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
             rec["exit_reason"] = "atr_stop_hit" if hit_atr_stop and not hit_tech_stop else "stop_hit"
         else:
-            max_hold = 15 if rec.get("type") in _TREND else 5
+            max_hold = 25 if rec.get("type") in _TREND else 8
             if days_held >= max_hold:
                 rec["status"]      = "expired"; rec["resolved_date"] = today_str
                 rec["exit_reason"] = "expired"

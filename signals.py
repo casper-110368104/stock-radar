@@ -29,16 +29,18 @@ _ATR_MULT = {
 
 _ALLOWED_SIGNALS = {
     "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base",
-                      "retest", "ma60_support", "trend_cont"},
-    "BULL_PULLBACK": {"ma_pullback", "retest"},
-    "RANGE":         {"ma_pullback", "retest", "ma60_support"},
+                      "retest", "trend_cont"},
+    # ma60_support 只在個股回檔期才有意義（BULL 時價格遠高於 MA60，觸碰 MA60 = 趨勢轉弱）
+    "BULL_PULLBACK": {"ma_pullback", "retest", "ma60_support"},
+    "RANGE":         {"ma_pullback", "retest"},
     "BEAR_WEAK":     {"false_breakdown", "retest"},
     "BEAR_STRONG":   {"false_breakdown"},
 }
 
 
 def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
-                 market_regime="range", composite_score=0, structure=""):
+                 market_regime="range", composite_score=0, structure="",
+                 sector_phase=""):
     """
     偵測技術面買點訊號，回傳 list of dict。
     每個訊號欄位：
@@ -117,12 +119,18 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     ]
     _confirmations = sum(f["ok"] for f in _conf_flags)
 
+    # 板塊空頭期間：壓制所有多頭訊號，只保留逆勢假跌破
+    _sector_bear = (sector_phase == "空頭")
+
     def _sig(type_, label, strength, entry, stop, reason):
         # 大盤相位篩選（優先）
         if type_ not in _MARKET_ALLOWED:
             return None
         # 個股型態篩選
         if type_ not in _ALLOWED_SIGNALS.get(stock_phase, _ALLOWED_SIGNALS["RANGE"]):
+            return None
+        # 板塊空頭過濾：只允許 false_breakdown，其餘訊號全部壓制
+        if _sector_bear and type_ != "false_breakdown":
             return None
 
         # ── 策略類型（必須在 ATR 計算前確定，修正原本 UnboundLocalError）──
@@ -203,6 +211,12 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         _today_high = yahoo.get("high") or entry
         trigger_price = round(_today_high * (1 + _TRIGGER_BUFFER.get(type_, 0.003)), 2)
         _TF = {"retest": "short", "false_breakdown": "short", "ma60_support": "long"}
+
+        # 依風險比例建議倉位：目標每筆交易風險 = 1.5% 資產
+        # risk_pct = 停損幅度（%），pos_factor = 建議倉位係數（0.3~1.0）
+        _risk_pct = round(risk / entry * 100, 2) if entry > 0 else 3.0
+        _pos_factor = round(min(1.0, max(0.3, 1.5 / _risk_pct)), 2) if _risk_pct > 0 else 0.5
+
         return {
             "type":               type_,
             "label":              label,
@@ -215,6 +229,8 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             "target":             target,
             "risk":               risk,
             "rr":                 rr,
+            "risk_pct":           _risk_pct,
+            "pos_factor":         _pos_factor,
             "reason":             _reason,
             "timeframe":          _TF.get(type_, "medium"),
             "confirmations":      _confirmations,

@@ -210,8 +210,8 @@ def fetch_sector_rotation(days=60, breadth_map=None):
         if today_m is None or today_a is None:
             continue
 
-        # RS_trend：最近5日RS線性斜率
-        rs_trend = round(linear_slope(rs_vals[-5:]), 4)
+        # RS_trend：最近5日RS線性斜率（用前5日，排除今天的未完成資料）
+        rs_trend = round(linear_slope(rs_vals[-6:-1]), 4)
 
         # Trend_structure：價格 vs MA60
         prices = price_history[s]
@@ -454,9 +454,9 @@ def _compute_m_a(daily_rs):
     m_tail = m_series[-3:]
     a = m_tail[-1] - sum(m_tail) / len(m_tail)
 
-    # rs_trend：日RS 5日線性斜率（真正的近期方向，非原本60日窗口斜率）
-    if len(daily_rs) >= 5:
-        vals   = daily_rs[-5:]
+    # rs_trend：日RS 5日線性斜率（用前5日，排除今天的未完成資料）
+    if len(daily_rs) >= 6:
+        vals   = daily_rs[-6:-1]  # 昨天往前5日，不含今天
         mu5    = sum(vals) / 5
         x_mean = 2.0
         num    = sum((i - x_mean) * (vals[i] - mu5) for i in range(5))
@@ -825,15 +825,17 @@ def fetch_yahoo(sid):
                 _idx_vol = _base20 + _safe_vols20.index(max(_safe_vols20))
                 _avwap_vol = calc_avwap(closes, highs, lows, vols, _idx_vol)
 
-                # avwap_short：近20日最近一個局部低點+後3日有反彈確認
+                # avwap_short：近20日最近一個局部低點（用過去3日確認，無向前看偏誤）
+                # 從 _n-4 開始，確保確認的3根K棒都已收盤，不碰未來資料
                 _avwap_short = None
-                for _j in range(_n - 2, _base20 - 1, -1):
+                for _j in range(_n - 4, _base20 - 1, -1):
                     if _j < 1:
                         break
-                    if lows[_j] > lows[_j-1] or lows[_j] > lows[min(_j+1, _n-1)]:
+                    if lows[_j] > lows[_j-1]:
                         continue
-                    _ahead = closes[_j+1:min(_j+4, _n)]
-                    if len(_ahead) >= 2 and sum(1 for c in _ahead if c > lows[_j]) >= 2:
+                    # 用已過去的3根收盤（_j+1 ~ _j+3）確認反彈，全在 _j 之後且已知
+                    _past = closes[_j+1:_j+4]
+                    if len(_past) >= 2 and sum(1 for c in _past if c > lows[_j]) >= 2:
                         _avwap_short = calc_avwap(closes, highs, lows, vols, _j)
                         break
 
@@ -2968,6 +2970,7 @@ def main():
                 market_regime=_market_regime.get("regime", "range"),
                 composite_score=_ws,
                 structure=r.get("structure", ""),
+                sector_phase=_sector_rotation.get(r.get("sector_key", ""), {}).get("sub_phase", ""),
             )
 
     # ── 提取原始歷史序列供回測 + 型態偵測，同時從 results 移除（避免寫入 JSON）
