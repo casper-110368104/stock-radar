@@ -2085,7 +2085,7 @@ def bt_aggregate_stats(all_results):
     return stats
 
 
-def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None):
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None, market_regime="range"):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -2157,6 +2157,10 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
                 "days_held":     0,
                 "gain_pct":      0.0,
                 "resolved_date": None,
+                # 診斷欄位（供2個月後參數調整分析用）
+                "rs_pct_at_trigger":        stock.get("rs_pct", 50),
+                "vol_ratio_at_trigger":     round(stock.get("vol_day_ratio", 1.0) or 1.0, 2),
+                "market_regime_at_trigger": market_regime,
             })
     # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
     open_recs   = [r for r in updated if r.get("status") == "open"]
@@ -2886,7 +2890,8 @@ def main():
                                           sector_rotation=_sector_rotation,
                                           today_high_map=today_high_map,
                                           today_low_map=today_low_map,
-                                          today_open_map=today_open_map)
+                                          today_open_map=today_open_map,
+                                          market_regime=_market_regime.get("regime", "range"))
     open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
 
