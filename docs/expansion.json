@@ -1,1 +1,769 @@
-{"updated_at":"2026-04-12 11:45","scan_failed":false,"sample_size":156,"signal_count":11,"backtest_stats":{},"signal_tracking":[],"stocks":[{"code":"3715","name":"定穎投控","price":186.5,"chg_pct":-0.27,"vol_ratio":0.5,"ma5":184.3,"ma20":177.47,"ma60":153.57,"avwap_swing":156.95,"avwap_vol":187.28,"avwap_short":185.68,"industry":"電子零組件","rs_pct":74,"stock_phase":"RANGE","m_z":5.0,"rs_trend":-0.6119,"signals":[{"type":"retest","label":"縮量回測(主升型)","strength":"medium","strategy":"trend","entry":186.5,"trigger_price":192.46,"stop_loss":177.47,"atr_stop":157.86,"target":202.75,"risk":9.03,"rr":1.8,"reason":"縮量(0.5x)回測MA10(185.0)，RS百分位74(≥60)","timeframe":"short","confirmations":2,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}]}],"patterns":[]},{"code":"2383","name":"台光電","price":3420.0,"chg_pct":6.21,"vol_ratio":0.81,"ma5":3096.0,"ma20":2844.75,"ma60":2235.25,"avwap_swing":2218.62,"avwap_vol":2891.34,"avwap_short":2969.04,"industry":"電子零組件","rs_pct":90,"stock_phase":"BULL","m_z":3.3029,"rs_trend":1.056,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":3420.0,"trigger_price":3445.3,"stop_loss":2196.43,"atr_stop":3012.86,"target":7824.85,"risk":1223.57,"rr":3.6,"reason":"緊貼20日高(3435.0)整理，RS百分位90；主力未跑✓","timeframe":"medium","confirmations":4,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"3532","name":"台勝科","price":165.5,"chg_pct":9.97,"vol_ratio":1.58,"ma5":143.6,"ma20":139.03,"ma60":134.6,"avwap_swing":134.96,"avwap_vol":145.66,"avwap_short":149.26,"industry":"半導體","rs_pct":77,"stock_phase":"BULL","m_z":4.734,"rs_trend":2.8244,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":165.5,"trigger_price":166.0,"stop_loss":133.61,"atr_stop":144.28,"target":280.3,"risk":31.89,"rr":3.6,"reason":"緊貼20日高(165.5)整理，RS百分位77；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"4989","name":"榮科","price":80.7,"chg_pct":9.95,"vol_ratio":1.69,"ma5":69.96,"ma20":69.05,"ma60":61.73,"avwap_swing":69.2,"avwap_vol":71.68,"avwap_short":73.35,"industry":"鋼鐵","rs_pct":75,"stock_phase":"BULL","m_z":5.0,"rs_trend":2.9804,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":80.7,"trigger_price":80.94,"stop_loss":68.51,"atr_stop":70.52,"target":124.58,"risk":12.19,"rr":3.6,"reason":"緊貼20日高(80.7)整理，RS百分位75；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"6442","name":"光聖","price":2325.0,"chg_pct":9.93,"vol_ratio":1.53,"ma5":2140.0,"ma20":1973.5,"ma60":1764.0,"avwap_swing":1862.55,"avwap_vol":2109.01,"avwap_short":2148.71,"industry":"電子零組件","rs_pct":81,"stock_phase":"BULL","m_z":5.0,"rs_trend":1.066,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":2325.0,"trigger_price":2331.97,"stop_loss":1843.92,"atr_stop":1967.86,"target":4056.89,"risk":481.08,"rr":3.6,"reason":"緊貼20日高(2325.0)整理，RS百分位81；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"2308","name":"台達電","price":1735.0,"chg_pct":5.47,"vol_ratio":0.97,"ma5":1598.0,"ma20":1484.0,"ma60":1298.5,"avwap_swing":1303.25,"avwap_vol":1548.59,"avwap_short":1609.68,"industry":"電子零組件","rs_pct":78,"stock_phase":"BULL","m_z":5.0,"rs_trend":0.4805,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":1735.0,"trigger_price":1755.25,"stop_loss":1290.22,"atr_stop":1544.28,"target":3336.21,"risk":444.78,"rr":3.6,"reason":"緊貼20日高(1750.0)整理，RS百分位78；主力未跑✓","timeframe":"medium","confirmations":4,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"1326","name":"台化","price":45.45,"chg_pct":-0.33,"vol_ratio":0.39,"ma5":45.34,"ma20":44.77,"ma60":41.23,"avwap_swing":43.27,"avwap_vol":46.03,"avwap_short":45.38,"industry":"化學","rs_pct":68,"stock_phase":"RANGE","m_z":-5.0,"rs_trend":-0.4544,"signals":[{"type":"retest","label":"縮量回測(主升型)","strength":"medium","strategy":"trend","entry":45.45,"trigger_price":46.43,"stop_loss":44.77,"atr_stop":40.37,"target":46.67,"risk":0.68,"rr":1.8,"reason":"縮量(0.4x)回測MA10(45.49)，RS百分位68(≥60)","timeframe":"short","confirmations":1,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":false},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}]}],"patterns":[]},{"code":"2345","name":"智邦","price":1835.0,"chg_pct":8.58,"vol_ratio":1.13,"ma5":1688.0,"ma20":1596.5,"ma60":1377.42,"avwap_swing":1496.4,"avwap_vol":1634.4,"avwap_short":1669.68,"industry":"通信網路","rs_pct":72,"stock_phase":"BULL","m_z":5.0,"rs_trend":1.7758,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":1835.0,"trigger_price":1860.56,"stop_loss":1481.44,"atr_stop":1615.0,"target":3107.82,"risk":353.56,"rr":3.6,"reason":"緊貼20日高(1855.0)整理，RS百分位72；主力未跑✓","timeframe":"medium","confirmations":4,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"3030","name":"德律","price":303.0,"chg_pct":9.98,"vol_ratio":2.21,"ma5":270.5,"ma20":260.57,"ma60":216.94,"avwap_swing":234.29,"avwap_vol":296.83,"avwap_short":278.5,"industry":"電子工業","rs_pct":75,"stock_phase":"BULL","m_z":5.0,"rs_trend":2.0362,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":303.0,"trigger_price":303.91,"stop_loss":231.95,"atr_stop":267.64,"target":558.78,"risk":71.05,"rr":3.6,"reason":"緊貼20日高(303.0)整理，RS百分位75；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"7610","name":"聯友金屬-創","price":497.5,"chg_pct":9.94,"vol_ratio":1.21,"ma5":437.3,"ma20":365.15,"ma60":273.59,"avwap_swing":269.75,"avwap_vol":389.88,"avwap_short":415.11,"industry":"鋼鐵","rs_pct":99,"stock_phase":"BULL","m_z":3.7413,"rs_trend":0.0744,"signals":[{"type":"high_base","label":"強整再突","strength":"medium","strategy":"trend","entry":497.5,"trigger_price":498.99,"stop_loss":267.05,"atr_stop":441.08,"target":1327.12,"risk":230.45,"rr":3.6,"reason":"緊貼20日高(497.5)整理，RS百分位99；主力未跑✓","timeframe":"medium","confirmations":4,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}]}],"patterns":[]},{"code":"2231","name":"為升","price":122.0,"chg_pct":6.09,"vol_ratio":0.43,"ma5":116.5,"ma20":103.51,"ma60":96.97,"avwap_swing":116.32,"avwap_vol":126.19,"avwap_short":116.14,"industry":"汽車","rs_pct":57,"stock_phase":"RANGE","m_z":3.6235,"rs_trend":1.6324,"signals":[{"type":"retest","label":"縮量回測(起漲型)","strength":"weak","strategy":"swing","entry":122.0,"trigger_price":122.61,"stop_loss":103.51,"atr_stop":104.02,"target":155.28,"risk":18.49,"rr":1.8,"reason":"縮量(0.4x)回測MA10(120.4)，RS百分位57(40~60)，RS斜率剛翻正","timeframe":"short","confirmations":1,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":false},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}]}],"patterns":[]}]}
+{
+  "updated_at": "2026-04-12 11:45",
+  "scan_failed": false,
+  "sample_size": 156,
+  "signal_count": 11,
+  "backtest_stats": {},
+  "signal_tracking": [],
+  "stocks": [
+    {
+      "code": "3715",
+      "name": "定穎投控",
+      "price": 186.5,
+      "chg_pct": -0.27,
+      "vol_ratio": 0.5,
+      "ma5": 184.3,
+      "ma20": 177.47,
+      "ma60": 153.57,
+      "avwap_swing": 156.95,
+      "avwap_vol": 187.28,
+      "avwap_short": 185.68,
+      "industry": "電子零組件",
+      "rs_pct": 74,
+      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "rs_trend": -0.6119,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 186.5,
+          "trigger_price": 192.46,
+          "stop_loss": 177.47,
+          "atr_stop": 157.86,
+          "target": 202.75,
+          "risk": 9.03,
+          "rr": 1.8,
+          "reason": "縮量(0.5x)回測MA10(185.0)，RS百分位74(≥60)",
+          "timeframe": "short",
+          "confirmations": 2,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2383",
+      "name": "台光電",
+      "price": 3420.0,
+      "chg_pct": 6.21,
+      "vol_ratio": 0.81,
+      "ma5": 3096.0,
+      "ma20": 2844.75,
+      "ma60": 2235.25,
+      "avwap_swing": 2218.62,
+      "avwap_vol": 2891.34,
+      "avwap_short": 2969.04,
+      "industry": "電子零組件",
+      "rs_pct": 90,
+      "stock_phase": "BULL",
+      "m_z": 3.3029,
+      "rs_trend": 1.056,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 3420.0,
+          "trigger_price": 3445.3,
+          "stop_loss": 2196.43,
+          "atr_stop": 3012.86,
+          "target": 7824.85,
+          "risk": 1223.57,
+          "rr": 3.6,
+          "reason": "緊貼20日高(3435.0)整理，RS百分位90；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 4,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "3532",
+      "name": "台勝科",
+      "price": 165.5,
+      "chg_pct": 9.97,
+      "vol_ratio": 1.58,
+      "ma5": 143.6,
+      "ma20": 139.03,
+      "ma60": 134.6,
+      "avwap_swing": 134.96,
+      "avwap_vol": 145.66,
+      "avwap_short": 149.26,
+      "industry": "半導體",
+      "rs_pct": 77,
+      "stock_phase": "BULL",
+      "m_z": 4.734,
+      "rs_trend": 2.8244,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 165.5,
+          "trigger_price": 166.0,
+          "stop_loss": 133.61,
+          "atr_stop": 144.28,
+          "target": 280.3,
+          "risk": 31.89,
+          "rr": 3.6,
+          "reason": "緊貼20日高(165.5)整理，RS百分位77；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "4989",
+      "name": "榮科",
+      "price": 80.7,
+      "chg_pct": 9.95,
+      "vol_ratio": 1.69,
+      "ma5": 69.96,
+      "ma20": 69.05,
+      "ma60": 61.73,
+      "avwap_swing": 69.2,
+      "avwap_vol": 71.68,
+      "avwap_short": 73.35,
+      "industry": "鋼鐵",
+      "rs_pct": 75,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 2.9804,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 80.7,
+          "trigger_price": 80.94,
+          "stop_loss": 68.51,
+          "atr_stop": 70.52,
+          "target": 124.58,
+          "risk": 12.19,
+          "rr": 3.6,
+          "reason": "緊貼20日高(80.7)整理，RS百分位75；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "6442",
+      "name": "光聖",
+      "price": 2325.0,
+      "chg_pct": 9.93,
+      "vol_ratio": 1.53,
+      "ma5": 2140.0,
+      "ma20": 1973.5,
+      "ma60": 1764.0,
+      "avwap_swing": 1862.55,
+      "avwap_vol": 2109.01,
+      "avwap_short": 2148.71,
+      "industry": "電子零組件",
+      "rs_pct": 81,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 1.066,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 2325.0,
+          "trigger_price": 2331.97,
+          "stop_loss": 1843.92,
+          "atr_stop": 1967.86,
+          "target": 4056.89,
+          "risk": 481.08,
+          "rr": 3.6,
+          "reason": "緊貼20日高(2325.0)整理，RS百分位81；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2308",
+      "name": "台達電",
+      "price": 1735.0,
+      "chg_pct": 5.47,
+      "vol_ratio": 0.97,
+      "ma5": 1598.0,
+      "ma20": 1484.0,
+      "ma60": 1298.5,
+      "avwap_swing": 1303.25,
+      "avwap_vol": 1548.59,
+      "avwap_short": 1609.68,
+      "industry": "電子零組件",
+      "rs_pct": 78,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 0.4805,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 1735.0,
+          "trigger_price": 1755.25,
+          "stop_loss": 1290.22,
+          "atr_stop": 1544.28,
+          "target": 3336.21,
+          "risk": 444.78,
+          "rr": 3.6,
+          "reason": "緊貼20日高(1750.0)整理，RS百分位78；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 4,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "1326",
+      "name": "台化",
+      "price": 45.45,
+      "chg_pct": -0.33,
+      "vol_ratio": 0.39,
+      "ma5": 45.34,
+      "ma20": 44.77,
+      "ma60": 41.23,
+      "avwap_swing": 43.27,
+      "avwap_vol": 46.03,
+      "avwap_short": 45.38,
+      "industry": "化學",
+      "rs_pct": 68,
+      "stock_phase": "RANGE",
+      "m_z": -5.0,
+      "rs_trend": -0.4544,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 45.45,
+          "trigger_price": 46.43,
+          "stop_loss": 44.77,
+          "atr_stop": 40.37,
+          "target": 46.67,
+          "risk": 0.68,
+          "rr": 1.8,
+          "reason": "縮量(0.4x)回測MA10(45.49)，RS百分位68(≥60)",
+          "timeframe": "short",
+          "confirmations": 1,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": false
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2345",
+      "name": "智邦",
+      "price": 1835.0,
+      "chg_pct": 8.58,
+      "vol_ratio": 1.13,
+      "ma5": 1688.0,
+      "ma20": 1596.5,
+      "ma60": 1377.42,
+      "avwap_swing": 1496.4,
+      "avwap_vol": 1634.4,
+      "avwap_short": 1669.68,
+      "industry": "通信網路",
+      "rs_pct": 72,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 1.7758,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 1835.0,
+          "trigger_price": 1860.56,
+          "stop_loss": 1481.44,
+          "atr_stop": 1615.0,
+          "target": 3107.82,
+          "risk": 353.56,
+          "rr": 3.6,
+          "reason": "緊貼20日高(1855.0)整理，RS百分位72；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 4,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "3030",
+      "name": "德律",
+      "price": 303.0,
+      "chg_pct": 9.98,
+      "vol_ratio": 2.21,
+      "ma5": 270.5,
+      "ma20": 260.57,
+      "ma60": 216.94,
+      "avwap_swing": 234.29,
+      "avwap_vol": 296.83,
+      "avwap_short": 278.5,
+      "industry": "電子工業",
+      "rs_pct": 75,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 2.0362,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 303.0,
+          "trigger_price": 303.91,
+          "stop_loss": 231.95,
+          "atr_stop": 267.64,
+          "target": 558.78,
+          "risk": 71.05,
+          "rr": 3.6,
+          "reason": "緊貼20日高(303.0)整理，RS百分位75；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "7610",
+      "name": "聯友金屬-創",
+      "price": 497.5,
+      "chg_pct": 9.94,
+      "vol_ratio": 1.21,
+      "ma5": 437.3,
+      "ma20": 365.15,
+      "ma60": 273.59,
+      "avwap_swing": 269.75,
+      "avwap_vol": 389.88,
+      "avwap_short": 415.11,
+      "industry": "鋼鐵",
+      "rs_pct": 99,
+      "stock_phase": "BULL",
+      "m_z": 3.7413,
+      "rs_trend": 0.0744,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 497.5,
+          "trigger_price": 498.99,
+          "stop_loss": 267.05,
+          "atr_stop": 441.08,
+          "target": 1327.12,
+          "risk": 230.45,
+          "rr": 3.6,
+          "reason": "緊貼20日高(497.5)整理，RS百分位99；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 4,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2231",
+      "name": "為升",
+      "price": 122.0,
+      "chg_pct": 6.09,
+      "vol_ratio": 0.43,
+      "ma5": 116.5,
+      "ma20": 103.51,
+      "ma60": 96.97,
+      "avwap_swing": 116.32,
+      "avwap_vol": 126.19,
+      "avwap_short": 116.14,
+      "industry": "汽車",
+      "rs_pct": 57,
+      "stock_phase": "RANGE",
+      "m_z": 3.6235,
+      "rs_trend": 1.6324,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(起漲型)",
+          "strength": "weak",
+          "strategy": "swing",
+          "entry": 122.0,
+          "trigger_price": 122.61,
+          "stop_loss": 103.51,
+          "atr_stop": 104.02,
+          "target": 155.28,
+          "risk": 18.49,
+          "rr": 1.8,
+          "reason": "縮量(0.4x)回測MA10(120.4)，RS百分位57(40~60)，RS斜率剛翻正",
+          "timeframe": "short",
+          "confirmations": 1,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": false
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ]
+        }
+      ],
+      "patterns": []
+    }
+  ]
+}
