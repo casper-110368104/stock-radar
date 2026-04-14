@@ -1558,6 +1558,9 @@ function _tradeVerdict(t,pos){
   var conf=t.confirmations||0;
   var volRatio=t.vol_ratio_at_trigger||1;
   var isRepeat=!!t.repeat&&!t.is_pyramid;
+  // 擁擠度：使用 expansionData.crowding_index 作為市場層級指標（500股樣本）
+  var crowding=((expansionData.crowding_index||{})[t.type]||0);
+  var crowdPct=Math.round(crowding*100);
 
   if(pos.lots===0)
     return {label:'❌ 跳過',color:'var(--red)',   reason:'停損過寬或風報比不足'};
@@ -1565,11 +1568,13 @@ function _tradeVerdict(t,pos){
     return {label:'🔁 重複',color:'var(--text3)', reason:'同股同類型已有開倉，跳過'};
   if(actualRR<1.5)
     return {label:'❌ 跳過',color:'var(--red)',   reason:'實際RR '+actualRR+' < 1.5'};
-  if(actualRR>=2.0&&conf>=2&&volRatio>=0.5)
-    return {label:'✅ 可進場',color:'var(--green)', reason:'RR '+actualRR+' ∙ 確認 '+conf+'/6 ∙ 量比 '+volRatio};
   var warn=[];
-  if(conf<2)  warn.push('確認數'+conf+'/6偏低');
+  if(conf<2) warn.push('確認數'+conf+'/6偏低');
   if(volRatio<0.5) warn.push('量比'+volRatio+'偏薄');
+  if(crowding>0.20) warn.push('訊號擁擠'+crowdPct+'%');
+  var isGreen=actualRR>=2.0&&conf>=2&&volRatio>=0.5&&crowding<=0.20;
+  if(isGreen)
+    return {label:'✅ 可進場',color:'var(--green)', reason:'RR '+actualRR+' ∙ 確認 '+conf+'/6 ∙ 量比 '+volRatio};
   return {label:'⚠️ 觀察',color:'#c9a227', reason:'RR '+actualRR+(warn.length?' ∙ '+warn.join('，'):'')};
 }
 
@@ -1613,7 +1618,7 @@ function _renderBtTracking(tracking,idPfx){
   var sumLots=0,sumDeployed=0,sumRisk=0,sumGain=0;
   tracking.forEach(function(t){
     if(t.status!=='open') return;
-    var pos=_calcPosition(t.entry,t.stop_loss,t.target,t.strength,t.is_pyramid);
+    var pos=_calcPosition(t.trigger_price||t.entry,t.stop_loss,t.target,t.strength,t.is_pyramid);
     sumLots+=pos.lots; sumDeployed+=pos.deployed; sumRisk+=pos.maxLoss; sumGain+=pos.maxGain;
   });
   var deployedPct=totalCapital>0?Math.round(sumDeployed/totalCapital*1000)/10:0;
@@ -1647,10 +1652,11 @@ function _renderBtTracking(tracking,idPfx){
     var fillRef=t.trigger_price||t.entry;
     var pos=_calcPosition(fillRef,t.stop_loss,t.target,st,isPyramid);
     var verdict=t.status==='open'?_tradeVerdict(t,pos):null;
-    // 1R 保本判斷：獲利 >= 1R（entry-stop）/ entry * 100
-    var oneR=t.entry>0&&t.stop_loss>0?Math.round((t.entry-t.stop_loss)/t.entry*10000)/100:0;
+    // 1R 保本判斷：獲利 >= 1R（fill-stop）/ fill * 100（用 trigger_price 計算）
+    var _fill2=t.trigger_price||t.entry;
+    var oneR=_fill2>0&&t.stop_loss>0?Math.round((_fill2-t.stop_loss)/_fill2*10000)/100:0;
     var breakevenHint=(t.status==='open'&&oneR>0&&(t.gain_pct||0)>=oneR)
-      ?'<div style="margin-top:4px;padding:3px 8px;background:rgba(59,178,115,.12);border-radius:5px;font-size:10px;color:var(--green)">💡 已達 1R，建議移保本止損至 $'+t.entry+'</div>'
+      ?'<div style="margin-top:4px;padding:3px 8px;background:rgba(59,178,115,.12);border-radius:5px;font-size:10px;color:var(--green)">💡 已達 1R，建議移保本止損至 $'+_fill2+'</div>'
       :'';
     var posHtml=pos.lots>0
       ?'<div style="margin-top:6px;padding:5px 8px;background:var(--bg2);border-radius:6px;font-size:10px">'+
@@ -1696,10 +1702,11 @@ function _renderBtTracking(tracking,idPfx){
           verdictBlock+
           '<div class="exp-sig-prices">'+
             '<div class="exp-sig-px">觸發進場 <span style="color:var(--blue)">$'+(t.trigger_price||t.entry)+'</span></div>'+
-            '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span></div>'+
+            '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span>'+(t.exit_style==='trailing'?' <span style="font-size:9px;color:var(--text3)">[追蹤停損]</span>':'')+'</div>'+
             '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+t.stop_loss+'</span></div>'+
             '<div class="exp-sig-px">現價 <span style="color:'+gc+'">$'+(t.current_price||'-')+'</span></div>'+
           '</div>'+
+          (t.confirmation_flags&&t.confirmation_flags.length?'<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px">'+t.confirmation_flags.map(function(f){return '<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(0,200,150,.12);color:var(--green)">'+escapeHtml(f)+'</span>';}).join('')+'</div>':'')+'
           posHtml+
           (t.trigger_date?'<div class="exp-sig-reason" style="margin-top:5px">觸發日：'+t.trigger_date+(t.sector_phase?' ∙ 類股：'+t.sector_phase:'')+'</div>':'')+
           (t.market_regime_at_trigger?'<div class="exp-sig-reason">大盤相位：'+t.market_regime_at_trigger+' ∙ RS：'+t.rs_pct_at_trigger+'% ∙ 量比：'+t.vol_ratio_at_trigger+'</div>':'')+

@@ -702,9 +702,11 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
         current_price = today_price_map.get(code)
         days_held     = rec.get("days_held", 0) + 1
 
+        # 使用 trigger_price 作為成本基準（比訊號日收盤更接近實際 fill）
+        _fill = rec.get("trigger_price") or rec["entry"]
         if current_price is not None:
             rec["current_price"] = current_price
-            rec["gain_pct"]      = round((current_price - rec["entry"]) / rec["entry"] * 100, 2)
+            rec["gain_pct"]      = round((current_price - _fill) / _fill * 100, 2)
 
         rec["days_held"] = days_held
 
@@ -723,16 +725,16 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
                 rec["status"]   = "win";  rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
+                rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
             else:
                 rec["status"]   = "loss"; rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
+                rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
         elif hit_target:
             rec["status"]   = "win";  rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
+            rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
         elif hit_stop:
             rec["status"]   = "loss"; rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
+            rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
         else:
             # 趨勢訊號最長 15 日；短線訊號最長 5 日（快進快出）
             _TREND = {"breakout", "high_base", "trend_cont"}
@@ -790,16 +792,18 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             "label":           sig["label"],
             "strength":        sig["strength"],
             "trigger_date":    today_str,
-            "trigger_price":   sig.get("trigger_price", sig["entry"]),  # 隔日需突破此價位才進場
-            "entry":           sig["entry"],           # 訊號日收盤（停損/目標基準）
-            "stop_loss":       sig["stop_loss"],
-            "atr_stop":        sig.get("atr_stop"),
-            "target":          sig["target"],
-            "rr":              sig.get("rr", 0),       # 風報比
-            "confirmations":   sig.get("confirmations", 0),  # 確認數（0-6）
-            "status":          "open",
-            "repeat":          is_repeat,
-            "is_pyramid":      is_pyramid,
+            "trigger_price":      sig.get("trigger_price", sig["entry"]),  # 隔日需突破此價位才進場
+            "entry":             sig["entry"],           # 訊號日收盤（停損/目標基準）
+            "stop_loss":         sig["stop_loss"],
+            "atr_stop":          sig.get("atr_stop"),
+            "target":            sig["target"],
+            "rr":                sig.get("rr", 0),       # 風報比
+            "confirmations":     sig.get("confirmations", 0),  # 確認數（0-6）
+            "confirmation_flags":[f["lbl"] for f in sig.get("confirmation_flags", []) if f.get("ok")],
+            "exit_style":        sig.get("exit_style", "fixed"),  # trailing=追蹤停損, fixed=固定目標
+            "status":            "open",
+            "repeat":            is_repeat,
+            "is_pyramid":        is_pyramid,
             "sector_key":      sk,
             "sector_phase":    sdata.get("sub_phase", ""),
             "current_price":   round(entry_price, 2),

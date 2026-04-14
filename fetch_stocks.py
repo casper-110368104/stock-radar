@@ -1966,6 +1966,9 @@ def _bt_yahoo_snapshot(closes, highs, lows, volumes, i):
         "vol_day_ratio": vol_day_ratio,
         "avwap_short":   _rolling_vwap(closes, highs, lows, volumes, i, 20),
         "avwap_swing":   _rolling_vwap(closes, highs, lows, volumes, i, 60),
+        "avwap_vol":     _rolling_vwap(closes, highs, lows, volumes, i,
+                             # 錨定過去20日最大成交量日，從該日到今計算 VWAP
+                             i - max(range(max(0, i-19), i+1), key=lambda j: volumes[j]) + 1),
     }
 
 
@@ -2002,10 +2005,9 @@ def bt_backtest_one_stock(closes, highs, lows, volumes, opens=None, stock_phase=
             if entry <= 0 or entry <= stop:
                 continue
             is_trend = sig["type"] in _BT_TREND_TYPES
-            # 趨勢訊號：目標 = entry+1R（追蹤停損的第一個里程碑）
-            # 短線訊號：目標 = sig["target"]（固定 T1）
-            R = entry - stop
-            win_target = (entry + R) if is_trend else target
+            # 統一使用 signals.py 計算的 target（與 forward tracking 一致）
+            # 趨勢訊號給 15 日持有時間（追蹤停損空間），短線訊號 5 日
+            win_target = target
             if win_target <= entry:
                 continue
             max_days  = 15 if is_trend else 5
@@ -2096,9 +2098,11 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
         code          = rec["code"]
         current_price = today_price_map.get(code)
         days_held     = rec.get("days_held", 0) + 1
+        # 使用 trigger_price 作為成本基準（比訊號日收盤更接近實際 fill）
+        _fill = rec.get("trigger_price") or rec["entry"]
         if current_price is not None:
             rec["current_price"] = current_price
-            rec["gain_pct"]      = round((current_price - rec["entry"]) / rec["entry"] * 100, 2)
+            rec["gain_pct"]      = round((current_price - _fill) / _fill * 100, 2)
         rec["days_held"] = days_held
         today_high  = (today_high_map or {}).get(code, current_price)
         today_low   = (today_low_map  or {}).get(code, current_price)
@@ -2114,16 +2118,16 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
                 rec["status"]   = "win";  rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
+                rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
             else:
                 rec["status"]   = "loss"; rec["resolved_date"] = today_str
-                rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
+                rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
         elif hit_target:
             rec["status"]   = "win";     rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["target"]    - rec["entry"]) / rec["entry"] * 100, 2)
+            rec["gain_pct"] = round((rec["target"]    - _fill) / _fill * 100, 2)
         elif hit_stop:
             rec["status"]   = "loss";    rec["resolved_date"] = today_str
-            rec["gain_pct"] = round((rec["stop_loss"] - rec["entry"]) / rec["entry"] * 100, 2)
+            rec["gain_pct"] = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
         else:
             # 到期判斷：趨勢訊號最長 15 日，短線訊號最長 5 日
             max_hold = 15 if rec.get("type") in _BT_TREND_TYPES else 5
@@ -2162,16 +2166,18 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
                 "label":           sig["label"],
                 "strength":        sig["strength"],
                 "trigger_date":    today_str,
-                "trigger_price":   sig.get("trigger_price", sig["entry"]),  # 隔日需突破此價位才進場
-                "entry":           sig["entry"],           # 訊號日收盤（停損/目標基準）
-                "stop_loss":       sig["stop_loss"],
-                "atr_stop":        sig.get("atr_stop"),
-                "target":          sig["target"],
-                "rr":              sig.get("rr", 0),       # 風報比
-                "confirmations":   sig.get("confirmations", 0),  # 確認數（0-6）
-                "status":          "open",
-                "repeat":          is_repeat,
-                "is_pyramid":      is_pyramid,
+                "trigger_price":      sig.get("trigger_price", sig["entry"]),  # 隔日需突破此價位才進場
+                "entry":             sig["entry"],           # 訊號日收盤（停損/目標基準）
+                "stop_loss":         sig["stop_loss"],
+                "atr_stop":          sig.get("atr_stop"),
+                "target":            sig["target"],
+                "rr":                sig.get("rr", 0),       # 風報比
+                "confirmations":     sig.get("confirmations", 0),  # 確認數（0-6）
+                "confirmation_flags":[f["lbl"] for f in sig.get("confirmation_flags", []) if f.get("ok")],
+                "exit_style":        sig.get("exit_style", "fixed"),  # trailing=追蹤停損, fixed=固定目標
+                "status":            "open",
+                "repeat":            is_repeat,
+                "is_pyramid":        is_pyramid,
                 "sector_key":      sk,
                 "sector_phase":    sdata.get("sub_phase", ""),
                 "current_price":   round(ep, 2),
