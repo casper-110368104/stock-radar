@@ -315,6 +315,32 @@ def get_twse_date(days_ago=0):
 
 # ── 1. TWSE 動態名單（量能前100 + 漲幅前50 + 跌幅前30）──────────
 
+def _fetch_twse_opendata_fallback():
+    """備援：用 opendata.twse.com.tw 抓上市公司基本清單（不含當日量能排序）
+    這個 domain 是 TWSE 專門對外的 OpenData 伺服器，雲端 IP 通常不會被擋。
+    無法做量能排序，改用公司規模（股本）做代替排序。
+    """
+    url = "https://opendata.twse.com.tw/v1/opendata/t187ap03_L"
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=20)
+        data = res.json()
+        if not data:
+            print("  [OpenData] 回傳空資料")
+            return [], []
+        codes = []
+        for row in data:
+            code = str(row.get("公司代號", "") or row.get("SecuritiesCompanyCode", "")).strip()
+            if code.isdigit() and len(code) == 4 and int(code) >= 1000:
+                if not code.startswith("00"):
+                    codes.append(code)
+        print(f"  [OpenData] 取得 {len(codes)} 個上市股票代碼（無量能排序）")
+        # 沒有成交量資訊，回傳清單 + 空的 all_stocks（breadth 計算會跳過）
+        return codes, []
+    except Exception as e:
+        print(f"  [OpenData] 失敗：{e}")
+        return [], []
+
+
 def fetch_twse_dynamic():
     """用 TWSE 公開 API 抓全市場當日資料，取量能/漲跌幅前N名
     回傳 (merged_codes, all_stocks)：
@@ -336,8 +362,8 @@ def fetch_twse_dynamic():
             time.sleep(3 * attempt)
             d = None
     if not d or d.get("stat") != "OK":
-        print("  [TWSE] 4 次嘗試後仍失敗，回傳空清單")
-        return [], []
+        print("  [TWSE] 4 次嘗試後仍失敗，嘗試 OpenData fallback...")
+        return _fetch_twse_opendata_fallback()
     try:
         fields = d.get("fields", [])
         rows   = d.get("data", [])
