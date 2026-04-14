@@ -2170,7 +2170,9 @@ function _initHeatmap(){
   var state=sorted.map(function(s,i){
     var chg=s.chg_pct||0;
     var col=_hmCol(chg);
-    var sz=Math.max(22,Math.min(54,26+Math.abs(chg)*5));
+    // sqrt scaling: compresses extremes so big movers aren't overwhelming
+    // range ~26-50px (±10% → 50, ±1% → 34, 0% → 26)
+    var sz=Math.max(26,Math.min(50,26+Math.sqrt(Math.abs(chg))*8));
     var el=document.createElement('div');
     el.style.cssText='position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;cursor:pointer;z-index:2';
     var gsz=Math.round(sz*2.4);
@@ -2183,24 +2185,59 @@ function _initHeatmap(){
     var idx=items.indexOf(s);
     el.addEventListener('click',(function(ii){return function(){_rrgClick(ii);};})(idx));
     cont.appendChild(el);
-    // random start position (%) converted on first tick
     var ang=Math.random()*Math.PI*2;
-    var spd=0.22+Math.random()*0.38;
-    return{el:el,sz:sz,
+    var spd=0.2+Math.random()*0.3;
+    var r=sz/2+3; // collision radius (just the dot + tiny buffer)
+    return{el:el,sz:sz,r:r,m:sz*sz, // mass ∝ area for momentum conservation
       x:8+Math.random()*84,y:8+Math.random()*84,usePct:true,
       vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd};
   });
 
   function tick(){
     var W=wrap.offsetWidth||300;
+    // pct → px on first frame
     state.forEach(function(st){
       if(st.usePct){st.x=st.x/100*W;st.y=st.y/100*wH;st.usePct=false;}
+    });
+
+    // bubble-bubble elastic collision (O(n²), fine for ~33 items)
+    for(var i=0;i<state.length-1;i++){
+      for(var j=i+1;j<state.length;j++){
+        var a=state[i],b=state[j];
+        var dx=b.x-a.x,dy=b.y-a.y;
+        var dist=Math.sqrt(dx*dx+dy*dy)||0.001;
+        var minD=a.r+b.r;
+        if(dist<minD){
+          var nx=dx/dist,ny=dy/dist;
+          var dvx=a.vx-b.vx,dvy=a.vy-b.vy;
+          var dot=dvx*nx+dvy*ny;
+          if(dot>0){ // only resolve if approaching
+            var mt=a.m+b.m;
+            var imp=2*dot/mt;
+            a.vx-=imp*b.m*nx; a.vy-=imp*b.m*ny;
+            b.vx+=imp*a.m*nx; b.vy+=imp*a.m*ny;
+          }
+          // push apart so they don't stick
+          var ov=(minD-dist)/2+0.5;
+          a.x-=nx*ov; a.y-=ny*ov;
+          b.x+=nx*ov; b.y+=ny*ov;
+        }
+      }
+    }
+
+    // move + wall bounce + speed cap
+    var MAX_SPD=0.9;
+    state.forEach(function(st){
       st.x+=st.vx; st.y+=st.vy;
-      var pad=st.sz/2+18; // dot radius + label area
-      if(st.x<pad){st.x=pad;st.vx=Math.abs(st.vx);}
-      else if(st.x>W-pad){st.x=W-pad;st.vx=-Math.abs(st.vx);}
-      if(st.y<pad){st.y=pad;st.vy=Math.abs(st.vy);}
-      else if(st.y>wH-pad){st.y=wH-pad;st.vy=-Math.abs(st.vy);}
+      // asymmetric wall padding: bottom needs room for label (~22px)
+      var padH=st.r+2, padBot=st.r+22, padSide=st.r+4;
+      if(st.x<padSide){st.x=padSide;st.vx=Math.abs(st.vx);}
+      else if(st.x>W-padSide){st.x=W-padSide;st.vx=-Math.abs(st.vx);}
+      if(st.y<padH){st.y=padH;st.vy=Math.abs(st.vy);}
+      else if(st.y>wH-padBot){st.y=wH-padBot;st.vy=-Math.abs(st.vy);}
+      // cap speed so collisions don't cause runaway acceleration
+      var spd2=st.vx*st.vx+st.vy*st.vy;
+      if(spd2>MAX_SPD*MAX_SPD){var s2=MAX_SPD/Math.sqrt(spd2);st.vx*=s2;st.vy*=s2;}
       st.el.style.left=st.x+'px';
       st.el.style.top=st.y+'px';
     });
