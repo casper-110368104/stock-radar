@@ -2277,7 +2277,7 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
             rec["gain_pct"]    = round((rec["stop_loss"] - _fill) / _fill * 100, 2)
             rec["exit_reason"] = "atr_stop_hit" if hit_atr_stop and not hit_tech_stop else "stop_hit"
         else:
-            max_hold = 15 if rec.get("type") in _BT_TREND_TYPES else 5
+            max_hold = 25 if rec.get("type") in _BT_TREND_TYPES else 8
             if days_held >= max_hold:
                 rec["status"]      = "expired"; rec["resolved_date"] = today_str
                 rec["exit_reason"] = "expired"
