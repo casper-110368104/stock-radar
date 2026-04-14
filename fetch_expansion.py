@@ -795,6 +795,8 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             "stop_loss":       sig["stop_loss"],
             "atr_stop":        sig.get("atr_stop"),
             "target":          sig["target"],
+            "rr":              sig.get("rr", 0),       # 風報比
+            "confirmations":   sig.get("confirmations", 0),  # 確認數（0-6）
             "status":          "open",
             "repeat":          is_repeat,
             "is_pyramid":      is_pyramid,

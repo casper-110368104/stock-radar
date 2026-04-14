@@ -1545,6 +1545,34 @@ function _togBtCard(id){
   if(card) card.classList.toggle('open');
 }
 
+// ── 進場評級 ────────────────────────────────────────────────────────────
+// 規則（依序檢查，任一不過即降級）：
+//   ✅ 進場：RR≥2.0 且 確認數≥2 且 lots≥1 且 非重複訊號
+//   ⚠️ 觀察：RR≥1.5 且 lots≥1，但確認數<2 或 量比偏低（<0.5x）
+//   ❌ 跳過：lots=0（停損過寬）或 RR<1.5 或 重複訊號
+function _tradeVerdict(t,pos){
+  var fillRef=t.trigger_price||t.entry;
+  var risk=fillRef-(t.stop_loss||0);
+  var reward=(t.target||0)-fillRef;
+  var actualRR=risk>0?Math.round(reward/risk*10)/10:0;
+  var conf=t.confirmations||0;
+  var volRatio=t.vol_ratio_at_trigger||1;
+  var isRepeat=!!t.repeat&&!t.is_pyramid;
+
+  if(pos.lots===0)
+    return {label:'❌ 跳過',color:'var(--red)',   reason:'停損過寬或風報比不足'};
+  if(isRepeat)
+    return {label:'🔁 重複',color:'var(--text3)', reason:'同股同類型已有開倉，跳過'};
+  if(actualRR<1.5)
+    return {label:'❌ 跳過',color:'var(--red)',   reason:'實際RR '+actualRR+' < 1.5'};
+  if(actualRR>=2.0&&conf>=2&&volRatio>=0.5)
+    return {label:'✅ 可進場',color:'var(--green)', reason:'RR '+actualRR+' ∙ 確認 '+conf+'/6 ∙ 量比 '+volRatio};
+  var warn=[];
+  if(conf<2)  warn.push('確認數'+conf+'/6偏低');
+  if(volRatio<0.5) warn.push('量比'+volRatio+'偏薄');
+  return {label:'⚠️ 觀察',color:'#c9a227', reason:'RR '+actualRR+(warn.length?' ∙ '+warn.join('，'):'')};
+}
+
 // entry    = trigger_price（隔日需突破的觸發點，比訊號日收盤高 0.2~0.5%）
 // stopLoss = sig.stop_loss（以訊號日收盤為基準計算，不受 trigger 影響）
 // 用 trigger_price 計算成本更接近真實 fill；停損距離仍用 trigger - stop
@@ -1618,6 +1646,7 @@ function _renderBtTracking(tracking,idPfx){
     // 用 trigger_price 計算倉位（更接近真實 fill）；fallback 到 entry（舊資料相容）
     var fillRef=t.trigger_price||t.entry;
     var pos=_calcPosition(fillRef,t.stop_loss,t.target,st,isPyramid);
+    var verdict=t.status==='open'?_tradeVerdict(t,pos):null;
     // 1R 保本判斷：獲利 >= 1R（entry-stop）/ entry * 100
     var oneR=t.entry>0&&t.stop_loss>0?Math.round((t.entry-t.stop_loss)/t.entry*10000)/100:0;
     var breakevenHint=(t.status==='open'&&oneR>0&&(t.gain_pct||0)>=oneR)
@@ -1636,16 +1665,19 @@ function _renderBtTracking(tracking,idPfx){
         '</div>'
       :'<div style="margin-top:6px;font-size:10px;color:var(--text3)">停損過寬，建議跳過（＜1張）</div>';
     var cid=idPfx+'-'+idx;
+    var verdictBadge=verdict?'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:'+verdict.color+'22;color:'+verdict.color+';margin-left:4px;flex-shrink:0">'+verdict.label+'</span>':'';
+    var verdictBlock=verdict?'<div style="margin-top:5px;padding:4px 8px;border-radius:6px;border-left:2px solid '+verdict.color+';background:'+verdict.color+'11;font-size:10px;color:'+verdict.color+'">'+verdict.label+' — '+verdict.reason+'</div>':'';
     return '<div class="exp-card bt-track-item" id="'+cid+'" data-status="'+(t.status||'open')+'" data-code="'+(t.code||'')+'" data-name="'+(t.name||'')+'">'+
       '<div class="exp-hdr" onclick="_togBtCard(\''+cid+'\')" style="cursor:pointer">'+
-        '<div class="exp-meta">'+
+        '<div class="exp-meta" style="flex-wrap:wrap;gap:3px">'+
           '<span class="exp-code">'+t.code+'</span>'+
           '<span class="exp-name">'+t.name+'</span>'+
           '<span class="exp-sig-badge '+st+'">'+t.label+'</span>'+
-          (isPyramid&&pos.lots>0?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227;margin-left:2px">加碼</span>':
+          (isPyramid&&pos.lots>0?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227">加碼</span>':
            t.repeat?'<span style="font-size:9px;color:var(--text3)">🔁</span>':'')+
+          (t.status==='open'?verdictBadge:'')+
         '</div>'+
-        '<div style="display:flex;align-items:center;gap:6px">'+
+        '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+
           '<div class="exp-right">'+
             '<div style="font-size:12px;font-weight:700">'+SI[t.status]+' $'+(t.current_price||'-')+'</div>'+
             '<div class="exp-chg" style="color:'+gc+'">'+gs+'</div>'+
@@ -1658,8 +1690,10 @@ function _renderBtTracking(tracking,idPfx){
           '<div class="exp-sig-head">'+
             '<span class="exp-sig-badge '+st+'">'+(st==='strong'?'強':st==='medium'?'中':'弱')+'</span>'+
             '<span class="exp-sig-label">'+t.label+'</span>'+
+            (t.confirmations!==undefined?'<span style="font-size:9px;color:var(--text3);margin-left:4px">確認 '+(t.confirmations||0)+'/6</span>':'')+
             '<span style="margin-left:auto;font-size:10px;color:'+statClr+'">'+dayStr+'</span>'+
           '</div>'+
+          verdictBlock+
           '<div class="exp-sig-prices">'+
             '<div class="exp-sig-px">觸發進場 <span style="color:var(--blue)">$'+(t.trigger_price||t.entry)+'</span></div>'+
             '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span></div>'+
