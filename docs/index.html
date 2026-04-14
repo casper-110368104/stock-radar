@@ -1545,6 +1545,9 @@ function _togBtCard(id){
   if(card) card.classList.toggle('open');
 }
 
+// entry    = trigger_price（隔日需突破的觸發點，比訊號日收盤高 0.2~0.5%）
+// stopLoss = sig.stop_loss（以訊號日收盤為基準計算，不受 trigger 影響）
+// 用 trigger_price 計算成本更接近真實 fill；停損距離仍用 trigger - stop
 function _calcPosition(entry,stopLoss,target,strength,isPyramid){
   var stMult={strong:1.0,medium:0.75,weak:0.5}[strength||'weak']||0.5;
   var rgMult={bull:1.0,bull_pullback:0.8,range:0.6,bear:0.35}[marketRegime.regime||'range']||0.6;
@@ -1612,7 +1615,9 @@ function _renderBtTracking(tracking,idPfx){
       ?'第'+(t.days_held||0)+'日'
       :(SL[t.status]||t.status)+(t.resolved_date?' '+t.resolved_date.slice(5):'');
     var isPyramid=!!t.is_pyramid;
-    var pos=_calcPosition(t.entry,t.stop_loss,t.target,st,isPyramid);
+    // 用 trigger_price 計算倉位（更接近真實 fill）；fallback 到 entry（舊資料相容）
+    var fillRef=t.trigger_price||t.entry;
+    var pos=_calcPosition(fillRef,t.stop_loss,t.target,st,isPyramid);
     // 1R 保本判斷：獲利 >= 1R（entry-stop）/ entry * 100
     var oneR=t.entry>0&&t.stop_loss>0?Math.round((t.entry-t.stop_loss)/t.entry*10000)/100:0;
     var breakevenHint=(t.status==='open'&&oneR>0&&(t.gain_pct||0)>=oneR)
@@ -1656,7 +1661,7 @@ function _renderBtTracking(tracking,idPfx){
             '<span style="margin-left:auto;font-size:10px;color:'+statClr+'">'+dayStr+'</span>'+
           '</div>'+
           '<div class="exp-sig-prices">'+
-            '<div class="exp-sig-px">進場 <span>$'+t.entry+'</span></div>'+
+            '<div class="exp-sig-px">觸發進場 <span style="color:var(--blue)">$'+(t.trigger_price||t.entry)+'</span></div>'+
             '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span></div>'+
             '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+t.stop_loss+'</span></div>'+
             '<div class="exp-sig-px">現價 <span style="color:'+gc+'">$'+(t.current_price||'-')+'</span></div>'+
