@@ -153,6 +153,7 @@ def fetch_sector_rotation(days=60, breadth_map=None):
                 price_history[s].append(day[s])
 
     # RS = 産業日漲幅 - 大盤日漲幅（需要相鄰兩日）
+    latest_chg = {}  # sector → 最新一日的絕對漲跌幅(%)
     for i in range(1, len(dates)):
         date = dates[i]
         prev_date = dates[i - 1]
@@ -168,6 +169,7 @@ def fetch_sector_rotation(days=60, breadth_map=None):
                 sector_ret = (day[s] / prev_day[s] - 1) * 100
                 rs = round(sector_ret - bm_ret, 4)
                 rs_history[s].append({"date": date[5:], "rs": rs})
+                latest_chg[s] = round(sector_ret, 2)
 
     def linear_slope(vals):
         n = len(vals)
@@ -285,6 +287,7 @@ def fetch_sector_rotation(days=60, breadth_map=None):
             "rs_up_days":   d["rs_up_days"],
             "vector":       d["vector"],
             "trend":        d["trend"],
+            "chg_pct":      latest_chg.get(s, 0),
         }
 
     phase_counts = {}

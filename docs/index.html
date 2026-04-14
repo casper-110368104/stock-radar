@@ -1944,12 +1944,9 @@ function renderMacroFull(){
     var rrgItems=[];
     sdKeys.forEach(function(name){
       var d=sectorData[name];
-      if(d) rrgItems.push({name:name,rs:+(d.rs||0),rs_mom:+(d.rs_mom||0),sub_phase:d.sub_phase||'整理觀察',acceleration:+(d.acceleration||0),vector:d.vector||{dx:0,dy:0},trend:d.trend||[],score:+(d.score||0)});
+      if(d) rrgItems.push({name:name,rs:+(d.rs||0),rs_mom:+(d.rs_mom||0),sub_phase:d.sub_phase||'整理觀察',acceleration:+(d.acceleration||0),vector:d.vector||{dx:0,dy:0},trend:d.trend||[],chg_pct:+(d.chg_pct||0)});
     });
     window._rrgItems=rrgItems;
-    var _sorted=rrgItems.slice().sort(function(a,b){return b.score-a.score;});
-    var _primarySet={};
-    _sorted.slice(0,8).forEach(function(s){_primarySet[s.name]=true;});
 
     // RRG scatter plot: X=RS, Y=rs_mom, 4 quadrants
     var svgW=480,svgH=420;
@@ -1962,7 +1959,6 @@ function renderMacroFull(){
 
     // Clamp both axes so no dot escapes the plot area
     function _rmx(v){var c=Math.max(_xMin,Math.min(_xMax,v));return _pl+(c-_xMin)/(_xMax-_xMin)*_pw;}
-    window._rrgData={items:rrgItems,primarySet:_primarySet,phases:phases,svgW:svgW,svgH:svgH,xMin:_xMin,xMax:_xMax,yMin:_yMin,yMax:_yMax,pt:_pt,pr:_pr,pb:_pb,pl:_pl,pw:_pw,ph:_ph};
 
     var svg='<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;display:block;overflow:visible">';
 
@@ -2028,10 +2024,9 @@ function renderMacroFull(){
     _qlabel(_pl+6,    svgH-_pb-8,'start', '#f87171', '◁', '落後');
     _qlabel(svgW-_pr-6,svgH-_pb-8,'end', '#fbbf24', '▽', '轉弱');
 
-    // Vector arrows for top-8 sectors only; dots are animated DOM bubbles
+    // Draw arrows + dot glows clipped to plot area
     svg+='<g clip-path="url(#rrg-clip)">';
     rrgItems.forEach(function(s){
-      if(!_primarySet[s.name]) return;
       var x=_rmx(s.rs),y=_rmy(s.rs_mom);
       var col=phases[s.sub_phase]?phases[s.sub_phase].color:'#6b7280';
       var dvx=s.vector.dx||0,dvy=s.vector.dy||0;
@@ -2046,8 +2041,19 @@ function renderMacroFull(){
         var px3=-ny*4,py3=nx*4;
         svg+='<polygon points="'+x.toFixed(1)+','+y.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+col+'" opacity=".75"/>';
       }
+      // 3-layer glow (clipped)
+      var clamped=(s.rs_mom<_yMin||s.rs_mom>_yMax||s.rs<_xMin||s.rs>_xMax);
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="14" fill="'+col+'" fill-opacity=".07"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="9"  fill="'+col+'" fill-opacity=".15"/>';
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5.5" fill="'+col+'" fill-opacity="'+(clamped?.55:.92)+'" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>';
     });
     svg+='</g>';
+
+    // 只保留點擊熱區（圖上不顯示文字標籤，改由下方象限卡片呈現）
+    rrgItems.forEach(function(s,i){
+      var x=_rmx(s.rs),y=_rmy(s.rs_mom);
+      svg+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="16" fill="transparent" style="cursor:pointer" onclick="_rrgClick('+i+')"/>';
+    });
     svg+='</svg>';
 
     // ── 象限卡片（圖下方，替代混亂的圖內標籤）────────────────────────
@@ -2096,14 +2102,8 @@ function renderMacroFull(){
     });
     quadHtml+='</div>';
 
-    var tabHtml='<div style="display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap">';
-    [{id:'all',lbl:'全部'},{id:'lead',lbl:'▶ 領先'},{id:'rise',lbl:'△ 轉強'},{id:'fall',lbl:'▽ 轉弱'},{id:'lag',lbl:'◁ 落後'}].forEach(function(t){
-      var a=t.id==='all';
-      tabHtml+='<button id="rrg-tab-'+t.id+'" onclick="_rrgFilter(\''+t.id+'\')" style="font-size:10px;padding:4px 11px;border-radius:8px;border:1px solid rgba(255,255,255,'+(a?.18:.1)+');background:rgba(255,255,255,'+(a?.12:.03)+');color:rgba(200,210,225,'+(a?'1':'.65')+');cursor:pointer;font-weight:'+(a?'700':'400')+'">'+t.lbl+'</button>';
-    });
-    tabHtml+='</div>';
     h+='<div style="background:linear-gradient(160deg,rgba(28,28,34,1) 0%,rgba(18,18,22,1) 100%);border-radius:16px;border:1px solid rgba(255,255,255,.08);padding:16px;margin-bottom:10px;box-shadow:0 6px 28px rgba(0,0,0,.4)">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
         '<div style="display:flex;align-items:center;gap:8px">'+
           '<div style="width:28px;height:28px;border-radius:8px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px">🗺️</div>'+
           '<div>'+
@@ -2113,93 +2113,97 @@ function renderMacroFull(){
         '</div>'+
         '<button onclick="goView(\'expansion\')" style="display:flex;align-items:center;gap:5px;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.22);color:var(--gold);font-size:11px;padding:5px 11px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:-.1px">🎲 隨機500</button>'+
       '</div>'+
-      tabHtml+
-      '<div id="rrg-wrap-main" style="position:relative;background:rgba(0,0,0,.22);border-radius:12px;padding:6px 4px 4px;border:1px solid rgba(255,255,255,.04);overflow:hidden">'+
-        svg+
-        '<div id="rrg-bubbles" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>'+
+      '<div style="background:rgba(0,0,0,.22);border-radius:12px;padding:6px 4px 4px;border:1px solid rgba(255,255,255,.04);overflow:hidden">'+
+      svg+
       '</div>'+
       quadHtml+
-      '<div style="font-size:9px;color:var(--text3);text-align:center;margin-top:10px;opacity:.5;letter-spacing:.3px">Top 8 産業有動態標示 · 點擊類股查看詳情 · X = RS · Y = 動能</div>'+
+      '<div style="font-size:9px;color:var(--text3);text-align:center;margin-top:10px;opacity:.5;letter-spacing:.3px">點擊類股查看詳情 · X = RS 相對強度 · Y = 動能 · 箭頭 = 近期方向</div>'+
+    '</div>';
+
+    // 類股漲跌幅氣泡圖
+    var _hmItems=rrgItems.slice().sort(function(a,b){return b.chg_pct-a.chg_pct;});
+    h+='<div style="background:linear-gradient(160deg,rgba(28,28,34,1) 0%,rgba(18,18,22,1) 100%);border-radius:16px;border:1px solid rgba(255,255,255,.08);padding:16px;margin-bottom:10px;box-shadow:0 6px 28px rgba(0,0,0,.4)">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
+        '<div style="width:28px;height:28px;border-radius:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);display:flex;align-items:center;justify-content:center;font-size:14px">🌡️</div>'+
+        '<div>'+
+          '<div style="font-size:13px;font-weight:700;color:rgba(240,240,242,.95);letter-spacing:-.2px">類股漲跌幅</div>'+
+          '<div style="font-size:10px;color:var(--text3);margin-top:1px">泡泡大小＝漲跌幅 · 綠漲紅跌 · 點擊查詳情</div>'+
+        '</div>'+
+      '</div>'+
+      '<div id="hm-wrap" style="position:relative;background:rgba(0,0,0,.18);border-radius:10px;border:1px solid rgba(255,255,255,.04);overflow:hidden;min-height:260px">'+
+        '<div id="hm-bubbles"></div>'+
+      '</div>'+
     '</div>';
   }
 
   el.innerHTML=h;
-  if(Object.keys(sectorData).length) setTimeout(_initRRGAnim,30);
+  if(Object.keys(sectorData).length) setTimeout(_initHeatmap,30);
 }
 
-function _initRRGAnim(){
-  if(window._rrgAnimId){cancelAnimationFrame(window._rrgAnimId);window._rrgAnimId=null;}
-  var cont=document.getElementById('rrg-bubbles');
-  var D=window._rrgData;
-  if(!cont||!D) return;
-  if(!document.getElementById('rrg-ks')){
+function _initHeatmap(){
+  if(window._hmAnimId){cancelAnimationFrame(window._hmAnimId);window._hmAnimId=null;}
+  var wrap=document.getElementById('hm-wrap');
+  var cont=document.getElementById('hm-bubbles');
+  if(!cont||!wrap) return;
+  var items=window._rrgItems;
+  if(!items||!items.length) return;
+  if(!document.getElementById('hm-ks')){
     var ks=document.createElement('style');
-    ks.id='rrg-ks';
-    ks.textContent='@keyframes rrgGlow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.18}50%{transform:translate(-50%,-50%) scale(1.6);opacity:.06}}';
+    ks.id='hm-ks';
+    ks.textContent='@keyframes hmGlow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.2}50%{transform:translate(-50%,-50%) scale(1.55);opacity:.07}}';
     document.head.appendChild(ks);
   }
   cont.innerHTML='';
-  cont.style.pointerEvents='none';
-  function _mx(v){v=Math.max(D.xMin,Math.min(D.xMax,v));return D.pl+(v-D.xMin)/(D.xMax-D.xMin)*D.pw;}
-  function _my(v){v=Math.max(D.yMin,Math.min(D.yMax,v));return D.pt+D.ph-(v-D.yMin)/(D.yMax-D.yMin)*D.ph;}
-  var state=D.items.map(function(s,i){
-    var col=(D.phases[s.sub_phase]||{}).color||'#6b7280';
-    var isPrimary=!!D.primarySet[s.name];
-    var px=_mx(s.rs),py=_my(s.rs_mom);
-    var sz=isPrimary?Math.max(20,24+Math.abs(s.rs)*2.5):7;
+  cont.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none';
+
+  // Sort by chg_pct desc; colour & size based on chg_pct
+  var sorted=items.slice().sort(function(a,b){return b.chg_pct-a.chg_pct;});
+  function _hmCol(v){
+    var t=Math.min(1,Math.abs(v)/3);
+    if(v>0) return 'rgb('+Math.round(34+t*30)+','+Math.round(197-t*50)+','+Math.round(94-t*30)+')';
+    if(v<0) return 'rgb('+Math.round(239+t*16)+','+Math.round(68-t*30)+','+Math.round(68-t*30)+')';
+    return '#6b7280';
+  }
+
+  // Grid layout: 4 cols, sorted left→right top→bottom
+  var cols=4, cellH=78;
+  var rows=Math.ceil(sorted.length/cols);
+  var totalH=Math.max(260, rows*cellH+16);
+  wrap.style.height=totalH+'px';
+
+  var state=sorted.map(function(s,i){
+    var chg=s.chg_pct||0;
+    var col=_hmCol(chg);
+    var sz=Math.max(18, Math.min(46, 22+Math.abs(chg)*4));
+    var row=Math.floor(i/cols), c=i%cols;
+    // use % for responsive positions
+    var pxPct=(c+0.5)/cols*100;
+    var pyPx=(row+0.5)*cellH+8;
     var el=document.createElement('div');
-    el.style.cssText='position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;cursor:pointer;z-index:'+(isPrimary?2:1);
-    var inner='';
-    if(isPrimary){
-      var gsz=Math.round(sz*2.4);
-      inner+='<div style="position:absolute;width:'+gsz+'px;height:'+gsz+'px;border-radius:50%;background:'+col+';left:50%;top:50%;margin-left:'+(-gsz/2)+'px;margin-top:'+(-gsz/2)+'px;animation:rrgGlow '+(2.2+i*0.13).toFixed(2)+'s ease-in-out infinite '+(i*0.18).toFixed(2)+'s"></div>';
-    }
-    inner+='<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+col+';border:1.5px solid rgba(255,255,255,'+(isPrimary?.35:.15)+');position:relative;z-index:2;box-shadow:0 0 '+(isPrimary?7:2)+'px '+col+(isPrimary?'99':'33')+'"></div>';
-    if(isPrimary) inner+='<div style="font-size:9px;font-weight:600;color:'+col+';white-space:nowrap;margin-top:2px;padding:1px 5px;border-radius:3px;background:rgba(10,10,14,.82);position:relative;z-index:2;line-height:1.4">'+s.name+'</div>';
-    el.innerHTML=inner;
-    el.title=s.name+' · '+s.sub_phase+' RS:'+(s.rs>=0?'+':'')+s.rs.toFixed(2)+' M:'+s.rs_mom.toFixed(1);
-    el.addEventListener('click',(function(idx){return function(){_rrgClick(idx);};})(i));
+    el.style.cssText='position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;cursor:pointer';
+    el.style.left=pxPct+'%';
+    el.style.top=pyPx+'px';
+    var gsz=Math.round(sz*2.3);
+    el.innerHTML=
+      '<div style="position:absolute;width:'+gsz+'px;height:'+gsz+'px;border-radius:50%;background:'+col+';left:50%;top:50%;margin-left:'+(-gsz/2)+'px;margin-top:'+(-gsz/2)+'px;animation:hmGlow '+(2.4+i*0.1).toFixed(1)+'s ease-in-out infinite '+(i*0.15).toFixed(2)+'s"></div>'+
+      '<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+col+';border:1.5px solid rgba(255,255,255,.3);position:relative;z-index:2;box-shadow:0 0 7px '+col+'99"></div>'+
+      '<div style="font-size:8.5px;font-weight:600;color:'+col+';white-space:nowrap;margin-top:2px;max-width:56px;text-align:center;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:2">'+s.name+'</div>'+
+      '<div style="font-size:8px;color:'+col+';opacity:.85;position:relative;z-index:2;font-weight:700">'+(chg>0?'+':'')+chg.toFixed(2)+'%</div>';
+    el.title=s.name+' '+s.sub_phase+' '+(chg>=0?'+':'')+chg.toFixed(2)+'%';
+    var idx=items.indexOf(s);
+    el.addEventListener('click',(function(i){return function(){_rrgClick(i);};})(idx));
     cont.appendChild(el);
-    var phase=(i/D.items.length)*Math.PI*2;
-    var speed=isPrimary?(0.0005+i*0.00004):0;
-    var ampX=isPrimary?(3+Math.abs(s.vector.dx)*14):0;
-    var ampY=isPrimary?(3+Math.abs(s.vector.dy)*2.8):0;
-    return{s:s,el:el,px:px,py:py,phase:phase,speed:speed,ampX:ampX,ampY:ampY,
-           dirX:s.vector.dx>=0?1:-1,dirY:s.vector.dy>=0?-1:1,isPrimary:isPrimary};
+    return{el:el,pxPct:pxPct,pyPx:pyPx,phase:(i/sorted.length)*Math.PI*2,speed:0.00045+i*0.00003};
   });
-  function toX(x){return x/D.svgW*100;}
-  function toY(y){return y/D.svgH*100;}
-  state.forEach(function(st){st.el.style.left=toX(st.px)+'%';st.el.style.top=toY(st.py)+'%';});
-  window._rrgState=state;
+
   function tick(t){
     state.forEach(function(st){
-      if(!st.isPrimary) return;
-      var off=Math.sin(t*st.speed+st.phase);
-      st.el.style.left=toX(st.px+st.dirX*Math.abs(off)*st.ampX)+'%';
-      st.el.style.top=toY(st.py+st.dirY*Math.abs(off)*st.ampY)+'%';
+      var off=Math.sin(t*st.speed+st.phase)*3;
+      st.el.style.top=(st.pyPx+off)+'px';
     });
-    window._rrgAnimId=requestAnimationFrame(tick);
+    window._hmAnimId=requestAnimationFrame(tick);
   }
-  window._rrgAnimId=requestAnimationFrame(tick);
-}
-
-function _rrgFilter(q){
-  ['all','lead','rise','fall','lag'].forEach(function(id){
-    var btn=document.getElementById('rrg-tab-'+id);
-    if(!btn) return;
-    var a=id===q;
-    btn.style.background=a?'rgba(255,255,255,.15)':'rgba(255,255,255,.03)';
-    btn.style.borderColor=a?'rgba(255,255,255,.3)':'rgba(255,255,255,.1)';
-    btn.style.color=a?'rgba(220,230,240,.95)':'rgba(180,190,205,.6)';
-    btn.style.fontWeight=a?'700':'400';
-  });
-  if(!window._rrgState) return;
-  window._rrgState.forEach(function(st){
-    var s=st.s;
-    var show=q==='all'||(q==='lead'&&s.rs>=0&&s.rs_mom>=0)||(q==='rise'&&s.rs<0&&s.rs_mom>=0)||(q==='fall'&&s.rs>=0&&s.rs_mom<0)||(q==='lag'&&s.rs<0&&s.rs_mom<0);
-    st.el.style.opacity=show?'1':'0.1';
-    st.el.style.transition='opacity .25s';
-  });
+  window._hmAnimId=requestAnimationFrame(tick);
 }
 
 function _rrgClick(idx){
