@@ -749,6 +749,15 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
     _STRENGTH_ORD = {"strong": 0, "medium": 1, "weak": 2}
     open_keys     = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
     open_codes    = {r["code"] for r in updated if r.get("status") == "open"}
+    # 加碼安全檢查：記錄各代號現有倉位的最高停損價
+    # 加碼進場點必須嚴格高於既有停損，否則等於「在停損價加碼」
+    open_max_stop = {}
+    for r in updated:
+        if r.get("status") == "open":
+            c  = r["code"]
+            sl = r.get("stop_loss") or 0
+            if sl > open_max_stop.get(c, 0):
+                open_max_stop[c] = sl
 
     new_candidates = []
     for stock in today_results:
@@ -756,7 +765,13 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
         name = stock["name"]
         for sig in stock.get("signals", []):
             is_repeat  = (code, sig["type"]) in open_keys
-            is_pyramid = (not is_repeat) and (code in open_codes)
+            # 加碼條件：(1) 不同類型訊號  (2) 進場點 > 既有最高停損
+            # 若 entry <= 既有停損，代表股票已回跌至停損區，不應加碼
+            is_pyramid = (
+                (not is_repeat)
+                and (code in open_codes)
+                and (sig["entry"] > (open_max_stop.get(code) or 0))
+            )
             new_candidates.append((stock, sig, is_repeat, is_pyramid))
 
     new_candidates.sort(key=lambda x: _STRENGTH_ORD.get(x[1].get("strength", "weak"), 2))

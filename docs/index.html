@@ -1637,7 +1637,7 @@ function _renderBtTracking(tracking,idPfx){
           '<span class="exp-code">'+t.code+'</span>'+
           '<span class="exp-name">'+t.name+'</span>'+
           '<span class="exp-sig-badge '+st+'">'+t.label+'</span>'+
-          (isPyramid?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227;margin-left:2px">加碼</span>':
+          (isPyramid&&pos.lots>0?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227;margin-left:2px">加碼</span>':
            t.repeat?'<span style="font-size:9px;color:var(--text3)">🔁</span>':'')+
         '</div>'+
         '<div style="display:flex;align-items:center;gap:6px">'+

@@ -2133,14 +2133,26 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
     # 加入今日新訊號
     # repeat=True：同代號同類型已有 open 記錄（重複訊號）
     # is_pyramid=True：同代號但不同類型已有 open 記錄（加碼機會）
+    # 加碼安全檢查：加碼進場點必須嚴格高於既有停損，否則等於「在停損價加碼」
     open_keys  = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
     open_codes = {r["code"] for r in updated if r.get("status") == "open"}
+    open_max_stop = {}
+    for r in updated:
+        if r.get("status") == "open":
+            c  = r["code"]
+            sl = r.get("stop_loss") or 0
+            if sl > open_max_stop.get(c, 0):
+                open_max_stop[c] = sl
     for stock in today_results:
         code = stock["code"]
         for sig in stock.get("signals", []):
             ep         = today_price_map.get(code, sig["entry"])
             is_repeat  = (code, sig["type"]) in open_keys
-            is_pyramid = (not is_repeat) and (code in open_codes)
+            is_pyramid = (
+                (not is_repeat)
+                and (code in open_codes)
+                and (sig["entry"] > (open_max_stop.get(code) or 0))
+            )
             sk         = stock.get("sector_key", "")
             sdata      = (sector_rotation or {}).get(sk, {})
             updated.append({
