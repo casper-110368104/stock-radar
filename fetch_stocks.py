@@ -2826,6 +2826,19 @@ def main():
     dynamic, twse_stocks = fetch_twse_dynamic()
     time.sleep(1)
 
+    # TWSE API 失敗時，補上次 stocks.json 的所有代碼（避免縮水到 34 檔）
+    if not dynamic:
+        try:
+            with open(OUTPUT_PATH, encoding="utf-8") as _f:
+                _prev = json.load(_f)
+            _prev_codes = [s["code"] for s in _prev.get("stocks", [])
+                           if s.get("code","").isdigit() and len(s["code"]) == 4]
+            if _prev_codes:
+                dynamic = _prev_codes
+                print(f"  [TWSE fallback] 使用上次 stocks.json 的 {len(dynamic)} 個代碼")
+        except Exception:
+            pass
+
     all_ids = list(dict.fromkeys(list(LARGE_CAP) + dynamic))
     # 過濾掉非純數字的代碼（ETF 等）
     # 過濾 ETF（00開頭）、權證（6碼）、憑證、非個股
@@ -2852,6 +2865,16 @@ def main():
     global _sector_rotation
     breadth_map = _compute_sector_breadth(twse_stocks)
     _sector_rotation = fetch_sector_rotation(60, breadth_map=breadth_map)
+    if not _sector_rotation:
+        # API 失敗時，保留上次的 sector_rotation（避免類股欄位全空）
+        try:
+            with open(OUTPUT_PATH, encoding="utf-8") as _f:
+                _prev = json.load(_f)
+            _sector_rotation = _prev.get("sector_rotation", {})
+            if _sector_rotation:
+                print(f"  [產業輪動] API 失敗，沿用上次資料（{len(_sector_rotation)} 個類股）")
+        except Exception:
+            pass
     time.sleep(1)
 
     # 大盤相位
