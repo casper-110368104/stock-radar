@@ -2085,7 +2085,7 @@ def bt_aggregate_stats(all_results):
     return stats
 
 
-def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None):
+def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None, market_regime="range"):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -2130,15 +2130,31 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
             if days_held >= max_hold:
                 rec["status"] = "expired"; rec["resolved_date"] = today_str
         updated.append(rec)
-    # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
-    open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    # 加入今日新訊號
+    # repeat=True：同代號同類型已有 open 記錄（重複訊號）
+    # is_pyramid=True：同代號但不同類型已有 open 記錄（加碼機會）
+    # 加碼安全檢查：加碼進場點必須嚴格高於既有停損，否則等於「在停損價加碼」
+    open_keys  = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    open_codes = {r["code"] for r in updated if r.get("status") == "open"}
+    open_max_stop = {}
+    for r in updated:
+        if r.get("status") == "open":
+            c  = r["code"]
+            sl = r.get("stop_loss") or 0
+            if sl > open_max_stop.get(c, 0):
+                open_max_stop[c] = sl
     for stock in today_results:
         code = stock["code"]
         for sig in stock.get("signals", []):
-            ep        = today_price_map.get(code, sig["entry"])
-            is_repeat = (code, sig["type"]) in open_keys
-            sk        = stock.get("sector_key", "")
-            sdata     = (sector_rotation or {}).get(sk, {})
+            ep         = today_price_map.get(code, sig["entry"])
+            is_repeat  = (code, sig["type"]) in open_keys
+            is_pyramid = (
+                (not is_repeat)
+                and (code in open_codes)
+                and (sig["entry"] > (open_max_stop.get(code) or 0))
+            )
+            sk         = stock.get("sector_key", "")
+            sdata      = (sector_rotation or {}).get(sk, {})
             updated.append({
                 "code":          code,
                 "name":          stock.get("name", code),
@@ -2148,15 +2164,21 @@ def bt_update_tracking(prev_tracking, today_price_map, today_results, today_str,
                 "trigger_date":  today_str,
                 "entry":         sig["entry"],
                 "stop_loss":     sig["stop_loss"],
+                "atr_stop":      sig.get("atr_stop"),
                 "target":        sig["target"],
                 "status":        "open",
                 "repeat":        is_repeat,
+                "is_pyramid":    is_pyramid,
                 "sector_key":    sk,
                 "sector_phase":  sdata.get("sub_phase", ""),
                 "current_price": round(ep, 2),
                 "days_held":     0,
                 "gain_pct":      0.0,
                 "resolved_date": None,
+                # 診斷欄位（供2個月後參數調整分析用）
+                "rs_pct_at_trigger":        stock.get("rs_pct", 50),
+                "vol_ratio_at_trigger":     round(stock.get("vol_day_ratio", 1.0) or 1.0, 2),
+                "market_regime_at_trigger": market_regime,
             })
     # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
     open_recs   = [r for r in updated if r.get("status") == "open"]
@@ -2886,7 +2908,8 @@ def main():
                                           sector_rotation=_sector_rotation,
                                           today_high_map=today_high_map,
                                           today_low_map=today_low_map,
-                                          today_open_map=today_open_map)
+                                          today_open_map=today_open_map,
+                                          market_regime=_market_regime.get("regime", "range"))
     open_cnt = sum(1 for r in signal_tracking if r.get("status") == "open")
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{len(signal_tracking) - open_cnt} 筆")
 

@@ -1545,6 +1545,21 @@ function _togBtCard(id){
   if(card) card.classList.toggle('open');
 }
 
+function _calcPosition(entry,stopLoss,target,strength,isPyramid){
+  var stMult={strong:1.0,medium:0.75,weak:0.5}[strength||'weak']||0.5;
+  var rgMult={bull:1.0,bull_pullback:0.8,range:0.6,bear:0.35}[marketRegime.regime||'range']||0.6;
+  var pyMult=isPyramid?0.5:1.0;  // 加碼倉位 = 原始倉位的 50%
+  var riskPerShare=+(entry-stopLoss).toFixed(2);
+  if(riskPerShare<=0) return {lots:0,deployed:0,maxLoss:0,maxGain:0,pct:0};
+  var riskBudget=totalCapital*riskPct/100*stMult*rgMult*pyMult;
+  var lots=Math.max(0,Math.floor(riskBudget/(riskPerShare*1000)));
+  var deployed=lots*entry*1000;
+  var maxLoss=lots*riskPerShare*1000;
+  var maxGain=lots*(target-entry)*1000;
+  var pct=totalCapital>0?Math.round(deployed/totalCapital*1000)/10:0;
+  return {lots:lots,deployed:deployed,maxLoss:maxLoss,maxGain:maxGain,pct:pct};
+}
+
 function _renderBtTracking(tracking,idPfx){
   if(!tracking||!tracking.length) return '';
   idPfx=idPfx||'bt';
@@ -1563,6 +1578,30 @@ function _renderBtTracking(tracking,idPfx){
     return '<span class="bt-ftab'+(i===0?' active':'')+'" data-status="'+tab.k+'" onclick="_btFilter(this)">'+tab.label+' '+cnt[tab.k]+'</span>';
   }).join('');
 
+  // 計算投組摘要（僅計算追蹤中的持倉）
+  var sumLots=0,sumDeployed=0,sumRisk=0,sumGain=0;
+  tracking.forEach(function(t){
+    if(t.status!=='open') return;
+    var pos=_calcPosition(t.entry,t.stop_loss,t.target,t.strength,t.is_pyramid);
+    sumLots+=pos.lots; sumDeployed+=pos.deployed; sumRisk+=pos.maxLoss; sumGain+=pos.maxGain;
+  });
+  var deployedPct=totalCapital>0?Math.round(sumDeployed/totalCapital*1000)/10:0;
+  var riskCapPct=totalCapital>0?Math.round(sumRisk/totalCapital*1000)/10:0;
+  var riskCapWarn=riskCapPct>10
+    ?'<div style="margin-top:4px;padding:3px 6px;background:rgba(245,88,88,.15);border-radius:5px;font-size:10px;color:var(--red)">⚠ 總風險 '+riskCapPct+'%，建議控制在 10% 以下</div>'
+    :'';
+  var portfolioSummary=cnt.open>0
+    ?'<div style="background:var(--bg3);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:11px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">'+
+        '<div style="color:var(--text3)">追蹤中</div>'+
+        '<div style="color:var(--text3)">建議投入</div>'+
+        '<div style="color:var(--text3)">估計風險/獲利</div>'+
+        '<div style="font-weight:700">'+cnt.open+'筆 / '+sumLots+'張</div>'+
+        '<div style="font-weight:700">'+Math.round(sumDeployed/10000)+'萬 <span style="color:var(--text3)">('+deployedPct+'%)</span></div>'+
+        '<div style="font-weight:700"><span style="color:var(--red)">-'+Math.round(sumRisk/10000)+'萬</span> / <span style="color:var(--green)">+'+Math.round(sumGain/10000)+'萬</span></div>'+
+        riskCapWarn+
+      '</div>'
+    :'';
+
   var cards=tracking.map(function(t,idx){
     var g=t.gain_pct||0;
     var gs=(g>=0?'+':'')+g.toFixed(1)+'%';
@@ -1572,6 +1611,25 @@ function _renderBtTracking(tracking,idPfx){
     var dayStr=t.status==='open'
       ?'第'+(t.days_held||0)+'日'
       :(SL[t.status]||t.status)+(t.resolved_date?' '+t.resolved_date.slice(5):'');
+    var isPyramid=!!t.is_pyramid;
+    var pos=_calcPosition(t.entry,t.stop_loss,t.target,st,isPyramid);
+    // 1R 保本判斷：獲利 >= 1R（entry-stop）/ entry * 100
+    var oneR=t.entry>0&&t.stop_loss>0?Math.round((t.entry-t.stop_loss)/t.entry*10000)/100:0;
+    var breakevenHint=(t.status==='open'&&oneR>0&&(t.gain_pct||0)>=oneR)
+      ?'<div style="margin-top:4px;padding:3px 8px;background:rgba(59,178,115,.12);border-radius:5px;font-size:10px;color:var(--green)">💡 已達 1R，建議移保本止損至 $'+t.entry+'</div>'
+      :'';
+    var posHtml=pos.lots>0
+      ?'<div style="margin-top:6px;padding:5px 8px;background:var(--bg2);border-radius:6px;font-size:10px">'+
+          '<div style="color:var(--text3);margin-bottom:3px">'+(isPyramid?'加碼倉位（0.5x）':'倉位模擬')+' — 風險'+riskPct+'%/筆 × '+({bull:'多頭',bull_pullback:'回檔',range:'盤整',bear:'空頭'}[marketRegime.regime||'range']||'盤整')+'係數</div>'+
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">'+
+            '<div>建議張數 <b>'+pos.lots+'張</b></div>'+
+            '<div>投入金額 <b>'+Math.round(pos.deployed/10000)+'萬</b><span style="color:var(--text3)"> ('+pos.pct+'%)</span></div>'+
+            '<div style="color:var(--red)">最大虧損 <b>-'+Math.round(pos.maxLoss)+'元</b></div>'+
+            '<div style="color:var(--green)">最大獲利 <b>+'+Math.round(pos.maxGain)+'元</b></div>'+
+          '</div>'+
+          breakevenHint+
+        '</div>'
+      :'<div style="margin-top:6px;font-size:10px;color:var(--text3)">停損過寬，建議跳過（＜1張）</div>';
     var cid=idPfx+'-'+idx;
     return '<div class="exp-card bt-track-item" id="'+cid+'" data-status="'+(t.status||'open')+'" data-code="'+(t.code||'')+'" data-name="'+(t.name||'')+'">'+
       '<div class="exp-hdr" onclick="_togBtCard(\''+cid+'\')" style="cursor:pointer">'+
@@ -1579,7 +1637,8 @@ function _renderBtTracking(tracking,idPfx){
           '<span class="exp-code">'+t.code+'</span>'+
           '<span class="exp-name">'+t.name+'</span>'+
           '<span class="exp-sig-badge '+st+'">'+t.label+'</span>'+
-          (t.repeat?'<span style="font-size:9px;color:var(--text3)">🔁</span>':'')+
+          (isPyramid&&pos.lots>0?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227;margin-left:2px">加碼</span>':
+           t.repeat?'<span style="font-size:9px;color:var(--text3)">🔁</span>':'')+
         '</div>'+
         '<div style="display:flex;align-items:center;gap:6px">'+
           '<div class="exp-right">'+
@@ -1602,7 +1661,9 @@ function _renderBtTracking(tracking,idPfx){
             '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+t.stop_loss+'</span></div>'+
             '<div class="exp-sig-px">現價 <span style="color:'+gc+'">$'+(t.current_price||'-')+'</span></div>'+
           '</div>'+
+          posHtml+
           (t.trigger_date?'<div class="exp-sig-reason" style="margin-top:5px">觸發日：'+t.trigger_date+(t.sector_phase?' ∙ 類股：'+t.sector_phase:'')+'</div>':'')+
+          (t.market_regime_at_trigger?'<div class="exp-sig-reason">大盤相位：'+t.market_regime_at_trigger+' ∙ RS：'+t.rs_pct_at_trigger+'% ∙ 量比：'+t.vol_ratio_at_trigger+'</div>':'')+
         '</div>'+
       '</div>'+
     '</div>';
@@ -1614,6 +1675,7 @@ function _renderBtTracking(tracking,idPfx){
       '<button class="bt-toggle-btn" onclick="_btToggle(this)">▾</button>'+
     '</div>'+
     '<div class="bt-card-body">'+
+      portfolioSummary+
       '<div class="bt-filter-bar">'+tabs+'</div>'+
       '<div class="bt-search-wrap">🔍 <input class="bt-search-input" placeholder="搜尋代號或名稱…" oninput="_btSearch(this)"></div>'+
       cards+

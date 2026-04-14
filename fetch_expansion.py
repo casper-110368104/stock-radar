@@ -687,7 +687,7 @@ def aggregate_backtest_stats(all_results):
     return stats
 
 
-def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None):
+def update_signal_tracking(prev_tracking, today_price_map, today_results, today_str, sector_rotation=None, today_high_map=None, today_low_map=None, today_open_map=None, market_regime="range"):
     """更新追蹤清單：更新舊記錄狀態，加入今日新訊號，保留最近 60 筆"""
     import copy
     updated = []
@@ -708,11 +708,17 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
 
         rec["days_held"] = days_held
 
-        today_high = (today_high_map or {}).get(code, current_price)
-        today_low  = (today_low_map  or {}).get(code, current_price)
-        today_open = (today_open_map or {}).get(code, current_price)
+        today_high  = (today_high_map or {}).get(code, current_price)
+        today_low   = (today_low_map  or {}).get(code, current_price)
+        today_open  = (today_open_map or {}).get(code, current_price)
+        today_close = current_price
+
         hit_target = today_high is not None and today_high >= rec["target"]
-        hit_stop   = today_low  is not None and today_low  <= rec["stop_loss"]
+        # 雙停損：技術停損（收盤確認）或 ATR停損（盤中破位即出）
+        _atr_stop_v   = rec.get("atr_stop")
+        hit_tech_stop = today_close is not None and today_close <= rec["stop_loss"]
+        hit_atr_stop  = bool(_atr_stop_v and today_low is not None and today_low <= _atr_stop_v)
+        hit_stop      = hit_tech_stop or hit_atr_stop
         if hit_target and hit_stop:
             mid = (rec["target"] + rec["stop_loss"]) / 2
             if today_open is not None and today_open >= mid:
@@ -736,22 +742,42 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
 
         updated.append(rec)
 
-    # 加入今日新訊號（重複標注：同代號同類型已有 open 記錄則標記 repeat=True）
+    # 加入今日新訊號
+    # repeat=True：同代號同類型已有 open 記錄（重複訊號，跳過）
+    # is_pyramid=True：同代號但不同類型已有 open 記錄（加碼機會）
     # expansion 每日新增上限：取最強前 20 筆（strong > medium > weak）
     _STRENGTH_ORD = {"strong": 0, "medium": 1, "weak": 2}
-    open_keys = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    open_keys     = {(r["code"], r["type"]) for r in updated if r.get("status") == "open"}
+    open_codes    = {r["code"] for r in updated if r.get("status") == "open"}
+    # 加碼安全檢查：記錄各代號現有倉位的最高停損價
+    # 加碼進場點必須嚴格高於既有停損，否則等於「在停損價加碼」
+    open_max_stop = {}
+    for r in updated:
+        if r.get("status") == "open":
+            c  = r["code"]
+            sl = r.get("stop_loss") or 0
+            if sl > open_max_stop.get(c, 0):
+                open_max_stop[c] = sl
 
     new_candidates = []
     for stock in today_results:
         code = stock["code"]
         name = stock["name"]
         for sig in stock.get("signals", []):
-            new_candidates.append((stock, sig, (code, sig["type"]) in open_keys))
+            is_repeat  = (code, sig["type"]) in open_keys
+            # 加碼條件：(1) 不同類型訊號  (2) 進場點 > 既有最高停損
+            # 若 entry <= 既有停損，代表股票已回跌至停損區，不應加碼
+            is_pyramid = (
+                (not is_repeat)
+                and (code in open_codes)
+                and (sig["entry"] > (open_max_stop.get(code) or 0))
+            )
+            new_candidates.append((stock, sig, is_repeat, is_pyramid))
 
     new_candidates.sort(key=lambda x: _STRENGTH_ORD.get(x[1].get("strength", "weak"), 2))
     new_candidates = new_candidates[:20]   # 每日新增上限 20 筆
 
-    for stock, sig, is_repeat in new_candidates:
+    for stock, sig, is_repeat, is_pyramid in new_candidates:
         code        = stock["code"]
         name        = stock["name"]
         entry_price = today_price_map.get(code, sig["entry"])
@@ -766,15 +792,21 @@ def update_signal_tracking(prev_tracking, today_price_map, today_results, today_
             "trigger_date":  today_str,
             "entry":         sig["entry"],
             "stop_loss":     sig["stop_loss"],
+            "atr_stop":      sig.get("atr_stop"),
             "target":        sig["target"],
             "status":        "open",
             "repeat":        is_repeat,
+            "is_pyramid":    is_pyramid,
             "sector_key":    sk,
             "sector_phase":  sdata.get("sub_phase", ""),
             "current_price": round(entry_price, 2),
             "days_held":     0,
             "gain_pct":      0.0,
             "resolved_date": None,
+            # 診斷欄位（供2個月後參數調整分析用）
+            "rs_pct_at_trigger":         stock.get("rs_pct", 50),
+            "vol_ratio_at_trigger":      round(stock.get("vol_ratio", 1.0) or 1.0, 2),
+            "market_regime_at_trigger":  market_regime,
         })
 
     # open 排前面（不限筆數），已結算的依結算日降序，保留最近 60 筆
@@ -1058,7 +1090,8 @@ def main():
                                              sector_rotation=_sector_rotation,
                                              today_high_map=today_high_map,
                                              today_low_map=today_low_map,
-                                             today_open_map=today_open_map)
+                                             today_open_map=today_open_map,
+                                             market_regime=_market_regime_str)
     open_cnt   = sum(1 for r in signal_tracking if r.get("status") == "open")
     closed_cnt = len(signal_tracking) - open_cnt
     print(f"  [tracking] 追蹤中：{open_cnt} 筆 | 已結算：{closed_cnt} 筆")
