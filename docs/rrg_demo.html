@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>RRG 動態氣泡 Demo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0f1117; color: #e2e8f0; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 32px 16px; min-height: 100vh; }
+h2 { font-size: 15px; color: #94a3b8; margin-bottom: 4px; letter-spacing: .05em; }
+p  { font-size: 12px; color: #475569; margin-bottom: 20px; }
+#rrg-wrap { position: relative; width: 520px; max-width: 100%; }
+#rrg-svg  { width: 100%; display: block; }
+#bubbles  { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.bubble {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center;
+  pointer-events: auto; cursor: pointer;
+}
+.bubble-glow {
+  position: absolute;
+  border-radius: 50%;
+  animation: pulse 2.6s ease-in-out infinite;
+}
+.bubble-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.35);
+  position: relative; z-index: 2;
+  transition: transform .2s;
+}
+.bubble:hover .bubble-dot { transform: scale(1.5); }
+.bubble-label {
+  font-size: 9.5px; font-weight: 600;
+  white-space: nowrap;
+  margin-top: 3px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(15,17,23,.7);
+  position: relative; z-index: 2;
+  opacity: .85;
+  transition: opacity .2s;
+}
+.bubble:hover .bubble-label { opacity: 1; }
+@keyframes pulse {
+  0%,100% { transform: translate(-50%,-50%) scale(1);   opacity:.18; }
+  50%      { transform: translate(-50%,-50%) scale(1.5); opacity:.07; }
+}
+.trail { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes arrowPulse {
+  0%,100% { opacity: .55; }
+  50%      { opacity: .9; }
+}
+.vec-arrow { animation: arrowPulse 1.8s ease-in-out infinite; }
+#tip {
+  position: fixed; background: rgba(15,17,23,.95);
+  border: 1px solid rgba(255,255,255,.1); border-radius: 8px;
+  padding: 8px 12px; font-size: 11px; line-height: 1.6;
+  pointer-events: none; display: none; z-index: 99;
+  backdrop-filter: blur(6px);
+}
+</style>
+</head>
+<body>
+<h2>産業輪動圖 — 動態氣泡預覽</h2>
+<p>氣泡持續沿 vector 方向微幅漂移 · 箭頭代表今日動能方向 · 尾跡顯示近期軌跡</p>
+
+<div id="rrg-wrap">
+  <svg id="rrg-svg" viewBox="0 0 520 460"></svg>
+  <div id="bubbles"></div>
+</div>
+<div id="tip"></div>
+
+<script>
+var SECTORS = [
+  { name:'半導體',    rs: 1.8,  rs_mom: 6.2,  sub_phase:'主升段',   vector:{dx:.12,dy:.4},  breadth:.72, score:.88 },
+  { name:'電腦週邊',  rs: 0.6,  rs_mom: 3.1,  sub_phase:'主升段',   vector:{dx:.05,dy:.15}, breadth:.61, score:.71 },
+  { name:'金融保險',  rs:-0.3,  rs_mom: 4.8,  sub_phase:'準備噴',   vector:{dx:.08,dy:.55}, breadth:.55, score:.62 },
+  { name:'生技醫療',  rs:-0.9,  rs_mom: 2.2,  sub_phase:'準備噴',   vector:{dx:.03,dy:.28}, breadth:.48, score:.54 },
+  { name:'航運',      rs: 1.1,  rs_mom:-3.5,  sub_phase:'高檔震盪', vector:{dx:-.04,dy:-.3},breadth:.42, score:.58 },
+  { name:'電子零組件',rs: 0.4,  rs_mom:-1.2,  sub_phase:'主升回檔', vector:{dx:.02,dy:-.18},breadth:.50, score:.60 },
+  { name:'鋼鐵',      rs:-1.4,  rs_mom:-5.8,  sub_phase:'空頭',     vector:{dx:-.09,dy:-.4},breadth:.25, score:.18 },
+  { name:'油電燃氣',  rs:-0.7,  rs_mom:-2.1,  sub_phase:'整理觀察', vector:{dx:-.02,dy:-.1},breadth:.40, score:.35 },
+  { name:'光電',      rs: 2.6,  rs_mom: 8.5,  sub_phase:'主升段',   vector:{dx:.18,dy:.6},  breadth:.78, score:.92 },
+  { name:'通信網路',  rs:-0.2,  rs_mom: 0.5,  sub_phase:'整理觀察', vector:{dx:.01,dy:.05}, breadth:.45, score:.46 },
+  { name:'建材營造',  rs:-1.8,  rs_mom:-7.2,  sub_phase:'空頭',     vector:{dx:-.12,dy:-.5},breadth:.20, score:.10 },
+  { name:'數位雲端',  rs: 0.8,  rs_mom: 1.6,  sub_phase:'主升回檔', vector:{dx:.04,dy:-.08},breadth:.55, score:.65 },
+];
+
+var PHASE_COLOR = {
+  '主升段'  :'#22c55e',
+  '準備噴'  :'#3b82f6',
+  '主升回檔':'#f97316',
+  '高檔震盪':'#f59e0b',
+  '空頭'    :'#ef4444',
+  '整理觀察':'#6b7280',
+};
+
+var SVG_W=520, SVG_H=460;
+var PT=44, PR=24, PB=36, PL=50;
+var PW=SVG_W-PL-PR, PH=SVG_H-PT-PB;
+var X_MIN=-2.5, X_MAX=3.2, Y_MIN=-14, Y_MAX=12;
+
+function mx(v){ v=Math.max(X_MIN,Math.min(X_MAX,v)); return PL+(v-X_MIN)/(X_MAX-X_MIN)*PW; }
+function my(v){ v=Math.max(Y_MIN,Math.min(Y_MAX,v)); return PT+PH-(v-Y_MIN)/(Y_MAX-Y_MIN)*PH; }
+var CX=mx(0), CY=my(0);
+
+function buildSVGBase(){
+  var s='';
+  s+='<defs>';
+  s+='<clipPath id="cp"><rect x="'+PL+'" y="'+PT+'" width="'+PW+'" height="'+PH+'"/></clipPath>';
+  s+='<radialGradient id="qg-tl" cx="0%" cy="0%" r="100%"><stop offset="0%" stop-color="#3b82f6" stop-opacity=".22"/><stop offset="100%" stop-color="#3b82f6" stop-opacity=".03"/></radialGradient>';
+  s+='<radialGradient id="qg-tr" cx="100%" cy="0%" r="100%"><stop offset="0%" stop-color="#22c55e" stop-opacity=".22"/><stop offset="100%" stop-color="#22c55e" stop-opacity=".03"/></radialGradient>';
+  s+='<radialGradient id="qg-bl" cx="0%" cy="100%" r="100%"><stop offset="0%" stop-color="#ef4444" stop-opacity=".22"/><stop offset="100%" stop-color="#ef4444" stop-opacity=".03"/></radialGradient>';
+  s+='<radialGradient id="qg-br" cx="100%" cy="100%" r="100%"><stop offset="0%" stop-color="#f59e0b" stop-opacity=".22"/><stop offset="100%" stop-color="#f59e0b" stop-opacity=".03"/></radialGradient>';
+  s+='</defs>';
+  s+='<rect x="'+PL+'" y="'+PT+'" width="'+PW+'" height="'+PH+'" fill="rgba(0,0,0,.28)" rx="7"/>';
+  var qw1=(CX-PL).toFixed(1), qh1=(CY-PT).toFixed(1);
+  var qw2=(SVG_W-PR-CX).toFixed(1), qh2=(SVG_H-PB-CY).toFixed(1);
+  s+='<rect x="'+PL+'" y="'+PT+'" width="'+qw1+'" height="'+qh1+'" fill="url(#qg-tl)" rx="7"/>';
+  s+='<rect x="'+CX.toFixed(1)+'" y="'+PT+'" width="'+qw2+'" height="'+qh1+'" fill="url(#qg-tr)" rx="7"/>';
+  s+='<rect x="'+PL+'" y="'+CY.toFixed(1)+'" width="'+qw1+'" height="'+qh2+'" fill="url(#qg-bl)" rx="7"/>';
+  s+='<rect x="'+CX.toFixed(1)+'" y="'+CY.toFixed(1)+'" width="'+qw2+'" height="'+qh2+'" fill="url(#qg-br)" rx="7"/>';
+  [-2,-1,1,2].forEach(function(v){var tx=mx(v); s+='<line x1="'+tx.toFixed(1)+'" y1="'+PT+'" x2="'+tx.toFixed(1)+'" y2="'+(SVG_H-PB)+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';});
+  [-10,-5,5,10].forEach(function(v){var ty=my(v); s+='<line x1="'+PL+'" y1="'+ty.toFixed(1)+'" x2="'+(SVG_W-PR)+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';});
+  s+='<line x1="'+PL+'" y1="'+CY.toFixed(1)+'" x2="'+(SVG_W-PR)+'" y2="'+CY.toFixed(1)+'" stroke="rgba(255,255,255,.25)" stroke-width="1" stroke-dasharray="6,4"/>';
+  s+='<line x1="'+CX.toFixed(1)+'" y1="'+PT+'" x2="'+CX.toFixed(1)+'" y2="'+(SVG_H-PB)+'" stroke="rgba(255,255,255,.25)" stroke-width="1" stroke-dasharray="6,4"/>';
+  [-2,-1,0,1,2].forEach(function(v){var tx=mx(v); s+='<line x1="'+tx.toFixed(1)+'" y1="'+(SVG_H-PB)+'" x2="'+tx.toFixed(1)+'" y2="'+(SVG_H-PB+4)+'" stroke="rgba(255,255,255,.18)" stroke-width="1"/><text x="'+tx.toFixed(1)+'" y="'+(SVG_H-PB+14)+'" text-anchor="middle" font-size="9" fill="rgba(150,160,180,.65)" font-family="sans-serif">'+v+'</text>';});
+  [-10,-5,0,5,10].forEach(function(v){var ty=my(v); s+='<line x1="'+(PL-4)+'" y1="'+ty.toFixed(1)+'" x2="'+PL+'" y2="'+ty.toFixed(1)+'" stroke="rgba(255,255,255,.18)" stroke-width="1"/><text x="'+(PL-7)+'" y="'+(ty+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="rgba(150,160,180,.65)" font-family="sans-serif">'+v+'</text>';});
+  s+='<text x="'+(PL+7)+'" y="'+(PT+16)+'" font-size="9.5" fill="rgba(99,160,255,.65)" font-weight="700" font-family="sans-serif">△ 轉強</text>';
+  s+='<text x="'+(SVG_W-PR-7)+'" y="'+(PT+16)+'" text-anchor="end" font-size="9.5" fill="rgba(74,222,128,.65)" font-weight="700" font-family="sans-serif">▶ 領先</text>';
+  s+='<text x="'+(PL+7)+'" y="'+(SVG_H-PB-8)+'" font-size="9.5" fill="rgba(248,113,113,.65)" font-weight="700" font-family="sans-serif">◁ 落後</text>';
+  s+='<text x="'+(SVG_W-PR-7)+'" y="'+(SVG_H-PB-8)+'" text-anchor="end" font-size="9.5" fill="rgba(251,191,36,.65)" font-weight="700" font-family="sans-serif">▽ 轉弱</text>';
+  s+='<text x="'+(SVG_W-PR-2)+'" y="'+(CY-5).toFixed(1)+'" text-anchor="end" font-size="8" fill="rgba(140,150,170,.55)" font-family="sans-serif">RS →</text>';
+  s+='<text x="'+(CX+5).toFixed(1)+'" y="'+(PT-6)+'" font-size="8" fill="rgba(140,150,170,.55)" font-family="sans-serif">M ↑</text>';
+  s+='<g id="vec-layer" clip-path="url(#cp)"></g>';
+  s+='<g id="trail-layer" clip-path="url(#cp)"></g>';
+  return s;
+}
+
+document.getElementById('rrg-svg').innerHTML = buildSVGBase();
+var vecLayer   = document.getElementById('vec-layer');
+var trailLayer = document.getElementById('trail-layer');
+
+var state = SECTORS.map(function(s, i){
+  var col = PHASE_COLOR[s.sub_phase] || '#6b7280';
+  var px = mx(s.rs), py = my(s.rs_mom);
+  var phase  = (i / SECTORS.length) * Math.PI * 2;
+  var speed  = 0.0006 + Math.random() * 0.0003;
+  var ampX   = 4 + Math.abs(s.vector.dx) * 18;
+  var ampY   = 4 + Math.abs(s.vector.dy) * 3.5;
+  var dirX   = s.vector.dx >= 0 ? 1 : -1;
+  var dirY   = s.vector.dy >= 0 ? -1 : 1;
+  var trail  = [];
+  for(var t=0;t<8;t++) trail.push({x:px,y:py});
+  return { s:s, col:col, px:px, py:py, phase:phase, speed:speed,
+           ampX:ampX, ampY:ampY, dirX:dirX, dirY:dirY, trail:trail };
+});
+
+var bubbleEls = state.map(function(st, i){
+  var el = document.createElement('div');
+  el.className = 'bubble';
+  var sz = 28 + Math.abs(st.s.rs) * 4;
+  var glowSz = sz * 2.2;
+  el.innerHTML =
+    '<div class="bubble-glow" style="width:'+glowSz+'px;height:'+glowSz+'px;background:'+st.col+';left:50%;top:50%;margin-left:'+(- glowSz/2)+'px;margin-top:'+(- glowSz/2)+'px;animation-delay:'+(i*0.22)+'s;animation-duration:'+(2.2+i*0.15)+'s"></div>'+
+    '<div class="bubble-dot" style="width:'+sz+'px;height:'+sz+'px;background:'+st.col+';box-shadow:0 0 8px '+st.col+'88"></div>'+
+    '<div class="bubble-label" style="color:'+st.col+'">'+st.s.name+'</div>';
+  el.addEventListener('mouseenter', function(){
+    var tip = document.getElementById('tip');
+    tip.innerHTML =
+      '<b style="color:'+st.col+'">'+st.s.name+'</b> · '+st.s.sub_phase+'<br>'+
+      'RS: <b>'+st.s.rs.toFixed(2)+'</b> &nbsp; M: <b>'+st.s.rs_mom.toFixed(1)+'</b><br>'+
+      'Vector: dx='+st.s.vector.dx.toFixed(3)+' dy='+st.s.vector.dy.toFixed(3)+'<br>'+
+      '廣度: '+(st.s.breadth*100).toFixed(0)+'% 個股上漲';
+    tip.style.display='block';
+  });
+  el.addEventListener('mousemove', function(e){
+    var tip=document.getElementById('tip');
+    tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-10)+'px';
+  });
+  el.addEventListener('mouseleave', function(){document.getElementById('tip').style.display='none';});
+  document.getElementById('bubbles').appendChild(el);
+  return el;
+});
+
+state.forEach(function(st){
+  var s = st.s;
+  var x0 = st.px, y0 = st.py;
+  var dvx =  s.vector.dx / (X_MAX - X_MIN) * PW;
+  var dvy = -s.vector.dy / (Y_MAX - Y_MIN) * PH;
+  var len = Math.sqrt(dvx*dvx + dvy*dvy) || 1;
+  if(len < 0.5) return;
+  var scale = Math.min(1, 28 / len);
+  var x1 = (x0 - dvx * scale).toFixed(1);
+  var y1 = (y0 - dvy * scale).toFixed(1);
+  var nx = dvx/len, ny = dvy/len;
+  var hbx = x0 - nx*9, hby = y0 - ny*9;
+  var px3 = -ny*3.5, py3 = nx*3.5;
+  var arr = document.createElementNS('http://www.w3.org/2000/svg','g');
+  arr.setAttribute('class','vec-arrow');
+  arr.style.animationDelay = Math.random()*1.5+'s';
+  arr.innerHTML =
+    '<line x1="'+x1+'" y1="'+y1+'" x2="'+x0.toFixed(1)+'" y2="'+y0.toFixed(1)+'" stroke="'+st.col+'" stroke-width="1.8" stroke-opacity=".5" stroke-linecap="round"/>'+
+    '<polygon points="'+x0.toFixed(1)+','+y0.toFixed(1)+' '+(hbx+px3).toFixed(1)+','+(hby+py3).toFixed(1)+' '+(hbx-px3).toFixed(1)+','+(hby-py3).toFixed(1)+'" fill="'+st.col+'" opacity=".7"/>';
+  vecLayer.appendChild(arr);
+});
+
+var trailLines = state.map(function(st){
+  var pl = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  pl.setAttribute('class','trail');
+  pl.setAttribute('stroke', st.col);
+  pl.setAttribute('stroke-width','1.5');
+  pl.setAttribute('stroke-opacity','0.35');
+  pl.setAttribute('stroke-dasharray','2,3');
+  trailLayer.appendChild(pl);
+  return pl;
+});
+
+function svgToPercX(svgX){ return svgX / SVG_W * 100; }
+function svgToPercY(svgY){ return svgY / SVG_H * 100; }
+
+var TRAIL_INTERVAL = 18;
+var frame = 0;
+
+function tick(t){
+  frame++;
+  state.forEach(function(st, i){
+    var off = Math.sin(t * st.speed + st.phase);
+    var dx  = st.dirX * Math.abs(off) * st.ampX;
+    var dy  = st.dirY * Math.abs(off) * st.ampY;
+    var curX = st.px + dx;
+    var curY = st.py + dy;
+    bubbleEls[i].style.left = svgToPercX(curX) + '%';
+    bubbleEls[i].style.top  = svgToPercY(curY) + '%';
+    if(frame % TRAIL_INTERVAL === (i % TRAIL_INTERVAL)){
+      st.trail.push({x:curX, y:curY});
+      if(st.trail.length > 12) st.trail.shift();
+      var pts = st.trail.map(function(p){ return p.x.toFixed(1)+','+p.y.toFixed(1); }).join(' ');
+      trailLines[i].setAttribute('points', pts);
+    }
+  });
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
