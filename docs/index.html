@@ -1209,11 +1209,69 @@ function _setECTab(t){
 }
 
 function _clearBtData(){
-  if(!confirm('確定清空所有回測追蹤記錄？（僅清除畫面顯示，JSON 資料需透過 reset_tracking.py 重置）')) return;
-  stocksBtStats={};
-  stocksBtTracking=[];
-  if(expansionData){expansionData.backtest_stats={};expansionData.signal_tracking=[];}
-  renderBacktest();
+  var token=(localStorage.getItem('gh_token')||'').trim();
+  if(!token){
+    token=(prompt(
+      '首次使用永久重置功能\n\n'+
+      '請輸入 GitHub Personal Access Token：\n'+
+      '（Fine-grained PAT → casper-110368104/stock-radar → Contents: Read & Write）\n\n'+
+      '輸入後會記住，下次不需再輸入。\n'+
+      '（日後想更換 token 可在瀏覽器 DevTools → Application → localStorage 刪除 gh_token）'
+    )||'').trim();
+    if(!token) return;
+    localStorage.setItem('gh_token',token);
+  }
+  if(!confirm('確定永久清空所有追蹤記錄？\n\n此操作會直接更新 GitHub 上的 JSON 檔案，無法還原。')) return;
+  _doPermanentReset(token);
+}
+
+async function _doPermanentReset(token){
+  var btn=document.querySelector('[onclick="_clearBtData()"]');
+  if(btn){btn.disabled=true;btn.textContent='⏳ 重置中...';}
+  var base='https://api.github.com/repos/casper-110368104/stock-radar/contents/';
+  var branch='main';
+  var hdrs={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  try{
+    for(var _f of ['docs/stocks.json','docs/expansion.json']){
+      var gr=await fetch(base+_f+'?ref='+branch,{headers:hdrs});
+      if(gr.status===404) continue; // 檔案不存在，跳過
+      if(gr.status===401||gr.status===403){
+        localStorage.removeItem('gh_token');
+        throw new Error('Token 無效（'+gr.status+'），已清除，請重試。');
+      }
+      if(!gr.ok) throw new Error('讀取 '+_f+' 失敗：'+gr.status);
+      var fd=await gr.json();
+      // 解碼（處理 UTF-8 中文）
+      var bytes=Uint8Array.from(atob(fd.content.replace(/\s/g,'')),function(c){return c.charCodeAt(0);});
+      var data=JSON.parse(new TextDecoder().decode(bytes));
+      data.signal_tracking=[];
+      data.backtest_stats={};
+      // 編碼回 base64
+      var enc=new TextEncoder().encode(JSON.stringify(data,null,2));
+      var b64str='';
+      enc.forEach(function(b){b64str+=String.fromCharCode(b);});
+      var pr=await fetch(base+_f,{
+        method:'PUT',
+        headers:Object.assign({'Content-Type':'application/json'},hdrs),
+        body:JSON.stringify({
+          message:'Reset tracking ('+new Date().toISOString().slice(0,10)+')',
+          content:btoa(b64str),sha:fd.sha,branch:branch
+        })
+      });
+      if(!pr.ok){
+        var pe=await pr.json().catch(function(){return{};});
+        throw new Error('更新 '+_f+' 失敗：'+pr.status+(pe.message?' — '+pe.message:''));
+      }
+    }
+    stocksBtStats={};stocksBtTracking=[];
+    if(expansionData){expansionData.backtest_stats={};expansionData.signal_tracking=[];}
+    renderBacktest();
+    alert('✅ 追蹤記錄已永久清空（GitHub main 已更新）');
+  }catch(e){
+    alert('❌ 失敗：'+e.message);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🗑 永久重置';}
+  }
 }
 function renderBacktest(){
   var app=document.getElementById('bt-app');
@@ -1225,7 +1283,7 @@ function renderBacktest(){
     _renderEquityCurve()+
     '<div style="'+secStyle+';margin-top:16px;display:flex;justify-content:space-between;align-items:center">'+
       '<span>📈 個股選股雷達</span>'+
-      '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 清空追蹤</button>'+
+      '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 永久重置</button>'+
     '</div>'+
     (stocksHtml||'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚無追蹤記錄</div>')+
     '<div style="'+secStyle+';margin-top:16px">🌐 全市場掃描</div>'+
@@ -1545,6 +1603,42 @@ function _togBtCard(id){
   if(card) card.classList.toggle('open');
 }
 
+// ── 進場評級 ────────────────────────────────────────────────────────────
+// 規則（依序檢查，任一不過即降級）：
+//   ✅ 進場：RR≥2.0 且 確認數≥2 且 lots≥1 且 非重複訊號
+//   ⚠️ 觀察：RR≥1.5 且 lots≥1，但確認數<2 或 量比偏低（<0.5x）
+//   ❌ 跳過：lots=0（停損過寬）或 RR<1.5 或 重複訊號
+function _tradeVerdict(t,pos){
+  var fillRef=t.trigger_price||t.entry;
+  var risk=fillRef-(t.stop_loss||0);
+  var reward=(t.target||0)-fillRef;
+  var actualRR=risk>0?Math.round(reward/risk*10)/10:0;
+  var conf=t.confirmations||0;
+  var volRatio=t.vol_ratio_at_trigger||1;
+  var isRepeat=!!t.repeat&&!t.is_pyramid;
+  // 擁擠度：使用 expansionData.crowding_index 作為市場層級指標（500股樣本）
+  var crowding=((expansionData.crowding_index||{})[t.type]||0);
+  var crowdPct=Math.round(crowding*100);
+
+  if(pos.lots===0)
+    return {label:'❌ 跳過',color:'var(--red)',   reason:'停損過寬或風報比不足'};
+  if(isRepeat)
+    return {label:'🔁 重複',color:'var(--text3)', reason:'同股同類型已有開倉，跳過'};
+  if(actualRR<1.5)
+    return {label:'❌ 跳過',color:'var(--red)',   reason:'實際RR '+actualRR+' < 1.5'};
+  var warn=[];
+  if(conf<2) warn.push('確認數'+conf+'/6偏低');
+  if(volRatio<0.5) warn.push('量比'+volRatio+'偏薄');
+  if(crowding>0.20) warn.push('訊號擁擠'+crowdPct+'%');
+  var isGreen=actualRR>=2.0&&conf>=2&&volRatio>=0.5&&crowding<=0.20;
+  if(isGreen)
+    return {label:'✅ 可進場',color:'var(--green)', reason:'RR '+actualRR+' ∙ 確認 '+conf+'/6 ∙ 量比 '+volRatio};
+  return {label:'⚠️ 觀察',color:'#c9a227', reason:'RR '+actualRR+(warn.length?' ∙ '+warn.join('，'):'')};
+}
+
+// entry    = trigger_price（隔日需突破的觸發點，比訊號日收盤高 0.2~0.5%）
+// stopLoss = sig.stop_loss（以訊號日收盤為基準計算，不受 trigger 影響）
+// 用 trigger_price 計算成本更接近真實 fill；停損距離仍用 trigger - stop
 function _calcPosition(entry,stopLoss,target,strength,isPyramid){
   var stMult={strong:1.0,medium:0.75,weak:0.5}[strength||'weak']||0.5;
   var rgMult={bull:1.0,bull_pullback:0.8,range:0.6,bear:0.35}[marketRegime.regime||'range']||0.6;
@@ -1582,7 +1676,7 @@ function _renderBtTracking(tracking,idPfx){
   var sumLots=0,sumDeployed=0,sumRisk=0,sumGain=0;
   tracking.forEach(function(t){
     if(t.status!=='open') return;
-    var pos=_calcPosition(t.entry,t.stop_loss,t.target,t.strength,t.is_pyramid);
+    var pos=_calcPosition(t.trigger_price||t.entry,t.stop_loss,t.target,t.strength,t.is_pyramid);
     sumLots+=pos.lots; sumDeployed+=pos.deployed; sumRisk+=pos.maxLoss; sumGain+=pos.maxGain;
   });
   var deployedPct=totalCapital>0?Math.round(sumDeployed/totalCapital*1000)/10:0;
@@ -1612,11 +1706,15 @@ function _renderBtTracking(tracking,idPfx){
       ?'第'+(t.days_held||0)+'日'
       :(SL[t.status]||t.status)+(t.resolved_date?' '+t.resolved_date.slice(5):'');
     var isPyramid=!!t.is_pyramid;
-    var pos=_calcPosition(t.entry,t.stop_loss,t.target,st,isPyramid);
-    // 1R 保本判斷：獲利 >= 1R（entry-stop）/ entry * 100
-    var oneR=t.entry>0&&t.stop_loss>0?Math.round((t.entry-t.stop_loss)/t.entry*10000)/100:0;
+    // 用 trigger_price 計算倉位（更接近真實 fill）；fallback 到 entry（舊資料相容）
+    var fillRef=t.trigger_price||t.entry;
+    var pos=_calcPosition(fillRef,t.stop_loss,t.target,st,isPyramid);
+    var verdict=t.status==='open'?_tradeVerdict(t,pos):null;
+    // 1R 保本判斷：獲利 >= 1R（fill-stop）/ fill * 100（用 trigger_price 計算）
+    var _fill2=t.trigger_price||t.entry;
+    var oneR=_fill2>0&&t.stop_loss>0?Math.round((_fill2-t.stop_loss)/_fill2*10000)/100:0;
     var breakevenHint=(t.status==='open'&&oneR>0&&(t.gain_pct||0)>=oneR)
-      ?'<div style="margin-top:4px;padding:3px 8px;background:rgba(59,178,115,.12);border-radius:5px;font-size:10px;color:var(--green)">💡 已達 1R，建議移保本止損至 $'+t.entry+'</div>'
+      ?'<div style="margin-top:4px;padding:3px 8px;background:rgba(59,178,115,.12);border-radius:5px;font-size:10px;color:var(--green)">💡 已達 1R，建議移保本止損至 $'+_fill2+'</div>'
       :'';
     var posHtml=pos.lots>0
       ?'<div style="margin-top:6px;padding:5px 8px;background:var(--bg2);border-radius:6px;font-size:10px">'+
@@ -1631,16 +1729,19 @@ function _renderBtTracking(tracking,idPfx){
         '</div>'
       :'<div style="margin-top:6px;font-size:10px;color:var(--text3)">停損過寬，建議跳過（＜1張）</div>';
     var cid=idPfx+'-'+idx;
+    var verdictBadge=verdict?'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:'+verdict.color+'22;color:'+verdict.color+';margin-left:4px;flex-shrink:0">'+verdict.label+'</span>':'';
+    var verdictBlock=verdict?'<div style="margin-top:5px;padding:4px 8px;border-radius:6px;border-left:2px solid '+verdict.color+';background:'+verdict.color+'11;font-size:10px;color:'+verdict.color+'">'+verdict.label+' — '+verdict.reason+'</div>':'';
     return '<div class="exp-card bt-track-item" id="'+cid+'" data-status="'+(t.status||'open')+'" data-code="'+(t.code||'')+'" data-name="'+(t.name||'')+'">'+
       '<div class="exp-hdr" onclick="_togBtCard(\''+cid+'\')" style="cursor:pointer">'+
-        '<div class="exp-meta">'+
+        '<div class="exp-meta" style="flex-wrap:wrap;gap:3px">'+
           '<span class="exp-code">'+t.code+'</span>'+
           '<span class="exp-name">'+t.name+'</span>'+
           '<span class="exp-sig-badge '+st+'">'+t.label+'</span>'+
-          (isPyramid&&pos.lots>0?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227;margin-left:2px">加碼</span>':
+          (isPyramid&&pos.lots>0?'<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(245,196,74,.2);color:#c9a227">加碼</span>':
            t.repeat?'<span style="font-size:9px;color:var(--text3)">🔁</span>':'')+
+          (t.status==='open'?verdictBadge:'')+
         '</div>'+
-        '<div style="display:flex;align-items:center;gap:6px">'+
+        '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+
           '<div class="exp-right">'+
             '<div style="font-size:12px;font-weight:700">'+SI[t.status]+' $'+(t.current_price||'-')+'</div>'+
             '<div class="exp-chg" style="color:'+gc+'">'+gs+'</div>'+
@@ -1653,14 +1754,25 @@ function _renderBtTracking(tracking,idPfx){
           '<div class="exp-sig-head">'+
             '<span class="exp-sig-badge '+st+'">'+(st==='strong'?'強':st==='medium'?'中':'弱')+'</span>'+
             '<span class="exp-sig-label">'+t.label+'</span>'+
+            (t.confirmations!==undefined?'<span style="font-size:9px;color:var(--text3);margin-left:4px">確認 '+(t.confirmations||0)+'/6</span>':'')+
             '<span style="margin-left:auto;font-size:10px;color:'+statClr+'">'+dayStr+'</span>'+
           '</div>'+
+          verdictBlock+
           '<div class="exp-sig-prices">'+
-            '<div class="exp-sig-px">進場 <span>$'+t.entry+'</span></div>'+
-            '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span></div>'+
+            '<div class="exp-sig-px">觸發進場 <span style="color:var(--blue)">$'+(t.trigger_price||t.entry)+'</span></div>'+
+            '<div class="exp-sig-px">目標 <span style="color:var(--green)">$'+t.target+'</span>'+(t.exit_style==='trailing'?' <span style="font-size:9px;color:var(--text3)">[追蹤停損]</span>':'')+'</div>'+
             '<div class="exp-sig-px">停損 <span style="color:var(--red)">$'+t.stop_loss+'</span></div>'+
             '<div class="exp-sig-px">現價 <span style="color:'+gc+'">$'+(t.current_price||'-')+'</span></div>'+
           '</div>'+
+          (t.confirmation_flags&&t.confirmation_flags.length?'<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px">'+t.confirmation_flags.map(function(f){return '<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(0,200,150,.12);color:var(--green)">'+escapeHtml(f)+'</span>';}).join('')+'</div>':'')+
+          (t.status!=='open'?(function(){
+            var _xLbl={'target_hit':'達目標','stop_hit':'技術停損','atr_stop_hit':'ATR停損','expired':'時間到期'};
+            var parts=[];
+            if(t.max_gain_pct&&t.max_gain_pct>0) parts.push('峰值 <span style="color:var(--green)">+'+t.max_gain_pct.toFixed(1)+'%</span>'+(t.day_of_max_gain?' (第'+t.day_of_max_gain+'日)':''));
+            if(t.max_loss_pct&&t.max_loss_pct<0) parts.push('最深 <span style="color:var(--red)">'+t.max_loss_pct.toFixed(1)+'%</span>');
+            if(t.exit_reason) parts.push(_xLbl[t.exit_reason]||t.exit_reason);
+            return parts.length?'<div style="margin-top:4px;font-size:10px;color:var(--text3)">'+parts.join(' ∙ ')+'</div>':'';
+          })():'')+'
           posHtml+
           (t.trigger_date?'<div class="exp-sig-reason" style="margin-top:5px">觸發日：'+t.trigger_date+(t.sector_phase?' ∙ 類股：'+t.sector_phase:'')+'</div>':'')+
           (t.market_regime_at_trigger?'<div class="exp-sig-reason">大盤相位：'+t.market_regime_at_trigger+' ∙ RS：'+t.rs_pct_at_trigger+'% ∙ 量比：'+t.vol_ratio_at_trigger+'</div>':'')+

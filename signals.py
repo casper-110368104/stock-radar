@@ -13,6 +13,14 @@ _RR_MAP = {
     "BEAR_STRONG":   1.0,
 }
 
+# 大盤相位目標乘數：bull 市場放寬目標，bear 市場收緊
+_REGIME_TARGET_MULT = {
+    "bull":          1.2,
+    "bull_pullback": 1.0,
+    "range":         0.85,
+    "bear":          0.7,
+}
+
 # ATR 止損乘數：趨勢訊號給更大空間，短線訊號更緊；熊市全面縮緊
 _ATR_MULT = {
     "trend": {"bull": 2.5, "bull_pullback": 2.0, "range": 2.0, "bear": 1.5},
@@ -155,13 +163,14 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         if risk <= 0:
             return None
 
-        # 動態 RR（AVWAP 位置微調）
+        # 動態 RR（AVWAP 位置微調 × 大盤相位乘數）
         rr = _RR_MAP.get(stock_phase, 2.0)
         if avwap_swing and price >= avwap_swing:
             rr *= 1.2
         elif avwap_short and price < avwap_short:
             rr *= 0.7
-        rr = round(rr, 2)
+        rr = round(rr * _REGIME_TARGET_MULT.get(market_regime, 1.0), 2)
+
         target = round(entry + risk * rr, 2)
 
         # ── ATR 動態停損（#3）──
@@ -176,6 +185,10 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             if risk <= 0:
                 return None
             target = round(entry + risk * rr, 2)
+
+        # 出場模式：趨勢訊號用追蹤停損（無固定目標），短線訊號用固定目標
+        _TRAILING_TYPES_SET = {"breakout", "high_base", "trend_cont"}
+        exit_style = "trailing" if type_ in _TRAILING_TYPES_SET else "fixed"
 
         # 觸發進場價：今日高 × (1 + buffer)
         _TRIGGER_BUFFER = {
@@ -206,6 +219,7 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             "timeframe":          _TF.get(type_, "medium"),
             "confirmations":      _confirmations,
             "confirmation_flags": _conf_flags,
+            "exit_style":         exit_style,
         }
 
     # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70 + BULL動能確認
