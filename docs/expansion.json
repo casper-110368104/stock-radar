@@ -1,1 +1,715 @@
-{"updated_at":"2026-04-14 15:02","scan_failed":false,"sample_size":159,"signal_count":10,"crowding_index":{"high_base":0.031,"retest":0.025,"ma_pullback":0.006},"signal_tracking":[{"code":"4956","name":"光鋐","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":41.8,"stop_loss":31.37,"atr_stop":34.8,"target":79.35,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":41.8,"days_held":2,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":90,"vol_ratio_at_trigger":1.55,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1802","name":"台玻","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":67.4,"stop_loss":54.18,"atr_stop":56.03,"target":114.99,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"建材營造","sector_phase":"整理觀察","current_price":68.2,"days_held":2,"gain_pct":1.19,"resolved_date":null,"rs_pct_at_trigger":88,"vol_ratio_at_trigger":2.3,"market_regime_at_trigger":"bull","max_gain_pct":1.19,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"4919","name":"新唐","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":110.5,"stop_loss":83.92,"atr_stop":90.28,"target":206.19,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"半導體","sector_phase":"高檔震盪","current_price":110.5,"days_held":2,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":90,"vol_ratio_at_trigger":1.61,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3715","name":"定穎投控","type":"ma_pullback","label":"均線回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":184.0,"stop_loss":150.53,"atr_stop":150.53,"target":244.25,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":186.5,"days_held":2,"gain_pct":1.36,"resolved_date":null,"rs_pct_at_trigger":73,"vol_ratio_at_trigger":0.25,"market_regime_at_trigger":"bull","max_gain_pct":1.36,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"3715","name":"定穎投控","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":184.0,"stop_loss":150.53,"atr_stop":150.53,"target":244.25,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":186.5,"days_held":2,"gain_pct":1.36,"resolved_date":null,"rs_pct_at_trigger":73,"vol_ratio_at_trigger":0.25,"market_regime_at_trigger":"bull","max_gain_pct":1.36,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"3714","name":"富采","type":"high_base","label":"強整再突","strength":"medium","trigger_date":"2026-04-14","entry":62.9,"stop_loss":47.34,"atr_stop":51.45,"target":118.92,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":62.9,"days_held":2,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":82,"vol_ratio_at_trigger":0.22,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3062","name":"建漢","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":31.15,"stop_loss":25.35,"atr_stop":25.35,"target":41.59,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"通信網路","sector_phase":"主升回檔","current_price":31.45,"days_held":2,"gain_pct":0.96,"resolved_date":null,"rs_pct_at_trigger":60,"vol_ratio_at_trigger":0.41,"market_regime_at_trigger":"bull","max_gain_pct":0.96,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"1582","name":"信錦","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":104.5,"stop_loss":85.67,"atr_stop":85.67,"target":172.29,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":102.5,"days_held":2,"gain_pct":-1.91,"resolved_date":null,"rs_pct_at_trigger":74,"vol_ratio_at_trigger":0.74,"market_regime_at_trigger":"bull","max_loss_pct":-1.91,"max_gain_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1305","name":"華夏","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":17.2,"stop_loss":13.25,"atr_stop":13.25,"target":31.42,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"化學","sector_phase":"主升段","current_price":17.65,"days_held":2,"gain_pct":2.62,"resolved_date":null,"rs_pct_at_trigger":71,"vol_ratio_at_trigger":0.15,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1326","name":"台化","type":"high_base","label":"強整再突","strength":"medium","trigger_date":"2026-04-14","entry":54.1,"stop_loss":43.67,"atr_stop":46.9,"target":91.65,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"化學","sector_phase":"主升段","current_price":54.6,"days_held":2,"gain_pct":0.92,"resolved_date":null,"rs_pct_at_trigger":77,"vol_ratio_at_trigger":1.3,"market_regime_at_trigger":"bull","max_gain_pct":0.92,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"2355","name":"敬鵬","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":51.0,"stop_loss":41.67,"atr_stop":41.67,"target":67.79,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":51.6,"days_held":2,"gain_pct":1.18,"resolved_date":null,"rs_pct_at_trigger":74,"vol_ratio_at_trigger":0.32,"market_regime_at_trigger":"bull","max_gain_pct":1.18,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"4989","name":"榮科","type":"high_base","label":"強整再突","strength":"medium","trigger_date":"2026-04-14","entry":89.4,"stop_loss":69.44,"atr_stop":76.43,"target":161.26,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"鋼鐵","sector_phase":"主升回檔","current_price":89.4,"days_held":2,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":86,"vol_ratio_at_trigger":0.63,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"6442","name":"光聖","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":2150.0,"stop_loss":1690.17,"atr_stop":1690.17,"target":2977.69,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":2075.0,"days_held":2,"gain_pct":-3.49,"resolved_date":null,"rs_pct_at_trigger":77,"vol_ratio_at_trigger":0.81,"market_regime_at_trigger":"bull","max_loss_pct":-3.49,"max_gain_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2313","name":"華通","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":267.0,"stop_loss":213.43,"atr_stop":213.43,"target":363.43,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":257.5,"days_held":2,"gain_pct":-3.56,"resolved_date":null,"rs_pct_at_trigger":94,"vol_ratio_at_trigger":0.43,"market_regime_at_trigger":"bull","max_loss_pct":-3.56,"max_gain_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"8039","name":"台虹","type":"high_base","label":"強整再突","strength":"medium","trigger_date":"2026-04-14","entry":141.0,"stop_loss":114.57,"atr_stop":117.78,"target":236.15,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":137.0,"days_held":2,"gain_pct":-2.84,"resolved_date":null,"rs_pct_at_trigger":75,"vol_ratio_at_trigger":0.82,"market_regime_at_trigger":"bull","max_loss_pct":-2.84,"max_gain_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"4906","name":"正文","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":39.0,"stop_loss":30.55,"atr_stop":30.55,"target":54.21,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"通信網路","sector_phase":"主升回檔","current_price":39.3,"days_held":2,"gain_pct":0.77,"resolved_date":null,"rs_pct_at_trigger":69,"vol_ratio_at_trigger":0.43,"market_regime_at_trigger":"bull","max_gain_pct":0.77,"day_of_max_gain":2,"max_loss_pct":0.0,"exit_reason":null},{"code":"2887","name":"台新新光金","type":"retest","label":"縮量回測(起漲型)","strength":"weak","trigger_date":"2026-04-14","entry":24.5,"stop_loss":23.61,"atr_stop":23.61,"target":26.1,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"金融保險","sector_phase":"整理觀察","current_price":24.45,"days_held":2,"gain_pct":-0.2,"resolved_date":null,"rs_pct_at_trigger":47,"vol_ratio_at_trigger":0.44,"market_regime_at_trigger":"bull","max_loss_pct":-0.2,"max_gain_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1225","name":"福懋油","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":34.25,"stop_loss":31.4,"atr_stop":31.88,"target":44.51,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":34.25,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":71,"vol_ratio_at_trigger":2.35,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1301","name":"台塑","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":54.3,"stop_loss":47.12,"atr_stop":48.67,"target":80.15,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"化學","sector_phase":"主升段","current_price":54.3,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":81,"vol_ratio_at_trigger":2.91,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1303","name":"南亞","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":89.0,"stop_loss":74.2,"atr_stop":74.2,"target":142.28,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"化學","sector_phase":"主升段","current_price":89.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":82,"vol_ratio_at_trigger":1.55,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1326","name":"台化","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":54.6,"stop_loss":43.83,"atr_stop":47.33,"target":93.37,"status":"open","repeat":true,"is_pyramid":false,"sector_key":"化學","sector_phase":"主升段","current_price":54.6,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":90,"vol_ratio_at_trigger":2.17,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1802","name":"台玻","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":68.2,"stop_loss":54.42,"atr_stop":56.8,"target":117.81,"status":"open","repeat":true,"is_pyramid":false,"sector_key":"建材營造","sector_phase":"整理觀察","current_price":68.2,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":94,"vol_ratio_at_trigger":3.35,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2049","name":"上銀","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":275.0,"stop_loss":237.24,"atr_stop":240.72,"target":410.94,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"其他","sector_phase":"整理觀察","current_price":275.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":83,"vol_ratio_at_trigger":3.5,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2330","name":"台積電","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":2055.0,"stop_loss":1823.73,"atr_stop":1929.1,"target":2887.57,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"半導體","sector_phase":"高檔震盪","current_price":2055.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":72,"vol_ratio_at_trigger":1.36,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2495","name":"普安","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":41.1,"stop_loss":35.35,"atr_stop":35.35,"target":61.8,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電腦週邊","sector_phase":"主升回檔","current_price":41.1,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":74,"vol_ratio_at_trigger":2.5,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3028","name":"增你強","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":64.1,"stop_loss":49.37,"atr_stop":55.7,"target":117.13,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":64.1,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":85,"vol_ratio_at_trigger":1.53,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3443","name":"創意","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":3050.0,"stop_loss":2554.43,"atr_stop":2619.65,"target":4834.05,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"半導體","sector_phase":"高檔震盪","current_price":3050.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":72,"vol_ratio_at_trigger":1.67,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3702","name":"大聯大","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":96.5,"stop_loss":80.69,"atr_stop":85.9,"target":153.42,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"電子通路","sector_phase":"主升回檔","current_price":96.5,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":87,"vol_ratio_at_trigger":1.75,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"4540","name":"全球傳動","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":51.9,"stop_loss":45.77,"atr_stop":45.77,"target":73.97,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"其他","sector_phase":"整理觀察","current_price":51.9,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":81,"vol_ratio_at_trigger":5.78,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"4956","name":"光鋐","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":41.8,"stop_loss":31.4,"atr_stop":34.8,"target":79.24,"status":"open","repeat":true,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":41.8,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":95,"vol_ratio_at_trigger":1.65,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"6531","name":"愛普*","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":606.0,"stop_loss":499.59,"atr_stop":511.98,"target":989.08,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":606.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":80,"vol_ratio_at_trigger":2.45,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"6789","name":"采鈺","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":407.0,"stop_loss":331.33,"atr_stop":353.25,"target":679.41,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"半導體","sector_phase":"高檔震盪","current_price":407.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":84,"vol_ratio_at_trigger":3.77,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"6958","name":"日盛台駿","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","entry":20.0,"stop_loss":17.23,"atr_stop":18.85,"target":29.97,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":20.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":78,"vol_ratio_at_trigger":3.87,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2010","name":"春源","type":"ma_pullback","label":"均線回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":25.35,"stop_loss":24.0,"atr_stop":24.0,"target":30.21,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":25.35,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":70,"vol_ratio_at_trigger":0.66,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2010","name":"春源","type":"high_base","label":"強整再突","strength":"medium","trigger_date":"2026-04-14","entry":25.35,"stop_loss":22.82,"atr_stop":24.0,"target":34.46,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":25.35,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":70,"vol_ratio_at_trigger":0.66,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2010","name":"春源","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":25.35,"stop_loss":24.0,"atr_stop":24.0,"target":30.21,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":25.35,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":70,"vol_ratio_at_trigger":0.66,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3653","name":"健策","type":"ma_pullback","label":"均線回測(主升型)","strength":"medium","trigger_date":"2026-04-14","entry":4000.0,"stop_loss":3374.1,"atr_stop":3374.1,"target":5126.62,"status":"open","repeat":false,"is_pyramid":false,"sector_key":"","sector_phase":"","current_price":4000.0,"days_held":1,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":88,"vol_ratio_at_trigger":0.61,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3702","name":"大聯大","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","trigger_price":101.3,"entry":96.5,"stop_loss":80.69,"atr_stop":85.9,"target":164.8,"rr":4.32,"confirmations":5,"confirmation_flags":["RS強勢","量能擴張","個股多頭","大盤多頭","均量線對齊"],"exit_style":"trailing","status":"open","repeat":true,"is_pyramid":false,"sector_key":"電子通路","sector_phase":"主升回檔","current_price":96.5,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":74,"vol_ratio_at_trigger":1.75,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"4956","name":"光鋐","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","trigger_price":41.93,"entry":41.8,"stop_loss":31.4,"atr_stop":34.8,"target":86.73,"rr":4.32,"confirmations":5,"confirmation_flags":["RS強勢","量能擴張","個股多頭","大盤多頭","均量線對齊"],"exit_style":"trailing","status":"open","repeat":true,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":41.8,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":89,"vol_ratio_at_trigger":1.65,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1326","name":"台化","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","trigger_price":55.06,"entry":54.6,"stop_loss":43.83,"atr_stop":47.33,"target":101.13,"rr":4.32,"confirmations":5,"confirmation_flags":["RS強勢","量能擴張","個股多頭","大盤多頭","均量線對齊"],"exit_style":"trailing","status":"open","repeat":true,"is_pyramid":false,"sector_key":"化學","sector_phase":"主升段","current_price":54.6,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":81,"vol_ratio_at_trigger":2.17,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"1802","name":"台玻","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","trigger_price":69.71,"entry":68.2,"stop_loss":54.42,"atr_stop":56.8,"target":127.73,"rr":4.32,"confirmations":5,"confirmation_flags":["RS強勢","量能擴張","個股多頭","大盤多頭","均量線對齊"],"exit_style":"trailing","status":"open","repeat":true,"is_pyramid":false,"sector_key":"建材營造","sector_phase":"整理觀察","current_price":68.2,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":86,"vol_ratio_at_trigger":3.35,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"6789","name":"采鈺","type":"high_base","label":"強整再突","strength":"strong","trigger_date":"2026-04-14","trigger_price":408.22,"entry":407.0,"stop_loss":331.33,"atr_stop":353.25,"target":733.89,"rr":4.32,"confirmations":5,"confirmation_flags":["RS強勢","量能擴張","個股多頭","大盤多頭","均量線對齊"],"exit_style":"trailing","status":"open","repeat":true,"is_pyramid":false,"sector_key":"半導體","sector_phase":"高檔震盪","current_price":407.0,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":70,"vol_ratio_at_trigger":3.77,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2355","name":"敬鵬","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","trigger_price":53.87,"entry":51.6,"stop_loss":42.25,"atr_stop":42.25,"target":71.8,"rr":2.16,"confirmations":2,"confirmation_flags":["RS強勢","大盤多頭"],"exit_style":"fixed","status":"open","repeat":true,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":51.6,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":77,"vol_ratio_at_trigger":0.61,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2455","name":"全新","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","trigger_price":301.5,"entry":280.5,"stop_loss":225.95,"atr_stop":225.95,"target":398.33,"rr":2.16,"confirmations":2,"confirmation_flags":["RS強勢","大盤多頭"],"exit_style":"fixed","status":"open","repeat":false,"is_pyramid":false,"sector_key":"半導體","sector_phase":"高檔震盪","current_price":280.5,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":84,"vol_ratio_at_trigger":0.16,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"6442","name":"光聖","type":"ma_pullback","label":"均線回測(主升型)","strength":"medium","trigger_date":"2026-04-14","trigger_price":2286.37,"entry":2075.0,"stop_loss":1602.67,"atr_stop":1602.67,"target":3095.23,"rr":2.16,"confirmations":3,"confirmation_flags":["RS強勢","量能擴張","大盤多頭"],"exit_style":"fixed","status":"open","repeat":false,"is_pyramid":true,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":2075.0,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":77,"vol_ratio_at_trigger":1.69,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"4906","name":"正文","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","trigger_price":41.51,"entry":39.3,"stop_loss":30.82,"atr_stop":30.82,"target":57.62,"rr":2.16,"confirmations":1,"confirmation_flags":["大盤多頭"],"exit_style":"fixed","status":"open","repeat":true,"is_pyramid":false,"sector_key":"通信網路","sector_phase":"主升回檔","current_price":39.3,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":69,"vol_ratio_at_trigger":0.8,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"3715","name":"定穎投控","type":"retest","label":"縮量回測(主升型)","strength":"medium","trigger_date":"2026-04-14","trigger_price":192.46,"entry":186.5,"stop_loss":153.03,"atr_stop":153.03,"target":258.8,"rr":2.16,"confirmations":2,"confirmation_flags":["RS強勢","大盤多頭"],"exit_style":"fixed","status":"open","repeat":true,"is_pyramid":false,"sector_key":"電子零組件","sector_phase":"整理觀察","current_price":186.5,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":76,"vol_ratio_at_trigger":0.41,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null}],"signal_archive":[],"stocks":[{"code":"3702","name":"大聯大","price":96.5,"chg_pct":-0.1,"vol_ratio":1.75,"ma5":93.56,"ma20":91.35,"ma60":74.49,"avwap_swing":81.51,"avwap_vol":93.11,"avwap_short":93.97,"industry":"電子通路","rs_pct":74,"stock_phase":"BULL","m_z":5.0,"rs_trend":0.4396,"signals":[{"type":"high_base","label":"強整再突","strength":"strong","strategy":"trend","entry":96.5,"trigger_price":101.3,"stop_loss":80.69,"atr_stop":85.9,"target":164.8,"risk":15.81,"rr":4.32,"reason":"緊貼20日高(101.0)整理，RS百分位74；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}],"exit_style":"trailing"}],"patterns":[]},{"code":"4956","name":"光鋐","price":41.8,"chg_pct":10.0,"vol_ratio":1.65,"ma5":37.5,"ma20":34.79,"ma60":27.23,"avwap_swing":31.72,"avwap_vol":35.28,"avwap_short":38.09,"industry":"電子零組件","rs_pct":89,"stock_phase":"BULL","m_z":5.0,"rs_trend":2.9935,"signals":[{"type":"high_base","label":"強整再突","strength":"strong","strategy":"trend","entry":41.8,"trigger_price":41.93,"stop_loss":31.4,"atr_stop":34.8,"target":86.73,"risk":10.4,"rr":4.32,"reason":"緊貼20日高(41.8)整理，RS百分位89；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}],"exit_style":"trailing"}],"patterns":[]},{"code":"1326","name":"台化","price":54.6,"chg_pct":9.31,"vol_ratio":2.17,"ma5":48.14,"ma20":45.78,"ma60":41.95,"avwap_swing":44.27,"avwap_vol":48.0,"avwap_short":50.58,"industry":"化學","rs_pct":81,"stock_phase":"BULL","m_z":5.0,"rs_trend":3.4266,"signals":[{"type":"high_base","label":"強整再突","strength":"strong","strategy":"trend","entry":54.6,"trigger_price":55.06,"stop_loss":43.83,"atr_stop":47.33,"target":101.13,"risk":10.77,"rr":4.32,"reason":"緊貼20日高(54.9)整理，RS百分位81；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}],"exit_style":"trailing"}],"patterns":[]},{"code":"1802","name":"台玻","price":68.2,"chg_pct":7.57,"vol_ratio":3.35,"ma5":61.56,"ma20":57.33,"ma60":52.27,"avwap_swing":54.97,"avwap_vol":67.47,"avwap_short":64.75,"industry":"建材營造","rs_pct":86,"stock_phase":"BULL","m_z":3.7995,"rs_trend":0.9096,"signals":[{"type":"high_base","label":"強整再突","strength":"strong","strategy":"trend","entry":68.2,"trigger_price":69.71,"stop_loss":54.42,"atr_stop":56.8,"target":127.73,"risk":13.78,"rr":4.32,"reason":"緊貼20日高(69.5)整理，RS百分位86；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}],"exit_style":"trailing"}],"patterns":[]},{"code":"6789","name":"采鈺","price":407.0,"chg_pct":10.0,"vol_ratio":3.77,"ma5":358.9,"ma20":336.75,"ma60":312.07,"avwap_swing":334.68,"avwap_vol":391.67,"avwap_short":377.71,"industry":"半導體","rs_pct":70,"stock_phase":"BULL","m_z":5.0,"rs_trend":3.0704,"signals":[{"type":"high_base","label":"強整再突","strength":"strong","strategy":"trend","entry":407.0,"trigger_price":408.22,"stop_loss":331.33,"atr_stop":353.25,"target":733.89,"risk":75.67,"rr":4.32,"reason":"緊貼20日高(407.0)整理，RS百分位70；主力未跑✓","timeframe":"medium","confirmations":5,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":true},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}],"exit_style":"trailing"}],"patterns":[]},{"code":"2355","name":"敬鵬","price":51.6,"chg_pct":-1.9,"vol_ratio":0.61,"ma5":52.6,"ma20":49.01,"ma60":41.98,"avwap_swing":45.84,"avwap_vol":52.17,"avwap_short":53.06,"industry":"電子零組件","rs_pct":77,"stock_phase":"RANGE","m_z":5.0,"rs_trend":-0.9632,"signals":[{"type":"retest","label":"縮量回測(主升型)","strength":"medium","strategy":"trend","entry":51.6,"trigger_price":53.87,"stop_loss":42.25,"atr_stop":42.25,"target":71.8,"risk":9.35,"rr":2.16,"reason":"縮量(0.6x)回測MA10(52.03)，RS百分位77(≥60)","timeframe":"short","confirmations":2,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}],"exit_style":"fixed"}],"patterns":[]},{"code":"2455","name":"全新","price":280.5,"chg_pct":-4.27,"vol_ratio":0.16,"ma5":290.2,"ma20":259.02,"ma60":209.98,"avwap_swing":217.46,"avwap_vol":277.24,"avwap_short":286.38,"industry":"半導體","rs_pct":84,"stock_phase":"RANGE","m_z":5.0,"rs_trend":-0.9234,"signals":[{"type":"retest","label":"縮量回測(主升型)","strength":"medium","strategy":"trend","entry":280.5,"trigger_price":301.5,"stop_loss":225.95,"atr_stop":225.95,"target":398.33,"risk":54.55,"rr":2.16,"reason":"縮量(0.2x)回測MA10(277.8)，RS百分位84(≥60)；主力未跑✓","timeframe":"short","confirmations":2,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}],"exit_style":"fixed"}],"patterns":[]},{"code":"6442","name":"光聖","price":2075.0,"chg_pct":-6.95,"vol_ratio":1.69,"ma5":2182.0,"ma20":2019.75,"ma60":1792.0,"avwap_swing":1884.32,"avwap_vol":2129.92,"avwap_short":2205.85,"industry":"電子零組件","rs_pct":77,"stock_phase":"RANGE","m_z":5.0,"rs_trend":-1.7698,"signals":[{"type":"ma_pullback","label":"均線回測(主升型)","strength":"medium","strategy":"trend","entry":2075.0,"trigger_price":2286.37,"stop_loss":1602.67,"atr_stop":1602.67,"target":3095.23,"risk":472.33,"rr":2.16,"reason":"均線多頭，RS百分位77(≥60)","timeframe":"medium","confirmations":3,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":true},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}],"exit_style":"fixed"}],"patterns":[]},{"code":"4906","name":"正文","price":39.3,"chg_pct":-3.2,"vol_ratio":0.8,"ma5":39.91,"ma20":35.84,"ma60":30.13,"avwap_swing":37.47,"avwap_vol":39.76,"avwap_short":40.35,"industry":"通信網路","rs_pct":69,"stock_phase":"RANGE","m_z":5.0,"rs_trend":-1.8531,"signals":[{"type":"retest","label":"縮量回測(主升型)","strength":"medium","strategy":"trend","entry":39.3,"trigger_price":41.51,"stop_loss":30.82,"atr_stop":30.82,"target":57.62,"risk":8.48,"rr":2.16,"reason":"縮量(0.8x)回測MA10(38.6)，RS百分位69(≥60)","timeframe":"short","confirmations":1,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":false},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}],"exit_style":"fixed"}],"patterns":[]},{"code":"3715","name":"定穎投控","price":186.5,"chg_pct":0.0,"vol_ratio":0.41,"ma5":188.2,"ma20":180.25,"ma60":155.83,"avwap_swing":157.42,"avwap_vol":187.26,"avwap_short":185.95,"industry":"電子零組件","rs_pct":76,"stock_phase":"RANGE","m_z":1.3892,"rs_trend":-0.5807,"signals":[{"type":"retest","label":"縮量回測(主升型)","strength":"medium","strategy":"trend","entry":186.5,"trigger_price":192.46,"stop_loss":153.03,"atr_stop":153.03,"target":258.8,"risk":33.47,"rr":2.16,"reason":"縮量(0.4x)回測MA10(183.45)，RS百分位76(≥60)","timeframe":"short","confirmations":2,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":true},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}],"exit_style":"fixed"}],"patterns":[]}]}
+{
+  "updated_at": "2026-04-14 15:02",
+  "scan_failed": false,
+  "sample_size": 159,
+  "signal_count": 10,
+  "crowding_index": {
+    "high_base": 0.031,
+    "retest": 0.025,
+    "ma_pullback": 0.006
+  },
+  "signal_tracking": [],
+  "signal_archive": [],
+  "stocks": [
+    {
+      "code": "3702",
+      "name": "大聯大",
+      "price": 96.5,
+      "chg_pct": -0.1,
+      "vol_ratio": 1.75,
+      "ma5": 93.56,
+      "ma20": 91.35,
+      "ma60": 74.49,
+      "avwap_swing": 81.51,
+      "avwap_vol": 93.11,
+      "avwap_short": 93.97,
+      "industry": "電子通路",
+      "rs_pct": 74,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 0.4396,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "entry": 96.5,
+          "trigger_price": 101.3,
+          "stop_loss": 80.69,
+          "atr_stop": 85.9,
+          "target": 164.8,
+          "risk": 15.81,
+          "rr": 4.32,
+          "reason": "緊貼20日高(101.0)整理，RS百分位74；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ],
+          "exit_style": "trailing"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "4956",
+      "name": "光鋐",
+      "price": 41.8,
+      "chg_pct": 10.0,
+      "vol_ratio": 1.65,
+      "ma5": 37.5,
+      "ma20": 34.79,
+      "ma60": 27.23,
+      "avwap_swing": 31.72,
+      "avwap_vol": 35.28,
+      "avwap_short": 38.09,
+      "industry": "電子零組件",
+      "rs_pct": 89,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 2.9935,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "entry": 41.8,
+          "trigger_price": 41.93,
+          "stop_loss": 31.4,
+          "atr_stop": 34.8,
+          "target": 86.73,
+          "risk": 10.4,
+          "rr": 4.32,
+          "reason": "緊貼20日高(41.8)整理，RS百分位89；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ],
+          "exit_style": "trailing"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "1326",
+      "name": "台化",
+      "price": 54.6,
+      "chg_pct": 9.31,
+      "vol_ratio": 2.17,
+      "ma5": 48.14,
+      "ma20": 45.78,
+      "ma60": 41.95,
+      "avwap_swing": 44.27,
+      "avwap_vol": 48.0,
+      "avwap_short": 50.58,
+      "industry": "化學",
+      "rs_pct": 81,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 3.4266,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "entry": 54.6,
+          "trigger_price": 55.06,
+          "stop_loss": 43.83,
+          "atr_stop": 47.33,
+          "target": 101.13,
+          "risk": 10.77,
+          "rr": 4.32,
+          "reason": "緊貼20日高(54.9)整理，RS百分位81；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ],
+          "exit_style": "trailing"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "1802",
+      "name": "台玻",
+      "price": 68.2,
+      "chg_pct": 7.57,
+      "vol_ratio": 3.35,
+      "ma5": 61.56,
+      "ma20": 57.33,
+      "ma60": 52.27,
+      "avwap_swing": 54.97,
+      "avwap_vol": 67.47,
+      "avwap_short": 64.75,
+      "industry": "建材營造",
+      "rs_pct": 86,
+      "stock_phase": "BULL",
+      "m_z": 3.7995,
+      "rs_trend": 0.9096,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "entry": 68.2,
+          "trigger_price": 69.71,
+          "stop_loss": 54.42,
+          "atr_stop": 56.8,
+          "target": 127.73,
+          "risk": 13.78,
+          "rr": 4.32,
+          "reason": "緊貼20日高(69.5)整理，RS百分位86；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ],
+          "exit_style": "trailing"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "6789",
+      "name": "采鈺",
+      "price": 407.0,
+      "chg_pct": 10.0,
+      "vol_ratio": 3.77,
+      "ma5": 358.9,
+      "ma20": 336.75,
+      "ma60": 312.07,
+      "avwap_swing": 334.68,
+      "avwap_vol": 391.67,
+      "avwap_short": 377.71,
+      "industry": "半導體",
+      "rs_pct": 70,
+      "stock_phase": "BULL",
+      "m_z": 5.0,
+      "rs_trend": 3.0704,
+      "signals": [
+        {
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "entry": 407.0,
+          "trigger_price": 408.22,
+          "stop_loss": 331.33,
+          "atr_stop": 353.25,
+          "target": 733.89,
+          "risk": 75.67,
+          "rr": 4.32,
+          "reason": "緊貼20日高(407.0)整理，RS百分位70；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 5,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": true
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ],
+          "exit_style": "trailing"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2355",
+      "name": "敬鵬",
+      "price": 51.6,
+      "chg_pct": -1.9,
+      "vol_ratio": 0.61,
+      "ma5": 52.6,
+      "ma20": 49.01,
+      "ma60": 41.98,
+      "avwap_swing": 45.84,
+      "avwap_vol": 52.17,
+      "avwap_short": 53.06,
+      "industry": "電子零組件",
+      "rs_pct": 77,
+      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "rs_trend": -0.9632,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 51.6,
+          "trigger_price": 53.87,
+          "stop_loss": 42.25,
+          "atr_stop": 42.25,
+          "target": 71.8,
+          "risk": 9.35,
+          "rr": 2.16,
+          "reason": "縮量(0.6x)回測MA10(52.03)，RS百分位77(≥60)",
+          "timeframe": "short",
+          "confirmations": 2,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2455",
+      "name": "全新",
+      "price": 280.5,
+      "chg_pct": -4.27,
+      "vol_ratio": 0.16,
+      "ma5": 290.2,
+      "ma20": 259.02,
+      "ma60": 209.98,
+      "avwap_swing": 217.46,
+      "avwap_vol": 277.24,
+      "avwap_short": 286.38,
+      "industry": "半導體",
+      "rs_pct": 84,
+      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "rs_trend": -0.9234,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 280.5,
+          "trigger_price": 301.5,
+          "stop_loss": 225.95,
+          "atr_stop": 225.95,
+          "target": 398.33,
+          "risk": 54.55,
+          "rr": 2.16,
+          "reason": "縮量(0.2x)回測MA10(277.8)，RS百分位84(≥60)；主力未跑✓",
+          "timeframe": "short",
+          "confirmations": 2,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "6442",
+      "name": "光聖",
+      "price": 2075.0,
+      "chg_pct": -6.95,
+      "vol_ratio": 1.69,
+      "ma5": 2182.0,
+      "ma20": 2019.75,
+      "ma60": 1792.0,
+      "avwap_swing": 1884.32,
+      "avwap_vol": 2129.92,
+      "avwap_short": 2205.85,
+      "industry": "電子零組件",
+      "rs_pct": 77,
+      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "rs_trend": -1.7698,
+      "signals": [
+        {
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 2075.0,
+          "trigger_price": 2286.37,
+          "stop_loss": 1602.67,
+          "atr_stop": 1602.67,
+          "target": 3095.23,
+          "risk": 472.33,
+          "rr": 2.16,
+          "reason": "均線多頭，RS百分位77(≥60)",
+          "timeframe": "medium",
+          "confirmations": 3,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": true
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "4906",
+      "name": "正文",
+      "price": 39.3,
+      "chg_pct": -3.2,
+      "vol_ratio": 0.8,
+      "ma5": 39.91,
+      "ma20": 35.84,
+      "ma60": 30.13,
+      "avwap_swing": 37.47,
+      "avwap_vol": 39.76,
+      "avwap_short": 40.35,
+      "industry": "通信網路",
+      "rs_pct": 69,
+      "stock_phase": "RANGE",
+      "m_z": 5.0,
+      "rs_trend": -1.8531,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 39.3,
+          "trigger_price": 41.51,
+          "stop_loss": 30.82,
+          "atr_stop": 30.82,
+          "target": 57.62,
+          "risk": 8.48,
+          "rr": 2.16,
+          "reason": "縮量(0.8x)回測MA10(38.6)，RS百分位69(≥60)",
+          "timeframe": "short",
+          "confirmations": 1,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": false
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "3715",
+      "name": "定穎投控",
+      "price": 186.5,
+      "chg_pct": 0.0,
+      "vol_ratio": 0.41,
+      "ma5": 188.2,
+      "ma20": 180.25,
+      "ma60": 155.83,
+      "avwap_swing": 157.42,
+      "avwap_vol": 187.26,
+      "avwap_short": 185.95,
+      "industry": "電子零組件",
+      "rs_pct": 76,
+      "stock_phase": "RANGE",
+      "m_z": 1.3892,
+      "rs_trend": -0.5807,
+      "signals": [
+        {
+          "type": "retest",
+          "label": "縮量回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "entry": 186.5,
+          "trigger_price": 192.46,
+          "stop_loss": 153.03,
+          "atr_stop": 153.03,
+          "target": 258.8,
+          "risk": 33.47,
+          "rr": 2.16,
+          "reason": "縮量(0.4x)回測MA10(183.45)，RS百分位76(≥60)",
+          "timeframe": "short",
+          "confirmations": 2,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": true
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    }
+  ]
+}
