@@ -322,13 +322,23 @@ def fetch_twse_dynamic():
       all_stocks   = 全市場 [{code, vol, chg}, ...] 供 breadth 計算
     """
     url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json"
+    d = None
+    for attempt in range(1, 5):  # 最多重試 4 次
+        try:
+            res = requests.get(url, headers=HEADERS, timeout=20)
+            d = res.json()
+            if d.get("stat") == "OK":
+                break
+            print(f"  [TWSE] 狀態異常: {d.get('stat')} (attempt {attempt}/4)")
+            time.sleep(3 * attempt)
+        except Exception as e:
+            print(f"  [TWSE] 失敗：{e} (attempt {attempt}/4)")
+            time.sleep(3 * attempt)
+            d = None
+    if not d or d.get("stat") != "OK":
+        print("  [TWSE] 4 次嘗試後仍失敗，回傳空清單")
+        return [], []
     try:
-        res = requests.get(url, headers=HEADERS, timeout=15)
-        d = res.json()
-        if d.get("stat") != "OK":
-            print(f"  [TWSE] 狀態異常: {d.get('stat')}")
-            return [], []
-
         fields = d.get("fields", [])
         rows   = d.get("data", [])
 
