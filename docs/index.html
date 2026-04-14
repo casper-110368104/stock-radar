@@ -1772,7 +1772,7 @@ function _renderBtTracking(tracking,idPfx){
             if(t.max_loss_pct&&t.max_loss_pct<0) parts.push('最深 <span style="color:var(--red)">'+t.max_loss_pct.toFixed(1)+'%</span>');
             if(t.exit_reason) parts.push(_xLbl[t.exit_reason]||t.exit_reason);
             return parts.length?'<div style="margin-top:4px;font-size:10px;color:var(--text3)">'+parts.join(' ∙ ')+'</div>':'';
-          })():'')+'
+          })():'') +
           posHtml+
           (t.trigger_date?'<div class="exp-sig-reason" style="margin-top:5px">觸發日：'+t.trigger_date+(t.sector_phase?' ∙ 類股：'+t.sector_phase:'')+'</div>':'')+
           (t.market_regime_at_trigger?'<div class="exp-sig-reason">大盤相位：'+t.market_regime_at_trigger+' ∙ RS：'+t.rs_pct_at_trigger+'% ∙ 量比：'+t.vol_ratio_at_trigger+'</div>':'')+
