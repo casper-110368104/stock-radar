@@ -1,1 +1,158 @@
-{"updated_at":"2026-04-14 17:24","scan_failed":false,"sample_size":34,"signal_count":2,"crowding_index":{"ma_pullback":0.059},"signal_tracking":[{"code":"3045","name":"TAIWAN MOBILE CO","type":"ma_pullback","label":"均線回測(起漲型)","strength":"weak","trigger_date":"2026-04-14","trigger_price":110.55,"entry":110.0,"stop_loss":108.31,"atr_stop":108.77,"target":113.65,"rr":2.16,"confirmations":2,"confirmation_flags":["大盤多頭","均量線對齊"],"exit_style":"fixed","status":"open","repeat":false,"is_pyramid":false,"sector_key":"通信網路","sector_phase":"","current_price":110.0,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":41,"vol_ratio_at_trigger":1.05,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null},{"code":"2891","name":"CTBC FINANCIAL HOLDINGS COMPANY","type":"ma_pullback","label":"均線回測(起漲型)","strength":"weak","trigger_date":"2026-04-14","trigger_price":54.47,"entry":53.3,"stop_loss":51.09,"atr_stop":51.09,"target":58.07,"rr":2.16,"confirmations":1,"confirmation_flags":["大盤多頭"],"exit_style":"fixed","status":"open","repeat":false,"is_pyramid":false,"sector_key":"金融保險","sector_phase":"","current_price":53.1,"days_held":0,"gain_pct":0.0,"resolved_date":null,"rs_pct_at_trigger":53,"vol_ratio_at_trigger":1.07,"market_regime_at_trigger":"bull","max_gain_pct":0.0,"max_loss_pct":0.0,"day_of_max_gain":0,"exit_reason":null}],"signal_archive":[],"stocks":[{"code":"3045","name":"TAIWAN MOBILE CO","price":110.0,"chg_pct":0.0,"vol_ratio":1.05,"ma5":109.9,"ma20":109.4,"ma60":107.72,"avwap_swing":108.09,"avwap_vol":109.35,"avwap_short":109.65,"industry":"通信網路","rs_pct":41,"stock_phase":"RANGE","m_z":0.1854,"rs_trend":0.6369,"signals":[{"type":"ma_pullback","label":"均線回測(起漲型)","strength":"weak","strategy":"swing","entry":110.0,"trigger_price":110.55,"stop_loss":108.31,"atr_stop":108.77,"target":113.65,"risk":1.69,"rr":2.16,"risk_pct":1.54,"pos_factor":0.97,"reason":"均線多頭，RS百分位41(40~60)，RS斜率剛翻正；主力未跑✓","timeframe":"medium","confirmations":2,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":false},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":true}],"exit_style":"fixed"}],"patterns":[]},{"code":"2891","name":"CTBC FINANCIAL HOLDINGS COMPANY","price":53.3,"chg_pct":-0.38,"vol_ratio":1.07,"ma5":54.38,"ma20":53.16,"ma60":51.96,"avwap_swing":52.34,"avwap_vol":54.65,"avwap_short":54.71,"industry":"金融保險","rs_pct":53,"stock_phase":"RANGE","m_z":0.1969,"rs_trend":0.6029,"signals":[{"type":"ma_pullback","label":"均線回測(起漲型)","strength":"weak","strategy":"swing","entry":53.3,"trigger_price":54.47,"stop_loss":51.09,"atr_stop":51.09,"target":58.07,"risk":2.21,"rr":2.16,"risk_pct":4.15,"pos_factor":0.36,"reason":"均線多頭，RS百分位53(40~60)，RS斜率剛翻正","timeframe":"medium","confirmations":1,"confirmation_flags":[{"lbl":"籌碼偏多","sub":"主力籌碼分>60","ok":false},{"lbl":"RS強勢","sub":"RS百分位≥70","ok":false},{"lbl":"量能擴張","sub":"日量比>1.3×","ok":false},{"lbl":"個股多頭","sub":"個股相位=BULL","ok":false},{"lbl":"大盤多頭","sub":"大盤相位=多頭","ok":true},{"lbl":"均量線對齊","sub":"三條AVWAP均低於現價","ok":false}],"exit_style":"fixed"}],"patterns":[]}]}
+{
+  "updated_at": "2026-04-14 17:24",
+  "scan_failed": false,
+  "sample_size": 34,
+  "signal_count": 2,
+  "crowding_index": {
+    "ma_pullback": 0.059
+  },
+  "signal_tracking": [],
+  "signal_archive": [],
+  "stocks": [
+    {
+      "code": "3045",
+      "name": "TAIWAN MOBILE CO",
+      "price": 110.0,
+      "chg_pct": 0.0,
+      "vol_ratio": 1.05,
+      "ma5": 109.9,
+      "ma20": 109.4,
+      "ma60": 107.72,
+      "avwap_swing": 108.09,
+      "avwap_vol": 109.35,
+      "avwap_short": 109.65,
+      "industry": "通信網路",
+      "rs_pct": 41,
+      "stock_phase": "RANGE",
+      "m_z": 0.1854,
+      "rs_trend": 0.6369,
+      "signals": [
+        {
+          "type": "ma_pullback",
+          "label": "均線回測(起漲型)",
+          "strength": "weak",
+          "strategy": "swing",
+          "entry": 110.0,
+          "trigger_price": 110.55,
+          "stop_loss": 108.31,
+          "atr_stop": 108.77,
+          "target": 113.65,
+          "risk": 1.69,
+          "rr": 2.16,
+          "risk_pct": 1.54,
+          "pos_factor": 0.97,
+          "reason": "均線多頭，RS百分位41(40~60)，RS斜率剛翻正；主力未跑✓",
+          "timeframe": "medium",
+          "confirmations": 2,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": false
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": true
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    },
+    {
+      "code": "2891",
+      "name": "CTBC FINANCIAL HOLDINGS COMPANY",
+      "price": 53.3,
+      "chg_pct": -0.38,
+      "vol_ratio": 1.07,
+      "ma5": 54.38,
+      "ma20": 53.16,
+      "ma60": 51.96,
+      "avwap_swing": 52.34,
+      "avwap_vol": 54.65,
+      "avwap_short": 54.71,
+      "industry": "金融保險",
+      "rs_pct": 53,
+      "stock_phase": "RANGE",
+      "m_z": 0.1969,
+      "rs_trend": 0.6029,
+      "signals": [
+        {
+          "type": "ma_pullback",
+          "label": "均線回測(起漲型)",
+          "strength": "weak",
+          "strategy": "swing",
+          "entry": 53.3,
+          "trigger_price": 54.47,
+          "stop_loss": 51.09,
+          "atr_stop": 51.09,
+          "target": 58.07,
+          "risk": 2.21,
+          "rr": 2.16,
+          "risk_pct": 4.15,
+          "pos_factor": 0.36,
+          "reason": "均線多頭，RS百分位53(40~60)，RS斜率剛翻正",
+          "timeframe": "medium",
+          "confirmations": 1,
+          "confirmation_flags": [
+            {
+              "lbl": "籌碼偏多",
+              "sub": "主力籌碼分>60",
+              "ok": false
+            },
+            {
+              "lbl": "RS強勢",
+              "sub": "RS百分位≥70",
+              "ok": false
+            },
+            {
+              "lbl": "量能擴張",
+              "sub": "日量比>1.3×",
+              "ok": false
+            },
+            {
+              "lbl": "個股多頭",
+              "sub": "個股相位=BULL",
+              "ok": false
+            },
+            {
+              "lbl": "大盤多頭",
+              "sub": "大盤相位=多頭",
+              "ok": true
+            },
+            {
+              "lbl": "均量線對齊",
+              "sub": "三條AVWAP均低於現價",
+              "ok": false
+            }
+          ],
+          "exit_style": "fixed"
+        }
+      ],
+      "patterns": []
+    }
+  ],
+  "backtest_stats": {}
+}

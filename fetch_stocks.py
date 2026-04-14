@@ -316,9 +316,10 @@ def get_twse_date(days_ago=0):
 # ── 1. TWSE 動態名單（量能前100 + 漲幅前50 + 跌幅前30）──────────
 
 def _fetch_twse_opendata_fallback():
-    """備援：用 opendata.twse.com.tw 抓上市公司基本清單（不含當日量能排序）
-    這個 domain 是 TWSE 專門對外的 OpenData 伺服器，雲端 IP 通常不會被擋。
-    無法做量能排序，改用公司規模（股本）做代替排序。
+    """備援：用 opendata.twse.com.tw 抓全市場上市公司清單。
+    此 domain 是 TWSE 專門對外的 OpenData 伺服器，雲端 IP 不會被擋。
+    量能排序由 yfinance 處理（各股歷史資料本來就從 Yahoo 抓），
+    這裡只需取得完整代碼清單即可。
     """
     url = "https://opendata.twse.com.tw/v1/opendata/t187ap03_L"
     try:
@@ -330,11 +331,14 @@ def _fetch_twse_opendata_fallback():
         codes = []
         for row in data:
             code = str(row.get("公司代號", "") or row.get("SecuritiesCompanyCode", "")).strip()
+            name = str(row.get("公司簡稱", "") or row.get("CompanyName", "")).strip()
             if code.isdigit() and len(code) == 4 and int(code) >= 1000:
                 if not code.startswith("00"):
                     codes.append(code)
-        print(f"  [OpenData] 取得 {len(codes)} 個上市股票代碼（無量能排序）")
-        # 沒有成交量資訊，回傳清單 + 空的 all_stocks（breadth 計算會跳過）
+                    if name and code not in _name_cache:
+                        _name_cache[code] = (name, "其他")
+        print(f"  [OpenData fallback] 取得 {len(codes)} 個上市股票代碼")
+        # all_stocks 回傳空列表：量能/漲跌幅資料由 yfinance 提供，breadth_map 跳過即可
         return codes, []
     except Exception as e:
         print(f"  [OpenData] 失敗：{e}")
