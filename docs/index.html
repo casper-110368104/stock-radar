@@ -2290,22 +2290,41 @@ function _initHeatmap(){
     };
   });
 
-  var alpha=1.0; // 熱度衰減，讓泡泡逐漸靜止
+  var alpha=1.0; // 收斂熱度（1→0），收斂後切換成緩漂模式
 
   function tick(){
     var W2=wrap.offsetWidth||W;
-    alpha=Math.max(0,alpha-0.016);
-    var damp=0.84+alpha*0.06; // alpha 高時阻尼小（動），低時阻尼大（靜）
+    var settling=alpha>0;
+    if(settling) alpha=Math.max(0,alpha-0.014);
 
-    // 向中心收引力
     var cx=W2/2, cy=wH/2;
-    var gStr=0.006+alpha*0.022;
-    state.forEach(function(st){
-      st.vx+=(cx-st.x)*gStr;
-      st.vy+=(cy-st.y)*gStr;
-    });
 
-    // 碰撞解算（O(n²)，~33 個類股沒問題）
+    if(settling){
+      // 收斂階段：強引力 + 大阻尼
+      var gStr=0.006+alpha*0.022;
+      state.forEach(function(st){
+        st.vx+=(cx-st.x)*gStr;
+        st.vy+=(cy-st.y)*gStr;
+      });
+    }else{
+      // 漂浮階段：每隔幾幀隨機微擾，讓泡泡緩慢漂動
+      if(Math.random()<0.04){
+        var rnd=state[Math.floor(Math.random()*state.length)];
+        rnd.vx+=(Math.random()-0.5)*0.5;
+        rnd.vy+=(Math.random()-0.5)*0.5;
+      }
+      // 弱引力把飄遠的拉回來
+      state.forEach(function(st){
+        var dx=cx-st.x, dy=cy-st.y;
+        var d=Math.sqrt(dx*dx+dy*dy)||1;
+        if(d>W2*0.38){
+          st.vx+=dx/d*0.08;
+          st.vy+=dy/d*0.08;
+        }
+      });
+    }
+
+    // 碰撞解算
     for(var i=0;i<state.length-1;i++){
       for(var j=i+1;j<state.length;j++){
         var a=state[i],b=state[j];
@@ -2330,8 +2349,12 @@ function _initHeatmap(){
     }
 
     // 移動 + 邊界反彈 + 阻尼
+    var damp=settling?(0.84+alpha*0.06):0.92;
+    var MAX_SPD=settling?1.5:0.45; // 漂浮階段限速，避免亂竄
     state.forEach(function(st){
       st.vx*=damp; st.vy*=damp;
+      var spd=Math.sqrt(st.vx*st.vx+st.vy*st.vy);
+      if(spd>MAX_SPD){var s2=MAX_SPD/spd;st.vx*=s2;st.vy*=s2;}
       st.x+=st.vx; st.y+=st.vy;
       var W2c=wrap.offsetWidth||W;
       if(st.x<st.r){st.x=st.r;st.vx*=-0.4;}
@@ -2342,12 +2365,7 @@ function _initHeatmap(){
       st.el.style.top=Math.round(st.y)+'px';
     });
 
-    // alpha 歸零後停止動畫
-    if(alpha>0){
-      window._hmAnimId=requestAnimationFrame(tick);
-    }else{
-      window._hmAnimId=null;
-    }
+    window._hmAnimId=requestAnimationFrame(tick); // 永遠持續
   }
   window._hmAnimId=requestAnimationFrame(tick);
 }
