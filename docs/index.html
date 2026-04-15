@@ -1334,6 +1334,30 @@ function _renderQ1Backtest(){
     '</div>';
   });
   h+='</div></div>';
+  // ── 確認項分層 ──
+  var byConf=q1BtData.by_confirmations||{};
+  if(Object.keys(byConf).length){
+    var confOrder=['0-2','3','4','5+'];
+    var confLabel={'0-2':'0-2項','3':'3項','4':'4項','5+':'5項+'};
+    h+='<div style="'+cardStyle+'">'+
+      '<div style="font-size:12px;font-weight:700;margin-bottom:4px">確認項數分層</div>'+
+      '<div style="font-size:9px;color:var(--text3);margin-bottom:8px">訊號觸發時同時滿足幾個確認條件（籌碼/RS/量能/個股相位/大盤/AVWAP），越多越強</div>'+
+      '<div style="display:flex;gap:6px">';
+    confOrder.forEach(function(k){
+      var s=byConf[k]; if(!s||!s.count) return;
+      var wr=s.win_rate;
+      var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
+      var exp=s.expectancy;
+      var expCol=exp!=null?(exp>0?'var(--green)':'var(--red)'):'var(--text3)';
+      h+='<div style="flex:1;background:var(--bg4);border-radius:8px;padding:8px;text-align:center">'+
+        '<div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+confLabel[k]+'</div>'+
+        '<div style="font-size:16px;font-weight:700;color:'+col+'">'+(wr!=null?wr+'%':'─')+'</div>'+
+        '<div style="font-size:9px;color:var(--text3)">'+s.count+'筆</div>'+
+        '<div style="font-size:9px;font-weight:600;color:'+expCol+';margin-top:2px">EV '+(exp!=null?(exp>0?'+':'')+exp+'%':'─')+'</div>'+
+      '</div>';
+    });
+    h+='</div></div>';
+  }
   // ── 生成時間 ──
   h+='<div style="font-size:9px;color:var(--text3);text-align:center;padding:4px 0">'+
     'Walk-Forward 回測 · 產生於 '+q1BtData.generated_at+
