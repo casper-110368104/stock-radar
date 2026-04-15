@@ -100,6 +100,18 @@ def _snapshot(closes, highs, lows, vols, opens, i):
     vol_20avg     = sum(vol_window) / len(vol_window) if vol_window else 1
     vol_day_ratio = round(vols[i] / vol_20avg, 2) if vol_20avg > 0 else 1.0
 
+    # ATR-14（True Range 14日平均）
+    def _atr14():
+        if i < 14:
+            return None
+        trs = []
+        for k in range(i - 13, i + 1):
+            hl = highs[k] - lows[k]
+            hc = abs(highs[k] - closes[k - 1]) if k > 0 else 0
+            lc = abs(lows[k]  - closes[k - 1]) if k > 0 else 0
+            trs.append(max(hl, hc, lc))
+        return round(sum(trs) / 14, 2)
+
     return {
         "price":         price,
         "high":          highs[i],
@@ -115,7 +127,7 @@ def _snapshot(closes, highs, lows, vols, opens, i):
         "avwap_swing":   rvwap(swing_anchor),
         "avwap_vol":     rvwap(vol_anchor),
         "avwap_short":   avwap_short,
-        "atr_14":        None,  # 簡化：不計 ATR（保守做法）
+        "atr_14":        _atr14(),
     }
 
 
@@ -193,20 +205,20 @@ def _stock_phase(rs_pct, m_z, snap):
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
 def _stats(trades):
-    wins  = [t for t in trades if t["outcome"] == "win"]
-    loss  = [t for t in trades if t["outcome"] == "loss"]
-    inc   = [t for t in trades if t["outcome"] == "inconclusive"]
-    n     = len(trades)
-    dec   = len(wins) + len(loss)
-    wr    = round(len(wins) / dec * 100, 1) if dec > 0 else None
-    ag    = round(sum(t["gain_pct"] for t in wins)  / len(wins),  2) if wins else 0
-    al    = round(sum(t["gain_pct"] for t in loss)  / len(loss),  2) if loss else 0
-    exp   = round(wr / 100 * ag + (1 - wr / 100) * al, 2) if wr is not None else None
+    wins    = [t for t in trades if t["outcome"] == "win"]
+    loss    = [t for t in trades if t["outcome"] == "loss"]
+    expired = [t for t in trades if t.get("exit_type") == "expired"]
+    n       = len(trades)
+    dec     = len(wins) + len(loss)
+    wr      = round(len(wins) / dec * 100, 1) if dec > 0 else None
+    ag      = round(sum(t["gain_pct"] for t in wins) / len(wins),  2) if wins else 0
+    al      = round(sum(t["gain_pct"] for t in loss) / len(loss),  2) if loss else 0
+    exp     = round(wr / 100 * ag + (1 - wr / 100) * al, 2) if wr is not None else None
     return {
         "count":         n,
         "wins":          len(wins),
         "losses":        len(loss),
-        "inconclusive":  len(inc),
+        "expired":       len(expired),   # 持倉期滿收盤平倉數（前稱 inconclusive）
         "win_rate":      wr,
         "avg_gain_pct":  ag,
         "avg_loss_pct":  al,
@@ -433,6 +445,13 @@ def main():
                     elif hit_s:
                         outcome = "loss"; exit_px = stop;   break
 
+                # 持倉期滿未碰停損/目標 → 以最後一天收盤價強制平倉
+                if outcome == "inconclusive":
+                    exit_type = "expired"
+                    outcome   = "win" if exit_px > actual_entry else "loss"
+                else:
+                    exit_type = "target" if outcome == "win" else "stop"
+
                 gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
 
                 trades.append({
@@ -449,6 +468,7 @@ def main():
                     "stop":          round(stop,         2),
                     "target":        round(target,       2),
                     "entry_type":    entry_type,
+                    "exit_type":     exit_type,
                     "outcome":       outcome,
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
@@ -468,12 +488,16 @@ def main():
     by_strength = defaultdict(list)
     by_month    = defaultdict(list)
     by_regime   = defaultdict(list)
+    by_conf     = defaultdict(list)
 
     for t in trades:
         by_type[t["type"]].append(t)
         by_strength[t["strength"]].append(t)
         by_month[t["date"][:7]].append(t)
         by_regime[t["regime"]].append(t)
+        c = t.get("confirmations", 0)
+        conf_key = "5+" if c >= 5 else ("4" if c == 4 else ("3" if c == 3 else "0-2"))
+        by_conf[conf_key].append(t)
 
     overall = _stats(trades)
     print(f"  整體：{overall['count']} 筆  勝率 {overall['win_rate']}%"
@@ -485,16 +509,17 @@ def main():
               f"均盈 {s['avg_gain_pct']:+.2f}%  均虧 {s['avg_loss_pct']:+.2f}%")
 
     result = {
-        "period":        "2025-Q1",
-        "generated_at":  datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "universe_size": len(stock_data),
-        "trading_days":  len(q1_dates),
-        "overall":       overall,
-        "by_type":       {k: _stats(v) for k, v in by_type.items()},
-        "by_strength":   {k: _stats(v) for k, v in by_strength.items()},
-        "by_month":      {k: _stats(v) for k, v in by_month.items()},
-        "by_regime":     {k: _stats(v) for k, v in by_regime.items()},
-        "trades":        trades,
+        "period":             "2025-Q1",
+        "generated_at":       datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "universe_size":      len(stock_data),
+        "trading_days":       len(q1_dates),
+        "overall":            overall,
+        "by_type":            {k: _stats(v) for k, v in by_type.items()},
+        "by_strength":        {k: _stats(v) for k, v in by_strength.items()},
+        "by_month":           {k: _stats(v) for k, v in by_month.items()},
+        "by_regime":          {k: _stats(v) for k, v in by_regime.items()},
+        "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
+        "trades":             trades,
     }
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
