@@ -2206,7 +2206,7 @@ function renderMacroFull(){
           '<div style="font-size:10px;color:var(--text3);margin-top:1px">泡泡大小＝漲跌幅 · 綠漲紅跌 · 點擊查詳情</div>'+
         '</div>'+
       '</div>'+
-      '<div id="hm-wrap" style="position:relative;background:rgba(0,0,0,.18);border-radius:10px;border:1px solid rgba(255,255,255,.04);overflow:hidden;min-height:260px">'+
+      '<div id="hm-wrap" style="position:relative;background:rgba(0,0,0,.18);border-radius:10px;border:1px solid rgba(255,255,255,.04);overflow:hidden;min-height:420px">'+
         '<div id="hm-bubbles"></div>'+
       '</div>'+
     '</div>';
@@ -2223,101 +2223,131 @@ function _initHeatmap(){
   if(!cont||!wrap) return;
   var items=window._rrgItems;
   if(!items||!items.length) return;
-  if(!document.getElementById('hm-ks')){
-    var ks=document.createElement('style');
-    ks.id='hm-ks';
-    ks.textContent='@keyframes hmGlow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.18}50%{transform:translate(-50%,-50%) scale(1.6);opacity:.06}}';
-    document.head.appendChild(ks);
-  }
   cont.innerHTML='';
   cont.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none';
 
-  var sorted=items.slice().sort(function(a,b){return b.chg_pct-a.chg_pct;});
+  // 顏色：純色系，對標 Crypto Bubbles
   function _hmCol(v){
-    var t=Math.min(1,Math.abs(v)/3);
-    if(v>0) return 'rgb('+Math.round(34+t*30)+','+Math.round(197-t*50)+','+Math.round(94-t*30)+')';
-    if(v<0) return 'rgb('+Math.round(239+t*16)+','+Math.round(68-t*30)+','+Math.round(68-t*30)+')';
-    return '#6b7280';
+    if(v>=3)  return '#16a34a';
+    if(v>0)   return '#22c55e';
+    if(v<=-3) return '#dc2626';
+    if(v<0)   return '#ef4444';
+    return '#4b5563';
   }
 
-  var wH=340;
-  wrap.style.height=wH+'px';
+  var W=wrap.offsetWidth||300;
 
-  var state=sorted.map(function(s,i){
-    var chg=s.chg_pct||0;
-    var col=_hmCol(chg);
-    // sqrt scaling: compresses extremes so big movers aren't overwhelming
-    // range ~26-50px (±10% → 50, ±1% → 34, 0% → 26)
-    var sz=Math.max(26,Math.min(50,26+Math.sqrt(Math.abs(chg))*8));
-    var el=document.createElement('div');
-    el.style.cssText='position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;cursor:pointer;z-index:2';
-    var gsz=Math.round(sz*2.4);
-    el.innerHTML=
-      '<div style="position:absolute;width:'+gsz+'px;height:'+gsz+'px;border-radius:50%;background:'+col+';left:50%;top:50%;margin-left:'+(-gsz/2)+'px;margin-top:'+(-gsz/2)+'px;animation:hmGlow '+(2.2+i*0.12).toFixed(1)+'s ease-in-out infinite '+(i*0.18).toFixed(2)+'s"></div>'+
-      '<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+col+';border:1.5px solid rgba(255,255,255,.32);position:relative;z-index:2;box-shadow:0 0 10px '+col+'aa"></div>'+
-      '<div style="font-size:8.5px;font-weight:600;color:'+col+';white-space:nowrap;margin-top:3px;max-width:62px;text-align:center;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:2">'+s.name+'</div>'+
-      '<div style="font-size:8px;color:'+col+';opacity:.9;position:relative;z-index:2;font-weight:700">'+(chg>0?'+':'')+chg.toFixed(2)+'%</div>';
-    el.title=s.name+' '+s.sub_phase+' '+(chg>=0?'+':'')+chg.toFixed(2)+'%';
-    var idx=items.indexOf(s);
-    el.addEventListener('click',(function(ii){return function(){_rrgClick(ii);};})(idx));
-    cont.appendChild(el);
-    var ang=Math.random()*Math.PI*2;
-    var spd=0.2+Math.random()*0.3;
-    var r=sz/2+3; // collision radius (just the dot + tiny buffer)
-    return{el:el,sz:sz,r:r,m:sz*sz, // mass ∝ area for momentum conservation
-      x:8+Math.random()*84,y:8+Math.random()*84,usePct:true,
-      vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd};
+  // 先算尺寸，決定容器高度
+  var maxAbs=0;
+  items.forEach(function(s){var a=Math.abs(s.chg_pct||0);if(a>maxAbs)maxAbs=a;});
+  maxAbs=Math.max(maxAbs,1);
+  var sizes=items.map(function(s){
+    return Math.round(Math.max(40,Math.min(92,40+Math.sqrt(Math.abs(s.chg_pct||0)/maxAbs)*52)));
   });
 
+  // 依圓面積估算最小容器高度（填充率 ~75%）
+  var totalArea=sizes.reduce(function(sum,sz){return sum+Math.PI*(sz/2)*(sz/2);},0);
+  var wH=Math.max(420,Math.round(totalArea/(W*0.75))+40);
+  wrap.style.height=wH+'px';
+
+  var state=items.map(function(s,i){
+    var chg=s.chg_pct||0;
+    var col=_hmCol(chg);
+    var sz=sizes[i];
+    var r=sz/2;
+
+    var el=document.createElement('div');
+    el.style.cssText='position:absolute;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;z-index:2;';
+
+    // 字體大小依泡泡大小自適應
+    var fName=Math.max(7,Math.min(11,sz*0.15));
+    var fPct =Math.max(8,Math.min(13,sz*0.19));
+    var showName=(sz>=50);
+
+    el.innerHTML=
+      '<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+col+
+      ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;'+
+      'border:1.5px solid rgba(255,255,255,0.18);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.5)">'+
+        (showName?'<div style="font-size:'+fName.toFixed(1)+'px;font-weight:600;color:rgba(255,255,255,0.92);'+
+          'white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;'+
+          'line-height:1.1;text-align:center">'+s.name+'</div>':'') +
+        '<div style="font-size:'+fPct.toFixed(1)+'px;font-weight:700;color:#fff;line-height:1.1">'+
+          (chg>0?'+':'')+chg.toFixed(2)+'%'+
+        '</div>'+
+      '</div>';
+
+    el.title=s.name+' '+(chg>=0?'+':'')+chg.toFixed(2)+'%';
+    var idx=i;
+    el.addEventListener('click',(function(ii){return function(){_rrgClick(ii);};})(idx));
+    cont.appendChild(el);
+
+    return{
+      el:el, sz:sz, r:r, m:sz*sz,
+      x:W*0.15+Math.random()*W*0.7,
+      y:wH*0.15+Math.random()*wH*0.7,
+      vx:(Math.random()-0.5)*3,
+      vy:(Math.random()-0.5)*3
+    };
+  });
+
+  var alpha=1.0; // 熱度衰減，讓泡泡逐漸靜止
+
   function tick(){
-    var W=wrap.offsetWidth||300;
-    // pct → px on first frame
+    var W2=wrap.offsetWidth||W;
+    alpha=Math.max(0,alpha-0.016);
+    var damp=0.84+alpha*0.06; // alpha 高時阻尼小（動），低時阻尼大（靜）
+
+    // 向中心收引力
+    var cx=W2/2, cy=wH/2;
+    var gStr=0.006+alpha*0.022;
     state.forEach(function(st){
-      if(st.usePct){st.x=st.x/100*W;st.y=st.y/100*wH;st.usePct=false;}
+      st.vx+=(cx-st.x)*gStr;
+      st.vy+=(cy-st.y)*gStr;
     });
 
-    // bubble-bubble elastic collision (O(n²), fine for ~33 items)
+    // 碰撞解算（O(n²)，~33 個類股沒問題）
     for(var i=0;i<state.length-1;i++){
       for(var j=i+1;j<state.length;j++){
         var a=state[i],b=state[j];
         var dx=b.x-a.x,dy=b.y-a.y;
         var dist=Math.sqrt(dx*dx+dy*dy)||0.001;
-        var minD=a.r+b.r;
+        var minD=a.r+b.r+1.5;
         if(dist<minD){
           var nx=dx/dist,ny=dy/dist;
+          var pen=(minD-dist)*0.55;
+          var mT=a.m+b.m;
+          a.x-=nx*pen*(b.m/mT); a.y-=ny*pen*(b.m/mT);
+          b.x+=nx*pen*(a.m/mT); b.y+=ny*pen*(a.m/mT);
           var dvx=a.vx-b.vx,dvy=a.vy-b.vy;
           var dot=dvx*nx+dvy*ny;
-          if(dot>0){ // only resolve if approaching
-            var mt=a.m+b.m;
-            var imp=2*dot/mt;
+          if(dot>0){
+            var imp=2*dot/mT;
             a.vx-=imp*b.m*nx; a.vy-=imp*b.m*ny;
             b.vx+=imp*a.m*nx; b.vy+=imp*a.m*ny;
           }
-          // push apart so they don't stick
-          var ov=(minD-dist)/2+0.5;
-          a.x-=nx*ov; a.y-=ny*ov;
-          b.x+=nx*ov; b.y+=ny*ov;
         }
       }
     }
 
-    // move + wall bounce + speed cap
-    var MAX_SPD=0.9;
+    // 移動 + 邊界反彈 + 阻尼
     state.forEach(function(st){
+      st.vx*=damp; st.vy*=damp;
       st.x+=st.vx; st.y+=st.vy;
-      // asymmetric wall padding: bottom needs room for label (~22px)
-      var padH=st.r+2, padBot=st.r+22, padSide=st.r+4;
-      if(st.x<padSide){st.x=padSide;st.vx=Math.abs(st.vx);}
-      else if(st.x>W-padSide){st.x=W-padSide;st.vx=-Math.abs(st.vx);}
-      if(st.y<padH){st.y=padH;st.vy=Math.abs(st.vy);}
-      else if(st.y>wH-padBot){st.y=wH-padBot;st.vy=-Math.abs(st.vy);}
-      // cap speed so collisions don't cause runaway acceleration
-      var spd2=st.vx*st.vx+st.vy*st.vy;
-      if(spd2>MAX_SPD*MAX_SPD){var s2=MAX_SPD/Math.sqrt(spd2);st.vx*=s2;st.vy*=s2;}
-      st.el.style.left=st.x+'px';
-      st.el.style.top=st.y+'px';
+      var W2c=wrap.offsetWidth||W;
+      if(st.x<st.r){st.x=st.r;st.vx*=-0.4;}
+      else if(st.x>W2c-st.r){st.x=W2c-st.r;st.vx*=-0.4;}
+      if(st.y<st.r){st.y=st.r;st.vy*=-0.4;}
+      else if(st.y>wH-st.r){st.y=wH-st.r;st.vy*=-0.4;}
+      st.el.style.left=Math.round(st.x)+'px';
+      st.el.style.top=Math.round(st.y)+'px';
     });
-    window._hmAnimId=requestAnimationFrame(tick);
+
+    // alpha 歸零後停止動畫
+    if(alpha>0){
+      window._hmAnimId=requestAnimationFrame(tick);
+    }else{
+      window._hmAnimId=null;
+    }
   }
   window._hmAnimId=requestAnimationFrame(tick);
 }
