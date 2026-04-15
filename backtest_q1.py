@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-backtest_q1.py — Q1 2025 Walk-Forward Backtest（走步式回測）
+backtest_q1.py — Walk-Forward Backtest（走步式回測）
 
-原則：對 Q1 2025 (2025-01-02 ~ 2025-03-31) 每個交易日，
+原則：對回測期間每個交易日，
 只使用截至當日為止的歷史資料計算所有指標——無任何向前看偏差。
 
 - RS 百分位：每日即時排名（用當日所有股票 RS，不用全期資料）
@@ -22,8 +22,9 @@ from collections import defaultdict
 from signals import calc_signals
 
 # ── 設定 ────────────────────────────────────────────────────────────
-Q1_START       = date(2025, 1, 2)    # 台股 1/1 休市，1/2 開盤
-Q1_END         = date(2025, 3, 31)
+BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
+BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
+BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
 MAX_HOLD_TREND = 25
 MAX_HOLD_SWING = 8
 BENCHMARK_TID  = "^TWII"
@@ -236,6 +237,7 @@ def main():
 
     # ── Step 1: 決定母體 ─────────────────────────────────────────
     print("\n[1] 抓取股票母體（TWSE 量能前 300）...")
+    print(f"  回測期間：{BT_START} ~ {BT_END}")
     universe = []
     try:
         r = requests.get(
@@ -275,7 +277,7 @@ def main():
     # 起始日早於 Q1_START 240 個交易日（~1 年）供 RS 計算
     # 結束日晚於 Q1_END 30 個交易日供結果追蹤
     DATA_START = "2023-06-01"
-    DATA_END   = "2025-05-01"
+    DATA_END   = "2026-06-01"
 
     print(f"\n[2] 下載 TWII 基準...")
     bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
@@ -284,8 +286,8 @@ def main():
     bm_dates    = [d.date() for d in bm.index]
     bm_closes   = [float(v) for v in bm["Close"].tolist()]
     bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
-    q1_dates    = [d for d in bm_dates if Q1_START <= d <= Q1_END]
-    print(f"  TWII：{len(bm_dates)} 日 | Q1 交易日：{len(q1_dates)} 天")
+    q1_dates    = [d for d in bm_dates if BT_START <= d <= BT_END]
+    print(f"  TWII：{len(bm_dates)} 日 | 回測交易日：{len(q1_dates)} 天")
 
     print(f"\n[3] 下載 {len(universe)} 檔個股資料...")
     print("    (每 20 檔暫停 3 秒避免限速，預計 5~10 分鐘)")
@@ -487,13 +489,19 @@ def main():
     by_type     = defaultdict(list)
     by_strength = defaultdict(list)
     by_month    = defaultdict(list)
+    by_quarter  = defaultdict(list)
     by_regime   = defaultdict(list)
     by_conf     = defaultdict(list)
+
+    def _quarter(d_str):
+        y, m = int(d_str[:4]), int(d_str[5:7])
+        return f"{y}-Q{(m-1)//3+1}"
 
     for t in trades:
         by_type[t["type"]].append(t)
         by_strength[t["strength"]].append(t)
         by_month[t["date"][:7]].append(t)
+        by_quarter[_quarter(t["date"])].append(t)
         by_regime[t["regime"]].append(t)
         c = t.get("confirmations", 0)
         conf_key = "5+" if c >= 5 else ("4" if c == 4 else ("3" if c == 3 else "0-2"))
@@ -509,7 +517,7 @@ def main():
               f"均盈 {s['avg_gain_pct']:+.2f}%  均虧 {s['avg_loss_pct']:+.2f}%")
 
     result = {
-        "period":             "2025-Q1",
+        "period":             BT_PERIOD,
         "generated_at":       datetime.now().strftime("%Y-%m-%d %H:%M"),
         "universe_size":      len(stock_data),
         "trading_days":       len(q1_dates),
@@ -517,6 +525,7 @@ def main():
         "by_type":            {k: _stats(v) for k, v in by_type.items()},
         "by_strength":        {k: _stats(v) for k, v in by_strength.items()},
         "by_month":           {k: _stats(v) for k, v in by_month.items()},
+        "by_quarter":         {k: _stats(v) for k, v in sorted(by_quarter.items())},
         "by_regime":          {k: _stats(v) for k, v in by_regime.items()},
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
         "trades":             trades,

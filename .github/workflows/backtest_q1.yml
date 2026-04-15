@@ -1,4 +1,4 @@
-name: Q1 2025 回測
+name: Walk-Forward 回測（Q1 2025 ~ Q1 2026）
 
 on:
   workflow_dispatch:   # 只手動觸發，避免每天自動跑
@@ -6,7 +6,7 @@ on:
 jobs:
   backtest:
     runs-on: ubuntu-latest
-    timeout-minutes: 60   # 最長 60 分鐘（抓資料約 15-20 分鐘）
+    timeout-minutes: 120   # 5 個季度資料，預計 40-70 分鐘
 
     steps:
       - name: Checkout repo
@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Q1 backtest
+      - name: Run Walk-Forward backtest
         run: python backtest_q1.py
 
       - name: Commit and push results
@@ -28,6 +28,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/backtest_q1.json
-          git diff --staged --quiet || git commit -m "Q1 2025 回測結果：$(date +'%Y-%m-%d %H:%M')"
+          git diff --staged --quiet || git commit -m "Walk-Forward 回測結果：$(date +'%Y-%m-%d %H:%M')"
           git pull --rebase origin main
           git push

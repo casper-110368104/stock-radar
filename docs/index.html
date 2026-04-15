@@ -316,6 +316,8 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .ec-stocks{background:linear-gradient(135deg,#12121a,#1a1220)}
 /* ─ 隨機500股卡片 ─ */
 .ec-expansion{background:linear-gradient(135deg,#0f1520,#1a1a35)}
+/* ─ 策略回測卡片 ─ */
+.ec-backtest{background:linear-gradient(135deg,#0f1a14,#1a2a20)}
 
 /* ─ 隨機500股訊號卡 ─ */
 .exp-card{background:var(--bg2);border:.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:8px}
@@ -474,14 +476,32 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <div class="ec-arr">›</div>
       </div>
     </div>
-    <div class="entry-card" onclick="goView('backtest')">
+    <div class="entry-card ec-backtest" onclick="goView('backtest')">
       <div class="ec-hdr">
-        <div class="ec-icon">📋</div>
+        <div class="ec-icon">📊</div>
         <div class="ec-info">
-          <div class="ec-title">訊號回測記錄</div>
-          <div class="ec-sub" id="backtest-sub">歷史勝率 &amp; 追蹤</div>
+          <div class="ec-title">策略回測績效</div>
+          <div class="ec-sub" id="backtest-sub">載入中...</div>
         </div>
         <div class="ec-arr">›</div>
+      </div>
+      <div class="ec-body" id="bt-home-stats" style="display:none">
+        <div class="ec-stat">
+          <div class="ec-stat-lbl">勝率</div>
+          <div class="ec-stat-val" id="bt-wr-home">─</div>
+        </div>
+        <div class="ec-stat">
+          <div class="ec-stat-lbl">均盈</div>
+          <div class="ec-stat-val" id="bt-ag-home" style="color:var(--green)">─</div>
+        </div>
+        <div class="ec-stat">
+          <div class="ec-stat-lbl">均虧</div>
+          <div class="ec-stat-val" id="bt-al-home" style="color:var(--red)">─</div>
+        </div>
+        <div class="ec-stat">
+          <div class="ec-stat-lbl">期望值</div>
+          <div class="ec-stat-val" id="bt-ev-home">─</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1000,12 +1020,29 @@ function renderHomeCards(){
   // 景氣燈號顯示在入口卡片副標
   var msub=document.getElementById('macro-ec-sub');
   if(msub&&bizCycle.label) msub.textContent=bizCycle.label+' | 外資期貨'+(window._foiData?(window._foiData.net>0?' 偏多':' 偏空'):'');
-  // 回測記錄卡片：顯示 open 追蹤筆數
+  // 回測記錄卡片：顯示追蹤筆數 + 回測績效
   var bsub=document.getElementById('backtest-sub');
   if(bsub){
     var openCnt=(stocksBtTracking.filter(function(r){return r.status==='open';}).length)+
                 ((expansionData.signal_tracking||[]).filter(function(r){return r.status==='open';}).length);
     bsub.textContent='追蹤中 '+openCnt+' 筆';
+  }
+  // 回測首頁 stats block
+  if(q1BtData&&q1BtData.overall){
+    var _o=q1BtData.overall;
+    var _wr=_o.win_rate; var _ev=_o.expectancy;
+    var _wrEl=document.getElementById('bt-wr-home');
+    var _evEl=document.getElementById('bt-ev-home');
+    var _agEl=document.getElementById('bt-ag-home');
+    var _alEl=document.getElementById('bt-al-home');
+    var _statsEl=document.getElementById('bt-home-stats');
+    if(_wrEl) _wrEl.textContent=(_wr!=null?_wr+'%':'─');
+    if(_wrEl) _wrEl.style.color=_wr>=55?'var(--green)':_wr>=40?'var(--orange)':'var(--red)';
+    if(_agEl) _agEl.textContent='+'+(_o.avg_gain_pct||0)+'%';
+    if(_alEl) _alEl.textContent=(_o.avg_loss_pct||0)+'%';
+    if(_evEl){ _evEl.textContent=(_ev!=null?(_ev>0?'+':'')+_ev+'%':'─'); _evEl.style.color=_ev>0?'var(--green)':'var(--red)'; }
+    if(_statsEl) _statsEl.style.display='flex';
+    if(bsub) bsub.textContent=q1BtData.period+' · '+_o.count+'筆 · 追蹤中 '+openCnt+' 筆';
   }
 }
 
@@ -1317,23 +1354,47 @@ function _renderQ1Backtest(){
     '</div>';
   });
   h+='</div>';
-  // ── 月份拆分 ──
-  var months=['2025-01','2025-02','2025-03'];
-  var mLabel={'2025-01':'1月','2025-02':'2月','2025-03':'3月'};
-  h+='<div style="'+cardStyle+'">'+
-    '<div style="font-size:12px;font-weight:700;margin-bottom:8px">月份拆分</div>'+
-    '<div style="display:flex;gap:8px">';
-  months.forEach(function(m){
-    var s=byMonth[m]; if(!s) return;
-    var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
-    var incTxt=(s.expired||s.inconclusive||0)>0?' / 未決'+(s.expired||s.inconclusive):'';
-    h+='<div style="flex:1;background:var(--bg4);border-radius:8px;padding:8px;text-align:center">'+
-      '<div style="font-size:10px;color:var(--text3);margin-bottom:4px">'+mLabel[m]+'</div>'+
-      '<div style="font-size:16px;font-weight:700;color:'+col+'">'+(wr!=null?wr+'%':'─')+'</div>'+
-      '<div style="font-size:9px;color:var(--text3)">'+s.count+'筆'+incTxt+'</div>'+
-    '</div>';
-  });
-  h+='</div></div>';
+  // ── 季度拆分（主要）──
+  var byQuarter=q1BtData.by_quarter||{};
+  var quarters=Object.keys(byQuarter).sort();
+  var regimeColor={'bull':'var(--green)','bull_pullback':'var(--orange)','range':'var(--text2)','bear':'var(--red)'};
+  var byRegime=q1BtData.by_regime||{};
+  if(quarters.length){
+    h+='<div style="'+cardStyle+'">'+
+      '<div style="font-size:12px;font-weight:700;margin-bottom:8px">季度拆分</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+    quarters.forEach(function(q){
+      var s=byQuarter[q]; if(!s) return;
+      var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
+      var ev=s.expectancy; var evCol=ev!=null?(ev>0?'var(--green)':'var(--red)'):'var(--text3)';
+      h+='<div style="flex:1;min-width:70px;background:var(--bg4);border-radius:8px;padding:8px;text-align:center">'+
+        '<div style="font-size:9px;color:var(--text3);margin-bottom:2px">'+q+'</div>'+
+        '<div style="font-size:15px;font-weight:700;color:'+col+'">'+(wr!=null?wr+'%':'─')+'</div>'+
+        '<div style="font-size:9px;color:var(--text3)">'+s.count+'筆</div>'+
+        '<div style="font-size:9px;font-weight:600;color:'+evCol+';margin-top:1px">EV '+(ev!=null?(ev>0?'+':'')+ev+'%':'─')+'</div>'+
+      '</div>';
+    });
+    h+='</div></div>';
+  }
+  // ── 大盤相位拆分 ──
+  if(Object.keys(byRegime).length){
+    var regimeLabel={'bull':'多頭','bull_pullback':'多頭回檔','range':'盤整','bear':'空頭'};
+    h+='<div style="'+cardStyle+'">'+
+      '<div style="font-size:12px;font-weight:700;margin-bottom:8px">大盤相位拆分</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+    ['bull','bull_pullback','range','bear'].forEach(function(r){
+      var s=byRegime[r]; if(!s||!s.count) return;
+      var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
+      var ev=s.expectancy; var evCol=ev!=null?(ev>0?'var(--green)':'var(--red)'):'var(--text3)';
+      h+='<div style="flex:1;min-width:70px;background:var(--bg4);border-radius:8px;padding:8px;text-align:center">'+
+        '<div style="font-size:9px;color:'+( regimeColor[r]||'var(--text3)')+';margin-bottom:2px;font-weight:600">'+(regimeLabel[r]||r)+'</div>'+
+        '<div style="font-size:15px;font-weight:700;color:'+col+'">'+(wr!=null?wr+'%':'─')+'</div>'+
+        '<div style="font-size:9px;color:var(--text3)">'+s.count+'筆</div>'+
+        '<div style="font-size:9px;font-weight:600;color:'+evCol+';margin-top:1px">EV '+(ev!=null?(ev>0?'+':'')+ev+'%':'─')+'</div>'+
+      '</div>';
+    });
+    h+='</div></div>';
+  }
   // ── 確認項分層 ──
   var byConf=q1BtData.by_confirmations||{};
   if(Object.keys(byConf).length){
