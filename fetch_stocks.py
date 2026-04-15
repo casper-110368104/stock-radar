@@ -60,6 +60,65 @@ SECTOR_MAP = {
 _sector_rotation = {}  # 產業輪動四象限資料
 
 
+def _derive_sector_rotation_from_stocks(stocks: list) -> dict:
+    """當 TWSE 類股 API 和 stocks.json 備援都失敗時，
+    從個股 RS 百分位推算類股輪動分相（不依賴任何 .tw 域名）。
+    精度低於 MI_INDEX 法，但能確保前端類股欄位有值。
+    """
+    from collections import defaultdict
+    import statistics
+
+    sector_buckets: dict = defaultdict(list)
+    for s in stocks:
+        sk = s.get("sector_key", "")
+        if not sk or sk == "其他":
+            continue
+        sector_buckets[sk].append({
+            "rs_pct":     s.get("rs_pct", 50) or 50,
+            "change_pct": s.get("change_pct", 0) or 0,
+        })
+
+    # 各類股平均 rs_pct，至少需要 3 支股才列入
+    sector_avg: list = [
+        (sk, statistics.mean(d["rs_pct"] for d in data))
+        for sk, data in sector_buckets.items()
+        if len(data) >= 3
+    ]
+    if not sector_avg:
+        return {}
+
+    sector_avg.sort(key=lambda x: x[1])
+    n = len(sector_avg)
+    result = {}
+    for rank, (sk, avg_rs) in enumerate(sector_avg):
+        rs_pct = round(rank / (n - 1) * 100) if n > 1 else 50
+        data   = sector_buckets[sk]
+        chg    = round(statistics.mean(d["change_pct"] for d in data), 2)
+
+        if   rs_pct >= 80: sub_phase = "主升段"
+        elif rs_pct >= 70: sub_phase = "準備噴"
+        elif rs_pct >= 50: sub_phase = "主升回檔"
+        elif rs_pct >= 30: sub_phase = "高檔震盪"
+        elif rs_pct >= 15: sub_phase = "整理觀察"
+        else:              sub_phase = "空頭"
+
+        rs_val = round((rs_pct - 50) / 10, 2)   # 標準化到 -5 ~ +5
+        result[sk] = {
+            "rs":           rs_val,
+            "rs_mom":       0,
+            "acceleration": 0,
+            "score":        rs_pct,
+            "sub_phase":    sub_phase,
+            "vector":       {"dx": 0, "dy": 0},
+            "trend":        [],
+            "chg_pct":      chg,
+            "name":         sk,
+            "source":       "derived",   # 標示來源，方便除錯
+        }
+
+    return result
+
+
 def _compute_sector_breadth(twse_stocks):
     """從 STOCK_DAY_ALL 資料計算每產業上漲比例 {sector_key: 0~1}
     只計算 STOCK_SECTOR_MAP 有明確對照的個股（靜態表，覆蓋主要成分股）
@@ -2913,7 +2972,7 @@ def main():
     breadth_map = _compute_sector_breadth(twse_stocks)
     _sector_rotation = fetch_sector_rotation(60, breadth_map=breadth_map)
     if not _sector_rotation:
-        # API 失敗時，保留上次的 sector_rotation（避免類股欄位全空）
+        # 第二層：讀上次 stocks.json 的 sector_rotation
         try:
             with open(OUTPUT_PATH, encoding="utf-8") as _f:
                 _prev = json.load(_f)
@@ -2922,6 +2981,19 @@ def main():
                 print(f"  [產業輪動] API 失敗，沿用上次資料（{len(_sector_rotation)} 個類股）")
         except Exception:
             pass
+    if not _sector_rotation:
+        # 第三層：從上次 stocks.json 的個股 RS 百分位推算（不依賴 .tw 域名）
+        try:
+            with open(OUTPUT_PATH, encoding="utf-8") as _f:
+                _prev2 = json.load(_f)
+            _prev_stocks = _prev2.get("stocks", [])
+            _sector_rotation = _derive_sector_rotation_from_stocks(_prev_stocks)
+            if _sector_rotation:
+                print(f"  [產業輪動] 由上次個股 RS 推算（{len(_sector_rotation)} 個類股）")
+        except Exception:
+            pass
+    if not _sector_rotation:
+        print("  [產業輪動] 無法取得資料，類股欄位將為空")
     time.sleep(1)
 
     # 大盤相位
@@ -2960,6 +3032,15 @@ def main():
             s.get("rs",        0) * .05
         )
     results.sort(key=total_score, reverse=True)
+
+    # 若類股輪動是用舊資料推算，此時用新鮮個股 RS 更新一次
+    if not _sector_rotation or any(
+        v.get("source") == "derived" for v in _sector_rotation.values()
+    ):
+        _fresh = _derive_sector_rotation_from_stocks(results)
+        if _fresh:
+            _sector_rotation = _fresh
+            print(f"  [產業輪動] 已用本次新鮮個股 RS 更新（{len(_sector_rotation)} 個類股）")
 
     # 對評分前20名補抓 Gemini 新聞
     print(f"\n  抓取前20名 Gemini 新聞...")
