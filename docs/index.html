@@ -1306,7 +1306,7 @@ function _renderQ1Backtest(){
     var s=byType[t]; if(!s||!s.count) return;
     var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
     var decided=s.wins+s.losses; var barW=decided>0?Math.round(s.wins/decided*100):0;
-    var incNote=s.inconclusive>0?'<span style="font-size:8px;color:var(--text3)">未決'+s.inconclusive+'</span>':'';
+    var incNote=(s.expired||s.inconclusive||0)>0?'<span style="font-size:8px;color:var(--text3)">未決'+(s.expired||s.inconclusive)+'</span>':'';
     h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
       '<div style="font-size:10px;color:var(--text2);width:64px;flex-shrink:0">'+(typeLabel[t]||t)+'</div>'+
       '<div style="flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">'+
@@ -1326,7 +1326,7 @@ function _renderQ1Backtest(){
   months.forEach(function(m){
     var s=byMonth[m]; if(!s) return;
     var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
-    var incTxt=s.inconclusive>0?' / 未決'+s.inconclusive:'';
+    var incTxt=(s.expired||s.inconclusive||0)>0?' / 未決'+(s.expired||s.inconclusive):'';
     h+='<div style="flex:1;background:var(--bg4);border-radius:8px;padding:8px;text-align:center">'+
       '<div style="font-size:10px;color:var(--text3);margin-bottom:4px">'+mLabel[m]+'</div>'+
       '<div style="font-size:16px;font-weight:700;color:'+col+'">'+(wr!=null?wr+'%':'─')+'</div>'+
