@@ -15,43 +15,7 @@
     "net": -36664
   },
   "backtest_stats": {},
-  "signal_tracking": [
-    {
-      "code": "4906",
-      "name": "GEMTEK TECHNOLOGY CO",
-      "type": "retest",
-      "label": "縮量回測(起漲型)",
-      "strength": "weak",
-      "trigger_date": "2026-04-14",
-      "trigger_price": 43.42,
-      "entry": 39.3,
-      "stop_loss": 35.54,
-      "atr_stop": null,
-      "target": 47.42,
-      "rr": 2.16,
-      "confirmations": 1,
-      "confirmation_flags": [
-        "大盤多頭"
-      ],
-      "exit_style": "fixed",
-      "status": "open",
-      "repeat": false,
-      "is_pyramid": false,
-      "sector_key": "通信網路",
-      "sector_phase": "",
-      "current_price": 39.3,
-      "days_held": 0,
-      "gain_pct": 0.0,
-      "resolved_date": null,
-      "rs_pct_at_trigger": 41,
-      "vol_ratio_at_trigger": 0.8,
-      "market_regime_at_trigger": "bull",
-      "max_gain_pct": 0.0,
-      "max_loss_pct": 0.0,
-      "day_of_max_gain": 0,
-      "exit_reason": null
-    }
-  ],
+  "signal_tracking": [],
   "signal_archive": [],
   "stocks": [
     {
