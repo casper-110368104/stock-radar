@@ -3028,24 +3028,24 @@ def main():
         )
         time.sleep(0.3)
 
-    # RS 百分位排名
+    # RS 百分位排名（rank-based，保證 0~100 均勻分布）
     rs_raw = [(r, r.get("yahoo_rs")) for r in results if r.get("yahoo_rs") is not None]
     if rs_raw:
-        sorted_rs = sorted(x[1] for x in rs_raw)
-        n = len(sorted_rs)
-        for r, rv in rs_raw:
-            pct = sum(1 for x in sorted_rs if x <= rv) / n * 100
-            # 基底分：區間百分位（interval RS）
+        rs_pairs_sorted = sorted(rs_raw, key=lambda x: x[1])
+        n = len(rs_pairs_sorted)
+        for rank, (r, rv) in enumerate(rs_pairs_sorted):
+            pct = round(rank / (n - 1) * 100) if n > 1 else 50
+            r["rs_pct"] = int(pct)
+            # RS 評分：百分位區間 + M值動能加分
             if   pct >= 90: base_score = 100
-            elif pct >= 80: base_score = 80
-            elif pct >= 70: base_score = 60
-            elif pct >= 50: base_score = 40
-            else:           base_score = max(0, int(pct * 0.6))
-            # 動能加分：M值（time-series RS趨勢）最多 ±20
+            elif pct >= 80: base_score = 85
+            elif pct >= 70: base_score = 70
+            elif pct >= 50: base_score = 55
+            elif pct >= 30: base_score = 40
+            else:           base_score = max(10, int(pct * 0.8))
             mz = r.get("m_z", 0) or 0
-            mz_bonus = max(-20, min(20, int(mz * 8)))  # mz=2.5 → +20
+            mz_bonus = max(-20, min(20, int(mz * 8)))
             r["scores"]["rs"] = max(0, min(100, base_score + mz_bonus))
-            r["rs_pct"] = int(pct)  # 記錄百分位供型態分類用
     # 其餘無 RS 值的股票設預設 rs_pct=50
     for r in results:
         if r.get("rs_pct") is None:

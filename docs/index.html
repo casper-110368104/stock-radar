@@ -1304,15 +1304,16 @@ function _renderQ1Backtest(){
     '<div style="font-size:12px;font-weight:700;margin-bottom:8px">訊號類型拆分</div>';
   typeOrder.forEach(function(t){
     var s=byType[t]; if(!s||!s.count) return;
-    var wr=s.win_rate; var col=wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)';
-    var barW=Math.round((s.wins/(s.wins+s.losses||1))*100);
+    var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
+    var decided=s.wins+s.losses; var barW=decided>0?Math.round(s.wins/decided*100):0;
+    var incNote=s.inconclusive>0?'<span style="font-size:8px;color:var(--text3)">未決'+s.inconclusive+'</span>':'';
     h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
       '<div style="font-size:10px;color:var(--text2);width:64px;flex-shrink:0">'+(typeLabel[t]||t)+'</div>'+
       '<div style="flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">'+
         '<div style="height:100%;width:'+barW+'%;background:'+col+';border-radius:3px;transition:width .4s"></div>'+
       '</div>'+
-      '<div style="font-size:10px;font-weight:700;color:'+col+';width:32px;text-align:right">'+(wr||'─')+'%</div>'+
-      '<div style="font-size:9px;color:var(--text3);width:28px;text-align:right">'+s.count+'筆</div>'+
+      '<div style="font-size:10px;font-weight:700;color:'+col+';width:32px;text-align:right">'+(wr!=null?wr+'%':'─')+'</div>'+
+      '<div style="font-size:9px;color:var(--text3);text-align:right">'+s.count+'筆 '+incNote+'</div>'+
     '</div>';
   });
   h+='</div>';
@@ -1324,11 +1325,12 @@ function _renderQ1Backtest(){
     '<div style="display:flex;gap:8px">';
   months.forEach(function(m){
     var s=byMonth[m]; if(!s) return;
-    var col=s.win_rate>=55?'var(--green)':s.win_rate>=45?'var(--orange)':'var(--red)';
+    var wr=s.win_rate; var col=wr!=null?(wr>=55?'var(--green)':wr>=45?'var(--orange)':'var(--red)'):'var(--text3)';
+    var incTxt=s.inconclusive>0?' / 未決'+s.inconclusive:'';
     h+='<div style="flex:1;background:var(--bg4);border-radius:8px;padding:8px;text-align:center">'+
       '<div style="font-size:10px;color:var(--text3);margin-bottom:4px">'+mLabel[m]+'</div>'+
-      '<div style="font-size:16px;font-weight:700;color:'+col+'">'+(s.win_rate||'─')+'%</div>'+
-      '<div style="font-size:9px;color:var(--text3)">'+s.count+'筆</div>'+
+      '<div style="font-size:16px;font-weight:700;color:'+col+'">'+(wr!=null?wr+'%':'─')+'</div>'+
+      '<div style="font-size:9px;color:var(--text3)">'+s.count+'筆'+incTxt+'</div>'+
     '</div>';
   });
   h+='</div></div>';
