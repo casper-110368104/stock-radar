@@ -231,7 +231,7 @@ def _stats(trades):
 def main():
     print("=" * 60)
     print("  Q1 2025 Walk-Forward Backtest")
-    print(f"  期間：{Q1_START} ~ {Q1_END}")
+    print(f"  期間：{BT_START} ~ {BT_END}")
     print("  原則：每日只用截至當日的已知資料，無向前看偏差")
     print("=" * 60)
 
