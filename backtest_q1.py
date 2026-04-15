@@ -206,8 +206,8 @@ def _stock_phase(rs_pct, m_z, snap):
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
 def _stats(trades):
-    wins    = [t for t in trades if t["outcome"] == "win"]
-    loss    = [t for t in trades if t["outcome"] == "loss"]
+    wins    = [t for t in trades if t["outcome"] == "win"  and not math.isnan(t.get("gain_pct", 0))]
+    loss    = [t for t in trades if t["outcome"] == "loss" and not math.isnan(t.get("gain_pct", 0))]
     expired = [t for t in trades if t.get("exit_type") == "expired"]
     n       = len(trades)
     dec     = len(wins) + len(loss)
@@ -430,7 +430,11 @@ def main():
                 max_days  = MAX_HOLD_TREND if is_trend else MAX_HOLD_SWING
                 final_si  = min(ni + max_days, len(sd["closes"]) - 1)
                 outcome   = "inconclusive"
-                exit_px   = sd["closes"][final_si]
+                # 向前找最後一個有效收盤價（yfinance 偶爾回傳 NaN）
+                _fsi = final_si
+                while _fsi > ni and math.isnan(sd["closes"][_fsi]):
+                    _fsi -= 1
+                exit_px   = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
@@ -532,7 +536,16 @@ def main():
     }
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
+        # NaN / Inf → None（標準 JSON 不允許 NaN）
+        def _sanitize(obj):
+            if isinstance(obj, float):
+                return None if (math.isnan(obj) or math.isinf(obj)) else obj
+            if isinstance(obj, dict):
+                return {k: _sanitize(v) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [_sanitize(v) for v in obj]
+            return obj
+        json.dump(_sanitize(result), f, ensure_ascii=False, indent=2)
     print(f"\n  ✓ 結果已寫入 {OUTPUT_PATH}")
 
 
