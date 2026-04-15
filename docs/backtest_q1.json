@@ -1,48 +1,48 @@
 {
   "period": "2025-Q1~2026-Q1",
-  "generated_at": "2026-04-15 17:15",
+  "generated_at": "2026-04-15 17:32",
   "universe_size": 300,
   "trading_days": 298,
   "overall": {
     "count": 4253,
-    "wins": 2019,
-    "losses": 2234,
+    "wins": 2038,
+    "losses": 2215,
     "expired": 3194,
-    "win_rate": 47.5,
-    "avg_gain_pct": 9.54,
-    "avg_loss_pct": null,
-    "expectancy": null
+    "win_rate": 47.9,
+    "avg_gain_pct": 9.58,
+    "avg_loss_pct": -5.86,
+    "expectancy": 1.54
   },
   "by_type": {
     "ma_pullback": {
       "count": 825,
-      "wins": 417,
-      "losses": 408,
+      "wins": 418,
+      "losses": 407,
       "expired": 664,
-      "win_rate": 50.5,
+      "win_rate": 50.7,
       "avg_gain_pct": 5.56,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "avg_loss_pct": -4.06,
+      "expectancy": 0.82
     },
     "retest": {
       "count": 2076,
-      "wins": 965,
-      "losses": 1111,
+      "wins": 966,
+      "losses": 1110,
       "expired": 1661,
       "win_rate": 46.5,
-      "avg_gain_pct": 6.73,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "avg_gain_pct": 6.72,
+      "avg_loss_pct": -4.9,
+      "expectancy": 0.5
     },
     "high_base": {
       "count": 1102,
-      "wins": 517,
-      "losses": 585,
+      "wins": 533,
+      "losses": 569,
       "expired": 715,
-      "win_rate": 46.9,
-      "avg_gain_pct": 17.63,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 48.4,
+      "avg_gain_pct": 17.53,
+      "avg_loss_pct": -9.01,
+      "expectancy": 3.84
     },
     "ma60_support": {
       "count": 179,
@@ -56,13 +56,13 @@
     },
     "breakout": {
       "count": 68,
-      "wins": 29,
-      "losses": 39,
+      "wins": 30,
+      "losses": 38,
       "expired": 38,
-      "win_rate": 42.6,
-      "avg_gain_pct": 29.0,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 44.1,
+      "avg_gain_pct": 28.74,
+      "avg_loss_pct": -9.91,
+      "expectancy": 7.13
     },
     "false_breakdown": {
       "count": 3,
@@ -78,33 +78,33 @@
   "by_strength": {
     "medium": {
       "count": 2994,
-      "wins": 1437,
-      "losses": 1557,
+      "wins": 1443,
+      "losses": 1551,
       "expired": 2400,
-      "win_rate": 48.0,
-      "avg_gain_pct": 7.87,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 48.2,
+      "avg_gain_pct": 7.89,
+      "avg_loss_pct": -5.3,
+      "expectancy": 1.06
     },
     "weak": {
       "count": 600,
-      "wins": 293,
-      "losses": 307,
+      "wins": 295,
+      "losses": 305,
       "expired": 375,
-      "win_rate": 48.8,
-      "avg_gain_pct": 5.47,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 49.2,
+      "avg_gain_pct": 5.51,
+      "avg_loss_pct": -4.21,
+      "expectancy": 0.57
     },
     "strong": {
       "count": 659,
-      "wins": 289,
-      "losses": 370,
+      "wins": 300,
+      "losses": 359,
       "expired": 419,
-      "win_rate": 43.9,
-      "avg_gain_pct": 21.97,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 45.5,
+      "avg_gain_pct": 21.68,
+      "avg_loss_pct": -9.68,
+      "expectancy": 4.59
     }
   },
   "by_month": {
@@ -250,13 +250,13 @@
     },
     "2026-03": {
       "count": 147,
-      "wins": 56,
-      "losses": 91,
+      "wins": 75,
+      "losses": 72,
       "expired": 122,
-      "win_rate": 38.1,
-      "avg_gain_pct": 11.96,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 51.0,
+      "avg_gain_pct": 12.27,
+      "avg_loss_pct": -8.17,
+      "expectancy": 2.25
     }
   },
   "by_quarter": {
@@ -302,35 +302,35 @@
     },
     "2026-Q1": {
       "count": 708,
-      "wins": 334,
-      "losses": 374,
+      "wins": 353,
+      "losses": 355,
       "expired": 507,
-      "win_rate": 47.2,
+      "win_rate": 49.9,
       "avg_gain_pct": 13.26,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "avg_loss_pct": -8.29,
+      "expectancy": 2.46
     }
   },
   "by_regime": {
     "range": {
       "count": 214,
-      "wins": 77,
-      "losses": 137,
+      "wins": 79,
+      "losses": 135,
       "expired": 124,
-      "win_rate": 36.0,
-      "avg_gain_pct": 7.91,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 36.9,
+      "avg_gain_pct": 7.77,
+      "avg_loss_pct": -6.32,
+      "expectancy": -1.12
     },
     "bull": {
       "count": 3788,
-      "wins": 1817,
-      "losses": 1971,
+      "wins": 1834,
+      "losses": 1954,
       "expired": 2883,
-      "win_rate": 48.0,
-      "avg_gain_pct": 9.85,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 48.4,
+      "avg_gain_pct": 9.89,
+      "avg_loss_pct": -5.88,
+      "expectancy": 1.75
     },
     "bull_pullback": {
       "count": 248,
@@ -356,13 +356,13 @@
   "by_confirmations": {
     "0-2": {
       "count": 1619,
-      "wins": 743,
-      "losses": 876,
+      "wins": 745,
+      "losses": 874,
       "expired": 1220,
-      "win_rate": 45.9,
-      "avg_gain_pct": 6.05,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 46.0,
+      "avg_gain_pct": 6.04,
+      "avg_loss_pct": -4.55,
+      "expectancy": 0.32
     },
     "3": {
       "count": 1152,
@@ -376,23 +376,23 @@
     },
     "4": {
       "count": 828,
-      "wins": 415,
-      "losses": 413,
+      "wins": 421,
+      "losses": 407,
       "expired": 614,
-      "win_rate": 50.1,
-      "avg_gain_pct": 10.69,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 50.8,
+      "avg_gain_pct": 10.76,
+      "avg_loss_pct": -6.41,
+      "expectancy": 2.31
     },
     "5+": {
       "count": 654,
-      "wins": 288,
-      "losses": 366,
+      "wins": 299,
+      "losses": 355,
       "expired": 418,
-      "win_rate": 44.0,
-      "avg_gain_pct": 21.94,
-      "avg_loss_pct": null,
-      "expectancy": null
+      "win_rate": 45.7,
+      "avg_gain_pct": 21.65,
+      "avg_loss_pct": -9.68,
+      "expectancy": 4.64
     }
   },
   "trades": [
@@ -87372,8 +87372,8 @@
       "target": 152.02,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 6.57,
       "actual_rr": 4.15,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -87582,8 +87582,8 @@
       "target": 1802.91,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 27.43,
       "actual_rr": 4.21,
       "confirmations": 4,
       "pos_factor": 0.3
@@ -87624,8 +87624,8 @@
       "target": 20.48,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 10.91,
       "actual_rr": 3.7,
       "confirmations": 4,
       "pos_factor": 0.3
@@ -87666,8 +87666,8 @@
       "target": 82.18,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 14.03,
       "actual_rr": 3.89,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -87729,8 +87729,8 @@
       "target": 21.94,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 21.11,
       "actual_rr": 3.81,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -87855,8 +87855,8 @@
       "target": 240.1,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 7.59,
       "actual_rr": 3.69,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -87876,8 +87876,8 @@
       "target": 3528.38,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 20.81,
       "actual_rr": 4.02,
       "confirmations": 4,
       "pos_factor": 0.3
@@ -87918,8 +87918,8 @@
       "target": 42.48,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 26.45,
       "actual_rr": 3.7,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -87960,8 +87960,8 @@
       "target": 275.01,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 6.5,
       "actual_rr": 4.22,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88086,8 +88086,8 @@
       "target": 96.21,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 4.53,
       "actual_rr": 4.17,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88464,8 +88464,8 @@
       "target": 188.06,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 4.91,
       "actual_rr": 3.89,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88528,7 +88528,7 @@
       "entry_type": "gap_up",
       "exit_type": "expired",
       "outcome": "loss",
-      "gain_pct": null,
+      "gain_pct": -14.26,
       "actual_rr": 3.44,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88548,8 +88548,8 @@
       "target": 24.78,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 17.16,
       "actual_rr": 3.31,
       "confirmations": 4,
       "pos_factor": 0.3
@@ -88590,8 +88590,8 @@
       "target": 198.66,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 40.83,
       "actual_rr": 3.83,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88611,8 +88611,8 @@
       "target": 100.23,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 11.05,
       "actual_rr": 3.79,
       "confirmations": 4,
       "pos_factor": 0.3
@@ -88653,8 +88653,8 @@
       "target": 77.11,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 0.89,
       "actual_rr": 3.64,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88863,8 +88863,8 @@
       "target": 340.06,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 19.73,
       "actual_rr": 3.84,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88906,7 +88906,7 @@
       "entry_type": "intraday",
       "exit_type": "expired",
       "outcome": "loss",
-      "gain_pct": null,
+      "gain_pct": -0.65,
       "actual_rr": 3.67,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -88989,8 +88989,8 @@
       "target": 18.74,
       "entry_type": "intraday",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 5.66,
       "actual_rr": 3.38,
       "confirmations": 4,
       "pos_factor": 0.3
@@ -89032,7 +89032,7 @@
       "entry_type": "intraday",
       "exit_type": "expired",
       "outcome": "loss",
-      "gain_pct": null,
+      "gain_pct": -7.99,
       "actual_rr": 3.72,
       "confirmations": 5,
       "pos_factor": 0.3
@@ -89682,8 +89682,8 @@
       "target": 10.73,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 2.27,
       "actual_rr": 1.69,
       "confirmations": 2,
       "pos_factor": 0.62
@@ -89703,8 +89703,8 @@
       "target": 10.73,
       "entry_type": "gap_up",
       "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": null,
+      "outcome": "win",
+      "gain_pct": 2.27,
       "actual_rr": 1.69,
       "confirmations": 2,
       "pos_factor": 0.62
