@@ -430,7 +430,11 @@ def main():
                 max_days  = MAX_HOLD_TREND if is_trend else MAX_HOLD_SWING
                 final_si  = min(ni + max_days, len(sd["closes"]) - 1)
                 outcome   = "inconclusive"
-                exit_px   = sd["closes"][final_si]
+                # 向前找最後一個有效收盤價（yfinance 偶爾回傳 NaN）
+                _fsi = final_si
+                while _fsi > ni and math.isnan(sd["closes"][_fsi]):
+                    _fsi -= 1
+                exit_px   = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
