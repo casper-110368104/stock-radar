@@ -318,8 +318,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .ec-expansion{background:linear-gradient(135deg,#0f1520,#1a1a35)}
 /* ─ 策略回測卡片 ─ */
 .ec-backtest{background:linear-gradient(135deg,#0f1a14,#1a2a20)}
-/* ─ 目前進場模擬卡片 ─ */
-.ec-livesim{background:linear-gradient(135deg,#1a1400,#2a2000)}
 /* ─ 主頁資金模擬卡片 ─ */
 .ec-capsim{background:var(--bg2);border:.5px solid var(--border)!important}
 
@@ -480,7 +478,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <div class="ec-arr">›</div>
       </div>
     </div>
-    <!-- Block A：Walk-Forward 歷史回測驗證 -->
     <div class="entry-card ec-backtest" onclick="goView('backtest')">
       <div class="ec-hdr">
         <div class="ec-icon">📊</div>
@@ -506,45 +503,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         <div class="ec-stat">
           <div class="ec-stat-lbl">期望值</div>
           <div class="ec-stat-val" id="bt-ev-home">─</div>
-        </div>
-      </div>
-      <!-- 資金模擬摘要（Walk-Forward trades 計算）-->
-      <div id="bt-home-capsim" style="display:none;padding:8px 0 2px;border-top:.5px solid rgba(255,255,255,0.07);margin-top:6px">
-        <div style="font-size:9px;color:var(--text3);margin-bottom:4px">💰 資金模擬（固定風險 1%/筆）</div>
-        <div style="display:flex;align-items:baseline;gap:8px">
-          <span id="bt-sim-init" style="font-size:11px;color:var(--text3)">─</span>
-          <span style="font-size:11px;color:var(--text3)">→</span>
-          <span id="bt-sim-end" style="font-size:14px;font-weight:700">─</span>
-          <span id="bt-sim-ret" style="font-size:11px;font-weight:600">─</span>
-        </div>
-      </div>
-    </div>
-    <!-- Block B：目前資金曲線模擬（signal_tracking） -->
-    <div class="entry-card ec-livesim" onclick="goView('backtest')">
-      <div class="ec-hdr">
-        <div class="ec-icon">📈</div>
-        <div class="ec-info">
-          <div class="ec-title">目前進場模擬</div>
-          <div class="ec-sub" id="livesim-sub">依實際觸發訊號追蹤</div>
-        </div>
-        <div class="ec-arr">›</div>
-      </div>
-      <div class="ec-body" id="livesim-home-stats" style="display:none">
-        <div class="ec-stat">
-          <div class="ec-stat-lbl">進行中</div>
-          <div class="ec-stat-val" id="ls-open-home">─</div>
-        </div>
-        <div class="ec-stat">
-          <div class="ec-stat-lbl">已結算</div>
-          <div class="ec-stat-val" id="ls-closed-home">─</div>
-        </div>
-        <div class="ec-stat">
-          <div class="ec-stat-lbl">總報酬</div>
-          <div class="ec-stat-val" id="ls-ret-home">─</div>
-        </div>
-        <div class="ec-stat">
-          <div class="ec-stat-lbl">最大回撤</div>
-          <div class="ec-stat-val" id="ls-dd-home" style="color:var(--orange)">─</div>
         </div>
       </div>
     </div>
@@ -1072,50 +1030,21 @@ function renderHomeCards(){
   var openCnt=(stocksBtTracking.filter(function(r){return r.status==='open';}).length)+
               ((expansionData.signal_tracking||[]).filter(function(r){return r.status==='open';}).length);
 
-  // ── Block A：歷史回測驗證 ──
+  // 歷史回測驗證卡片
   var bsub=document.getElementById('backtest-sub');
   if(q1BtData&&q1BtData.overall){
     var _o=q1BtData.overall;
     var _wr=_o.win_rate; var _ev=_o.expectancy;
-    if(document.getElementById('bt-wr-home')) document.getElementById('bt-wr-home').textContent=(_wr!=null?_wr+'%':'─');
-    if(document.getElementById('bt-wr-home')) document.getElementById('bt-wr-home').style.color=_wr>=55?'var(--green)':_wr>=40?'var(--orange)':'var(--red)';
+    var _wrEl=document.getElementById('bt-wr-home');
+    if(_wrEl){ _wrEl.textContent=(_wr!=null?_wr+'%':'─'); _wrEl.style.color=_wr>=55?'var(--green)':_wr>=40?'var(--orange)':'var(--red)'; }
     if(document.getElementById('bt-ag-home')) document.getElementById('bt-ag-home').textContent='+'+(_o.avg_gain_pct||0)+'%';
     if(document.getElementById('bt-al-home')) document.getElementById('bt-al-home').textContent=(_o.avg_loss_pct||0)+'%';
     var _evEl=document.getElementById('bt-ev-home');
     if(_evEl){ _evEl.textContent=(_ev!=null?(_ev>0?'+':'')+_ev+'%':'─'); _evEl.style.color=_ev>0?'var(--green)':'var(--red)'; }
     if(document.getElementById('bt-home-stats')) document.getElementById('bt-home-stats').style.display='flex';
     if(bsub) bsub.textContent='Walk-Forward · '+q1BtData.period+' · '+_o.count+'筆';
-    // 資金模擬摘要
-    var _cs=_buildQ1CapCurve();
-    if(_cs){
-      var _ret=_cs.totalReturn;
-      var _retCol=_ret>=0?'var(--green)':'var(--red)';
-      if(document.getElementById('bt-sim-init')) document.getElementById('bt-sim-init').textContent=Math.round(totalCapital/10000)+'萬';
-      if(document.getElementById('bt-sim-end')){ document.getElementById('bt-sim-end').textContent=Math.round(_cs.endCap/10000)+'萬'; document.getElementById('bt-sim-end').style.color=_retCol; }
-      if(document.getElementById('bt-sim-ret')){ document.getElementById('bt-sim-ret').textContent=(_ret>=0?'+':'')+_ret+'%'; document.getElementById('bt-sim-ret').style.color=_retCol; }
-      if(document.getElementById('bt-home-capsim')) document.getElementById('bt-home-capsim').style.display='block';
-    }
   } else {
     if(bsub) bsub.textContent='Walk-Forward · 載入中...';
-  }
-
-  // ── Block B：目前進場模擬 ──
-  var lsub=document.getElementById('livesim-sub');
-  var allTracking=[].concat(stocksBtTracking||[]).concat(expansionData.signal_tracking||[]);
-  var closedTrades=allTracking.filter(function(t){return t.status==='win'||t.status==='loss';});
-  var posPct=Math.min(Math.round(riskPct/5*100*10)/10,25);
-  var lsCurve=_buildCurveFromTracking(allTracking,posPct);
-  if(closedTrades.length>0&&lsCurve){
-    var _lr=lsCurve.totalReturn; var _lrCol=_lr>=0?'var(--green)':'var(--red)';
-    if(document.getElementById('ls-open-home')) document.getElementById('ls-open-home').textContent=openCnt+'筆';
-    if(document.getElementById('ls-closed-home')) document.getElementById('ls-closed-home').textContent=closedTrades.length+'筆';
-    var _lrEl=document.getElementById('ls-ret-home');
-    if(_lrEl){ _lrEl.textContent=(_lr>=0?'+':'')+_lr+'%'; _lrEl.style.color=_lrCol; }
-    if(document.getElementById('ls-dd-home')) document.getElementById('ls-dd-home').textContent='-'+lsCurve.maxDD+'%';
-    if(document.getElementById('livesim-home-stats')) document.getElementById('livesim-home-stats').style.display='flex';
-    if(lsub) lsub.textContent='進行中 '+openCnt+'筆 · 已結算 '+closedTrades.length+'筆';
-  } else {
-    if(lsub) lsub.textContent='進行中 '+openCnt+'筆 · 尚無結算紀錄';
   }
 }
 
