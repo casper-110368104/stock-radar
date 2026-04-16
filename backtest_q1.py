@@ -25,8 +25,12 @@ from signals import calc_signals
 BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
 BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
 BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
+MAX_HOLD_LONG  = 60   # breakout / high_base：中長線持倉（約3個月）
 MAX_HOLD_TREND = 25
 MAX_HOLD_SWING = 8
+
+# 盤整市場暫停的訊號類型（趨勢追蹤在盤整中效果差）
+RANGE_SKIP_TYPES = {"breakout", "retest"}
 BENCHMARK_TID  = "^TWII"
 OUTPUT_PATH    = "docs/backtest_q1.json"
 SLIP           = 0.002    # 滑價估計 0.2%
@@ -404,6 +408,10 @@ def main():
                 target   = sig["target"]
                 sig_type = sig["type"]
 
+                # 盤整市場跳過趨勢追蹤訊號（假突破率高）
+                if regime == "range" and sig_type in RANGE_SKIP_TYPES:
+                    continue
+
                 # 確認次日觸發
                 if nxt_open > trigger:
                     gap_pct      = (nxt_open - trigger) / trigger
@@ -426,8 +434,13 @@ def main():
                     continue   # RR 不足
 
                 # ── 4e: 追蹤結果（只看已過去的資料）
-                is_trend  = sig_type in TREND_TYPES
-                max_days  = MAX_HOLD_TREND if is_trend else MAX_HOLD_SWING
+                # breakout / high_base → 中長線持倉；其他趨勢 25 天；短線 8 天
+                if sig_type in {"breakout", "high_base"}:
+                    max_days = MAX_HOLD_LONG
+                elif sig_type in TREND_TYPES:
+                    max_days = MAX_HOLD_TREND
+                else:
+                    max_days = MAX_HOLD_SWING
                 final_si  = min(ni + max_days, len(sd["closes"]) - 1)
                 outcome   = "inconclusive"
                 # 向前找最後一個有效收盤價（yfinance 偶爾回傳 NaN）
@@ -479,7 +492,7 @@ def main():
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
                     "confirmations": sig.get("confirmations", 0),
-                    "pos_factor":    sig.get("pos_factor", 0.5),
+                    "pos_factor":    min(sig.get("pos_factor", 0.5), 0.3) if sig_type == "retest" else sig.get("pos_factor", 0.5),
                 })
                 day_count += 1
 

@@ -1419,12 +1419,88 @@ function _renderQ1Backtest(){
     });
     h+='</div></div>';
   }
+  // ── 資金模擬 ──
+  h+=_renderQ1CapSim();
   // ── 生成時間 ──
   h+='<div style="font-size:9px;color:var(--text3);text-align:center;padding:4px 0">'+
     'Walk-Forward 回測 · 產生於 '+q1BtData.generated_at+
     ' · 無向前看偏差</div>';
   return h;
 }
+// ── Walk-Forward 回測資金模擬 ──────────────────────────────────────
+function _buildQ1CapCurve(){
+  var trades=(q1BtData||{}).trades;
+  if(!trades||!trades.length) return null;
+  var sorted=trades.slice().sort(function(a,b){return a.date>b.date?1:-1;});
+  var initCap=totalCapital, cap=initCap, peak=cap, maxDD=0, wins=0;
+  var points=[{x:0,y:100}];
+  var qEndCap={};
+  function getQ(d){var y=d.slice(0,4),m=parseInt(d.slice(5,7));return y+'-Q'+Math.ceil(m/3);}
+  sorted.forEach(function(t,i){
+    var entry=t.entry,stop=t.stop;
+    if(!entry||!stop||entry<=stop) return;
+    var stopDist=Math.max((entry-stop)/entry,0.005);
+    var pf=Math.min(t.pos_factor||0.5,1.0);
+    var posPct=Math.min((riskPct/100)/stopDist,0.20)*pf;
+    var gp=(t.gain_pct||0)/100;
+    if(includeFeeSim) gp-=FEE_ROUNDTRIP;
+    cap*=(1+posPct*gp);
+    if(cap<1) cap=1;
+    if(cap>peak) peak=cap;
+    var dd=(peak-cap)/peak;
+    if(dd>maxDD) maxDD=dd;
+    if(t.outcome==='win') wins++;
+    qEndCap[getQ(t.date)]=Math.round(cap);
+    if(i%30===0||i===sorted.length-1)
+      points.push({x:i+1,y:+(cap/initCap*100).toFixed(2)});
+  });
+  return{points:points,endCap:Math.round(cap),
+    totalReturn:+((cap-initCap)/initCap*100).toFixed(2),
+    maxDD:+(maxDD*100).toFixed(1),count:sorted.length,wins:wins,qEndCap:qEndCap};
+}
+
+function _renderQ1CapSim(){
+  var d=_buildQ1CapCurve();
+  if(!d) return '';
+  var initCap=totalCapital;
+  var gain=d.endCap-initCap;
+  var retCol=d.totalReturn>=0?'var(--green)':'var(--red)';
+  var initStr=Math.round(initCap/10000)+'萬';
+  var endStr=Math.round(d.endCap/10000)+'萬';
+  var gainStr=(gain>=0?'+':'')+Math.round(gain/10000)+'萬';
+  var chart=_svgEquityCurve(d.points,320,120);
+  var statsHtml='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px">'+
+    _ecStat('總報酬',(d.totalReturn>=0?'+':'')+d.totalReturn+'%',retCol)+
+    _ecStat('損益',gainStr,retCol)+
+    _ecStat('最大回撤','-'+d.maxDD+'%','var(--orange)')+
+    _ecStat('勝率',Math.round(d.wins/d.count*100)+'%','var(--text2)')+
+  '</div>';
+  var quarters=['2025-Q1','2025-Q2','2025-Q3','2025-Q4','2026-Q1'];
+  var prevCap=initCap;
+  var qHtml='<div style="margin-top:8px;display:flex;gap:4px">';
+  quarters.forEach(function(q){
+    var ec=d.qEndCap[q]; if(!ec) return;
+    var qRet=(ec-prevCap)/prevCap*100;
+    var qCol=qRet>=0?'var(--green)':'var(--red)';
+    qHtml+='<div style="flex:1;background:var(--bg4);border-radius:6px;padding:5px;text-align:center">'+
+      '<div style="font-size:8px;color:var(--text3)">'+q.slice(5)+'</div>'+
+      '<div style="font-size:10px;font-weight:700;color:'+qCol+'">'+(qRet>=0?'+':'')+qRet.toFixed(1)+'%</div>'+
+      '<div style="font-size:8px;color:var(--text3)">'+Math.round(ec/10000)+'萬</div>'+
+    '</div>';
+    prevCap=ec;
+  });
+  qHtml+='</div>';
+  var cardStyle='background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px';
+  return '<div style="'+cardStyle+'">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+      '<div style="font-size:12px;font-weight:700">💰 資金模擬 <span style="font-size:10px;color:var(--text3)">'+initStr+' 入場 · 5季</span></div>'+
+      '<div style="font-size:13px;font-weight:700;color:'+retCol+'">'+endStr+'</div>'+
+    '</div>'+
+    chart+statsHtml+qHtml+
+    '<div style="font-size:9px;color:var(--text3);margin-top:6px;text-align:center">固定風險 '+riskPct+'%/筆 · 最大倉位20% · 依停損距離定量（可在下方調整）</div>'+
+  '</div>';
+}
+
 function _q1Pill(label,val,col){
   return '<div style="background:var(--bg4);border-radius:7px;padding:4px 8px;text-align:center">'+
     '<div style="font-size:9px;color:var(--text3)">'+label+'</div>'+
