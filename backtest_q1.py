@@ -17,7 +17,7 @@ backtest_q1.py — Walk-Forward Backtest（走步式回測）
 """
 import json, time, math, sys, requests
 import yfinance as yf
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from collections import defaultdict
 from signals import calc_signals
 
@@ -35,6 +35,19 @@ MIN_HIST_DAYS  = 70
 HEADERS        = {"User-Agent": "Mozilla/5.0 (stock-radar-backtest/1.0)"}
 
 TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+
+# ── 優化：訊號分級 × Portfolio Heat ──────────────────────────────────
+MAX_HEAT     = 0.10   # 同時總 stop risk 上限（10% 資本）；值由風險承受度決定，非回測最佳化
+SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
+    "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
+    "breakout":        1.2,   # 高確信度 + 中期持有
+    "ma_pullback":     1.0,
+    "ma60_support":    0.8,
+    "false_breakdown": 0.8,
+    "trend_cont":      1.0,
+    "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
+}
+
 GAP_LIMIT   = {
     "breakout":        0.04,
     "trend_cont":      0.04,
@@ -364,7 +377,8 @@ def main():
 
     # ── Step 3: Walk-Forward 主迴圈 ──────────────────────────────
     print(f"\n[4] Walk-Forward 逐日掃描（{len(q1_dates)} 個交易日）...")
-    trades = []
+    trades        = []
+    open_positions = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
 
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
@@ -387,6 +401,30 @@ def main():
             _, scalar  = _rs_metrics(dr)
             if scalar is not None:
                 rs_scalar_map[code] = scalar
+
+        # ── 4a-2: 市場廣度 & 動能（連續調整，無二元門檻，無向前看）
+        _above_ma20 = 0
+        _breadth_n  = 0
+        for _bc, _bsd in stock_data.items():
+            _bsi = stock_date_idx[_bc].get(q_date)
+            if _bsi is None or _bsi < 20:
+                continue
+            _cl = _bsd["closes"][_bsi]
+            if math.isnan(_cl):
+                continue
+            _ma20v = sum(_bsd["closes"][_bsi - 19:_bsi + 1]) / 20
+            _breadth_n += 1
+            if _cl > _ma20v:
+                _above_ma20 += 1
+        breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
+        twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
+        # 線性連續因子（k=1，無可調參數）；各自 clamp 0.3~1.5 後相乘再 clamp
+        _brf          = max(0.3, min(1.5, breadth_pct / 0.5))
+        _mmf          = max(0.3, min(1.5, 1.0 + twii_mom_20))
+        market_factor = round(max(0.3, min(1.5, _brf * _mmf)), 3)
+
+        # ── 清除已到期的 heat 部位（依信號日判斷）
+        open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
 
         # ── 4b: 計算當日跨股 RS 百分位
         if len(rs_scalar_map) > 1:
@@ -480,6 +518,24 @@ def main():
                 if sig_type == "high_base" and sig.get("confirmations", 0) < 4:
                     continue
 
+                # retest：公平宇宙回測無 alpha，降為候選清單不交易
+                if sig_type == "retest":
+                    continue
+
+                # ── 訊號分級 pos_factor（依設計屬性，非 EV 擬合）
+                confs      = sig.get("confirmations", 0)
+                conf_scale = 1.3 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
+                sig_scale  = SIGNAL_SCALE.get(sig_type, 1.0)
+                base_pf    = sig.get("pos_factor", 0.5)
+                final_pf   = round(min(1.0, base_pf * sig_scale * conf_scale * market_factor), 3)
+
+                # ── Portfolio Heat 檢查（total stop risk ≤ MAX_HEAT）
+                _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
+                _trade_heat = round(min(0.015 / _stop_dist, 0.20) * final_pf * _stop_dist, 5)
+                _total_heat = sum(h for _, h in open_positions)
+                if _total_heat + _trade_heat > MAX_HEAT:
+                    continue   # 超過整體風險預算
+
                 # ── 4e: 追蹤結果（只看已過去的資料）
                 # high_base 60 天：5季 expired 均正，需要時間跑出波段
                 # breakout 維持 25 天：各季 expired 不一致，不延長
@@ -489,6 +545,7 @@ def main():
                     max_days = MAX_HOLD_TREND
                 else:
                     max_days = MAX_HOLD_SWING
+                open_positions.append((q_date + timedelta(days=max_days + 1), _trade_heat))
                 final_si  = min(ni + max_days, len(sd["closes"]) - 1)
                 outcome   = "inconclusive"
                 # 向前找最後一個有效收盤價（yfinance 偶爾回傳 NaN）
@@ -540,7 +597,7 @@ def main():
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
                     "confirmations": sig.get("confirmations", 0),
-                    "pos_factor":    _retest_pf(sig.get("pos_factor", 0.5), sig_type, regime),
+                    "pos_factor":    final_pf,
                 })
                 day_count += 1
 
