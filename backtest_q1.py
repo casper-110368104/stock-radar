@@ -236,10 +236,20 @@ def main():
     print("  原則：每日只用截至當日的已知資料，無向前看偏差")
     print("=" * 60)
 
-    # ── Step 1: 決定母體 ─────────────────────────────────────────
-    print("\n[1] 抓取股票母體（TWSE 量能前 300）...")
+    # ── Step 1: 決定候選母體 ─────────────────────────────────────
+    # 抗倖存者偏差設計：
+    #   1. TWSE API 取今日量能前 500 作為「候選池」（不直接用作母體）
+    #   2. 下載資料後，用「回測開始前一年（2024）的平均成交量」重排，取前 300
+    #   → 選股依據為 2024 已知資訊，不含 2025+ 的未來資訊
+    UNIVERSE_CANDIDATES = 500   # 候選池大小（下載後再篩）
+    UNIVERSE_FINAL      = 300   # 最終母體大小
+    PRE_BT_VOL_START    = date(2024, 1, 1)
+    PRE_BT_VOL_END      = date(2024, 12, 31)
+
+    print("\n[1] 抓取候選股票池（TWSE 量能前 500）...")
     print(f"  回測期間：{BT_START} ~ {BT_END}")
-    universe = []
+    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（回測前一年）")
+    universe_candidates = []
     try:
         r = requests.get(
             "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json",
@@ -261,18 +271,20 @@ def main():
             except Exception:
                 continue
         tmp.sort(key=lambda x: x[1], reverse=True)
-        universe = [c for c, _ in tmp[:300]]
-        print(f"  → {len(universe)} 檔")
+        universe_candidates = [c for c, _ in tmp[:UNIVERSE_CANDIDATES]]
+        print(f"  → 候選池：{len(universe_candidates)} 檔")
     except Exception as e:
-        print(f"  TWSE API 失敗：{e}，使用內建清單")
-        universe = [
+        print(f"  TWSE API 失敗：{e}，使用內建候選清單")
+        universe_candidates = [
             "2330","2317","2454","2382","2308","2303","2412","3711",
             "2881","2882","2891","2886","2884","2885","1301","1303",
             "6505","2002","2912","2207","1216","2327","3034","3037",
             "2395","2379","4938","2408","2357","2377","3008","2357",
+            "2301","2376","2344","2337","3045","2353","2352","2347",
+            "2345","2371","2404","2498","3406","4904","6415","6669",
         ]
 
-    universe = list(dict.fromkeys(universe))
+    universe_candidates = list(dict.fromkeys(universe_candidates))
 
     # ── Step 2: 下載歷史資料 ─────────────────────────────────────
     # 起始日早於 Q1_START 240 個交易日（~1 年）供 RS 計算
@@ -290,12 +302,12 @@ def main():
     q1_dates    = [d for d in bm_dates if BT_START <= d <= BT_END]
     print(f"  TWII：{len(bm_dates)} 日 | 回測交易日：{len(q1_dates)} 天")
 
-    print(f"\n[3] 下載 {len(universe)} 檔個股資料...")
-    print("    (每 20 檔暫停 3 秒避免限速，預計 5~10 分鐘)")
+    print(f"\n[3] 下載 {len(universe_candidates)} 檔候選個股資料...")
+    print("    (每 20 檔暫停 3 秒避免限速，預計 8~15 分鐘)")
     stock_data = {}
-    for idx, code in enumerate(universe):
+    for idx, code in enumerate(universe_candidates):
         tid = code + ".TW"
-        print(f"  [{idx + 1:3d}/{len(universe)}] {code}", end="  ")
+        print(f"  [{idx + 1:3d}/{len(universe_candidates)}] {code}", end="  ")
         try:
             h = yf.Ticker(tid).history(start=DATA_START, end=DATA_END)
             if h.empty or len(h) < MIN_HIST_DAYS:
@@ -315,7 +327,35 @@ def main():
         if (idx + 1) % 20 == 0:
             time.sleep(3)
 
-    print(f"\n  → 有效個股：{len(stock_data)} 檔")
+    print(f"\n  → 下載完成：{len(stock_data)} 檔")
+
+    # ── Step 3b: 用回測前一年（2024）的平均成交量重排，取前 300 ──────
+    # 消除倖存者偏差：選股依據為 2024 已知資訊，不使用 2025+ 的未來量能
+    print(f"\n  [母體篩選] 計算 {PRE_BT_VOL_START}~{PRE_BT_VOL_END} 平均成交量...")
+    pre_bt_vol = {}
+    for code, sd in stock_data.items():
+        vols_2024 = [
+            sd["vols"][i] for i, d in enumerate(sd["dates"])
+            if PRE_BT_VOL_START <= d <= PRE_BT_VOL_END
+            and not math.isnan(sd["vols"][i]) and sd["vols"][i] > 0
+        ]
+        if vols_2024:
+            pre_bt_vol[code] = sum(vols_2024) / len(vols_2024)
+
+    sorted_by_pre_bt = sorted(pre_bt_vol, key=lambda c: pre_bt_vol[c], reverse=True)
+    final_universe   = sorted_by_pre_bt[:UNIVERSE_FINAL]
+
+    # 無 2024 量能資料的股票（IPO 太晚）不納入母體
+    no_pre_vol = [c for c in stock_data if c not in pre_bt_vol]
+    if no_pre_vol:
+        print(f"  [排除] {len(no_pre_vol)} 檔無 2024 量能資料（新上市等）")
+
+    # 只保留最終母體的資料，釋放記憶體
+    stock_data = {c: stock_data[c] for c in final_universe if c in stock_data}
+    print(f"  → 最終母體：{len(stock_data)} 檔（依 2024 平均成交量選出）")
+    if stock_data:
+        top5 = final_universe[:5]
+        print(f"  → 前 5 大：{', '.join(top5)}")
 
     # 為每支股票建立「日期 → 陣列 index」的快速對照
     stock_date_idx = {}
