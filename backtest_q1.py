@@ -432,6 +432,14 @@ def main():
                 if actual_rr < 1.5:
                     continue   # RR 門檻：1.2→1.5，移除邊際交易（EV 僅 +0.26%）
 
+                # ma60_support：只在 bull_pullback 進場（bull 市場 35.8% 勝率）
+                if sig_type == "ma60_support" and regime != "bull_pullback":
+                    continue
+
+                # high_base：至少需要 4 個確認項（conf 3 以下勝率僅 23.4%）
+                if sig_type == "high_base" and sig.get("confirmations", 0) < 4:
+                    continue
+
                 # ── 4e: 追蹤結果（只看已過去的資料）
                 # high_base 60 天：5季 expired 均正，需要時間跑出波段
                 # breakout 維持 25 天：各季 expired 不一致，不延長
