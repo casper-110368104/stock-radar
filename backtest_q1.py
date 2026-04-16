@@ -25,12 +25,9 @@ from signals import calc_signals
 BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
 BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
 BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
-MAX_HOLD_LONG  = 60   # breakout / high_base：中長線持倉（約3個月）
+MAX_HOLD_LONG  = 60   # high_base 專用：5季 expired 均正，需要時間發酵
 MAX_HOLD_TREND = 25
 MAX_HOLD_SWING = 8
-
-# 盤整市場暫停的訊號類型（趨勢追蹤在盤整中效果差）
-RANGE_SKIP_TYPES = {"breakout", "retest"}
 BENCHMARK_TID  = "^TWII"
 OUTPUT_PATH    = "docs/backtest_q1.json"
 SLIP           = 0.002    # 滑價估計 0.2%
@@ -398,6 +395,12 @@ def main():
                 continue
 
             # ── 4d: 次日進場模擬
+            def _retest_pf(pf, stype, reg):
+                """retest 在非多頭市場半倉：Q1/Q2 EV 負，Q3/Q2026 EV 正，動態而非固定上限"""
+                if stype == "retest" and reg != "bull":
+                    return round(pf * 0.5, 2)
+                return pf
+
             ni        = si + 1
             nxt_open  = sd["opens"][ni]
             nxt_high  = sd["highs"][ni]
@@ -407,10 +410,6 @@ def main():
                 stop     = sig["stop_loss"]
                 target   = sig["target"]
                 sig_type = sig["type"]
-
-                # 盤整市場跳過趨勢追蹤訊號（假突破率高）
-                if regime == "range" and sig_type in RANGE_SKIP_TYPES:
-                    continue
 
                 # 確認次日觸發
                 if nxt_open > trigger:
@@ -430,12 +429,13 @@ def main():
                 if actual_risk <= 0:
                     continue
                 actual_rr = round((target - actual_entry) / actual_risk, 2)
-                if actual_rr < 1.2:
-                    continue   # RR 不足
+                if actual_rr < 1.5:
+                    continue   # RR 門檻：1.2→1.5，移除邊際交易（EV 僅 +0.26%）
 
                 # ── 4e: 追蹤結果（只看已過去的資料）
-                # breakout / high_base → 中長線持倉；其他趨勢 25 天；短線 8 天
-                if sig_type in {"breakout", "high_base"}:
+                # high_base 60 天：5季 expired 均正，需要時間跑出波段
+                # breakout 維持 25 天：各季 expired 不一致，不延長
+                if sig_type == "high_base":
                     max_days = MAX_HOLD_LONG
                 elif sig_type in TREND_TYPES:
                     max_days = MAX_HOLD_TREND
@@ -492,7 +492,7 @@ def main():
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
                     "confirmations": sig.get("confirmations", 0),
-                    "pos_factor":    min(sig.get("pos_factor", 0.5), 0.3) if sig_type == "retest" else sig.get("pos_factor", 0.5),
+                    "pos_factor":    _retest_pf(sig.get("pos_factor", 0.5), sig_type, regime),
                 })
                 day_count += 1
 
