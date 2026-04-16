@@ -318,8 +318,10 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .ec-expansion{background:linear-gradient(135deg,#0f1520,#1a1a35)}
 /* ─ 策略回測卡片 ─ */
 .ec-backtest{background:linear-gradient(135deg,#0f1a14,#1a2a20)}
-/* ─ 資金模擬卡片 ─ */
+/* ─ 目前進場模擬卡片 ─ */
 .ec-livesim{background:linear-gradient(135deg,#1a1400,#2a2000)}
+/* ─ 主頁資金模擬卡片 ─ */
+.ec-capsim{background:var(--bg2);border:.5px solid var(--border)!important}
 
 /* ─ 隨機500股訊號卡 ─ */
 .exp-card{background:var(--bg2);border:.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:8px}
@@ -546,23 +548,13 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         </div>
       </div>
     </div>
+    <!-- 資金模擬卡片（Walk-Forward 歷史 + 目前追蹤）-->
+    <div class="entry-card ec-capsim" style="cursor:default">
+      <div id="home-capsim-inner" style="padding:2px 0 4px">
+        <div style="font-size:12px;color:var(--text3);padding:16px;text-align:center">載入中...</div>
+      </div>
+    </div>
   </div><!-- /home-wrap -->
-
-  <!-- 主頁：Walk-Forward 資金模擬 Block -->
-  <div style="padding:0 12px 8px">
-    <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:10px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px">
-      📊 Walk-Forward 歷史回測資金模擬
-    </div>
-    <div id="home-wf-sim"><div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">載入中...</div></div>
-  </div>
-
-  <!-- 主頁：目前進場模擬 Block -->
-  <div style="padding:0 12px 80px">
-    <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:10px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px">
-      📈 目前進場模擬
-    </div>
-    <div id="home-live-sim"><div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">載入中...</div></div>
-  </div>
 
 </div><!-- /home-view -->
 <div id="macro-view" style="display:none">
@@ -1129,17 +1121,19 @@ function renderHomeCards(){
 
 // ── 主頁 Sim Blocks ──────────────────────────────────────────
 function renderHomeSimBlocks(){
-  // Walk-Forward 歷史回測
-  var wfEl=document.getElementById('home-wf-sim');
-  if(wfEl){
-    if(q1BtData&&(q1BtData.trades||[]).length)
-      wfEl.innerHTML=_renderQ1CapSim();
-    else
-      wfEl.innerHTML='<div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">回測資料載入中...</div>';
+  var el=document.getElementById('home-capsim-inner');
+  if(!el) return;
+  var html='';
+  // ── Walk-Forward 歷史回測 ──
+  if(q1BtData&&(q1BtData.trades||[]).length){
+    html+=_renderQ1CapSim();
+  } else {
+    html+='<div style="font-size:12px;color:var(--text3);padding:12px;text-align:center">回測資料載入中...</div>';
   }
-  // 目前進場模擬
-  var liveEl=document.getElementById('home-live-sim');
-  if(liveEl) liveEl.innerHTML=_renderLiveSimHome();
+  // ── 目前進場模擬 ──
+  html+='<div style="border-top:.5px solid var(--border);margin:4px 0"></div>';
+  html+=_renderLiveSimHome();
+  el.innerHTML=html;
 }
 
 function _renderLiveSimHome(){
