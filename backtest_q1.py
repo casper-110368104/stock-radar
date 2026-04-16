@@ -37,7 +37,7 @@ HEADERS        = {"User-Agent": "Mozilla/5.0 (stock-radar-backtest/1.0)"}
 TREND_TYPES = {"breakout", "high_base", "trend_cont"}
 
 # ── 優化：訊號分級 × Portfolio Heat ──────────────────────────────────
-MAX_HEAT     = 0.10   # 同時總 stop risk 上限（10% 資本）；值由風險承受度決定，非回測最佳化
+MAX_HEAT     = 0.15   # 同時總 stop risk 上限（15% 資本）；值由風險承受度決定，非回測最佳化
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
