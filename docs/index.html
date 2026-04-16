@@ -546,10 +546,25 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         </div>
       </div>
     </div>
-  </div>
-</div>
+  </div><!-- /home-wrap -->
 
-<!-- 整體經濟頁 -->
+  <!-- 主頁：Walk-Forward 資金模擬 Block -->
+  <div style="padding:0 12px 8px">
+    <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:10px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px">
+      📊 Walk-Forward 歷史回測資金模擬
+    </div>
+    <div id="home-wf-sim"><div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">載入中...</div></div>
+  </div>
+
+  <!-- 主頁：目前進場模擬 Block -->
+  <div style="padding:0 12px 80px">
+    <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;padding:10px 0 6px;border-bottom:.5px solid var(--border);margin-bottom:8px">
+      📈 目前進場模擬
+    </div>
+    <div id="home-live-sim"><div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">載入中...</div></div>
+  </div>
+
+</div><!-- /home-view -->
 <div id="macro-view" style="display:none">
   <div class="foi-bar" id="foiBar" style="display:none">
     <div class="foi-inner">
@@ -1110,6 +1125,54 @@ function renderHomeCards(){
   } else {
     if(lsub) lsub.textContent='進行中 '+openCnt+'筆 · 尚無結算紀錄';
   }
+}
+
+// ── 主頁 Sim Blocks ──────────────────────────────────────────
+function renderHomeSimBlocks(){
+  // Walk-Forward 歷史回測
+  var wfEl=document.getElementById('home-wf-sim');
+  if(wfEl){
+    if(q1BtData&&(q1BtData.trades||[]).length)
+      wfEl.innerHTML=_renderQ1CapSim();
+    else
+      wfEl.innerHTML='<div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">回測資料載入中...</div>';
+  }
+  // 目前進場模擬
+  var liveEl=document.getElementById('home-live-sim');
+  if(liveEl) liveEl.innerHTML=_renderLiveSimHome();
+}
+
+function _renderLiveSimHome(){
+  var posPct=Math.min(Math.round(riskPct/5*100*10)/10,25);
+  var allTracking=[].concat(stocksBtTracking||[]).concat(expansionData.signal_tracking||[]);
+  var d=_buildCurveFromTracking(allTracking,posPct);
+  var openCnt=allTracking.filter(function(t){return t.status==='open';}).length;
+  var closedCnt=allTracking.filter(function(t){return t.status==='win'||t.status==='loss';}).length;
+  var cardStyle='background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px';
+  if(!d||closedCnt===0){
+    return '<div style="'+cardStyle+';text-align:center">'+
+      '<div style="font-size:12px;color:var(--text3);margin-bottom:6px">進行中 <b style="color:var(--text1)">'+openCnt+'</b> 筆訊號</div>'+
+      '<div style="font-size:10px;color:var(--text3)">尚無已結算交易，累積更多紀錄後此處將顯示資金曲線</div>'+
+    '</div>';
+  }
+  var tr=d.totalReturn; var trCol=tr>=0?'var(--green)':'var(--red)';
+  var gain=Math.round(totalCapital*tr/100);
+  var gainStr=(gain>=0?'+':'')+gain.toLocaleString()+'元';
+  var chart=_svgEquityCurve(d.points,320,120);
+  return '<div style="'+cardStyle+'">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+      '<div style="font-size:12px;font-weight:700">依實際觸發訊號</div>'+
+      '<div style="font-size:11px;color:var(--text3)">已結算 '+closedCnt+' 筆</div>'+
+    '</div>'+
+    chart+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px">'+
+      _ecStat('總報酬',(tr>=0?'+':'')+tr+'%',trCol)+
+      _ecStat('損益',gainStr,trCol)+
+      _ecStat('最大回撤','-'+d.maxDD+'%','var(--orange)')+
+      _ecStat('進行中',openCnt+'筆','var(--text2)')+
+    '</div>'+
+    '<div style="font-size:9px;color:var(--text3);margin-top:6px;text-align:center">固定風險 '+riskPct+'%/筆 · 含費用 0.74%</div>'+
+  '</div>';
 }
 
 // ── 風控 & 資金曲線 ───────────────────────────────────────────
@@ -3899,6 +3962,7 @@ async function loadData(){
     _step='render';
     goView('home');
     render();
+    renderHomeSimBlocks();   // 更新主頁目前進場模擬（signal_tracking 來自 stocks.json）
   }catch(err){
     document.getElementById('app').innerHTML='<div class="status"><span>⚠️ 數據載入失敗</span><span style="font-size:11px;word-break:break-all">['+_step+'] '+err.message+'</span></div>';
   }
@@ -3925,6 +3989,8 @@ async function loadQ1Backtest(){
     if(!res.ok) return;
     q1BtData=await res.json();
     if(curView==='backtest') renderBacktest();
+    renderHomeCards();       // 更新首頁 block A 統計
+    renderHomeSimBlocks();   // 渲染首頁 Walk-Forward + 目前進場模擬
   }catch(e){console.error('[loadQ1Backtest]',e);}
 }
 loadQ1Backtest();
