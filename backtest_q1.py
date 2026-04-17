@@ -25,9 +25,10 @@ from signals import calc_signals
 BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
 BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
 BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
-MAX_HOLD_LONG  = 60   # high_base 專用：5季 expired 均正，需要時間發酵
-MAX_HOLD_TREND = 25
-MAX_HOLD_SWING = 8
+MAX_HOLD_LONG    = 60   # high_base：需要時間發酵，expired win avg +14.7%
+MAX_HOLD_TREND   = 25   # breakout / trend_cont
+MAX_HOLD_PULLBACK = 10  # ma_pullback：技術面 2 週內不確認即失效
+MAX_HOLD_SWING   = 8    # false_breakdown / ma60_support 等短線
 BENCHMARK_TID  = "^TWII"
 OUTPUT_PATH    = "docs/backtest_q1.json"
 SLIP           = 0.002    # 滑價估計 0.2%
@@ -42,7 +43,7 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
     "ma_pullback":     1.0,
-    "ma60_support":    0.8,
+    "ma60_support":    0.0,   # 不單獨進場；MA60 近支撐改為第 7 個確認旗標（signals.py）
     "false_breakdown": 0.8,
     "trend_cont":      1.0,
     "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
@@ -148,15 +149,28 @@ def _snapshot(closes, highs, lows, vols, opens, i):
     }
 
 
-# ── 大盤相位（截至第 i 日的 TWII）────────────────────────────────────
-def _market_regime(bm_closes, i):
+# ── 大盤相位（截至第 i 日的 TWII + 市場廣度雙確認）───────────────────────
+def _market_regime(bm_closes, i, breadth_pct=0.5):
+    """
+    雙確認 regime：TWII vs MA60（趨勢方向）× 市場廣度（% 股票在 MA20 以上）
+    防止猴市中 MA60 假突破/假跌破導致誤判。
+
+    bear 需要 TWII < MA60 AND 廣度 < 35%（雙確認）；
+    僅 MA60 破位但廣度健康 → range（猴市或短暫急跌）。
+    """
     if i < 60:
         return "range"
     p    = bm_closes[i]
-    ma20 = sum(bm_closes[i - 19:i + 1]) / 20
     ma60 = sum(bm_closes[i - 59:i + 1]) / 60
-    if p > ma20 and p > ma60:
+
+    above_ma60 = p > ma60
+    if above_ma60 and breadth_pct > 0.55:
         return "bull"
+    if above_ma60:                       # 廣度 ≤ 55%：多頭結構仍在但開始轉弱
+        return "bull_pullback"
+    if breadth_pct < 0.35:               # MA60 跌破 + 廣度崩潰 → 真熊市
+        return "bear"
+    return "range"                       # MA60 附近震盪 or 廣度居中 → 猴市
     if p > ma60 and p <= ma20:
         return "bull_pullback"
     if p < ma60 * 0.97:
@@ -300,6 +314,22 @@ def main():
     print("  原則：每日只用截至當日的已知資料，無向前看偏差")
     print("=" * 60)
 
+    # ── 板塊對應（從 stocks.json 讀取；板塊歸屬穩定，不含未來資訊）──────
+    sector_map   = {}   # code → sector_key
+    sector_codes = defaultdict(list)   # sector_key → [codes]
+    try:
+        with open("docs/stocks.json", encoding="utf-8") as _f:
+            _sj = json.load(_f)
+        for _s in _sj.get("stocks", []):
+            _c  = _s.get("code", "")
+            _sk = _s.get("sector_key", "")
+            if _c and _sk:
+                sector_map[_c] = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊對應：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except Exception as _e:
+        print(f"  板塊對應載入失敗（{_e}），sector_rs 使用 None")
+
     # ── Step 1: 決定候選母體 ─────────────────────────────────────
     # 抗倖存者偏差設計：
     #   1. TWSE API 取今日量能前 500 作為「候選池」（不直接用作母體）
@@ -436,40 +466,37 @@ def main():
         if bm_i is None:
             continue
 
-        regime = _market_regime(bm_closes, bm_i)
-
-        # ── 4a: 計算所有股票截至當日的 RS scalar，用於當日百分位排名
+        # ── 4a: RS scalar + 市場廣度（單次遍歷，廣度用於 regime 雙確認）
         rs_scalar_map = {}
-        rs_cache      = {}   # code → daily_rs（當日截止），避免重複計算
+        rs_cache      = {}
+        _above_ma20   = 0
+        _breadth_n    = 0
         for code, sd in stock_data.items():
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 10:
                 continue
-            # 對齊：只用到 bm_i+1 的大盤資料
-            n_align    = min(si + 1, bm_i + 1)
-            dr         = _daily_rs(sd["closes"][:n_align], bm_closes[:n_align])
+            n_align        = min(si + 1, bm_i + 1)
+            dr             = _daily_rs(sd["closes"][:n_align], bm_closes[:n_align])
             rs_cache[code] = dr
-            _, scalar  = _rs_metrics(dr)
+            _, scalar      = _rs_metrics(dr)
             if scalar is not None:
                 rs_scalar_map[code] = scalar
+            # 廣度：同一次遍歷順帶計算（需 si >= 20）
+            if si >= 20:
+                _cl = sd["closes"][si]
+                if not math.isnan(_cl):
+                    _ma20v = sum(sd["closes"][si - 19:si + 1]) / 20
+                    _breadth_n += 1
+                    if _cl > _ma20v:
+                        _above_ma20 += 1
 
-        # ── 4a-2: 市場廣度 & 動能（連續調整，無二元門檻，無向前看）
-        _above_ma20 = 0
-        _breadth_n  = 0
-        for _bc, _bsd in stock_data.items():
-            _bsi = stock_date_idx[_bc].get(q_date)
-            if _bsi is None or _bsi < 20:
-                continue
-            _cl = _bsd["closes"][_bsi]
-            if math.isnan(_cl):
-                continue
-            _ma20v = sum(_bsd["closes"][_bsi - 19:_bsi + 1]) / 20
-            _breadth_n += 1
-            if _cl > _ma20v:
-                _above_ma20 += 1
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
+
+        # ── regime 在廣度計算後判斷（雙確認：MA60 × 廣度）
+        regime = _market_regime(bm_closes, bm_i, breadth_pct)
+
+        # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
-        # 線性連續因子（k=1，無可調參數）；各自 clamp 0.3~1.5 後相乘再 clamp
         _brf          = max(0.3, min(1.5, breadth_pct / 0.5))
         _mmf          = max(0.3, min(1.5, 1.0 + twii_mom_20))
         market_factor = round(max(0.3, min(1.5, _brf * _mmf)), 3)
@@ -510,7 +537,7 @@ def main():
 
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = None   # 簡化：不計板塊 RS
+            snap["sector_rs"]      = None   # sector RS 待完整設計後再接入
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
@@ -586,10 +613,10 @@ def main():
                     continue   # 超過整體風險預算
 
                 # ── 4e: 追蹤結果（只看已過去的資料）
-                # high_base 60 天：5季 expired 均正，需要時間跑出波段
-                # breakout 維持 25 天：各季 expired 不一致，不延長
                 if sig_type == "high_base":
                     max_days = MAX_HOLD_LONG
+                elif sig_type == "ma_pullback":
+                    max_days = MAX_HOLD_PULLBACK   # 2週：技術面定義，不確認即失效
                 elif sig_type in TREND_TYPES:
                     max_days = MAX_HOLD_TREND
                 else:
@@ -699,8 +726,15 @@ def main():
         "by_quarter":         {k: _stats(v) for k, v in sorted(by_quarter.items())},
         "by_regime":          {k: _stats(v) for k, v in by_regime.items()},
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
+        "capital_curves":     _capital_curves(trades, BT_START),
         "trades":             trades,
     }
+
+    curves = result["capital_curves"]
+    print(f"  固定資本報酬：{curves['fixed']['total_return_pct']:+.1f}%  "
+          f"MaxDD {curves['fixed']['max_drawdown_pct']:.1f}%")
+    print(f"  複利報酬：    {curves['compound']['total_return_pct']:+.1f}%  "
+          f"MaxDD {curves['compound']['max_drawdown_pct']:.1f}%")
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         # NaN / Inf → None（標準 JSON 不允許 NaN）
