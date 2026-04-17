@@ -243,7 +243,12 @@ def _stats(trades):
 
 def _capital_curves(trades, bt_start):
     """fixed capital 與 compound equity 兩條資金曲線（按進場日排序）。
-    注意：concurrent trades 以進場日順序近似處理。"""
+    注意：concurrent trades 以進場日順序近似處理。
+
+    position_size = min(0.015 / stop_dist, 0.20) × pos_factor
+    contrib       = position_size × gain_pct / 100
+    （stop_dist 從 trade 的 entry/stop 反算；pos_factor 是縮放係數，非資本比）
+    """
     sorted_t = sorted(trades, key=lambda t: t["date"])
 
     start_str = bt_start.strftime("%Y-%m-%d")
@@ -254,16 +259,25 @@ def _capital_curves(trades, bt_start):
     comp_eq  = 1.0;  comp_peak  = 1.0;  comp_mdd  = 0.0
 
     for t in sorted_t:
-        pf      = t.get("pos_factor", 0.5)
-        gp      = t.get("gain_pct",   0.0) or 0.0
-        contrib = pf * gp / 100
+        entry = t.get("entry", 0) or 0
+        stop  = t.get("stop",  0) or 0
+        pf    = t.get("pos_factor", 0.5)
+        gp    = t.get("gain_pct",   0.0) or 0.0
 
-        fixed_eq  += contrib
+        # 實際停損距離（避免除零）
+        stop_dist = max((entry - stop) / entry, 0.005) if entry > stop > 0 else 0.05
+        # 倉位大小（佔總資本%，上限 20%）
+        pos_size  = min(0.015 / stop_dist, 0.20) * pf
+        contrib   = pos_size * gp / 100
+
+        fixed_eq   = max(fixed_eq + contrib, 0.0)  # 最低歸零，不穿負
         fixed_peak = max(fixed_peak, fixed_eq)
-        fixed_mdd  = max(fixed_mdd, (fixed_peak - fixed_eq) / fixed_peak)
+        if fixed_peak > 0:
+            fixed_mdd = max(fixed_mdd, (fixed_peak - fixed_eq) / fixed_peak)
         fixed_pts.append({"date": t["date"], "equity": round(fixed_eq, 4)})
 
         comp_eq  *= (1 + contrib)
+        comp_eq   = max(comp_eq, 1e-6)             # 理論下限
         comp_peak  = max(comp_peak, comp_eq)
         comp_mdd   = max(comp_mdd, (comp_peak - comp_eq) / comp_peak)
         comp_pts.append({"date": t["date"], "equity": round(comp_eq, 4)})
@@ -459,16 +473,7 @@ def main():
             if scalar is not None:
                 rs_scalar_map[code] = scalar
 
-        # ── 4a-2: 板塊 RS（只用截至當日的 rs_scalar_map，無向前看）
-        sector_rs_map = {}
-        for _sc, _sk in sector_map.items():
-            if _sc not in rs_scalar_map:
-                continue
-            _peers = [rs_scalar_map[c] for c in sector_codes.get(_sk, [])
-                      if c in rs_scalar_map and c != _sc]
-            sector_rs_map[_sc] = sum(_peers) / len(_peers) if _peers else None
-
-        # ── 4a-3: 市場廣度 & 動能（連續調整，無二元門檻，無向前看）
+        # ── 4a-2: 市場廣度 & 動能（連續調整，無二元門檻，無向前看）
         _above_ma20 = 0
         _breadth_n  = 0
         for _bc, _bsd in stock_data.items():
@@ -525,7 +530,7 @@ def main():
 
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = sector_rs_map.get(code)
+            snap["sector_rs"]      = None   # sector RS 待完整設計後再接入
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
