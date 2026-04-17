@@ -22,9 +22,9 @@ from collections import defaultdict
 from signals import calc_signals
 
 # ── 設定 ────────────────────────────────────────────────────────────
-BT_START       = date(2024, 1, 2)    # 樣本外測試：2024 全年
-BT_END         = date(2024, 12, 31)  # 樣本外測試結束
-BT_PERIOD      = "2024-Q1~2024-Q4"  # 顯示標籤（Out-of-Sample）
+BT_START       = date(2024, 1, 2)    # 回測起始（含 2024 OOS + 2025 in-sample）
+BT_END         = date(2026, 3, 31)   # 回測結束
+BT_PERIOD      = "2024-Q1~2026-Q1"  # 顯示標籤
 MAX_HOLD_LONG    = 60   # high_base：需要時間發酵，expired win avg +14.7%
 MAX_HOLD_TREND   = 25   # breakout / trend_cont
 MAX_HOLD_PULLBACK = 10  # ma_pullback：技術面 2 週內不確認即失效
@@ -588,15 +588,7 @@ def main():
                 if actual_rr < 1.5:
                     continue   # RR 門檻：1.2→1.5，移除邊際交易（EV 僅 +0.26%）
 
-                # ma60_support：只在 bull_pullback 進場（bull 市場 35.8% 勝率）
-                if sig_type == "ma60_support" and regime != "bull_pullback":
-                    continue
-
-                # high_base：至少需要 4 個確認項（conf 3 以下勝率僅 23.4%）
-                if sig_type == "high_base" and sig.get("confirmations", 0) < 4:
-                    continue
-
-                # retest：公平宇宙回測無 alpha，降為候選清單不交易
+                # retest / ma60_support：SIGNAL_SCALE=0.0，pos_size=0，記錄但不影響資金曲線
                 if sig_type == "retest":
                     continue
 
