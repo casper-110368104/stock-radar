@@ -25,9 +25,10 @@ from signals import calc_signals
 BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
 BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
 BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
-MAX_HOLD_LONG  = 60   # high_base 專用：5季 expired 均正，需要時間發酵
-MAX_HOLD_TREND = 25
-MAX_HOLD_SWING = 8
+MAX_HOLD_LONG    = 60   # high_base：需要時間發酵，expired win avg +14.7%
+MAX_HOLD_TREND   = 25   # breakout / trend_cont
+MAX_HOLD_PULLBACK = 10  # ma_pullback：技術面 2 週內不確認即失效
+MAX_HOLD_SWING   = 8    # false_breakdown / ma60_support 等短線
 BENCHMARK_TID  = "^TWII"
 OUTPUT_PATH    = "docs/backtest_q1.json"
 SLIP           = 0.002    # 滑價估計 0.2%
@@ -618,10 +619,10 @@ def main():
                     continue   # 超過整體風險預算
 
                 # ── 4e: 追蹤結果（只看已過去的資料）
-                # high_base 60 天：5季 expired 均正，需要時間跑出波段
-                # breakout 維持 25 天：各季 expired 不一致，不延長
                 if sig_type == "high_base":
                     max_days = MAX_HOLD_LONG
+                elif sig_type == "ma_pullback":
+                    max_days = MAX_HOLD_PULLBACK   # 2週：技術面定義，不確認即失效
                 elif sig_type in TREND_TYPES:
                     max_days = MAX_HOLD_TREND
                 else:
