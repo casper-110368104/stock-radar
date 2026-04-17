@@ -333,16 +333,16 @@ def main():
     # ── Step 1: 決定候選母體 ─────────────────────────────────────
     # 抗倖存者偏差設計：
     #   1. TWSE API 取今日量能前 500 作為「候選池」（不直接用作母體）
-    #   2. 下載資料後，用「回測開始前一年（2024）的平均成交量」重排，取前 300
-    #   → 選股依據為 2024 已知資訊，不含 2025+ 的未來資訊
+    #   2. 下載資料後，用「回測開始前一整年的平均成交量」重排，取前 300
+    #   → PRE_BT_VOL 動態計算（BT_START 前一年），確保任何測試區間都無向後看偏差
     UNIVERSE_CANDIDATES = 500   # 候選池大小（下載後再篩）
     UNIVERSE_FINAL      = 300   # 最終母體大小
-    PRE_BT_VOL_START    = date(2024, 1, 1)
-    PRE_BT_VOL_END      = date(2024, 12, 31)
+    PRE_BT_VOL_START    = date(BT_START.year - 1, 1, 1)
+    PRE_BT_VOL_END      = date(BT_START.year - 1, 12, 31)
 
     print("\n[1] 抓取候選股票池（TWSE 量能前 500）...")
     print(f"  回測期間：{BT_START} ~ {BT_END}")
-    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（回測前一年）")
+    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（BT_START 前一整年，無向後看）")
     universe_candidates = []
     try:
         r = requests.get(
