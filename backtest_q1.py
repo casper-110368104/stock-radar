@@ -49,6 +49,14 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
 }
 
+# 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
+REGIME_ACTIVE_SIGNALS = {
+    "bull":          {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown"},
+    "bull_pullback": {"ma_pullback", "false_breakdown"},
+    "range":         {"false_breakdown", "ma_pullback"},
+    "bear":          {"false_breakdown"},
+}
+
 BASE_R      = 0.012   # base risk per trade as fraction of capital (1.2%)
 
 GAP_LIMIT   = {
@@ -529,6 +537,23 @@ def main():
         else:
             rs_pct_map = {c: 50.0 for c in rs_scalar_map}
 
+        # ── 類股 RS 百分位（每日計算，用於個股倉位加權）
+        _sec_sum = defaultdict(float)
+        _sec_cnt = defaultdict(int)
+        for _c, _sc in rs_scalar_map.items():
+            _sk = sector_map.get(_c, "")
+            if _sk:
+                _sec_sum[_sk] += _sc
+                _sec_cnt[_sk] += 1
+        _sec_avg = {sk: _sec_sum[sk] / _sec_cnt[sk] for sk in _sec_sum}
+        if len(_sec_avg) > 1:
+            _sec_sorted = sorted(_sec_avg, key=lambda s: _sec_avg[s])
+            _sec_n      = len(_sec_sorted)
+            _sec_pct    = {s: round(i / (_sec_n - 1) * 100, 1)
+                           for i, s in enumerate(_sec_sorted)}
+        else:
+            _sec_pct = {s: 50.0 for s in _sec_avg}
+
         day_count = 0
 
         # ── 4c: 對每支股票產生訊號
@@ -551,9 +576,12 @@ def main():
             m_z, _ = _rs_metrics(dr)
             slope  = _rs_slope(dr)
 
+            _code_sk       = sector_map.get(code, "")
+            _code_sec_pct  = _sec_pct.get(_code_sk, 50.0)
+
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = None   # sector RS 待完整設計後再接入
+            snap["sector_rs"]      = _code_sec_pct
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
@@ -604,15 +632,21 @@ def main():
                 if actual_rr < 1.5:
                     continue   # RR 門檻：1.2→1.5，移除邊際交易（EV 僅 +0.26%）
 
-                # retest / ma60_support：SIGNAL_SCALE=0.0，pos_size=0，記錄但不影響資金曲線
+                # retest / ma60_support：SIGNAL_SCALE=0.0，不進場
                 if sig_type == "retest":
                     continue
 
-                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子）
+                # ── 依市場相位篩選訊號類型（空頭不跑趨勢單；震盪不跑高基底）
+                if sig_type not in REGIME_ACTIVE_SIGNALS.get(regime, set()):
+                    continue
+
+                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 confs      = sig.get("confirmations", 0)
                 conf_mult  = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                 sig_scale  = SIGNAL_SCALE.get(sig_type, 1.0)
-                target_R   = BASE_R * sig_scale * conf_mult * market_factor
+                # 類股 RS 加權：強勢類股 +20%，弱勢類股 -20%（連續，無硬門檻）
+                _sector_mult = round(0.8 + 0.004 * _code_sec_pct, 3)
+                target_R   = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                 _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
                 pos_size   = min(target_R / _stop_dist, 0.20)
                 _trade_heat = round(pos_size * _stop_dist, 5)
@@ -680,10 +714,12 @@ def main():
                     "outcome":       outcome,
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
-                    "confirmations": sig.get("confirmations", 0),
-                    "pos_factor":    round(pos_size, 4),
-                    "market_er":     round(_er, 3),
-                    "market_factor": market_factor,
+                    "confirmations":  sig.get("confirmations", 0),
+                    "pos_factor":     round(pos_size, 4),
+                    "market_er":      round(_er, 3),
+                    "market_factor":  market_factor,
+                    "sector_key":     _code_sk,
+                    "sector_rs_pct":  round(_code_sec_pct, 1),
                 })
                 day_count += 1
 
@@ -700,6 +736,7 @@ def main():
     by_quarter  = defaultdict(list)
     by_regime   = defaultdict(list)
     by_conf     = defaultdict(list)
+    by_sector   = defaultdict(list)
 
     def _quarter(d_str):
         y, m = int(d_str[:4]), int(d_str[5:7])
@@ -714,6 +751,9 @@ def main():
         c = t.get("confirmations", 0)
         conf_key = "5+" if c >= 5 else ("4" if c == 4 else ("3" if c == 3 else "0-2"))
         by_conf[conf_key].append(t)
+        sk = t.get("sector_key", "")
+        if sk:
+            by_sector[sk].append(t)
 
     overall = _stats(trades)
     print(f"  整體：{overall['count']} 筆  勝率 {overall['win_rate']}%"
@@ -736,6 +776,7 @@ def main():
         "by_quarter":         {k: _stats(v) for k, v in sorted(by_quarter.items())},
         "by_regime":          {k: _stats(v) for k, v in by_regime.items()},
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
+        "by_sector":          {k: _stats(v) for k, v in sorted(by_sector.items())},
         "capital_curves":     _capital_curves(trades, BT_START),
         "trades":             trades,
     }
