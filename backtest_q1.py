@@ -49,6 +49,8 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
 }
 
+BASE_R      = 0.012   # base risk per trade as fraction of capital (1.2%)
+
 GAP_LIMIT   = {
     "breakout":        0.04,
     "trend_cont":      0.04,
@@ -259,9 +261,8 @@ def _capital_curves(trades, bt_start):
     """fixed capital 與 compound equity 兩條資金曲線（按進場日排序）。
     注意：concurrent trades 以進場日順序近似處理。
 
-    position_size = min(0.015 / stop_dist, 0.20) × pos_factor
-    contrib       = position_size × gain_pct / 100
-    （stop_dist 從 trade 的 entry/stop 反算；pos_factor 是縮放係數，非資本比）
+    pos_factor = actual position size (fraction of capital, already R-sized)
+    contrib    = pos_factor × gain_pct / 100
     """
     sorted_t = sorted(trades, key=lambda t: t["date"])
 
@@ -273,16 +274,11 @@ def _capital_curves(trades, bt_start):
     comp_eq  = 1.0;  comp_peak  = 1.0;  comp_mdd  = 0.0
 
     for t in sorted_t:
-        entry = t.get("entry", 0) or 0
-        stop  = t.get("stop",  0) or 0
-        pf    = t.get("pos_factor", 0.5)
+        pf    = t.get("pos_factor", 0.05)
         gp    = t.get("gain_pct",   0.0) or 0.0
 
-        # 實際停損距離（避免除零）
-        stop_dist = max((entry - stop) / entry, 0.005) if entry > stop > 0 else 0.05
-        # 倉位大小（佔總資本%，上限 20%）
-        pos_size  = min(0.015 / stop_dist, 0.20) * pf
-        contrib   = pos_size * gp / 100
+        # pos_factor is already the true position size (R-based sizing)
+        contrib = pf * gp / 100
 
         fixed_eq   = max(fixed_eq + contrib, 0.0)  # 最低歸零，不穿負
         fixed_peak = max(fixed_peak, fixed_eq)
@@ -604,16 +600,14 @@ def main():
                 if sig_type == "retest":
                     continue
 
-                # ── 訊號分級 pos_factor（依設計屬性，非 EV 擬合）
+                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子）
                 confs      = sig.get("confirmations", 0)
-                conf_scale = 1.3 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
+                conf_mult  = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                 sig_scale  = SIGNAL_SCALE.get(sig_type, 1.0)
-                base_pf    = sig.get("pos_factor", 0.5)
-                final_pf   = round(min(1.0, base_pf * sig_scale * conf_scale * market_factor), 3)
-
-                # ── Portfolio Heat 檢查（total stop risk ≤ MAX_HEAT）
+                target_R   = BASE_R * sig_scale * conf_mult * market_factor
                 _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
-                _trade_heat = round(min(0.015 / _stop_dist, 0.20) * final_pf * _stop_dist, 5)
+                pos_size   = min(target_R / _stop_dist, 0.20)
+                _trade_heat = round(pos_size * _stop_dist, 5)
                 _total_heat = sum(h for _, h in open_positions)
                 if _total_heat + _trade_heat > MAX_HEAT:
                     continue   # 超過整體風險預算
@@ -679,7 +673,7 @@ def main():
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
                     "confirmations": sig.get("confirmations", 0),
-                    "pos_factor":    final_pf,
+                    "pos_factor":    round(pos_size, 4),
                 })
                 day_count += 1
 
