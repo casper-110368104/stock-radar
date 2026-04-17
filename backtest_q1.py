@@ -241,6 +241,47 @@ def _stats(trades):
     }
 
 
+def _capital_curves(trades, bt_start):
+    """fixed capital 與 compound equity 兩條資金曲線（按進場日排序）。
+    注意：concurrent trades 以進場日順序近似處理。"""
+    sorted_t = sorted(trades, key=lambda t: t["date"])
+
+    start_str = bt_start.strftime("%Y-%m-%d")
+    fixed_pts  = [{"date": start_str, "equity": 1.0}]
+    comp_pts   = [{"date": start_str, "equity": 1.0}]
+
+    fixed_eq = 1.0;  fixed_peak = 1.0;  fixed_mdd = 0.0
+    comp_eq  = 1.0;  comp_peak  = 1.0;  comp_mdd  = 0.0
+
+    for t in sorted_t:
+        pf      = t.get("pos_factor", 0.5)
+        gp      = t.get("gain_pct",   0.0) or 0.0
+        contrib = pf * gp / 100
+
+        fixed_eq  += contrib
+        fixed_peak = max(fixed_peak, fixed_eq)
+        fixed_mdd  = max(fixed_mdd, (fixed_peak - fixed_eq) / fixed_peak)
+        fixed_pts.append({"date": t["date"], "equity": round(fixed_eq, 4)})
+
+        comp_eq  *= (1 + contrib)
+        comp_peak  = max(comp_peak, comp_eq)
+        comp_mdd   = max(comp_mdd, (comp_peak - comp_eq) / comp_peak)
+        comp_pts.append({"date": t["date"], "equity": round(comp_eq, 4)})
+
+    return {
+        "fixed": {
+            "curve":            fixed_pts,
+            "total_return_pct": round((fixed_eq - 1) * 100, 2),
+            "max_drawdown_pct": round(fixed_mdd * 100, 2),
+        },
+        "compound": {
+            "curve":            comp_pts,
+            "total_return_pct": round((comp_eq - 1) * 100, 2),
+            "max_drawdown_pct": round(comp_mdd * 100, 2),
+        },
+    }
+
+
 # ── 主程式 ────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
@@ -248,6 +289,22 @@ def main():
     print(f"  期間：{BT_START} ~ {BT_END}")
     print("  原則：每日只用截至當日的已知資料，無向前看偏差")
     print("=" * 60)
+
+    # ── 板塊對應（從 stocks.json 讀取；板塊歸屬穩定，不含未來資訊）──────
+    sector_map   = {}   # code → sector_key
+    sector_codes = defaultdict(list)   # sector_key → [codes]
+    try:
+        with open("docs/stocks.json", encoding="utf-8") as _f:
+            _sj = json.load(_f)
+        for _s in _sj.get("stocks", []):
+            _c  = _s.get("code", "")
+            _sk = _s.get("sector_key", "")
+            if _c and _sk:
+                sector_map[_c] = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊對應：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except Exception as _e:
+        print(f"  板塊對應載入失敗（{_e}），sector_rs 使用 None")
 
     # ── Step 1: 決定候選母體 ─────────────────────────────────────
     # 抗倖存者偏差設計：
@@ -402,7 +459,16 @@ def main():
             if scalar is not None:
                 rs_scalar_map[code] = scalar
 
-        # ── 4a-2: 市場廣度 & 動能（連續調整，無二元門檻，無向前看）
+        # ── 4a-2: 板塊 RS（只用截至當日的 rs_scalar_map，無向前看）
+        sector_rs_map = {}
+        for _sc, _sk in sector_map.items():
+            if _sc not in rs_scalar_map:
+                continue
+            _peers = [rs_scalar_map[c] for c in sector_codes.get(_sk, [])
+                      if c in rs_scalar_map and c != _sc]
+            sector_rs_map[_sc] = sum(_peers) / len(_peers) if _peers else None
+
+        # ── 4a-3: 市場廣度 & 動能（連續調整，無二元門檻，無向前看）
         _above_ma20 = 0
         _breadth_n  = 0
         for _bc, _bsd in stock_data.items():
@@ -459,7 +525,7 @@ def main():
 
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = None   # 簡化：不計板塊 RS
+            snap["sector_rs"]      = sector_rs_map.get(code)
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
@@ -650,8 +716,15 @@ def main():
         "by_quarter":         {k: _stats(v) for k, v in sorted(by_quarter.items())},
         "by_regime":          {k: _stats(v) for k, v in by_regime.items()},
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
+        "capital_curves":     _capital_curves(trades, BT_START),
         "trades":             trades,
     }
+
+    curves = result["capital_curves"]
+    print(f"  固定資本報酬：{curves['fixed']['total_return_pct']:+.1f}%  "
+          f"MaxDD {curves['fixed']['max_drawdown_pct']:.1f}%")
+    print(f"  複利報酬：    {curves['compound']['total_return_pct']:+.1f}%  "
+          f"MaxDD {curves['compound']['max_drawdown_pct']:.1f}%")
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         # NaN / Inf → None（標準 JSON 不允許 NaN）
