@@ -42,7 +42,7 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
     "ma_pullback":     1.0,
-    "ma60_support":    0.8,
+    "ma60_support":    0.0,   # 不單獨進場；MA60 近支撐改為第 7 個確認旗標（signals.py）
     "false_breakdown": 0.8,
     "trend_cont":      1.0,
     "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha

@@ -105,17 +105,19 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         "bear":          {"false_breakdown"},
     }.get(market_regime, _base_allowed)
 
-    # 訊號確認旗標（最高 6 項；chips/market 無資料時對應項目 ok=False）
+    # 訊號確認旗標（最高 7 項；chips/market 無資料時對應項目 ok=False）
     _chips_score = (chips or {}).get("chips_score_val", 0) or 0
+    _near_ma60   = bool(ma60 and 0 <= (price - ma60) / ma60 <= 0.025)
     _conf_flags = [
-        {"lbl": "籌碼偏多",   "sub": "主力籌碼分>60",     "ok": _chips_score > 60},
-        {"lbl": "RS強勢",     "sub": "RS百分位≥70",        "ok": rs_pct >= 70},
-        {"lbl": "量能擴張",   "sub": "日量比>1.3×",        "ok": (yahoo.get("vol_day_ratio") or 1) > 1.3},
-        {"lbl": "個股多頭",   "sub": "個股相位=BULL",       "ok": stock_phase == "BULL"},
-        {"lbl": "大盤多頭",   "sub": "大盤相位=多頭",       "ok": market_regime == "bull"},
-        {"lbl": "均量線對齊", "sub": "三條AVWAP均低於現價", "ok": bool(
+        {"lbl": "籌碼偏多",   "sub": "主力籌碼分>60",         "ok": _chips_score > 60},
+        {"lbl": "RS強勢",     "sub": "RS百分位≥70",            "ok": rs_pct >= 70},
+        {"lbl": "量能擴張",   "sub": "日量比>1.3×",            "ok": (yahoo.get("vol_day_ratio") or 1) > 1.3},
+        {"lbl": "個股多頭",   "sub": "個股相位=BULL",           "ok": stock_phase == "BULL"},
+        {"lbl": "大盤多頭",   "sub": "大盤相位=多頭",           "ok": market_regime == "bull"},
+        {"lbl": "均量線對齊", "sub": "三條AVWAP均低於現價",     "ok": bool(
             avwap_swing and avwap_vol and avwap_short
             and price >= avwap_swing and price >= avwap_vol and price >= avwap_short)},
+        {"lbl": "MA60近支撐", "sub": "收盤在MA60 +0~2.5%以內", "ok": _near_ma60},
     ]
     _confirmations = sum(f["ok"] for f in _conf_flags)
 
