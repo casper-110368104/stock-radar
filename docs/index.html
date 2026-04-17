@@ -700,6 +700,7 @@ var stocksBtStats={};
 var stocksBtTracking=[];
 var totalCapital=1000000; // 模擬總資金（預設100萬）
 var _curECTab='combined'; // equity curve tab: stocks / exp / combined
+var _q1CapTab='compound'; // Q1回測資金曲線 tab: fixed / compound
 var riskPct=1.0;          // 每筆風險% (固定風險法，預設1%)
 var includeFeeSim=true;   // 資金曲線是否含手續費+稅+滑點
 var FEE_ROUNDTRIP=0.0074; // 台股來回成本：手續費0.285%+交易稅0.3%+滑點0.2%≈0.74%
@@ -1479,77 +1480,48 @@ function _renderQ1Backtest(){
     ' · 無向前看偏差</div>';
   return h;
 }
-// ── Walk-Forward 回測資金模擬 ──────────────────────────────────────
-function _buildQ1CapCurve(){
-  var trades=(q1BtData||{}).trades;
-  if(!trades||!trades.length) return null;
-  var sorted=trades.slice().sort(function(a,b){return a.date>b.date?1:-1;});
-  var initCap=totalCapital, cap=initCap, peak=cap, maxDD=0, wins=0;
-  var points=[{x:0,y:100}];
-  var qEndCap={};
-  function getQ(d){var y=d.slice(0,4),m=parseInt(d.slice(5,7));return y+'-Q'+Math.ceil(m/3);}
-  sorted.forEach(function(t,i){
-    var entry=t.entry,stop=t.stop;
-    if(!entry||!stop||entry<=stop) return;
-    var stopDist=Math.max((entry-stop)/entry,0.005);
-    var pf=Math.min(t.pos_factor||0.5,1.0);
-    var posPct=Math.min((riskPct/100)/stopDist,0.20)*pf;
-    var gp=(t.gain_pct||0)/100;
-    if(includeFeeSim) gp-=FEE_ROUNDTRIP;
-    cap*=(1+posPct*gp);
-    if(cap<1) cap=1;
-    if(cap>peak) peak=cap;
-    var dd=(peak-cap)/peak;
-    if(dd>maxDD) maxDD=dd;
-    if(t.outcome==='win') wins++;
-    qEndCap[getQ(t.date)]=Math.round(cap);
-    if(i%30===0||i===sorted.length-1)
-      points.push({x:i+1,y:+(cap/initCap*100).toFixed(2)});
-  });
-  return{points:points,endCap:Math.round(cap),
-    totalReturn:+((cap-initCap)/initCap*100).toFixed(2),
-    maxDD:+(maxDD*100).toFixed(1),count:sorted.length,wins:wins,qEndCap:qEndCap};
-}
-
+// ── Walk-Forward 回測資金曲線（使用後端預計算的 capital_curves）────────
 function _renderQ1CapSim(){
-  var d=_buildQ1CapCurve();
-  if(!d) return '';
-  var initCap=totalCapital;
-  var gain=d.endCap-initCap;
-  var retCol=d.totalReturn>=0?'var(--green)':'var(--red)';
-  var initStr=Math.round(initCap/10000)+'萬';
-  var endStr=Math.round(d.endCap/10000)+'萬';
-  var gainStr=(gain>=0?'+':'')+Math.round(gain/10000)+'萬';
-  var chart=_svgEquityCurve(d.points,320,120);
-  var statsHtml='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px">'+
-    _ecStat('總報酬',(d.totalReturn>=0?'+':'')+d.totalReturn+'%',retCol)+
-    _ecStat('損益',gainStr,retCol)+
-    _ecStat('最大回撤','-'+d.maxDD+'%','var(--orange)')+
-    _ecStat('勝率',Math.round(d.wins/d.count*100)+'%','var(--text2)')+
+  var cc = q1BtData && q1BtData.capital_curves;
+  if(!cc) return '';
+  var tabs = ['compound','fixed'];
+  var tabLbl = {fixed:'固定資本', compound:'複利'};
+  var active = _q1CapTab;
+  var tabBar = tabs.map(function(t){
+    var on = t===active;
+    return '<button onclick="_q1CapTab=\''+t+'\';renderBacktest()" style="font-size:11px;padding:3px 10px;border-radius:12px;border:none;cursor:pointer;background:'+(on?'var(--blue)':'var(--bg3)')+';color:'+(on?'#fff':'var(--text2)')+'">'+tabLbl[t]+'</button>';
+  }).join('');
+  var cur = cc[active] || {};
+  var curve = cur.curve || [];
+  // equity 以 1.0 為基準，乘以 100 對齊 _svgEquityCurve 的 baseline=100
+  var pts = curve.map(function(p,i){ return {x:i, y:+(Math.max(p.equity,0)*100).toFixed(2)}; });
+  var tr  = cur.total_return_pct;
+  var mdd = cur.max_drawdown_pct;
+  var retCol = tr>=0 ? 'var(--green)' : 'var(--red)';
+  var cnt = (q1BtData.overall||{}).count || 0;
+  var chart = _svgEquityCurve(pts, 320, 120);
+  var statsHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px">'+
+    _ecStat('總報酬',(tr>=0?'+':'')+tr+'%',retCol)+
+    _ecStat('最大回撤','-'+mdd+'%','var(--orange)')+
+    _ecStat('交易筆數',cnt+'筆','var(--text2)')+
   '</div>';
-  var quarters=['2025-Q1','2025-Q2','2025-Q3','2025-Q4','2026-Q1'];
-  var prevCap=initCap;
-  var qHtml='<div style="margin-top:8px;display:flex;gap:4px">';
-  quarters.forEach(function(q){
-    var ec=d.qEndCap[q]; if(!ec) return;
-    var qRet=(ec-prevCap)/prevCap*100;
-    var qCol=qRet>=0?'var(--green)':'var(--red)';
-    qHtml+='<div style="flex:1;background:var(--bg4);border-radius:6px;padding:5px;text-align:center">'+
-      '<div style="font-size:8px;color:var(--text3)">'+q.slice(5)+'</div>'+
-      '<div style="font-size:10px;font-weight:700;color:'+qCol+'">'+(qRet>=0?'+':'')+qRet.toFixed(1)+'%</div>'+
-      '<div style="font-size:8px;color:var(--text3)">'+Math.round(ec/10000)+'萬</div>'+
-    '</div>';
-    prevCap=ec;
-  });
-  qHtml+='</div>';
-  var cardStyle='background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px';
+  // 另一條曲線摘要（對比用）
+  var otherKey = active==='fixed'?'compound':'fixed';
+  var other = cc[otherKey] || {};
+  var otherTr = other.total_return_pct; var otherMdd = other.max_drawdown_pct;
+  var compareHtml = '<div style="font-size:9px;color:var(--text3);margin-top:6px;padding:5px 8px;background:var(--bg4);border-radius:6px;display:flex;justify-content:space-between">'+
+    '<span>'+tabLbl[otherKey]+'：</span>'+
+    '<span style="color:'+(otherTr>=0?'var(--green)':'var(--red)')+'">報酬 '+(otherTr>=0?'+':'')+otherTr+'%</span>'+
+    '<span style="color:var(--orange)">MaxDD '+otherMdd+'%</span>'+
+  '</div>';
+  var cardStyle = 'background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px';
   return '<div style="'+cardStyle+'">'+
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
-      '<div style="font-size:12px;font-weight:700">💰 資金模擬 <span style="font-size:10px;color:var(--text3)">'+initStr+' 入場 · 5季</span></div>'+
-      '<div style="font-size:13px;font-weight:700;color:'+retCol+'">'+endStr+'</div>'+
+      '<div style="font-size:12px;font-weight:700">💰 資金曲線</div>'+
+      '<div style="display:flex;gap:4px">'+tabBar+'</div>'+
     '</div>'+
-    chart+statsHtml+qHtml+
-    '<div style="font-size:9px;color:var(--text3);margin-top:6px;text-align:center">固定風險 '+riskPct+'%/筆 · 最大倉位20% · 依停損距離定量（可在下方調整）</div>'+
+    chart+statsHtml+compareHtml+
+    '<div style="font-size:9px;color:var(--text3);margin-top:6px;text-align:center">pos_factor × gain_pct 各筆累計 · 按進場日排序近似</div>'+
   '</div>';
 }
 
