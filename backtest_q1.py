@@ -22,9 +22,9 @@ from collections import defaultdict
 from signals import calc_signals
 
 # ── 設定 ────────────────────────────────────────────────────────────
-BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
-BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
-BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
+BT_START       = date(2024, 1, 2)    # 回測起始（含 2024 OOS + 2025 in-sample）
+BT_END         = date(2026, 3, 31)   # 回測結束
+BT_PERIOD      = "2024-Q1~2026-Q1"  # 顯示標籤
 MAX_HOLD_LONG    = 60   # high_base：需要時間發酵，expired win avg +14.7%
 MAX_HOLD_TREND   = 25   # breakout / trend_cont
 MAX_HOLD_PULLBACK = 10  # ma_pullback：技術面 2 週內不確認即失效
@@ -333,16 +333,16 @@ def main():
     # ── Step 1: 決定候選母體 ─────────────────────────────────────
     # 抗倖存者偏差設計：
     #   1. TWSE API 取今日量能前 500 作為「候選池」（不直接用作母體）
-    #   2. 下載資料後，用「回測開始前一年（2024）的平均成交量」重排，取前 300
-    #   → 選股依據為 2024 已知資訊，不含 2025+ 的未來資訊
+    #   2. 下載資料後，用「回測開始前一整年的平均成交量」重排，取前 300
+    #   → PRE_BT_VOL 動態計算（BT_START 前一年），確保任何測試區間都無向後看偏差
     UNIVERSE_CANDIDATES = 500   # 候選池大小（下載後再篩）
     UNIVERSE_FINAL      = 300   # 最終母體大小
-    PRE_BT_VOL_START    = date(2024, 1, 1)
-    PRE_BT_VOL_END      = date(2024, 12, 31)
+    PRE_BT_VOL_START    = date(BT_START.year - 1, 1, 1)
+    PRE_BT_VOL_END      = date(BT_START.year - 1, 12, 31)
 
     print("\n[1] 抓取候選股票池（TWSE 量能前 500）...")
     print(f"  回測期間：{BT_START} ~ {BT_END}")
-    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（回測前一年）")
+    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（BT_START 前一整年，無向後看）")
     universe_candidates = []
     try:
         r = requests.get(
@@ -588,15 +588,7 @@ def main():
                 if actual_rr < 1.5:
                     continue   # RR 門檻：1.2→1.5，移除邊際交易（EV 僅 +0.26%）
 
-                # ma60_support：只在 bull_pullback 進場（bull 市場 35.8% 勝率）
-                if sig_type == "ma60_support" and regime != "bull_pullback":
-                    continue
-
-                # high_base：至少需要 4 個確認項（conf 3 以下勝率僅 23.4%）
-                if sig_type == "high_base" and sig.get("confirmations", 0) < 4:
-                    continue
-
-                # retest：公平宇宙回測無 alpha，降為候選清單不交易
+                # retest / ma60_support：SIGNAL_SCALE=0.0，pos_size=0，記錄但不影響資金曲線
                 if sig_type == "retest":
                     continue
 
