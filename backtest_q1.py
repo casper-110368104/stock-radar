@@ -49,6 +49,16 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
 }
 
+# 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
+REGIME_ACTIVE_SIGNALS = {
+    "bull":          {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown"},
+    "bull_pullback": {"ma_pullback", "false_breakdown"},
+    "range":         {"false_breakdown", "ma_pullback"},
+    "bear":          set(),   # 空頭不開個股單：改用 00632R 反向 ETF 對沖 + 留現金
+}
+
+HEDGE_SIZE = 0.25   # 空頭相位持有 00632R 的倉位比例（25%）；非最佳化，設計值
+
 BASE_R      = 0.012   # base risk per trade as fraction of capital (1.2%)
 
 GAP_LIMIT   = {
@@ -408,6 +418,24 @@ def main():
     q1_dates    = [d for d in bm_dates if BT_START <= d <= BT_END]
     print(f"  TWII：{len(bm_dates)} 日 | 回測交易日：{len(q1_dates)} 天")
 
+    print(f"\n[2b] 下載 00632R（元大台灣50反1，空頭對沖用）...")
+    try:
+        _h = yf.Ticker("00632R.TW").history(start=DATA_START, end=DATA_END)
+        if _h.empty:
+            raise ValueError("empty data")
+        hedge_dates    = [d.date() for d in _h.index]
+        hedge_closes   = [float(v) for v in _h["Close"].tolist()]
+        hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
+        print(f"  00632R：{len(hedge_dates)} 日")
+    except Exception as _e:
+        print(f"  00632R 下載失敗（{_e}），以 TWII 反向模擬（-1x daily）")
+        hedge_dates  = bm_dates[:]
+        hedge_closes = [bm_closes[0]]
+        for _k in range(1, len(bm_closes)):
+            _dr = bm_closes[_k] / bm_closes[_k - 1] - 1
+            hedge_closes.append(round(hedge_closes[-1] * (1 - _dr), 4))
+        hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
+
     print(f"\n[3] 下載 {len(universe_candidates)} 檔候選個股資料...")
     print("    (每 20 檔暫停 3 秒避免限速，預計 8~15 分鐘)")
     stock_data = {}
@@ -470,8 +498,9 @@ def main():
 
     # ── Step 3: Walk-Forward 主迴圈 ──────────────────────────────
     print(f"\n[4] Walk-Forward 逐日掃描（{len(q1_dates)} 個交易日）...")
-    trades        = []
+    trades         = []
     open_positions = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
+    regime_timeline = {}  # date → regime，用於事後計算對沖期間
 
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
@@ -506,6 +535,7 @@ def main():
 
         # ── regime 在廣度計算後判斷（雙確認：MA60 × 廣度）
         regime = _market_regime(bm_closes, bm_i, breadth_pct)
+        regime_timeline[q_date] = regime
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -529,6 +559,23 @@ def main():
         else:
             rs_pct_map = {c: 50.0 for c in rs_scalar_map}
 
+        # ── 類股 RS 百分位（每日計算，用於個股倉位加權）
+        _sec_sum = defaultdict(float)
+        _sec_cnt = defaultdict(int)
+        for _c, _sc in rs_scalar_map.items():
+            _sk = sector_map.get(_c, "")
+            if _sk:
+                _sec_sum[_sk] += _sc
+                _sec_cnt[_sk] += 1
+        _sec_avg = {sk: _sec_sum[sk] / _sec_cnt[sk] for sk in _sec_sum}
+        if len(_sec_avg) > 1:
+            _sec_sorted = sorted(_sec_avg, key=lambda s: _sec_avg[s])
+            _sec_n      = len(_sec_sorted)
+            _sec_pct    = {s: round(i / (_sec_n - 1) * 100, 1)
+                           for i, s in enumerate(_sec_sorted)}
+        else:
+            _sec_pct = {s: 50.0 for s in _sec_avg}
+
         day_count = 0
 
         # ── 4c: 對每支股票產生訊號
@@ -551,9 +598,12 @@ def main():
             m_z, _ = _rs_metrics(dr)
             slope  = _rs_slope(dr)
 
+            _code_sk       = sector_map.get(code, "")
+            _code_sec_pct  = _sec_pct.get(_code_sk, 50.0)
+
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = None   # sector RS 待完整設計後再接入
+            snap["sector_rs"]      = _code_sec_pct
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
@@ -604,15 +654,21 @@ def main():
                 if actual_rr < 1.5:
                     continue   # RR 門檻：1.2→1.5，移除邊際交易（EV 僅 +0.26%）
 
-                # retest / ma60_support：SIGNAL_SCALE=0.0，pos_size=0，記錄但不影響資金曲線
+                # retest / ma60_support：SIGNAL_SCALE=0.0，不進場
                 if sig_type == "retest":
                     continue
 
-                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子）
+                # ── 依市場相位篩選訊號類型（空頭不跑趨勢單；震盪不跑高基底）
+                if sig_type not in REGIME_ACTIVE_SIGNALS.get(regime, set()):
+                    continue
+
+                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 confs      = sig.get("confirmations", 0)
                 conf_mult  = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                 sig_scale  = SIGNAL_SCALE.get(sig_type, 1.0)
-                target_R   = BASE_R * sig_scale * conf_mult * market_factor
+                # 類股 RS 加權：強勢類股 +20%，弱勢類股 -20%（連續，無硬門檻）
+                _sector_mult = round(0.8 + 0.004 * _code_sec_pct, 3)
+                target_R   = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                 _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
                 pos_size   = min(target_R / _stop_dist, 0.20)
                 _trade_heat = round(pos_size * _stop_dist, 5)
@@ -680,16 +736,65 @@ def main():
                     "outcome":       outcome,
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
-                    "confirmations": sig.get("confirmations", 0),
-                    "pos_factor":    round(pos_size, 4),
-                    "market_er":     round(_er, 3),
-                    "market_factor": market_factor,
+                    "confirmations":  sig.get("confirmations", 0),
+                    "pos_factor":     round(pos_size, 4),
+                    "market_er":      round(_er, 3),
+                    "market_factor":  market_factor,
+                    "sector_key":     _code_sk,
+                    "sector_rs_pct":  round(_code_sec_pct, 1),
                 })
                 day_count += 1
 
         print(f"  {q_date}  regime={regime:<14}  訊號={day_count:3d}筆  累計={len(trades)}")
 
     print(f"\n  ✓ 回測完成：共 {len(trades)} 筆觸發交易")
+
+    # ── Step 4b: 空頭對沖（00632R）──────────────────────────────────
+    # 從 regime_timeline 找出連續空頭區間，模擬持有 00632R
+    print("\n[4b] 計算空頭對沖部位（00632R）...")
+    bear_periods = []
+    _in_bear = False
+    _bear_start = None
+    for _d in sorted(regime_timeline.keys()):
+        if regime_timeline[_d] == "bear" and not _in_bear:
+            _in_bear = True
+            _bear_start = _d
+        elif regime_timeline[_d] != "bear" and _in_bear:
+            _in_bear = False
+            bear_periods.append((_bear_start, _d))
+    if _in_bear:
+        bear_periods.append((_bear_start, BT_END))
+
+    hedge_trades = []
+    _hedge_dates_sorted = sorted(hedge_date_idx.keys())
+    for _bs, _be in bear_periods:
+        # 找空頭開始後第一個有效交易日（進場）
+        _entry_date = next((d for d in _hedge_dates_sorted if d >= _bs), None)
+        if _entry_date is None:
+            continue
+        _entry_px = hedge_closes[hedge_date_idx[_entry_date]]
+        # 找空頭結束後第一個有效交易日（出場）
+        _exit_date = next((d for d in _hedge_dates_sorted if d >= _be), None)
+        if _exit_date is None:
+            _exit_date = max(hedge_date_idx.keys())
+        _exit_px = hedge_closes[hedge_date_idx[_exit_date]]
+        _gp      = round((_exit_px - _entry_px) / _entry_px * 100, 2)
+        _days    = (_exit_date - _entry_date).days
+        hedge_trades.append({
+            "date":       _entry_date.strftime("%Y-%m-%d"),
+            "exit_date":  _exit_date.strftime("%Y-%m-%d"),
+            "code":       "00632R",
+            "type":       "hedge",
+            "regime":     "bear",
+            "entry":      _entry_px,
+            "exit":       _exit_px,
+            "hold_days":  _days,
+            "gain_pct":   _gp,
+            "outcome":    "win" if _gp > 0 else "loss",
+            "pos_factor": HEDGE_SIZE,
+        })
+        print(f"  → {_entry_date} ~ {_exit_date}  00632R {_gp:+.2f}%  ({_days}天)")
+    print(f"  → 共 {len(hedge_trades)} 筆對沖交易")
 
     # ── Step 4: 統計 ──────────────────────────────────────────────
     print("\n[5] 統計彙整...")
@@ -700,6 +805,7 @@ def main():
     by_quarter  = defaultdict(list)
     by_regime   = defaultdict(list)
     by_conf     = defaultdict(list)
+    by_sector   = defaultdict(list)
 
     def _quarter(d_str):
         y, m = int(d_str[:4]), int(d_str[5:7])
@@ -714,6 +820,9 @@ def main():
         c = t.get("confirmations", 0)
         conf_key = "5+" if c >= 5 else ("4" if c == 4 else ("3" if c == 3 else "0-2"))
         by_conf[conf_key].append(t)
+        sk = t.get("sector_key", "")
+        if sk:
+            by_sector[sk].append(t)
 
     overall = _stats(trades)
     print(f"  整體：{overall['count']} 筆  勝率 {overall['win_rate']}%"
@@ -736,8 +845,12 @@ def main():
         "by_quarter":         {k: _stats(v) for k, v in sorted(by_quarter.items())},
         "by_regime":          {k: _stats(v) for k, v in by_regime.items()},
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
-        "capital_curves":     _capital_curves(trades, BT_START),
+        "by_sector":          {k: _stats(v) for k, v in sorted(by_sector.items())},
+        "capital_curves":     _capital_curves(
+                                  sorted(trades + hedge_trades, key=lambda t: t["date"]),
+                                  BT_START),
         "trades":             trades,
+        "hedge_trades":       hedge_trades,
     }
 
     curves = result["capital_curves"]
