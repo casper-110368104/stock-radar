@@ -183,11 +183,13 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
 
         target = round(entry + risk * rr, 2)
 
-        # ATR 停損下限：取結構性停損與 ATR 停損中較寬者，避免噪音震出
+        # ATR 停損下限：只對長持倉趨勢型訊號擴寬（高基底/突破/趨勢延伸）
+        # ma_pullback 持倉 10 天，ATR 擴寬會讓目標價不可達，用結構性停損即可
+        _ATR_TYPES = {"high_base", "breakout", "trend_cont"}
         atr = yahoo.get("atr_14")
         _atr_mult = _ATR_MULT[_strategy].get(market_regime, 2.0)
         atr_stop = round(entry - _atr_mult * atr, 2) if atr is not None else None
-        if atr_stop is not None and atr_stop < stop:
+        if type_ in _ATR_TYPES and atr_stop is not None and atr_stop < stop:
             stop   = atr_stop
             risk   = round(entry - stop, 2)
             if risk <= 0:
