@@ -22,9 +22,9 @@ from collections import defaultdict
 from signals import calc_signals
 
 # ── 設定 ────────────────────────────────────────────────────────────
-BT_START       = date(2025, 1, 2)    # 回測起始（台股 1/1 休市，1/2 開盤）
-BT_END         = date(2026, 3, 31)   # 回測結束（含 Q1 2026）
-BT_PERIOD      = "2025-Q1~2026-Q1"   # 顯示標籤
+BT_START       = date(2024, 1, 2)    # 樣本外測試：2024 全年
+BT_END         = date(2024, 12, 31)  # 樣本外測試結束
+BT_PERIOD      = "2024-Q1~2024-Q4"  # 顯示標籤（Out-of-Sample）
 MAX_HOLD_LONG    = 60   # high_base：需要時間發酵，expired win avg +14.7%
 MAX_HOLD_TREND   = 25   # breakout / trend_cont
 MAX_HOLD_PULLBACK = 10  # ma_pullback：技術面 2 週內不確認即失效
