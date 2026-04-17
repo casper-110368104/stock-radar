@@ -178,6 +178,18 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
     return "range"
 
 
+# ── Efficiency Ratio（市場趨勢效率，連續縮放用）──────────────────────
+def _efficiency_ratio(closes, i, n=20):
+    """Kaufman ER：|淨移動| / Σ|逐日移動|
+    → 0 = 純震盪；1 = 純趨勢。用大盤 closes 量測整體市場效率。
+    """
+    if i < n:
+        return 0.5
+    net  = abs(closes[i] - closes[i - n])
+    path = sum(abs(closes[k] - closes[k - 1]) for k in range(i - n + 1, i + 1))
+    return round(net / path, 3) if path > 0 else 0.5
+
+
 # ── 日 RS 序列（個股 vs 大盤，只用截至當日的資料）─────────────────────
 def _daily_rs(stock_c, bm_c):
     n   = min(len(stock_c), len(bm_c))
@@ -499,7 +511,11 @@ def main():
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
         _brf          = max(0.3, min(1.5, breadth_pct / 0.5))
         _mmf          = max(0.3, min(1.5, 1.0 + twii_mom_20))
-        market_factor = round(max(0.3, min(1.5, _brf * _mmf)), 3)
+        # ER 連續乘數：市場越趨勢效率越高 → 倉位越大；震盪 → 自動縮減
+        # er_scale ∈ [0.3, 1.2]；ER=0.30 → 1.0x（基準）；ER=0.15 → 0.5x；ER=0.60 → 1.2x（上限）
+        _er           = _efficiency_ratio(bm_closes, bm_i, 20)
+        _er_scale     = max(0.3, min(_er / 0.30, 1.2))
+        market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale)), 3)
 
         # ── 清除已到期的 heat 部位（依信號日判斷）
         open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
@@ -666,6 +682,8 @@ def main():
                     "actual_rr":     actual_rr,
                     "confirmations": sig.get("confirmations", 0),
                     "pos_factor":    round(pos_size, 4),
+                    "market_er":     round(_er, 3),
+                    "market_factor": market_factor,
                 })
                 day_count += 1
 
