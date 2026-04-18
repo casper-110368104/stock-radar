@@ -786,8 +786,8 @@ def main():
     hedge_trades = []
     _hedge_dates_sorted = sorted(hedge_date_idx.keys())
     for _bs, _be in bear_periods:
-        # 找空頭開始後第一個有效交易日（進場）
-        _entry_date = next((d for d in _hedge_dates_sorted if d >= _bs), None)
+        # 找空頭開始後「次一個」有效交易日進場（當天收盤才得知 regime，次日才能買）
+        _entry_date = next((d for d in _hedge_dates_sorted if d > _bs), None)
         if _entry_date is None:
             continue
         _entry_px = hedge_closes[hedge_date_idx[_entry_date]]
