@@ -1,48 +1,48 @@
 {
   "period": "2024-Q1~2026-Q1",
-  "generated_at": "2026-04-17 22:41",
+  "generated_at": "2026-04-18 11:55",
   "universe_size": 300,
   "trading_days": 540,
   "overall": {
-    "count": 333,
-    "wins": 142,
-    "losses": 191,
-    "expired": 147,
-    "win_rate": 42.6,
-    "avg_gain_pct": 10.45,
-    "avg_loss_pct": -5.4,
-    "expectancy": 1.35
+    "count": 340,
+    "wins": 147,
+    "losses": 193,
+    "expired": 153,
+    "win_rate": 43.2,
+    "avg_gain_pct": 10.43,
+    "avg_loss_pct": -5.33,
+    "expectancy": 1.48
   },
   "by_type": {
     "ma_pullback": {
-      "count": 230,
-      "wins": 97,
+      "count": 235,
+      "wins": 102,
       "losses": 133,
-      "expired": 104,
-      "win_rate": 42.2,
-      "avg_gain_pct": 5.04,
-      "avg_loss_pct": -3.23,
-      "expectancy": 0.26
+      "expired": 108,
+      "win_rate": 43.4,
+      "avg_gain_pct": 4.99,
+      "avg_loss_pct": -3.24,
+      "expectancy": 0.33
     },
     "high_base": {
-      "count": 92,
-      "wins": 39,
-      "losses": 53,
-      "expired": 36,
-      "win_rate": 42.4,
-      "avg_gain_pct": 24.14,
-      "avg_loss_pct": -10.48,
-      "expectancy": 4.2
+      "count": 93,
+      "wins": 38,
+      "losses": 55,
+      "expired": 37,
+      "win_rate": 40.9,
+      "avg_gain_pct": 24.37,
+      "avg_loss_pct": -10.02,
+      "expectancy": 4.05
     },
     "breakout": {
-      "count": 10,
-      "wins": 5,
+      "count": 11,
+      "wins": 6,
       "losses": 5,
-      "expired": 7,
-      "win_rate": 50.0,
-      "avg_gain_pct": 9.49,
+      "expired": 8,
+      "win_rate": 54.5,
+      "avg_gain_pct": 15.33,
       "avg_loss_pct": -9.52,
-      "expectancy": -0.01
+      "expectancy": 4.02
     },
     "false_breakdown": {
       "count": 1,
@@ -57,14 +57,14 @@
   },
   "by_strength": {
     "medium": {
-      "count": 254,
-      "wins": 109,
-      "losses": 145,
-      "expired": 118,
-      "win_rate": 42.9,
-      "avg_gain_pct": 7.87,
-      "avg_loss_pct": -3.98,
-      "expectancy": 1.1
+      "count": 261,
+      "wins": 113,
+      "losses": 148,
+      "expired": 123,
+      "win_rate": 43.3,
+      "avg_gain_pct": 7.63,
+      "avg_loss_pct": -4.02,
+      "expectancy": 1.02
     },
     "weak": {
       "count": 7,
@@ -78,13 +78,13 @@
     },
     "strong": {
       "count": 72,
-      "wins": 30,
-      "losses": 42,
-      "expired": 28,
-      "win_rate": 41.7,
-      "avg_gain_pct": 20.15,
-      "avg_loss_pct": -10.5,
-      "expectancy": 2.28
+      "wins": 31,
+      "losses": 41,
+      "expired": 29,
+      "win_rate": 43.1,
+      "avg_gain_pct": 20.94,
+      "avg_loss_pct": -10.24,
+      "expectancy": 3.2
     }
   },
   "by_month": {
@@ -129,24 +129,24 @@
       "expectancy": 5.0
     },
     "2024-05": {
-      "count": 12,
-      "wins": 5,
-      "losses": 7,
-      "expired": 6,
-      "win_rate": 41.7,
-      "avg_gain_pct": 7.63,
-      "avg_loss_pct": -10.18,
-      "expectancy": -2.75
+      "count": 15,
+      "wins": 6,
+      "losses": 9,
+      "expired": 8,
+      "win_rate": 40.0,
+      "avg_gain_pct": 11.27,
+      "avg_loss_pct": -8.29,
+      "expectancy": -0.47
     },
     "2024-06": {
-      "count": 6,
-      "wins": 4,
-      "losses": 2,
-      "expired": 3,
-      "win_rate": 66.7,
-      "avg_gain_pct": 7.14,
-      "avg_loss_pct": -1.61,
-      "expectancy": 4.23
+      "count": 10,
+      "wins": 7,
+      "losses": 3,
+      "expired": 6,
+      "win_rate": 70.0,
+      "avg_gain_pct": 6.44,
+      "avg_loss_pct": -1.22,
+      "expectancy": 4.14
     },
     "2024-07": {
       "count": 10,
@@ -155,8 +155,8 @@
       "expired": 1,
       "win_rate": 10.0,
       "avg_gain_pct": 4.46,
-      "avg_loss_pct": -7.29,
-      "expectancy": -6.12
+      "avg_loss_pct": -6.75,
+      "expectancy": -5.63
     },
     "2024-08": {
       "count": 11,
@@ -310,13 +310,13 @@
     },
     "2025-12": {
       "count": 14,
-      "wins": 6,
-      "losses": 8,
-      "expired": 6,
-      "win_rate": 42.9,
-      "avg_gain_pct": 28.61,
-      "avg_loss_pct": -4.4,
-      "expectancy": 9.76
+      "wins": 7,
+      "losses": 7,
+      "expired": 7,
+      "win_rate": 50.0,
+      "avg_gain_pct": 24.99,
+      "avg_loss_pct": -4.69,
+      "expectancy": 10.15
     },
     "2026-01": {
       "count": 7,
@@ -361,14 +361,14 @@
       "expectancy": -3.83
     },
     "2024-Q2": {
-      "count": 32,
-      "wins": 18,
-      "losses": 14,
-      "expired": 15,
-      "win_rate": 56.2,
-      "avg_gain_pct": 9.88,
-      "avg_loss_pct": -8.26,
-      "expectancy": 1.93
+      "count": 39,
+      "wins": 22,
+      "losses": 17,
+      "expired": 20,
+      "win_rate": 56.4,
+      "avg_gain_pct": 10.18,
+      "avg_loss_pct": -7.03,
+      "expectancy": 2.68
     },
     "2024-Q3": {
       "count": 38,
@@ -377,8 +377,8 @@
       "expired": 19,
       "win_rate": 34.2,
       "avg_gain_pct": 4.72,
-      "avg_loss_pct": -6.17,
-      "expectancy": -2.45
+      "avg_loss_pct": -5.97,
+      "expectancy": -2.31
     },
     "2024-Q4": {
       "count": 48,
@@ -422,13 +422,13 @@
     },
     "2025-Q4": {
       "count": 57,
-      "wins": 26,
-      "losses": 31,
-      "expired": 27,
-      "win_rate": 45.6,
-      "avg_gain_pct": 15.12,
-      "avg_loss_pct": -4.01,
-      "expectancy": 4.71
+      "wins": 27,
+      "losses": 30,
+      "expired": 28,
+      "win_rate": 47.4,
+      "avg_gain_pct": 14.68,
+      "avg_loss_pct": -4.06,
+      "expectancy": 4.82
     },
     "2026-Q1": {
       "count": 21,
@@ -443,24 +443,24 @@
   },
   "by_regime": {
     "bull_pullback": {
-      "count": 151,
-      "wins": 61,
-      "losses": 90,
-      "expired": 62,
-      "win_rate": 40.4,
-      "avg_gain_pct": 5.19,
-      "avg_loss_pct": -3.26,
-      "expectancy": 0.15
+      "count": 152,
+      "wins": 63,
+      "losses": 89,
+      "expired": 63,
+      "win_rate": 41.4,
+      "avg_gain_pct": 5.2,
+      "avg_loss_pct": -3.25,
+      "expectancy": 0.25
     },
     "bull": {
-      "count": 156,
-      "wins": 67,
-      "losses": 89,
-      "expired": 68,
-      "win_rate": 42.9,
-      "avg_gain_pct": 16.65,
-      "avg_loss_pct": -7.98,
-      "expectancy": 2.59
+      "count": 162,
+      "wins": 70,
+      "losses": 92,
+      "expired": 73,
+      "win_rate": 43.2,
+      "avg_gain_pct": 16.49,
+      "avg_loss_pct": -7.73,
+      "expectancy": 2.73
     },
     "range": {
       "count": 26,
@@ -476,43 +476,43 @@
   "by_confirmations": {
     "0-2": {
       "count": 82,
-      "wins": 32,
-      "losses": 50,
-      "expired": 32,
-      "win_rate": 39.0,
-      "avg_gain_pct": 4.89,
-      "avg_loss_pct": -3.24,
-      "expectancy": -0.07
+      "wins": 35,
+      "losses": 47,
+      "expired": 33,
+      "win_rate": 42.7,
+      "avg_gain_pct": 4.95,
+      "avg_loss_pct": -3.25,
+      "expectancy": 0.25
     },
     "3": {
-      "count": 99,
-      "wins": 44,
-      "losses": 55,
-      "expired": 45,
-      "win_rate": 44.4,
-      "avg_gain_pct": 4.98,
-      "avg_loss_pct": -3.25,
-      "expectancy": 0.4
+      "count": 101,
+      "wins": 45,
+      "losses": 56,
+      "expired": 47,
+      "win_rate": 44.6,
+      "avg_gain_pct": 4.88,
+      "avg_loss_pct": -3.22,
+      "expectancy": 0.39
     },
     "4": {
-      "count": 80,
+      "count": 85,
       "wins": 36,
-      "losses": 44,
-      "expired": 42,
-      "win_rate": 45.0,
-      "avg_gain_pct": 13.99,
-      "avg_loss_pct": -5.7,
-      "expectancy": 3.16
+      "losses": 49,
+      "expired": 44,
+      "win_rate": 42.4,
+      "avg_gain_pct": 13.66,
+      "avg_loss_pct": -5.63,
+      "expectancy": 2.55
     },
     "5+": {
       "count": 72,
-      "wins": 30,
-      "losses": 42,
-      "expired": 28,
-      "win_rate": 41.7,
-      "avg_gain_pct": 20.15,
-      "avg_loss_pct": -10.5,
-      "expectancy": 2.28
+      "wins": 31,
+      "losses": 41,
+      "expired": 29,
+      "win_rate": 43.1,
+      "avg_gain_pct": 20.94,
+      "avg_loss_pct": -10.24,
+      "expectancy": 3.2
     }
   },
   "by_sector": {
@@ -547,14 +547,14 @@
       "expectancy": 12.78
     },
     "建材營造": {
-      "count": 5,
+      "count": 4,
       "wins": 0,
-      "losses": 5,
+      "losses": 4,
       "expired": 0,
       "win_rate": 0.0,
       "avg_gain_pct": 0,
-      "avg_loss_pct": -9.47,
-      "expectancy": -9.47
+      "avg_loss_pct": -7.5,
+      "expectancy": -7.5
     },
     "油電燃氣": {
       "count": 1,
@@ -598,13 +598,13 @@
     },
     "航運": {
       "count": 13,
-      "wins": 5,
-      "losses": 8,
-      "expired": 7,
-      "win_rate": 38.5,
-      "avg_gain_pct": 8.16,
-      "avg_loss_pct": -7.86,
-      "expectancy": -1.69
+      "wins": 6,
+      "losses": 7,
+      "expired": 8,
+      "win_rate": 46.2,
+      "avg_gain_pct": 7.35,
+      "avg_loss_pct": -6.97,
+      "expectancy": -0.35
     },
     "通信網路": {
       "count": 8,
@@ -627,14 +627,14 @@
       "expectancy": -6.14
     },
     "金融保險": {
-      "count": 56,
-      "wins": 25,
+      "count": 57,
+      "wins": 26,
       "losses": 31,
-      "expired": 42,
-      "win_rate": 44.6,
-      "avg_gain_pct": 3.81,
-      "avg_loss_pct": -2.6,
-      "expectancy": 0.26
+      "expired": 43,
+      "win_rate": 45.6,
+      "avg_gain_pct": 3.29,
+      "avg_loss_pct": -2.65,
+      "expectancy": 0.06
     },
     "電子工業": {
       "count": 1,
@@ -657,14 +657,14 @@
       "expectancy": -3.45
     },
     "電子零組件": {
-      "count": 32,
+      "count": 33,
       "wins": 9,
-      "losses": 23,
+      "losses": 24,
       "expired": 5,
-      "win_rate": 28.1,
+      "win_rate": 27.3,
       "avg_gain_pct": 7.92,
-      "avg_loss_pct": -7.49,
-      "expectancy": -3.16
+      "avg_loss_pct": -7.37,
+      "expectancy": -3.2
     },
     "電機機械": {
       "count": 12,
@@ -677,14 +677,14 @@
       "expectancy": 9.24
     },
     "電腦週邊": {
-      "count": 15,
-      "wins": 6,
+      "count": 16,
+      "wins": 7,
       "losses": 9,
-      "expired": 7,
-      "win_rate": 40.0,
-      "avg_gain_pct": 14.63,
+      "expired": 8,
+      "win_rate": 43.8,
+      "avg_gain_pct": 18.9,
       "avg_loss_pct": -6.32,
-      "expectancy": 2.06
+      "expectancy": 4.73
     }
   },
   "capital_curves": {
@@ -723,1368 +723,1396 @@
           "equity": 0.9891
         },
         {
-          "date": "2024-01-17",
-          "equity": 0.9831
+          "date": "2024-01-18",
+          "equity": 0.9837
         },
         {
           "date": "2024-01-19",
-          "equity": 0.9841
+          "equity": 0.9846
         },
         {
           "date": "2024-01-22",
-          "equity": 0.9805
+          "equity": 0.981
         },
         {
           "date": "2024-01-22",
-          "equity": 0.9784
-        },
-        {
-          "date": "2024-01-22",
-          "equity": 0.9775
-        },
-        {
-          "date": "2024-01-23",
-          "equity": 0.9732
-        },
-        {
-          "date": "2024-01-23",
-          "equity": 0.9719
-        },
-        {
-          "date": "2024-01-29",
-          "equity": 0.9681
-        },
-        {
-          "date": "2024-01-31",
-          "equity": 0.9681
-        },
-        {
-          "date": "2024-02-01",
-          "equity": 0.9593
-        },
-        {
-          "date": "2024-02-01",
-          "equity": 0.9729
-        },
-        {
-          "date": "2024-02-05",
-          "equity": 0.9817
-        },
-        {
-          "date": "2024-02-15",
-          "equity": 1.0004
-        },
-        {
-          "date": "2024-02-16",
           "equity": 0.9789
         },
         {
-          "date": "2024-02-16",
+          "date": "2024-01-22",
+          "equity": 0.978
+        },
+        {
+          "date": "2024-01-23",
+          "equity": 0.9741
+        },
+        {
+          "date": "2024-01-23",
+          "equity": 0.9728
+        },
+        {
+          "date": "2024-01-29",
+          "equity": 0.9691
+        },
+        {
+          "date": "2024-01-31",
+          "equity": 0.969
+        },
+        {
+          "date": "2024-02-01",
           "equity": 0.9602
         },
         {
-          "date": "2024-02-16",
-          "equity": 0.9321
+          "date": "2024-02-01",
+          "equity": 0.9739
+        },
+        {
+          "date": "2024-02-05",
+          "equity": 0.9826
+        },
+        {
+          "date": "2024-02-15",
+          "equity": 0.9985
         },
         {
           "date": "2024-02-16",
-          "equity": 0.9023
+          "equity": 0.9769
         },
         {
           "date": "2024-02-16",
-          "equity": 0.8791
+          "equity": 0.9582
         },
         {
           "date": "2024-02-16",
-          "equity": 0.8611
+          "equity": 0.9302
+        },
+        {
+          "date": "2024-02-16",
+          "equity": 0.9004
+        },
+        {
+          "date": "2024-02-16",
+          "equity": 0.8772
+        },
+        {
+          "date": "2024-02-16",
+          "equity": 0.8592
         },
         {
           "date": "2024-02-29",
-          "equity": 0.8534
+          "equity": 0.8514
         },
         {
           "date": "2024-03-11",
-          "equity": 0.8427
+          "equity": 0.8408
         },
         {
           "date": "2024-03-15",
-          "equity": 0.8387
+          "equity": 0.8368
         },
         {
           "date": "2024-03-22",
-          "equity": 0.8304
+          "equity": 0.8285
         },
         {
           "date": "2024-03-22",
-          "equity": 0.8014
+          "equity": 0.7995
         },
         {
           "date": "2024-03-25",
-          "equity": 0.7852
+          "equity": 0.7833
         },
         {
           "date": "2024-04-02",
-          "equity": 0.7989
+          "equity": 0.7969
         },
         {
           "date": "2024-04-17",
-          "equity": 0.8086
+          "equity": 0.8066
         },
         {
           "date": "2024-04-18",
-          "equity": 0.8154
+          "equity": 0.8117
         },
         {
           "date": "2024-04-22",
-          "equity": 0.8258
+          "equity": 0.8185
         },
         {
           "date": "2024-04-26",
-          "equity": 0.836
+          "equity": 0.8288
         },
         {
           "date": "2024-04-29",
-          "equity": 0.8645
+          "equity": 0.8515
         },
         {
           "date": "2024-04-29",
-          "equity": 0.8608
+          "equity": 0.8485
         },
         {
           "date": "2024-04-29",
-          "equity": 0.8527
+          "equity": 0.842
         },
         {
           "date": "2024-04-29",
-          "equity": 0.8477
+          "equity": 0.8381
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8653
+          "equity": 0.8538
         },
         {
           "date": "2024-04-30",
-          "equity": 0.872
+          "equity": 0.8597
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8686
+          "equity": 0.8567
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8714
+          "equity": 0.8592
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8675
+          "equity": 0.8557
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8677
+          "equity": 0.8559
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8633
+          "equity": 0.8515
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8548
+          "equity": 0.843
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8612
+          "equity": 0.8496
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8623
+          "equity": 0.8506
         },
         {
-          "date": "2024-05-06",
-          "equity": 0.8753
+          "date": "2024-05-02",
+          "equity": 0.8439
+        },
+        {
+          "date": "2024-05-02",
+          "equity": 0.8432
+        },
+        {
+          "date": "2024-05-07",
+          "equity": 0.8555
         },
         {
           "date": "2024-05-10",
-          "equity": 0.8667
+          "equity": 0.8559
         },
         {
           "date": "2024-05-13",
-          "equity": 0.8701
+          "equity": 0.8594
         },
         {
           "date": "2024-05-22",
-          "equity": 0.8443
+          "equity": 0.8335
+        },
+        {
+          "date": "2024-05-22",
+          "equity": 0.8268
         },
         {
           "date": "2024-05-27",
-          "equity": 0.8356
+          "equity": 0.8181
         },
         {
           "date": "2024-05-27",
-          "equity": 0.828
+          "equity": 0.8105
         },
         {
           "date": "2024-05-29",
-          "equity": 0.8197
+          "equity": 0.8022
+        },
+        {
+          "date": "2024-06-03",
+          "equity": 0.8013
         },
         {
           "date": "2024-06-07",
-          "equity": 0.8377
+          "equity": 0.8193
         },
         {
           "date": "2024-06-12",
-          "equity": 0.8542
+          "equity": 0.8359
         },
         {
           "date": "2024-06-13",
-          "equity": 0.8714
+          "equity": 0.853
         },
         {
           "date": "2024-06-13",
-          "equity": 0.8652
+          "equity": 0.8468
+        },
+        {
+          "date": "2024-06-13",
+          "equity": 0.8621
+        },
+        {
+          "date": "2024-06-14",
+          "equity": 0.8734
         },
         {
           "date": "2024-06-18",
-          "equity": 0.8706
+          "equity": 0.8787
         },
         {
           "date": "2024-06-24",
-          "equity": 0.8703
+          "equity": 0.8785
+        },
+        {
+          "date": "2024-06-25",
+          "equity": 0.8851
         },
         {
           "date": "2024-07-01",
-          "equity": 0.8415
+          "equity": 0.8563
         },
         {
           "date": "2024-07-01",
-          "equity": 0.8093
+          "equity": 0.8358
         },
         {
           "date": "2024-07-02",
-          "equity": 0.7937
+          "equity": 0.8201
+        },
+        {
+          "date": "2024-07-02",
+          "equity": 0.8149
         },
         {
           "date": "2024-07-09",
-          "equity": 0.8026
+          "equity": 0.8238
         },
         {
-          "date": "2024-07-10",
-          "equity": 0.8006
-        },
-        {
-          "date": "2024-07-11",
-          "equity": 0.7938
+          "date": "2024-07-18",
+          "equity": 0.8192
         },
         {
           "date": "2024-07-22",
-          "equity": 0.7902
+          "equity": 0.8156
         },
         {
           "date": "2024-07-22",
-          "equity": 0.7863
+          "equity": 0.8117
         },
         {
           "date": "2024-07-22",
-          "equity": 0.7828
+          "equity": 0.8082
         },
         {
           "date": "2024-07-22",
-          "equity": 0.7792
+          "equity": 0.8046
         },
         {
-          "date": "2024-07-26",
-          "equity": 0.7735
+          "date": "2024-07-29",
+          "equity": 0.7996
         },
         {
-          "date": "2024-08-02",
-          "equity": 0.7679
+          "date": "2024-08-05",
+          "equity": 0.7722
         },
         {
           "date": "2024-08-16",
-          "equity": 0.7697
-        },
-        {
-          "date": "2024-08-23",
-          "equity": 0.7653
-        },
-        {
-          "date": "2024-08-23",
-          "equity": 0.7662
-        },
-        {
-          "date": "2024-08-23",
-          "equity": 0.7664
-        },
-        {
-          "date": "2024-08-26",
-          "equity": 0.7789
-        },
-        {
-          "date": "2024-08-27",
-          "equity": 0.7798
-        },
-        {
-          "date": "2024-08-28",
-          "equity": 0.7809
-        },
-        {
-          "date": "2024-08-29",
-          "equity": 0.7756
-        },
-        {
-          "date": "2024-08-29",
-          "equity": 0.7703
-        },
-        {
-          "date": "2024-08-30",
-          "equity": 0.7702
-        },
-        {
-          "date": "2024-08-30",
           "equity": 0.774
         },
         {
-          "date": "2024-09-04",
-          "equity": 0.7644
+          "date": "2024-08-23",
+          "equity": 0.7696
+        },
+        {
+          "date": "2024-08-23",
+          "equity": 0.7705
+        },
+        {
+          "date": "2024-08-23",
+          "equity": 0.7707
+        },
+        {
+          "date": "2024-08-26",
+          "equity": 0.7832
+        },
+        {
+          "date": "2024-08-27",
+          "equity": 0.7841
+        },
+        {
+          "date": "2024-08-28",
+          "equity": 0.7852
+        },
+        {
+          "date": "2024-08-29",
+          "equity": 0.78
+        },
+        {
+          "date": "2024-08-29",
+          "equity": 0.7747
+        },
+        {
+          "date": "2024-08-30",
+          "equity": 0.7745
+        },
+        {
+          "date": "2024-08-30",
+          "equity": 0.7784
+        },
+        {
+          "date": "2024-09-05",
+          "equity": 0.7687
         },
         {
           "date": "2024-09-18",
-          "equity": 0.762
+          "equity": 0.7663
         },
         {
           "date": "2024-09-19",
-          "equity": 0.7662
+          "equity": 0.7706
         },
         {
           "date": "2024-09-19",
-          "equity": 0.7645
+          "equity": 0.7688
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7552
+          "equity": 0.7595
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7647
+          "equity": 0.769
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7628
+          "equity": 0.7671
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7557
+          "equity": 0.7601
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7522
+          "equity": 0.7565
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7436
+          "equity": 0.7479
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7352
-        },
-        {
-          "date": "2024-09-24",
-          "equity": 0.7273
-        },
-        {
-          "date": "2024-09-24",
-          "equity": 0.7226
-        },
-        {
-          "date": "2024-09-24",
-          "equity": 0.7143
-        },
-        {
-          "date": "2024-09-25",
-          "equity": 0.6976
-        },
-        {
-          "date": "2024-09-25",
-          "equity": 0.7094
-        },
-        {
-          "date": "2024-09-25",
-          "equity": 0.7169
-        },
-        {
-          "date": "2024-09-25",
-          "equity": 0.7187
-        },
-        {
-          "date": "2024-10-01",
-          "equity": 0.7292
-        },
-        {
-          "date": "2024-10-01",
-          "equity": 0.7322
-        },
-        {
-          "date": "2024-10-01",
-          "equity": 0.7345
-        },
-        {
-          "date": "2024-10-07",
-          "equity": 0.717
-        },
-        {
-          "date": "2024-10-14",
-          "equity": 0.712
-        },
-        {
-          "date": "2024-10-22",
-          "equity": 0.7348
-        },
-        {
-          "date": "2024-10-25",
-          "equity": 0.7255
-        },
-        {
-          "date": "2024-10-30",
-          "equity": 0.7321
-        },
-        {
-          "date": "2024-11-01",
-          "equity": 0.7446
-        },
-        {
-          "date": "2024-11-04",
-          "equity": 0.74
-        },
-        {
-          "date": "2024-11-06",
           "equity": 0.7395
         },
         {
-          "date": "2024-11-07",
-          "equity": 0.7191
+          "date": "2024-09-24",
+          "equity": 0.7316
+        },
+        {
+          "date": "2024-09-24",
+          "equity": 0.727
+        },
+        {
+          "date": "2024-09-24",
+          "equity": 0.7186
+        },
+        {
+          "date": "2024-09-25",
+          "equity": 0.7019
+        },
+        {
+          "date": "2024-09-25",
+          "equity": 0.7138
+        },
+        {
+          "date": "2024-09-25",
+          "equity": 0.7212
+        },
+        {
+          "date": "2024-09-25",
+          "equity": 0.7231
+        },
+        {
+          "date": "2024-10-01",
+          "equity": 0.7336
+        },
+        {
+          "date": "2024-10-01",
+          "equity": 0.7365
+        },
+        {
+          "date": "2024-10-01",
+          "equity": 0.7388
+        },
+        {
+          "date": "2024-10-07",
+          "equity": 0.7213
+        },
+        {
+          "date": "2024-10-14",
+          "equity": 0.7163
+        },
+        {
+          "date": "2024-10-22",
+          "equity": 0.7391
+        },
+        {
+          "date": "2024-10-25",
+          "equity": 0.7299
+        },
+        {
+          "date": "2024-10-30",
+          "equity": 0.7364
+        },
+        {
+          "date": "2024-11-01",
+          "equity": 0.7489
+        },
+        {
+          "date": "2024-11-04",
+          "equity": 0.7443
+        },
+        {
+          "date": "2024-11-06",
+          "equity": 0.7438
         },
         {
           "date": "2024-11-07",
-          "equity": 0.7101
+          "equity": 0.7234
+        },
+        {
+          "date": "2024-11-07",
+          "equity": 0.7144
         },
         {
           "date": "2024-11-13",
-          "equity": 0.7135
+          "equity": 0.7178
         },
         {
           "date": "2024-11-14",
-          "equity": 0.7095
+          "equity": 0.7138
         },
         {
           "date": "2024-11-14",
-          "equity": 0.7058
+          "equity": 0.7102
         },
         {
           "date": "2024-11-18",
-          "equity": 0.7067
+          "equity": 0.711
         },
         {
           "date": "2024-11-21",
-          "equity": 0.6997
+          "equity": 0.704
         },
         {
           "date": "2024-11-25",
-          "equity": 0.7068
+          "equity": 0.7112
         },
         {
           "date": "2024-11-25",
-          "equity": 0.7024
+          "equity": 0.7067
         },
         {
           "date": "2024-11-25",
-          "equity": 0.695
+          "equity": 0.6993
         },
         {
           "date": "2024-11-25",
-          "equity": 0.6921
+          "equity": 0.6964
         },
         {
           "date": "2024-11-25",
-          "equity": 0.6946
+          "equity": 0.6989
         },
         {
           "date": "2024-11-25",
-          "equity": 0.6848
+          "equity": 0.6892
         },
         {
           "date": "2024-11-25",
-          "equity": 0.7111
+          "equity": 0.7154
         },
         {
           "date": "2024-11-26",
-          "equity": 0.7065
+          "equity": 0.7108
         },
         {
           "date": "2024-11-26",
-          "equity": 0.7176
+          "equity": 0.722
         },
         {
-          "date": "2024-11-27",
-          "equity": 2.1763
-        },
-        {
-          "date": "2024-12-04",
-          "equity": 2.1683
+          "date": "2024-11-28",
+          "equity": 2.1807
         },
         {
           "date": "2024-12-04",
-          "equity": 2.162
+          "equity": 2.1726
         },
         {
           "date": "2024-12-04",
-          "equity": 2.155
+          "equity": 2.1663
         },
         {
           "date": "2024-12-04",
-          "equity": 2.1479
+          "equity": 2.1593
         },
         {
           "date": "2024-12-04",
-          "equity": 2.1414
+          "equity": 2.1522
         },
         {
           "date": "2024-12-04",
-          "equity": 2.1548
+          "equity": 2.1458
         },
         {
           "date": "2024-12-04",
-          "equity": 2.1618
+          "equity": 2.1591
+        },
+        {
+          "date": "2024-12-04",
+          "equity": 2.1661
         },
         {
           "date": "2024-12-05",
-          "equity": 2.158
+          "equity": 2.1623
         },
         {
           "date": "2024-12-05",
-          "equity": 2.1554
+          "equity": 2.1597
         },
         {
           "date": "2024-12-06",
-          "equity": 2.1512
+          "equity": 2.1555
         },
         {
           "date": "2024-12-10",
-          "equity": 2.1476
+          "equity": 2.1519
         },
         {
           "date": "2024-12-11",
-          "equity": 2.1436
+          "equity": 2.148
         },
         {
           "date": "2024-12-11",
-          "equity": 2.1436
+          "equity": 2.1479
         },
         {
           "date": "2024-12-19",
-          "equity": 2.14
+          "equity": 2.1443
         },
         {
           "date": "2024-12-19",
-          "equity": 2.15
-        },
-        {
-          "date": "2024-12-20",
-          "equity": 2.1447
+          "equity": 2.1544
         },
         {
           "date": "2024-12-23",
-          "equity": 2.1404
+          "equity": 2.1501
         },
         {
           "date": "2024-12-23",
-          "equity": 2.1409
+          "equity": 2.1506
+        },
+        {
+          "date": "2024-12-23",
+          "equity": 2.1506
         },
         {
           "date": "2024-12-25",
-          "equity": 2.1326
+          "equity": 2.1423
         },
         {
           "date": "2024-12-25",
-          "equity": 2.1244
+          "equity": 2.1341
         },
         {
           "date": "2024-12-31",
-          "equity": 2.1203
+          "equity": 2.13
         },
         {
           "date": "2024-12-31",
-          "equity": 2.1161
+          "equity": 2.1258
         },
         {
-          "date": "2025-01-02",
-          "equity": 2.1075
+          "date": "2025-01-03",
+          "equity": 2.1192
         },
         {
-          "date": "2025-01-10",
-          "equity": 2.1087
+          "date": "2025-01-13",
+          "equity": 2.1147
         },
         {
           "date": "2025-01-16",
-          "equity": 2.1077
+          "equity": 2.1137
         },
         {
           "date": "2025-01-17",
-          "equity": 2.1151
+          "equity": 2.1211
         },
         {
           "date": "2025-01-21",
-          "equity": 2.1144
+          "equity": 2.1204
         },
         {
           "date": "2025-01-21",
-          "equity": 2.1102
+          "equity": 2.1162
         },
         {
           "date": "2025-01-21",
-          "equity": 2.1062
+          "equity": 2.1122
         },
         {
           "date": "2025-02-03",
-          "equity": 2.1104
+          "equity": 2.1165
         },
         {
           "date": "2025-02-03",
-          "equity": 2.1142
-        },
-        {
-          "date": "2025-02-04",
-          "equity": 2.1094
+          "equity": 2.1202
         },
         {
           "date": "2025-02-05",
-          "equity": 2.1115
+          "equity": 2.1223
         },
         {
           "date": "2025-02-05",
-          "equity": 2.1078
+          "equity": 2.1185
         },
         {
           "date": "2025-02-05",
-          "equity": 2.1117
+          "equity": 2.1225
+        },
+        {
+          "date": "2025-02-05",
+          "equity": 2.1225
         },
         {
           "date": "2025-02-06",
-          "equity": 2.1136
+          "equity": 2.1244
         },
         {
           "date": "2025-02-06",
-          "equity": 2.1054
+          "equity": 2.1161
         },
         {
           "date": "2025-02-06",
-          "equity": 2.112
+          "equity": 2.1227
         },
         {
           "date": "2025-02-06",
+          "equity": 2.1138
+        },
+        {
+          "date": "2025-02-06",
+          "equity": 2.1456
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 2.1463
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 2.1369
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 2.126
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 2.1166
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 2.1183
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 2.1072
+        },
+        {
+          "date": "2025-02-10",
           "equity": 2.1031
         },
         {
-          "date": "2025-02-06",
-          "equity": 2.1349
-        },
-        {
-          "date": "2025-02-07",
-          "equity": 2.1355
-        },
-        {
-          "date": "2025-02-07",
-          "equity": 2.1261
-        },
-        {
-          "date": "2025-02-07",
-          "equity": 2.1152
-        },
-        {
-          "date": "2025-02-07",
-          "equity": 2.1058
-        },
-        {
-          "date": "2025-02-07",
-          "equity": 2.1075
-        },
-        {
-          "date": "2025-02-07",
-          "equity": 2.0965
+          "date": "2025-02-10",
+          "equity": 2.0949
         },
         {
           "date": "2025-02-10",
-          "equity": 2.0923
-        },
-        {
-          "date": "2025-02-10",
-          "equity": 2.0842
-        },
-        {
-          "date": "2025-02-10",
-          "equity": 2.0737
-        },
-        {
-          "date": "2025-02-10",
-          "equity": 2.0649
-        },
-        {
-          "date": "2025-02-14",
-          "equity": 2.0553
-        },
-        {
-          "date": "2025-02-17",
-          "equity": 2.0458
-        },
-        {
-          "date": "2025-02-17",
-          "equity": 2.0449
-        },
-        {
-          "date": "2025-02-18",
-          "equity": 2.0462
-        },
-        {
-          "date": "2025-02-21",
-          "equity": 2.0374
-        },
-        {
-          "date": "2025-03-03",
-          "equity": 2.0506
-        },
-        {
-          "date": "2025-03-04",
-          "equity": 2.0504
-        },
-        {
-          "date": "2025-03-04",
-          "equity": 2.0464
-        },
-        {
-          "date": "2025-03-11",
-          "equity": 2.0439
-        },
-        {
-          "date": "2025-03-18",
-          "equity": 2.0524
-        },
-        {
-          "date": "2025-03-19",
-          "equity": 2.0482
-        },
-        {
-          "date": "2025-03-21",
-          "equity": 2.0403
-        },
-        {
-          "date": "2025-03-21",
-          "equity": 2.0337
-        },
-        {
-          "date": "2025-03-24",
-          "equity": 2.0479
-        },
-        {
-          "date": "2025-05-09",
-          "equity": 2.0623
-        },
-        {
-          "date": "2025-05-09",
-          "equity": 2.0679
-        },
-        {
-          "date": "2025-05-09",
-          "equity": 2.0676
-        },
-        {
-          "date": "2025-05-13",
-          "equity": 2.064
-        },
-        {
-          "date": "2025-05-14",
-          "equity": 2.0816
-        },
-        {
-          "date": "2025-05-14",
-          "equity": 2.0955
-        },
-        {
-          "date": "2025-05-14",
-          "equity": 2.0777
-        },
-        {
-          "date": "2025-05-14",
-          "equity": 2.0579
-        },
-        {
-          "date": "2025-05-16",
-          "equity": 2.05
-        },
-        {
-          "date": "2025-05-20",
-          "equity": 2.0323
-        },
-        {
-          "date": "2025-05-20",
-          "equity": 2.0243
-        },
-        {
-          "date": "2025-05-26",
-          "equity": 2.018
-        },
-        {
-          "date": "2025-05-27",
-          "equity": 2.0146
-        },
-        {
-          "date": "2025-06-02",
-          "equity": 2.0173
-        },
-        {
-          "date": "2025-06-02",
-          "equity": 2.0137
-        },
-        {
-          "date": "2025-06-06",
-          "equity": 2.0168
-        },
-        {
-          "date": "2025-06-09",
-          "equity": 2.016
-        },
-        {
-          "date": "2025-06-09",
-          "equity": 2.0107
-        },
-        {
-          "date": "2025-06-12",
-          "equity": 2.0158
-        },
-        {
-          "date": "2025-06-13",
-          "equity": 2.0173
-        },
-        {
-          "date": "2025-06-13",
-          "equity": 2.0166
-        },
-        {
-          "date": "2025-06-17",
-          "equity": 2.008
-        },
-        {
-          "date": "2025-06-20",
-          "equity": 2.0101
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.013
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.0142
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.0127
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.0091
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.0153
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.0208
-        },
-        {
-          "date": "2025-06-23",
-          "equity": 2.0238
-        },
-        {
-          "date": "2025-06-24",
-          "equity": 2.0264
-        },
-        {
-          "date": "2025-06-30",
-          "equity": 2.017
-        },
-        {
-          "date": "2025-07-01",
-          "equity": 2.0255
-        },
-        {
-          "date": "2025-07-07",
-          "equity": 2.0263
-        },
-        {
-          "date": "2025-07-07",
-          "equity": 2.026
-        },
-        {
-          "date": "2025-07-07",
-          "equity": 2.0205
-        },
-        {
-          "date": "2025-07-08",
-          "equity": 2.0238
-        },
-        {
-          "date": "2025-07-08",
-          "equity": 2.0322
-        },
-        {
-          "date": "2025-07-08",
-          "equity": 2.0374
-        },
-        {
-          "date": "2025-07-08",
-          "equity": 2.0388
-        },
-        {
-          "date": "2025-07-11",
-          "equity": 2.0375
-        },
-        {
-          "date": "2025-07-15",
-          "equity": 2.0559
-        },
-        {
-          "date": "2025-07-15",
-          "equity": 2.0478
-        },
-        {
-          "date": "2025-07-15",
-          "equity": 2.0404
-        },
-        {
-          "date": "2025-07-15",
-          "equity": 2.0588
-        },
-        {
-          "date": "2025-07-15",
-          "equity": 2.0511
-        },
-        {
-          "date": "2025-07-16",
-          "equity": 2.0585
-        },
-        {
-          "date": "2025-07-16",
-          "equity": 2.0524
-        },
-        {
-          "date": "2025-07-16",
-          "equity": 2.0684
-        },
-        {
-          "date": "2025-07-16",
-          "equity": 2.062
-        },
-        {
-          "date": "2025-07-16",
           "equity": 2.0845
         },
         {
+          "date": "2025-02-10",
+          "equity": 2.0756
+        },
+        {
+          "date": "2025-02-14",
+          "equity": 2.0661
+        },
+        {
+          "date": "2025-02-17",
+          "equity": 2.0565
+        },
+        {
+          "date": "2025-02-17",
+          "equity": 2.0557
+        },
+        {
+          "date": "2025-02-18",
+          "equity": 2.0569
+        },
+        {
+          "date": "2025-02-21",
+          "equity": 2.0481
+        },
+        {
+          "date": "2025-03-03",
+          "equity": 2.0613
+        },
+        {
+          "date": "2025-03-04",
+          "equity": 2.0612
+        },
+        {
+          "date": "2025-03-04",
+          "equity": 2.0571
+        },
+        {
+          "date": "2025-03-12",
+          "equity": 2.0555
+        },
+        {
+          "date": "2025-03-18",
+          "equity": 2.0641
+        },
+        {
+          "date": "2025-03-20",
+          "equity": 2.0641
+        },
+        {
+          "date": "2025-03-21",
+          "equity": 2.0561
+        },
+        {
+          "date": "2025-03-21",
+          "equity": 2.0496
+        },
+        {
+          "date": "2025-03-25",
+          "equity": 2.0659
+        },
+        {
+          "date": "2025-05-09",
+          "equity": 2.0803
+        },
+        {
+          "date": "2025-05-09",
+          "equity": 2.0859
+        },
+        {
+          "date": "2025-05-09",
+          "equity": 2.0856
+        },
+        {
+          "date": "2025-05-13",
+          "equity": 2.082
+        },
+        {
+          "date": "2025-05-14",
+          "equity": 2.0996
+        },
+        {
+          "date": "2025-05-14",
+          "equity": 2.1134
+        },
+        {
+          "date": "2025-05-14",
+          "equity": 2.0957
+        },
+        {
+          "date": "2025-05-14",
+          "equity": 2.0759
+        },
+        {
+          "date": "2025-05-16",
+          "equity": 2.068
+        },
+        {
+          "date": "2025-05-20",
+          "equity": 2.0503
+        },
+        {
+          "date": "2025-05-20",
+          "equity": 2.0423
+        },
+        {
+          "date": "2025-05-26",
+          "equity": 2.036
+        },
+        {
+          "date": "2025-05-27",
+          "equity": 2.0326
+        },
+        {
+          "date": "2025-06-02",
+          "equity": 2.0353
+        },
+        {
+          "date": "2025-06-02",
+          "equity": 2.0317
+        },
+        {
+          "date": "2025-06-06",
+          "equity": 2.0348
+        },
+        {
+          "date": "2025-06-09",
+          "equity": 2.034
+        },
+        {
+          "date": "2025-06-09",
+          "equity": 2.0287
+        },
+        {
+          "date": "2025-06-12",
+          "equity": 2.0338
+        },
+        {
+          "date": "2025-06-13",
+          "equity": 2.0352
+        },
+        {
+          "date": "2025-06-13",
+          "equity": 2.0346
+        },
+        {
+          "date": "2025-06-17",
+          "equity": 2.026
+        },
+        {
+          "date": "2025-06-20",
+          "equity": 2.0281
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.031
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.0322
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.0306
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.0271
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.0332
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.0387
+        },
+        {
+          "date": "2025-06-23",
+          "equity": 2.0418
+        },
+        {
+          "date": "2025-06-24",
+          "equity": 2.0444
+        },
+        {
+          "date": "2025-06-30",
+          "equity": 2.035
+        },
+        {
+          "date": "2025-07-01",
+          "equity": 2.0434
+        },
+        {
+          "date": "2025-07-07",
+          "equity": 2.0443
+        },
+        {
+          "date": "2025-07-07",
+          "equity": 2.044
+        },
+        {
+          "date": "2025-07-07",
+          "equity": 2.0384
+        },
+        {
+          "date": "2025-07-08",
+          "equity": 2.0418
+        },
+        {
+          "date": "2025-07-08",
+          "equity": 2.0502
+        },
+        {
+          "date": "2025-07-08",
+          "equity": 2.0554
+        },
+        {
+          "date": "2025-07-08",
+          "equity": 2.0568
+        },
+        {
+          "date": "2025-07-11",
+          "equity": 2.0555
+        },
+        {
+          "date": "2025-07-15",
+          "equity": 2.0739
+        },
+        {
+          "date": "2025-07-15",
+          "equity": 2.0658
+        },
+        {
+          "date": "2025-07-15",
+          "equity": 2.0584
+        },
+        {
+          "date": "2025-07-15",
+          "equity": 2.0768
+        },
+        {
+          "date": "2025-07-15",
+          "equity": 2.069
+        },
+        {
+          "date": "2025-07-16",
+          "equity": 2.0765
+        },
+        {
+          "date": "2025-07-16",
+          "equity": 2.0704
+        },
+        {
+          "date": "2025-07-16",
+          "equity": 2.0864
+        },
+        {
+          "date": "2025-07-16",
+          "equity": 2.0799
+        },
+        {
+          "date": "2025-07-16",
+          "equity": 2.1025
+        },
+        {
           "date": "2025-07-18",
-          "equity": 2.1332
+          "equity": 2.1512
         },
         {
           "date": "2025-07-21",
-          "equity": 2.2308
+          "equity": 2.2488
         },
         {
           "date": "2025-07-22",
-          "equity": 2.2207
+          "equity": 2.2386
         },
         {
           "date": "2025-07-28",
-          "equity": 2.3469
+          "equity": 2.3649
         },
         {
           "date": "2025-07-28",
-          "equity": 2.3735
+          "equity": 2.3915
         },
         {
           "date": "2025-07-28",
-          "equity": 2.4173
+          "equity": 2.4353
         },
         {
           "date": "2025-07-30",
-          "equity": 2.4336
+          "equity": 2.4516
         },
         {
           "date": "2025-08-04",
-          "equity": 2.4469
+          "equity": 2.4649
         },
         {
           "date": "2025-08-11",
-          "equity": 2.4647
+          "equity": 2.4827
         },
         {
           "date": "2025-08-15",
-          "equity": 2.4794
+          "equity": 2.4974
         },
         {
           "date": "2025-08-22",
-          "equity": 2.5052
+          "equity": 2.5231
         },
         {
           "date": "2025-09-15",
-          "equity": 2.4977
+          "equity": 2.5157
         },
         {
           "date": "2025-09-18",
-          "equity": 2.5485
+          "equity": 2.5665
         },
         {
           "date": "2025-09-19",
-          "equity": 2.5395
+          "equity": 2.5575
         },
         {
           "date": "2025-09-22",
-          "equity": 2.5427
+          "equity": 2.5607
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5361
+          "equity": 2.554
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5281
+          "equity": 2.546
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5187
+          "equity": 2.5367
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5134
+          "equity": 2.5314
         },
         {
           "date": "2025-10-01",
-          "equity": 2.5012
+          "equity": 2.5192
         },
         {
           "date": "2025-10-03",
-          "equity": 2.5053
+          "equity": 2.5233
         },
         {
           "date": "2025-10-03",
-          "equity": 2.5004
+          "equity": 2.5184
         },
         {
           "date": "2025-10-07",
-          "equity": 2.5247
+          "equity": 2.5427
         },
         {
           "date": "2025-10-08",
-          "equity": 2.5282
+          "equity": 2.5462
         },
         {
           "date": "2025-10-08",
-          "equity": 2.539
+          "equity": 2.557
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5307
+          "equity": 2.5487
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5302
+          "equity": 2.5482
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5508
+          "equity": 2.5688
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5671
+          "equity": 2.5851
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5639
+          "equity": 2.5819
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5573
+          "equity": 2.5753
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5594
+          "equity": 2.5774
         },
         {
           "date": "2025-10-16",
-          "equity": 2.5589
+          "equity": 2.5769
         },
         {
           "date": "2025-10-16",
-          "equity": 2.5822
-        },
-        {
-          "date": "2025-10-21",
-          "equity": 2.5971
-        },
-        {
-          "date": "2025-10-21",
           "equity": 2.6002
         },
         {
           "date": "2025-10-21",
-          "equity": 2.6012
+          "equity": 2.615
+        },
+        {
+          "date": "2025-10-21",
+          "equity": 2.6182
+        },
+        {
+          "date": "2025-10-21",
+          "equity": 2.6192
         },
         {
           "date": "2025-10-22",
-          "equity": 2.5983
+          "equity": 2.6163
         },
         {
           "date": "2025-10-27",
-          "equity": 2.6329
+          "equity": 2.6509
         },
         {
           "date": "2025-10-29",
-          "equity": 2.6244
+          "equity": 2.6424
         },
         {
           "date": "2025-10-30",
-          "equity": 2.6158
-        },
-        {
-          "date": "2025-10-30",
-          "equity": 2.629
-        },
-        {
-          "date": "2025-11-03",
-          "equity": 2.6214
-        },
-        {
-          "date": "2025-11-03",
-          "equity": 2.6149
-        },
-        {
-          "date": "2025-11-06",
-          "equity": 2.6099
-        },
-        {
-          "date": "2025-11-06",
-          "equity": 2.6135
-        },
-        {
-          "date": "2025-11-07",
-          "equity": 2.6095
-        },
-        {
-          "date": "2025-11-07",
-          "equity": 2.6059
-        },
-        {
-          "date": "2025-11-10",
-          "equity": 2.6086
-        },
-        {
-          "date": "2025-11-11",
-          "equity": 2.6076
-        },
-        {
-          "date": "2025-11-19",
-          "equity": 2.6032
-        },
-        {
-          "date": "2025-11-19",
-          "equity": 2.6054
-        },
-        {
-          "date": "2025-11-21",
-          "equity": 2.6025
-        },
-        {
-          "date": "2025-11-25",
-          "equity": 2.6008
-        },
-        {
-          "date": "2025-11-28",
-          "equity": 2.5989
-        },
-        {
-          "date": "2025-11-28",
-          "equity": 2.6262
-        },
-        {
-          "date": "2025-11-28",
           "equity": 2.6338
         },
         {
-          "date": "2025-11-28",
-          "equity": 2.6265
+          "date": "2025-10-30",
+          "equity": 2.647
+        },
+        {
+          "date": "2025-11-03",
+          "equity": 2.6394
+        },
+        {
+          "date": "2025-11-03",
+          "equity": 2.6329
+        },
+        {
+          "date": "2025-11-06",
+          "equity": 2.6279
+        },
+        {
+          "date": "2025-11-06",
+          "equity": 2.6315
+        },
+        {
+          "date": "2025-11-07",
+          "equity": 2.6275
+        },
+        {
+          "date": "2025-11-07",
+          "equity": 2.6238
+        },
+        {
+          "date": "2025-11-10",
+          "equity": 2.6266
+        },
+        {
+          "date": "2025-11-11",
+          "equity": 2.6256
+        },
+        {
+          "date": "2025-11-19",
+          "equity": 2.6212
+        },
+        {
+          "date": "2025-11-19",
+          "equity": 2.6234
+        },
+        {
+          "date": "2025-11-24",
+          "equity": 2.6206
+        },
+        {
+          "date": "2025-11-25",
+          "equity": 2.6191
         },
         {
           "date": "2025-11-28",
-          "equity": 2.6189
+          "equity": 2.6172
         },
         {
           "date": "2025-11-28",
-          "equity": 2.6518
+          "equity": 2.6445
         },
         {
           "date": "2025-11-28",
-          "equity": 2.6705
+          "equity": 2.6521
         },
         {
           "date": "2025-11-28",
-          "equity": 2.6685
+          "equity": 2.6448
         },
         {
           "date": "2025-11-28",
-          "equity": 2.6604
+          "equity": 2.6372
+        },
+        {
+          "date": "2025-11-28",
+          "equity": 2.6701
+        },
+        {
+          "date": "2025-11-28",
+          "equity": 2.6888
+        },
+        {
+          "date": "2025-11-28",
+          "equity": 2.6867
+        },
+        {
+          "date": "2025-11-28",
+          "equity": 2.6787
         },
         {
           "date": "2025-12-01",
-          "equity": 2.657
+          "equity": 2.6753
         },
         {
           "date": "2025-12-01",
-          "equity": 2.6538
+          "equity": 2.6721
         },
         {
           "date": "2025-12-02",
-          "equity": 2.6501
+          "equity": 2.6684
         },
         {
           "date": "2025-12-03",
-          "equity": 2.6548
+          "equity": 2.673
         },
         {
           "date": "2025-12-03",
-          "equity": 2.6815
+          "equity": 2.6998
         },
         {
           "date": "2025-12-03",
-          "equity": 2.7134
+          "equity": 2.7317
         },
         {
           "date": "2025-12-03",
-          "equity": 2.7084
+          "equity": 2.7267
         },
         {
-          "date": "2025-12-08",
-          "equity": 2.704
+          "date": "2025-12-05",
+          "equity": 2.7224
         },
         {
           "date": "2025-12-09",
-          "equity": 2.6968
+          "equity": 2.7152
         },
         {
           "date": "2025-12-12",
-          "equity": 2.7266
-        },
-        {
-          "date": "2025-12-15",
-          "equity": 2.7249
-        },
-        {
-          "date": "2025-12-18",
-          "equity": 2.7213
-        },
-        {
-          "date": "2025-12-29",
           "equity": 2.745
         },
         {
+          "date": "2025-12-15",
+          "equity": 2.7433
+        },
+        {
+          "date": "2025-12-16",
+          "equity": 2.7477
+        },
+        {
           "date": "2025-12-29",
-          "equity": 2.7688
+          "equity": 2.7715
+        },
+        {
+          "date": "2025-12-29",
+          "equity": 2.7952
         },
         {
           "date": "2026-01-09",
-          "equity": 2.7805
+          "equity": 2.807
         },
         {
           "date": "2026-01-21",
-          "equity": 2.7717
+          "equity": 2.7981
         },
         {
           "date": "2026-01-21",
-          "equity": 2.7661
+          "equity": 2.7926
         },
         {
           "date": "2026-01-28",
-          "equity": 2.8565
+          "equity": 2.883
         },
         {
           "date": "2026-01-28",
-          "equity": 2.8472
+          "equity": 2.8736
         },
         {
           "date": "2026-01-28",
-          "equity": 2.8495
+          "equity": 2.8759
         },
         {
           "date": "2026-01-30",
-          "equity": 2.8422
+          "equity": 2.8687
         },
         {
           "date": "2026-02-02",
-          "equity": 2.8344
+          "equity": 2.8609
         },
         {
           "date": "2026-02-06",
-          "equity": 2.8324
+          "equity": 2.8589
         },
         {
           "date": "2026-02-06",
-          "equity": 2.8399
+          "equity": 2.8663
         },
         {
           "date": "2026-02-10",
-          "equity": 2.838
+          "equity": 2.8645
         },
         {
           "date": "2026-02-11",
-          "equity": 2.8299
+          "equity": 2.8564
         },
         {
           "date": "2026-02-11",
-          "equity": 2.8476
+          "equity": 2.874
         },
         {
           "date": "2026-02-23",
-          "equity": 2.8507
+          "equity": 2.8771
         },
         {
           "date": "2026-02-23",
-          "equity": 2.973
+          "equity": 2.9995
         },
         {
           "date": "2026-02-23",
-          "equity": 2.9607
+          "equity": 2.9872
         },
         {
           "date": "2026-02-24",
-          "equity": 2.9805
+          "equity": 3.0069
         },
         {
           "date": "2026-03-02",
-          "equity": 2.9567
+          "equity": 2.9832
         },
         {
           "date": "2026-03-16",
-          "equity": 2.9627
+          "equity": 2.9891
         },
         {
           "date": "2026-03-17",
-          "equity": 2.9819
+          "equity": 3.0084
         },
         {
           "date": "2026-03-17",
-          "equity": 2.983
+          "equity": 3.0095
         },
         {
-          "date": "2026-03-31",
-          "equity": 2.983
+          "date": "2026-04-01",
+          "equity": 3.0215
         }
       ],
-      "total_return_pct": 198.3,
-      "max_drawdown_pct": 31.78
+      "total_return_pct": 202.15,
+      "max_drawdown_pct": 31.35
     },
     "compound": {
       "curve": [
@@ -2121,1368 +2149,1396 @@
           "equity": 0.9891
         },
         {
-          "date": "2024-01-17",
-          "equity": 0.9832
+          "date": "2024-01-18",
+          "equity": 0.9837
         },
         {
           "date": "2024-01-19",
-          "equity": 0.9842
+          "equity": 0.9847
         },
         {
           "date": "2024-01-22",
-          "equity": 0.9807
+          "equity": 0.9812
         },
         {
           "date": "2024-01-22",
-          "equity": 0.9786
+          "equity": 0.9791
         },
         {
           "date": "2024-01-22",
-          "equity": 0.9777
+          "equity": 0.9782
         },
         {
           "date": "2024-01-23",
-          "equity": 0.9735
+          "equity": 0.9743
         },
         {
           "date": "2024-01-23",
-          "equity": 0.9722
-        },
-        {
-          "date": "2024-01-29",
-          "equity": 0.9686
-        },
-        {
-          "date": "2024-01-31",
-          "equity": 0.9685
-        },
-        {
-          "date": "2024-02-01",
-          "equity": 0.96
-        },
-        {
-          "date": "2024-02-01",
           "equity": 0.9731
         },
         {
+          "date": "2024-01-29",
+          "equity": 0.9695
+        },
+        {
+          "date": "2024-01-31",
+          "equity": 0.9694
+        },
+        {
+          "date": "2024-02-01",
+          "equity": 0.9609
+        },
+        {
+          "date": "2024-02-01",
+          "equity": 0.974
+        },
+        {
           "date": "2024-02-05",
-          "equity": 0.9816
+          "equity": 0.9825
         },
         {
           "date": "2024-02-15",
-          "equity": 1.0
+          "equity": 0.9981
         },
         {
           "date": "2024-02-16",
-          "equity": 0.9785
+          "equity": 0.9766
         },
         {
           "date": "2024-02-16",
-          "equity": 0.9602
+          "equity": 0.9584
         },
         {
           "date": "2024-02-16",
-          "equity": 0.9332
+          "equity": 0.9315
         },
         {
           "date": "2024-02-16",
-          "equity": 0.9054
+          "equity": 0.9037
         },
         {
           "date": "2024-02-16",
-          "equity": 0.8844
+          "equity": 0.8827
         },
         {
           "date": "2024-02-16",
-          "equity": 0.8685
+          "equity": 0.8669
         },
         {
           "date": "2024-02-29",
-          "equity": 0.8618
+          "equity": 0.8601
         },
         {
           "date": "2024-03-11",
-          "equity": 0.8526
+          "equity": 0.851
         },
         {
           "date": "2024-03-15",
-          "equity": 0.8492
+          "equity": 0.8476
         },
         {
           "date": "2024-03-22",
-          "equity": 0.8421
+          "equity": 0.8405
         },
         {
           "date": "2024-03-22",
-          "equity": 0.8177
+          "equity": 0.8162
         },
         {
           "date": "2024-03-25",
-          "equity": 0.8044
+          "equity": 0.8029
         },
         {
           "date": "2024-04-02",
-          "equity": 0.8154
+          "equity": 0.8139
         },
         {
           "date": "2024-04-17",
-          "equity": 0.8234
+          "equity": 0.8218
         },
         {
           "date": "2024-04-18",
-          "equity": 0.829
+          "equity": 0.8259
         },
         {
           "date": "2024-04-22",
-          "equity": 0.8376
+          "equity": 0.8316
         },
         {
           "date": "2024-04-26",
-          "equity": 0.8462
+          "equity": 0.8401
         },
         {
           "date": "2024-04-29",
-          "equity": 0.8703
+          "equity": 0.8592
         },
         {
           "date": "2024-04-29",
-          "equity": 0.867
+          "equity": 0.8566
         },
         {
           "date": "2024-04-29",
-          "equity": 0.86
+          "equity": 0.8511
         },
         {
           "date": "2024-04-29",
-          "equity": 0.8557
+          "equity": 0.8477
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8708
+          "equity": 0.861
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8766
+          "equity": 0.8661
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8737
+          "equity": 0.8635
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8761
+          "equity": 0.8657
         },
         {
           "date": "2024-04-30",
-          "equity": 0.8726
+          "equity": 0.8626
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8728
+          "equity": 0.8628
         },
         {
           "date": "2024-05-02",
-          "equity": 0.869
+          "equity": 0.859
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8616
+          "equity": 0.8517
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8671
+          "equity": 0.8573
         },
         {
           "date": "2024-05-02",
-          "equity": 0.8681
+          "equity": 0.8582
         },
         {
-          "date": "2024-05-06",
-          "equity": 0.8793
+          "date": "2024-05-02",
+          "equity": 0.8525
+        },
+        {
+          "date": "2024-05-02",
+          "equity": 0.8519
+        },
+        {
+          "date": "2024-05-07",
+          "equity": 0.8624
         },
         {
           "date": "2024-05-10",
-          "equity": 0.8718
+          "equity": 0.8627
         },
         {
           "date": "2024-05-13",
-          "equity": 0.8748
+          "equity": 0.8657
         },
         {
           "date": "2024-05-22",
-          "equity": 0.8522
+          "equity": 0.8433
+        },
+        {
+          "date": "2024-05-22",
+          "equity": 0.8377
         },
         {
           "date": "2024-05-27",
-          "equity": 0.8448
+          "equity": 0.8304
         },
         {
           "date": "2024-05-27",
-          "equity": 0.8383
+          "equity": 0.824
         },
         {
           "date": "2024-05-29",
-          "equity": 0.8314
+          "equity": 0.8172
+        },
+        {
+          "date": "2024-06-03",
+          "equity": 0.8165
         },
         {
           "date": "2024-06-07",
-          "equity": 0.8463
+          "equity": 0.8312
         },
         {
           "date": "2024-06-12",
-          "equity": 0.8603
+          "equity": 0.8449
         },
         {
           "date": "2024-06-13",
-          "equity": 0.8751
+          "equity": 0.8594
         },
         {
           "date": "2024-06-13",
-          "equity": 0.8697
+          "equity": 0.8541
+        },
+        {
+          "date": "2024-06-13",
+          "equity": 0.8672
+        },
+        {
+          "date": "2024-06-14",
+          "equity": 0.8769
         },
         {
           "date": "2024-06-18",
-          "equity": 0.8744
+          "equity": 0.8816
         },
         {
           "date": "2024-06-24",
-          "equity": 0.8741
+          "equity": 0.8814
+        },
+        {
+          "date": "2024-06-25",
+          "equity": 0.8872
         },
         {
           "date": "2024-07-01",
-          "equity": 0.849
+          "equity": 0.8617
         },
         {
           "date": "2024-07-01",
-          "equity": 0.8216
+          "equity": 0.844
         },
         {
           "date": "2024-07-02",
-          "equity": 0.8088
+          "equity": 0.8308
+        },
+        {
+          "date": "2024-07-02",
+          "equity": 0.8264
         },
         {
           "date": "2024-07-09",
-          "equity": 0.816
+          "equity": 0.8338
         },
         {
-          "date": "2024-07-10",
-          "equity": 0.8144
-        },
-        {
-          "date": "2024-07-11",
-          "equity": 0.8088
+          "date": "2024-07-18",
+          "equity": 0.83
         },
         {
           "date": "2024-07-22",
-          "equity": 0.8059
+          "equity": 0.827
         },
         {
           "date": "2024-07-22",
-          "equity": 0.8027
+          "equity": 0.8237
         },
         {
           "date": "2024-07-22",
-          "equity": 0.7999
+          "equity": 0.8209
         },
         {
           "date": "2024-07-22",
-          "equity": 0.7971
+          "equity": 0.8179
         },
         {
-          "date": "2024-07-26",
-          "equity": 0.7925
+          "date": "2024-07-29",
+          "equity": 0.8138
         },
         {
-          "date": "2024-08-02",
-          "equity": 0.7881
+          "date": "2024-08-05",
+          "equity": 0.7916
         },
         {
           "date": "2024-08-16",
+          "equity": 0.793
+        },
+        {
+          "date": "2024-08-23",
           "equity": 0.7895
         },
         {
           "date": "2024-08-23",
-          "equity": 0.786
+          "equity": 0.7902
         },
         {
           "date": "2024-08-23",
-          "equity": 0.7868
-        },
-        {
-          "date": "2024-08-23",
-          "equity": 0.7869
+          "equity": 0.7903
         },
         {
           "date": "2024-08-26",
-          "equity": 0.7967
+          "equity": 0.8002
         },
         {
           "date": "2024-08-27",
-          "equity": 0.7974
+          "equity": 0.8009
         },
         {
           "date": "2024-08-28",
-          "equity": 0.7983
+          "equity": 0.8018
         },
         {
           "date": "2024-08-29",
-          "equity": 0.7941
+          "equity": 0.7976
         },
         {
           "date": "2024-08-29",
-          "equity": 0.7899
+          "equity": 0.7934
         },
         {
           "date": "2024-08-30",
-          "equity": 0.7898
+          "equity": 0.7933
         },
         {
           "date": "2024-08-30",
-          "equity": 0.7928
+          "equity": 0.7963
         },
         {
-          "date": "2024-09-04",
-          "equity": 0.7852
+          "date": "2024-09-05",
+          "equity": 0.7886
         },
         {
           "date": "2024-09-18",
-          "equity": 0.7833
+          "equity": 0.7867
         },
         {
           "date": "2024-09-19",
-          "equity": 0.7866
+          "equity": 0.7901
         },
         {
           "date": "2024-09-19",
-          "equity": 0.7853
+          "equity": 0.7887
         },
         {
           "date": "2024-09-24",
-          "equity": 0.778
+          "equity": 0.7814
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7853
+          "equity": 0.7888
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7839
+          "equity": 0.7873
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7783
+          "equity": 0.7817
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7756
+          "equity": 0.779
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7689
+          "equity": 0.7723
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7624
+          "equity": 0.7658
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7564
+          "equity": 0.7597
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7529
+          "equity": 0.7562
         },
         {
           "date": "2024-09-24",
-          "equity": 0.7466
+          "equity": 0.7499
         },
         {
           "date": "2024-09-25",
-          "equity": 0.7342
+          "equity": 0.7374
         },
         {
           "date": "2024-09-25",
-          "equity": 0.7428
+          "equity": 0.7461
         },
         {
           "date": "2024-09-25",
-          "equity": 0.7484
+          "equity": 0.7517
         },
         {
           "date": "2024-09-25",
-          "equity": 0.7498
+          "equity": 0.7531
         },
         {
           "date": "2024-10-01",
-          "equity": 0.7576
+          "equity": 0.761
         },
         {
           "date": "2024-10-01",
-          "equity": 0.7599
+          "equity": 0.7632
         },
         {
           "date": "2024-10-01",
-          "equity": 0.7616
-        },
-        {
-          "date": "2024-10-07",
-          "equity": 0.7483
-        },
-        {
-          "date": "2024-10-14",
-          "equity": 0.7446
-        },
-        {
-          "date": "2024-10-22",
-          "equity": 0.7615
-        },
-        {
-          "date": "2024-10-25",
-          "equity": 0.7545
-        },
-        {
-          "date": "2024-10-30",
-          "equity": 0.7594
-        },
-        {
-          "date": "2024-11-01",
-          "equity": 0.7689
-        },
-        {
-          "date": "2024-11-04",
-          "equity": 0.7654
-        },
-        {
-          "date": "2024-11-06",
           "equity": 0.765
         },
         {
-          "date": "2024-11-07",
-          "equity": 0.7494
+          "date": "2024-10-07",
+          "equity": 0.7516
         },
         {
-          "date": "2024-11-07",
-          "equity": 0.7427
-        },
-        {
-          "date": "2024-11-13",
-          "equity": 0.7452
-        },
-        {
-          "date": "2024-11-14",
-          "equity": 0.7422
-        },
-        {
-          "date": "2024-11-14",
-          "equity": 0.7395
-        },
-        {
-          "date": "2024-11-18",
-          "equity": 0.7401
-        },
-        {
-          "date": "2024-11-21",
-          "equity": 0.7349
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.7402
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.7369
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.7314
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.7293
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.7312
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.724
-        },
-        {
-          "date": "2024-11-25",
-          "equity": 0.743
-        },
-        {
-          "date": "2024-11-26",
-          "equity": 0.7396
-        },
-        {
-          "date": "2024-11-26",
+          "date": "2024-10-14",
           "equity": 0.7478
         },
         {
-          "date": "2024-11-27",
-          "equity": 1.8387
+          "date": "2024-10-22",
+          "equity": 0.7648
+        },
+        {
+          "date": "2024-10-25",
+          "equity": 0.7578
+        },
+        {
+          "date": "2024-10-30",
+          "equity": 0.7628
+        },
+        {
+          "date": "2024-11-01",
+          "equity": 0.7723
+        },
+        {
+          "date": "2024-11-04",
+          "equity": 0.7687
+        },
+        {
+          "date": "2024-11-06",
+          "equity": 0.7684
+        },
+        {
+          "date": "2024-11-07",
+          "equity": 0.7527
+        },
+        {
+          "date": "2024-11-07",
+          "equity": 0.7459
+        },
+        {
+          "date": "2024-11-13",
+          "equity": 0.7484
+        },
+        {
+          "date": "2024-11-14",
+          "equity": 0.7455
+        },
+        {
+          "date": "2024-11-14",
+          "equity": 0.7427
+        },
+        {
+          "date": "2024-11-18",
+          "equity": 0.7434
+        },
+        {
+          "date": "2024-11-21",
+          "equity": 0.7382
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7434
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7401
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7347
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7325
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7344
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7272
+        },
+        {
+          "date": "2024-11-25",
+          "equity": 0.7463
+        },
+        {
+          "date": "2024-11-26",
+          "equity": 0.7429
+        },
+        {
+          "date": "2024-11-26",
+          "equity": 0.7511
+        },
+        {
+          "date": "2024-11-28",
+          "equity": 1.8468
         },
         {
           "date": "2024-12-04",
-          "equity": 1.8239
+          "equity": 1.8319
         },
         {
           "date": "2024-12-04",
-          "equity": 1.8124
+          "equity": 1.8203
         },
         {
           "date": "2024-12-04",
-          "equity": 1.7998
+          "equity": 1.8077
         },
         {
           "date": "2024-12-04",
-          "equity": 1.787
+          "equity": 1.7948
         },
         {
           "date": "2024-12-04",
-          "equity": 1.7754
+          "equity": 1.7832
         },
         {
           "date": "2024-12-04",
-          "equity": 1.7991
+          "equity": 1.807
         },
         {
           "date": "2024-12-04",
-          "equity": 1.8118
+          "equity": 1.8197
         },
         {
           "date": "2024-12-05",
-          "equity": 1.8049
+          "equity": 1.8128
         },
         {
           "date": "2024-12-05",
-          "equity": 1.8002
+          "equity": 1.8081
         },
         {
           "date": "2024-12-06",
-          "equity": 1.7927
+          "equity": 1.8005
         },
         {
           "date": "2024-12-10",
-          "equity": 1.7862
+          "equity": 1.794
         },
         {
           "date": "2024-12-11",
-          "equity": 1.7791
+          "equity": 1.7869
         },
         {
           "date": "2024-12-11",
-          "equity": 1.779
+          "equity": 1.7868
         },
         {
           "date": "2024-12-19",
-          "equity": 1.7726
+          "equity": 1.7804
         },
         {
           "date": "2024-12-19",
-          "equity": 1.7904
-        },
-        {
-          "date": "2024-12-20",
-          "equity": 1.7808
+          "equity": 1.7983
         },
         {
           "date": "2024-12-23",
-          "equity": 1.7732
+          "equity": 1.7906
         },
         {
           "date": "2024-12-23",
-          "equity": 1.7741
+          "equity": 1.7915
+        },
+        {
+          "date": "2024-12-23",
+          "equity": 1.7915
         },
         {
           "date": "2024-12-25",
-          "equity": 1.7594
+          "equity": 1.7767
         },
         {
           "date": "2024-12-25",
-          "equity": 1.7449
-        },
-        {
-          "date": "2024-12-31",
-          "equity": 1.7378
-        },
-        {
-          "date": "2024-12-31",
-          "equity": 1.7306
-        },
-        {
-          "date": "2025-01-02",
-          "equity": 1.7156
-        },
-        {
-          "date": "2025-01-10",
-          "equity": 1.7176
-        },
-        {
-          "date": "2025-01-16",
-          "equity": 1.716
-        },
-        {
-          "date": "2025-01-17",
-          "equity": 1.7286
-        },
-        {
-          "date": "2025-01-21",
-          "equity": 1.7275
-        },
-        {
-          "date": "2025-01-21",
-          "equity": 1.7201
-        },
-        {
-          "date": "2025-01-21",
-          "equity": 1.7133
-        },
-        {
-          "date": "2025-02-03",
-          "equity": 1.7206
-        },
-        {
-          "date": "2025-02-03",
-          "equity": 1.727
-        },
-        {
-          "date": "2025-02-04",
-          "equity": 1.7188
-        },
-        {
-          "date": "2025-02-05",
-          "equity": 1.7224
-        },
-        {
-          "date": "2025-02-05",
-          "equity": 1.7159
-        },
-        {
-          "date": "2025-02-05",
-          "equity": 1.7227
-        },
-        {
-          "date": "2025-02-06",
-          "equity": 1.726
-        },
-        {
-          "date": "2025-02-06",
-          "equity": 1.7117
-        },
-        {
-          "date": "2025-02-06",
-          "equity": 1.723
-        },
-        {
-          "date": "2025-02-06",
-          "equity": 1.7077
-        },
-        {
-          "date": "2025-02-06",
           "equity": 1.762
         },
         {
-          "date": "2025-02-07",
-          "equity": 1.7631
+          "date": "2024-12-31",
+          "equity": 1.7548
+        },
+        {
+          "date": "2024-12-31",
+          "equity": 1.7475
+        },
+        {
+          "date": "2025-01-03",
+          "equity": 1.7359
+        },
+        {
+          "date": "2025-01-13",
+          "equity": 1.7281
+        },
+        {
+          "date": "2025-01-16",
+          "equity": 1.7264
+        },
+        {
+          "date": "2025-01-17",
+          "equity": 1.7391
+        },
+        {
+          "date": "2025-01-21",
+          "equity": 1.738
+        },
+        {
+          "date": "2025-01-21",
+          "equity": 1.7306
+        },
+        {
+          "date": "2025-01-21",
+          "equity": 1.7237
+        },
+        {
+          "date": "2025-02-03",
+          "equity": 1.7311
+        },
+        {
+          "date": "2025-02-03",
+          "equity": 1.7375
+        },
+        {
+          "date": "2025-02-05",
+          "equity": 1.7411
+        },
+        {
+          "date": "2025-02-05",
+          "equity": 1.7346
+        },
+        {
+          "date": "2025-02-05",
+          "equity": 1.7415
+        },
+        {
+          "date": "2025-02-05",
+          "equity": 1.7415
+        },
+        {
+          "date": "2025-02-06",
+          "equity": 1.7448
+        },
+        {
+          "date": "2025-02-06",
+          "equity": 1.7304
+        },
+        {
+          "date": "2025-02-06",
+          "equity": 1.7418
+        },
+        {
+          "date": "2025-02-06",
+          "equity": 1.7263
+        },
+        {
+          "date": "2025-02-06",
+          "equity": 1.7812
         },
         {
           "date": "2025-02-07",
-          "equity": 1.7465
+          "equity": 1.7824
         },
         {
           "date": "2025-02-07",
-          "equity": 1.7276
+          "equity": 1.7656
         },
         {
           "date": "2025-02-07",
-          "equity": 1.7113
+          "equity": 1.7464
         },
         {
           "date": "2025-02-07",
-          "equity": 1.7142
+          "equity": 1.73
         },
         {
           "date": "2025-02-07",
-          "equity": 1.6952
+          "equity": 1.7329
+        },
+        {
+          "date": "2025-02-07",
+          "equity": 1.7137
         },
         {
           "date": "2025-02-10",
-          "equity": 1.6882
+          "equity": 1.7066
         },
         {
           "date": "2025-02-10",
-          "equity": 1.6745
+          "equity": 1.6928
         },
         {
           "date": "2025-02-10",
-          "equity": 1.657
+          "equity": 1.675
         },
         {
           "date": "2025-02-10",
-          "equity": 1.6423
+          "equity": 1.6602
         },
         {
           "date": "2025-02-14",
-          "equity": 1.6266
+          "equity": 1.6444
         },
         {
           "date": "2025-02-17",
-          "equity": 1.6111
+          "equity": 1.6287
         },
         {
           "date": "2025-02-17",
-          "equity": 1.6098
+          "equity": 1.6273
         },
         {
           "date": "2025-02-18",
-          "equity": 1.6117
+          "equity": 1.6293
         },
         {
           "date": "2025-02-21",
-          "equity": 1.5976
+          "equity": 1.615
         },
         {
           "date": "2025-03-03",
-          "equity": 1.6187
+          "equity": 1.6363
         },
         {
           "date": "2025-03-04",
-          "equity": 1.6184
+          "equity": 1.6361
         },
         {
           "date": "2025-03-04",
-          "equity": 1.6118
+          "equity": 1.6294
         },
         {
-          "date": "2025-03-11",
-          "equity": 1.6078
+          "date": "2025-03-12",
+          "equity": 1.6268
         },
         {
           "date": "2025-03-18",
-          "equity": 1.6216
+          "equity": 1.6407
         },
         {
-          "date": "2025-03-19",
-          "equity": 1.6148
-        },
-        {
-          "date": "2025-03-21",
-          "equity": 1.6019
+          "date": "2025-03-20",
+          "equity": 1.6407
         },
         {
           "date": "2025-03-21",
-          "equity": 1.5914
+          "equity": 1.6277
         },
         {
-          "date": "2025-03-24",
-          "equity": 1.614
+          "date": "2025-03-21",
+          "equity": 1.617
         },
         {
-          "date": "2025-05-09",
-          "equity": 1.6372
-        },
-        {
-          "date": "2025-05-09",
-          "equity": 1.6465
+          "date": "2025-03-25",
+          "equity": 1.6434
         },
         {
           "date": "2025-05-09",
-          "equity": 1.6459
+          "equity": 1.667
+        },
+        {
+          "date": "2025-05-09",
+          "equity": 1.6764
+        },
+        {
+          "date": "2025-05-09",
+          "equity": 1.6759
         },
         {
           "date": "2025-05-13",
-          "equity": 1.64
+          "equity": 1.6699
         },
         {
           "date": "2025-05-14",
-          "equity": 1.6689
+          "equity": 1.6993
         },
         {
           "date": "2025-05-14",
-          "equity": 1.692
+          "equity": 1.7228
         },
         {
           "date": "2025-05-14",
-          "equity": 1.662
+          "equity": 1.6922
         },
         {
           "date": "2025-05-14",
-          "equity": 1.6291
+          "equity": 1.6587
         },
         {
           "date": "2025-05-16",
-          "equity": 1.6161
+          "equity": 1.6455
         },
         {
           "date": "2025-05-20",
-          "equity": 1.5876
+          "equity": 1.6165
         },
         {
           "date": "2025-05-20",
-          "equity": 1.5748
+          "equity": 1.6035
         },
         {
           "date": "2025-05-26",
-          "equity": 1.5649
+          "equity": 1.5934
         },
         {
           "date": "2025-05-27",
-          "equity": 1.5596
+          "equity": 1.588
         },
         {
           "date": "2025-06-02",
-          "equity": 1.5638
+          "equity": 1.5923
         },
         {
           "date": "2025-06-02",
-          "equity": 1.5582
+          "equity": 1.5866
         },
         {
           "date": "2025-06-06",
-          "equity": 1.563
+          "equity": 1.5915
         },
         {
           "date": "2025-06-09",
-          "equity": 1.5618
+          "equity": 1.5903
         },
         {
           "date": "2025-06-09",
-          "equity": 1.5535
+          "equity": 1.5818
         },
         {
           "date": "2025-06-12",
-          "equity": 1.5614
+          "equity": 1.5899
         },
         {
           "date": "2025-06-13",
-          "equity": 1.5637
+          "equity": 1.5921
         },
         {
           "date": "2025-06-13",
-          "equity": 1.5627
+          "equity": 1.5911
         },
         {
           "date": "2025-06-17",
-          "equity": 1.5493
+          "equity": 1.5775
         },
         {
           "date": "2025-06-20",
-          "equity": 1.5525
+          "equity": 1.5808
         },
         {
           "date": "2025-06-23",
-          "equity": 1.557
+          "equity": 1.5854
         },
         {
           "date": "2025-06-23",
-          "equity": 1.5589
+          "equity": 1.5873
         },
         {
           "date": "2025-06-23",
-          "equity": 1.5564
+          "equity": 1.5848
         },
         {
           "date": "2025-06-23",
-          "equity": 1.5509
+          "equity": 1.5791
         },
         {
           "date": "2025-06-23",
-          "equity": 1.5605
+          "equity": 1.5889
         },
         {
           "date": "2025-06-23",
-          "equity": 1.569
+          "equity": 1.5976
         },
         {
           "date": "2025-06-23",
-          "equity": 1.5738
+          "equity": 1.6025
         },
         {
           "date": "2025-06-24",
-          "equity": 1.5779
+          "equity": 1.6067
         },
         {
           "date": "2025-06-30",
-          "equity": 1.5631
+          "equity": 1.5915
         },
         {
           "date": "2025-07-01",
-          "equity": 1.5763
+          "equity": 1.605
         },
         {
           "date": "2025-07-07",
-          "equity": 1.5776
+          "equity": 1.6063
         },
         {
           "date": "2025-07-07",
-          "equity": 1.5772
+          "equity": 1.6059
         },
         {
           "date": "2025-07-07",
-          "equity": 1.5684
+          "equity": 1.597
         },
         {
           "date": "2025-07-08",
-          "equity": 1.5736
+          "equity": 1.6023
         },
         {
           "date": "2025-07-08",
-          "equity": 1.5869
+          "equity": 1.6158
         },
         {
           "date": "2025-07-08",
-          "equity": 1.5951
+          "equity": 1.6241
         },
         {
           "date": "2025-07-08",
-          "equity": 1.5974
+          "equity": 1.6264
         },
         {
           "date": "2025-07-11",
-          "equity": 1.5953
+          "equity": 1.6243
         },
         {
           "date": "2025-07-15",
-          "equity": 1.6247
+          "equity": 1.6542
         },
         {
           "date": "2025-07-15",
-          "equity": 1.6115
+          "equity": 1.6408
         },
         {
           "date": "2025-07-15",
-          "equity": 1.5996
+          "equity": 1.6287
         },
         {
           "date": "2025-07-15",
-          "equity": 1.629
+          "equity": 1.6586
         },
         {
           "date": "2025-07-15",
-          "equity": 1.6163
+          "equity": 1.6458
         },
         {
           "date": "2025-07-16",
-          "equity": 1.6284
+          "equity": 1.658
         },
         {
           "date": "2025-07-16",
-          "equity": 1.6184
+          "equity": 1.6479
         },
         {
           "date": "2025-07-16",
-          "equity": 1.6443
+          "equity": 1.6743
         },
         {
           "date": "2025-07-16",
-          "equity": 1.6337
+          "equity": 1.6635
         },
         {
           "date": "2025-07-16",
-          "equity": 1.6706
+          "equity": 1.701
         },
         {
           "date": "2025-07-18",
-          "equity": 1.7519
+          "equity": 1.7838
         },
         {
           "date": "2025-07-21",
-          "equity": 1.923
+          "equity": 1.958
         },
         {
           "date": "2025-07-22",
-          "equity": 1.9034
+          "equity": 1.938
         },
         {
           "date": "2025-07-28",
-          "equity": 2.1436
+          "equity": 2.1827
         },
         {
           "date": "2025-07-28",
-          "equity": 2.2007
+          "equity": 2.2408
         },
         {
           "date": "2025-07-28",
-          "equity": 2.2971
+          "equity": 2.3389
         },
         {
           "date": "2025-07-30",
-          "equity": 2.3346
+          "equity": 2.3771
         },
         {
           "date": "2025-08-04",
-          "equity": 2.3657
+          "equity": 2.4088
         },
         {
           "date": "2025-08-11",
-          "equity": 2.4077
+          "equity": 2.4515
         },
         {
           "date": "2025-08-15",
-          "equity": 2.4432
+          "equity": 2.4877
         },
         {
           "date": "2025-08-22",
-          "equity": 2.5061
+          "equity": 2.5517
         },
         {
           "date": "2025-09-15",
-          "equity": 2.4873
+          "equity": 2.5326
         },
         {
           "date": "2025-09-18",
-          "equity": 2.6136
+          "equity": 2.6612
         },
         {
           "date": "2025-09-19",
-          "equity": 2.5903
+          "equity": 2.6374
         },
         {
           "date": "2025-09-22",
-          "equity": 2.5985
+          "equity": 2.6458
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5812
+          "equity": 2.6282
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5606
+          "equity": 2.6072
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5366
+          "equity": 2.5828
         },
         {
           "date": "2025-09-30",
-          "equity": 2.5233
+          "equity": 2.5692
         },
         {
           "date": "2025-10-01",
-          "equity": 2.4925
+          "equity": 2.5378
         },
         {
           "date": "2025-10-03",
-          "equity": 2.5026
+          "equity": 2.5482
         },
         {
           "date": "2025-10-03",
-          "equity": 2.4904
+          "equity": 2.5357
         },
         {
           "date": "2025-10-07",
-          "equity": 2.5509
+          "equity": 2.5973
         },
         {
           "date": "2025-10-08",
-          "equity": 2.5599
+          "equity": 2.6065
         },
         {
           "date": "2025-10-08",
-          "equity": 2.5875
+          "equity": 2.6346
         },
         {
           "date": "2025-10-13",
-          "equity": 2.566
+          "equity": 2.6127
         },
         {
           "date": "2025-10-13",
-          "equity": 2.5648
+          "equity": 2.6114
         },
         {
           "date": "2025-10-13",
-          "equity": 2.6174
+          "equity": 2.6651
         },
         {
           "date": "2025-10-13",
-          "equity": 2.6602
+          "equity": 2.7086
         },
         {
           "date": "2025-10-13",
-          "equity": 2.6516
-        },
-        {
-          "date": "2025-10-13",
-          "equity": 2.6341
-        },
-        {
-          "date": "2025-10-13",
-          "equity": 2.6397
-        },
-        {
-          "date": "2025-10-16",
-          "equity": 2.6385
-        },
-        {
-          "date": "2025-10-16",
           "equity": 2.6999
         },
         {
-          "date": "2025-10-21",
-          "equity": 2.7399
+          "date": "2025-10-13",
+          "equity": 2.6821
+        },
+        {
+          "date": "2025-10-13",
+          "equity": 2.6878
+        },
+        {
+          "date": "2025-10-16",
+          "equity": 2.6865
+        },
+        {
+          "date": "2025-10-16",
+          "equity": 2.7491
         },
         {
           "date": "2025-10-21",
-          "equity": 2.7485
+          "equity": 2.7898
         },
         {
           "date": "2025-10-21",
-          "equity": 2.7514
+          "equity": 2.7985
+        },
+        {
+          "date": "2025-10-21",
+          "equity": 2.8014
         },
         {
           "date": "2025-10-22",
-          "equity": 2.7433
+          "equity": 2.7932
         },
         {
           "date": "2025-10-27",
-          "equity": 2.8382
+          "equity": 2.8899
         },
         {
           "date": "2025-10-29",
-          "equity": 2.8142
+          "equity": 2.8655
         },
         {
           "date": "2025-10-30",
-          "equity": 2.79
+          "equity": 2.8408
         },
         {
           "date": "2025-10-30",
-          "equity": 2.8269
+          "equity": 2.8783
         },
         {
           "date": "2025-11-03",
-          "equity": 2.8053
+          "equity": 2.8564
         },
         {
           "date": "2025-11-03",
-          "equity": 2.7871
+          "equity": 2.8378
         },
         {
           "date": "2025-11-06",
-          "equity": 2.7731
+          "equity": 2.8236
         },
         {
           "date": "2025-11-06",
-          "equity": 2.7831
+          "equity": 2.8337
         },
         {
           "date": "2025-11-07",
-          "equity": 2.7719
+          "equity": 2.8224
         },
         {
           "date": "2025-11-07",
-          "equity": 2.7619
+          "equity": 2.8122
         },
         {
           "date": "2025-11-10",
-          "equity": 2.7695
+          "equity": 2.8199
         },
         {
           "date": "2025-11-11",
-          "equity": 2.7666
+          "equity": 2.817
         },
         {
           "date": "2025-11-19",
-          "equity": 2.7545
+          "equity": 2.8047
         },
         {
           "date": "2025-11-19",
-          "equity": 2.7606
+          "equity": 2.8109
         },
         {
-          "date": "2025-11-21",
-          "equity": 2.7525
+          "date": "2025-11-24",
+          "equity": 2.803
         },
         {
           "date": "2025-11-25",
-          "equity": 2.748
+          "equity": 2.7989
         },
         {
           "date": "2025-11-28",
-          "equity": 2.7426
+          "equity": 2.7934
         },
         {
           "date": "2025-11-28",
-          "equity": 2.8176
+          "equity": 2.8698
         },
         {
           "date": "2025-11-28",
-          "equity": 2.8391
+          "equity": 2.8916
         },
         {
           "date": "2025-11-28",
-          "equity": 2.8181
+          "equity": 2.8703
         },
         {
           "date": "2025-11-28",
-          "equity": 2.7968
+          "equity": 2.8486
         },
         {
           "date": "2025-11-28",
-          "equity": 2.8887
+          "equity": 2.9422
         },
         {
           "date": "2025-11-28",
-          "equity": 2.9429
+          "equity": 2.9974
         },
         {
           "date": "2025-11-28",
-          "equity": 2.9368
+          "equity": 2.9912
         },
         {
           "date": "2025-11-28",
-          "equity": 2.9132
+          "equity": 2.9671
         },
         {
           "date": "2025-12-01",
-          "equity": 2.9032
+          "equity": 2.9569
         },
         {
           "date": "2025-12-01",
-          "equity": 2.8939
+          "equity": 2.9475
         },
         {
           "date": "2025-12-02",
-          "equity": 2.8833
+          "equity": 2.9367
         },
         {
           "date": "2025-12-03",
-          "equity": 2.8967
+          "equity": 2.9503
         },
         {
           "date": "2025-12-03",
-          "equity": 2.9742
+          "equity": 3.0293
         },
         {
           "date": "2025-12-03",
-          "equity": 3.0689
+          "equity": 3.1258
         },
         {
           "date": "2025-12-03",
-          "equity": 3.0537
+          "equity": 3.1102
         },
         {
-          "date": "2025-12-08",
-          "equity": 3.0403
+          "date": "2025-12-05",
+          "equity": 3.0969
         },
         {
           "date": "2025-12-09",
-          "equity": 3.0184
+          "equity": 3.0746
         },
         {
           "date": "2025-12-12",
-          "equity": 3.1083
+          "equity": 3.1662
         },
         {
           "date": "2025-12-15",
-          "equity": 3.1029
+          "equity": 3.1607
         },
         {
-          "date": "2025-12-18",
-          "equity": 3.0917
-        },
-        {
-          "date": "2025-12-29",
-          "equity": 3.1652
+          "date": "2025-12-16",
+          "equity": 3.1748
         },
         {
           "date": "2025-12-29",
-          "equity": 3.2403
+          "equity": 3.2503
+        },
+        {
+          "date": "2025-12-29",
+          "equity": 3.3274
         },
         {
           "date": "2026-01-09",
-          "equity": 3.2783
+          "equity": 3.3664
         },
         {
           "date": "2026-01-21",
-          "equity": 3.2493
+          "equity": 3.3367
         },
         {
           "date": "2026-01-21",
-          "equity": 3.2313
+          "equity": 3.3181
         },
         {
           "date": "2026-01-28",
-          "equity": 3.5234
+          "equity": 3.6181
         },
         {
           "date": "2026-01-28",
-          "equity": 3.4906
+          "equity": 3.5844
         },
         {
           "date": "2026-01-28",
-          "equity": 3.4985
+          "equity": 3.5925
         },
         {
           "date": "2026-01-30",
-          "equity": 3.4731
+          "equity": 3.5665
         },
         {
           "date": "2026-02-02",
-          "equity": 3.4462
+          "equity": 3.5388
         },
         {
           "date": "2026-02-06",
-          "equity": 3.4393
+          "equity": 3.5317
         },
         {
           "date": "2026-02-06",
-          "equity": 3.4649
+          "equity": 3.558
         },
         {
           "date": "2026-02-10",
-          "equity": 3.4585
+          "equity": 3.5514
         },
         {
           "date": "2026-02-11",
-          "equity": 3.4304
+          "equity": 3.5226
         },
         {
           "date": "2026-02-11",
-          "equity": 3.491
+          "equity": 3.5848
         },
         {
           "date": "2026-02-23",
-          "equity": 3.5017
+          "equity": 3.5958
         },
         {
           "date": "2026-02-23",
-          "equity": 3.9301
+          "equity": 4.0358
         },
         {
           "date": "2026-02-23",
-          "equity": 3.8819
+          "equity": 3.9862
         },
         {
           "date": "2026-02-24",
-          "equity": 3.9586
+          "equity": 4.065
         },
         {
           "date": "2026-03-02",
-          "equity": 3.8645
+          "equity": 3.9683
         },
         {
           "date": "2026-03-16",
-          "equity": 3.8875
+          "equity": 3.9919
         },
         {
           "date": "2026-03-17",
-          "equity": 3.9623
+          "equity": 4.0688
         },
         {
           "date": "2026-03-17",
-          "equity": 3.9668
+          "equity": 4.0734
         },
         {
-          "date": "2026-03-31",
-          "equity": 3.9668
+          "date": "2026-04-01",
+          "equity": 4.1223
         }
       ],
-      "total_return_pct": 296.68,
-      "max_drawdown_pct": 27.88
+      "total_return_pct": 312.23,
+      "max_drawdown_pct": 27.57
     }
   },
   "trades": [
@@ -3509,7 +3565,8 @@
       "market_er": 0.329,
       "market_factor": 1.199,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-01-03",
@@ -3534,7 +3591,8 @@
       "market_er": 0.153,
       "market_factor": 0.396,
       "sector_key": "電機機械",
-      "sector_rs_pct": 17.6
+      "sector_rs_pct": 17.6,
+      "high_vol": false
     },
     {
       "date": "2024-01-04",
@@ -3559,7 +3617,8 @@
       "market_er": 0.127,
       "market_factor": 0.3,
       "sector_key": "電機機械",
-      "sector_rs_pct": 23.5
+      "sector_rs_pct": 23.5,
+      "high_vol": false
     },
     {
       "date": "2024-01-05",
@@ -3584,7 +3643,8 @@
       "market_er": 0.167,
       "market_factor": 0.418,
       "sector_key": "金融保險",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2024-01-11",
@@ -3609,7 +3669,8 @@
       "market_er": 0.051,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-01-12",
@@ -3634,7 +3695,8 @@
       "market_er": 0.105,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-01-15",
@@ -3659,7 +3721,8 @@
       "market_er": 0.094,
       "market_factor": 0.3,
       "sector_key": "電機機械",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2024-01-19",
@@ -3684,7 +3747,8 @@
       "market_er": 0.069,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-01-22",
@@ -3709,7 +3773,8 @@
       "market_er": 0.104,
       "market_factor": 0.3,
       "sector_key": "航運",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": true
     },
     {
       "date": "2024-01-22",
@@ -3734,7 +3799,8 @@
       "market_er": 0.104,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-01-22",
@@ -3759,7 +3825,8 @@
       "market_er": 0.104,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-01-23",
@@ -3780,11 +3847,12 @@
       "gain_pct": -4.52,
       "actual_rr": 2.02,
       "confirmations": 4,
-      "pos_factor": 0.0946,
+      "pos_factor": 0.0876,
       "market_er": 0.126,
-      "market_factor": 0.324,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-01-23",
@@ -3805,11 +3873,12 @@
       "gain_pct": -1.1,
       "actual_rr": 2.61,
       "confirmations": 3,
-      "pos_factor": 0.1202,
+      "pos_factor": 0.1113,
       "market_er": 0.126,
-      "market_factor": 0.324,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-01-29",
@@ -3834,7 +3903,8 @@
       "market_er": 0.091,
       "market_factor": 0.313,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-01-31",
@@ -3859,7 +3929,8 @@
       "market_er": 0.171,
       "market_factor": 0.496,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-02-01",
@@ -3884,7 +3955,8 @@
       "market_er": 0.209,
       "market_factor": 0.723,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-02-01",
@@ -3909,7 +3981,8 @@
       "market_er": 0.209,
       "market_factor": 0.723,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-02-05",
@@ -3934,7 +4007,8 @@
       "market_er": 0.256,
       "market_factor": 0.721,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-02-15",
@@ -3955,11 +4029,12 @@
       "gain_pct": 9.38,
       "actual_rr": 1.97,
       "confirmations": 1,
-      "pos_factor": 0.2,
+      "pos_factor": 0.1692,
       "market_er": 0.433,
-      "market_factor": 1.344,
+      "market_factor": 0.672,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-02-16",
@@ -3984,7 +4059,8 @@
       "market_er": 0.452,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-02-16",
@@ -4009,7 +4085,8 @@
       "market_er": 0.452,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-02-16",
@@ -4034,7 +4111,8 @@
       "market_er": 0.452,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-02-16",
@@ -4059,7 +4137,8 @@
       "market_er": 0.452,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-02-16",
@@ -4084,7 +4163,8 @@
       "market_er": 0.452,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-02-16",
@@ -4109,7 +4189,8 @@
       "market_er": 0.452,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-02-29",
@@ -4134,7 +4215,8 @@
       "market_er": 0.564,
       "market_factor": 1.5,
       "sector_key": "建材營造",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-03-11",
@@ -4159,7 +4241,8 @@
       "market_er": 0.755,
       "market_factor": 1.217,
       "sector_key": "建材營造",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2024-03-15",
@@ -4184,7 +4267,8 @@
       "market_er": 0.484,
       "market_factor": 0.988,
       "sector_key": "電子通路",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2024-03-22",
@@ -4209,7 +4293,8 @@
       "market_er": 0.563,
       "market_factor": 1.447,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-03-22",
@@ -4234,7 +4319,8 @@
       "market_er": 0.563,
       "market_factor": 1.447,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-03-25",
@@ -4259,7 +4345,8 @@
       "market_er": 0.533,
       "market_factor": 1.5,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2024-04-02",
@@ -4284,7 +4371,8 @@
       "market_er": 0.458,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-04-17",
@@ -4309,7 +4397,8 @@
       "market_er": 0.11,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-04-18",
@@ -4330,11 +4419,12 @@
       "gain_pct": 6.75,
       "actual_rr": 1.74,
       "confirmations": 2,
-      "pos_factor": 0.1015,
+      "pos_factor": 0.0745,
       "market_er": 0.144,
-      "market_factor": 0.409,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-04-22",
@@ -4355,11 +4445,12 @@
       "gain_pct": 7.74,
       "actual_rr": 1.9,
       "confirmations": 3,
-      "pos_factor": 0.1336,
+      "pos_factor": 0.0883,
       "market_er": 0.226,
-      "market_factor": 0.454,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-04-26",
@@ -4384,7 +4475,8 @@
       "market_er": 0.018,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-04-29",
@@ -4405,11 +4497,12 @@
       "gain_pct": 29.57,
       "actual_rr": 3.96,
       "confirmations": 4,
-      "pos_factor": 0.0963,
+      "pos_factor": 0.0768,
       "market_er": 0.072,
-      "market_factor": 0.376,
+      "market_factor": 0.3,
       "sector_key": "半導體",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": true
     },
     {
       "date": "2024-04-29",
@@ -4430,11 +4523,12 @@
       "gain_pct": -9.24,
       "actual_rr": 3.83,
       "confirmations": 4,
-      "pos_factor": 0.0403,
+      "pos_factor": 0.0322,
       "market_er": 0.072,
-      "market_factor": 0.376,
+      "market_factor": 0.3,
       "sector_key": "半導體",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": true
     },
     {
       "date": "2024-04-29",
@@ -4455,11 +4549,12 @@
       "gain_pct": -8.06,
       "actual_rr": 3.72,
       "confirmations": 5,
-      "pos_factor": 0.1008,
+      "pos_factor": 0.0804,
       "market_er": 0.072,
-      "market_factor": 0.376,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-04-29",
@@ -4480,11 +4575,12 @@
       "gain_pct": -5.5,
       "actual_rr": 2.31,
       "confirmations": 4,
-      "pos_factor": 0.0902,
+      "pos_factor": 0.072,
       "market_er": 0.072,
-      "market_factor": 0.376,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-04-30",
@@ -4497,19 +4593,20 @@
       "stock_phase": "BULL",
       "rs_pct": 70.2,
       "entry": 19.66,
-      "stop": 18.23,
-      "target": 24.35,
+      "stop": 18.22,
+      "target": 24.39,
       "entry_type": "intraday",
       "exit_type": "expired",
       "outcome": "win",
       "gain_pct": 17.9,
       "actual_rr": 3.28,
       "confirmations": 4,
-      "pos_factor": 0.0984,
+      "pos_factor": 0.0877,
       "market_er": 0.021,
-      "market_factor": 0.334,
+      "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": true
     },
     {
       "date": "2024-04-30",
@@ -4522,19 +4619,20 @@
       "stock_phase": "BULL",
       "rs_pct": 82.9,
       "entry": 14.09,
-      "stop": 12.74,
-      "target": 19.34,
+      "stop": 12.73,
+      "target": 19.38,
       "entry_type": "intraday",
       "exit_type": "expired",
       "outcome": "win",
       "gain_pct": 8.87,
       "actual_rr": 3.89,
       "confirmations": 4,
-      "pos_factor": 0.0747,
+      "pos_factor": 0.0666,
       "market_er": 0.021,
-      "market_factor": 0.334,
+      "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": true
     },
     {
       "date": "2024-04-30",
@@ -4555,11 +4653,12 @@
       "gain_pct": -9.71,
       "actual_rr": 3.75,
       "confirmations": 4,
-      "pos_factor": 0.0341,
+      "pos_factor": 0.0307,
       "market_er": 0.021,
-      "market_factor": 0.334,
+      "market_factor": 0.3,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": true
     },
     {
       "date": "2024-04-30",
@@ -4580,11 +4679,12 @@
       "gain_pct": 10.3,
       "actual_rr": 4.24,
       "confirmations": 5,
-      "pos_factor": 0.0269,
+      "pos_factor": 0.0242,
       "market_er": 0.021,
-      "market_factor": 0.334,
+      "market_factor": 0.3,
       "sector_key": "電機機械",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": true
     },
     {
       "date": "2024-04-30",
@@ -4605,11 +4705,12 @@
       "gain_pct": -8.68,
       "actual_rr": 3.69,
       "confirmations": 4,
-      "pos_factor": 0.0451,
+      "pos_factor": 0.0405,
       "market_er": 0.021,
-      "market_factor": 0.334,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2024-05-02",
@@ -4634,7 +4735,8 @@
       "market_er": 0.0,
       "market_factor": 0.34,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-05-02",
@@ -4659,7 +4761,8 @@
       "market_er": 0.0,
       "market_factor": 0.34,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2024-05-02",
@@ -4684,7 +4787,8 @@
       "market_er": 0.0,
       "market_factor": 0.34,
       "sector_key": "建材營造",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-05-02",
@@ -4697,19 +4801,20 @@
       "stock_phase": "BULL",
       "rs_pct": 79.6,
       "entry": 23.11,
-      "stop": 20.06,
-      "target": 34.95,
+      "stop": 20.13,
+      "target": 34.65,
       "entry_type": "intraday",
       "exit_type": "expired",
       "outcome": "win",
       "gain_pct": 11.51,
-      "actual_rr": 3.88,
+      "actual_rr": 3.87,
       "confirmations": 5,
-      "pos_factor": 0.0556,
+      "pos_factor": 0.057,
       "market_er": 0.0,
       "market_factor": 0.34,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-05-02",
@@ -4734,57 +4839,112 @@
       "market_er": 0.0,
       "market_factor": 0.34,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
-      "date": "2024-05-06",
-      "code": "2890",
+      "date": "2024-05-02",
+      "code": "2204",
       "type": "high_base",
       "label": "強整再突",
       "strength": "medium",
       "strategy": "trend",
       "regime": "bull",
       "stock_phase": "BULL",
-      "rs_pct": 72.9,
-      "entry": 20.19,
-      "stop": 18.33,
-      "target": 27.69,
+      "rs_pct": 88.3,
+      "entry": 131.48,
+      "stop": 114.35,
+      "target": 194.95,
       "entry_type": "intraday",
-      "exit_type": "expired",
-      "outcome": "win",
-      "gain_pct": 15.46,
-      "actual_rr": 4.03,
+      "exit_type": "stop",
+      "outcome": "loss",
+      "gain_pct": -13.03,
+      "actual_rr": 3.71,
       "confirmations": 4,
-      "pos_factor": 0.0839,
-      "market_er": 0.038,
-      "market_factor": 0.353,
-      "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "pos_factor": 0.0517,
+      "market_er": 0.0,
+      "market_factor": 0.34,
+      "sector_key": "",
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
-      "date": "2024-05-10",
-      "code": "2603",
+      "date": "2024-05-02",
+      "code": "2845",
       "type": "high_base",
       "label": "強整再突",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "BULL",
+      "rs_pct": 82.3,
+      "entry": 13.24,
+      "stop": 11.81,
+      "target": 18.83,
+      "entry_type": "intraday",
+      "exit_type": "expired",
+      "outcome": "loss",
+      "gain_pct": -1.14,
+      "actual_rr": 3.91,
+      "confirmations": 4,
+      "pos_factor": 0.0623,
+      "market_er": 0.0,
+      "market_factor": 0.34,
+      "sector_key": "",
+      "sector_rs_pct": 50.0,
+      "high_vol": false
+    },
+    {
+      "date": "2024-05-07",
+      "code": "4967",
+      "type": "breakout",
+      "label": "突破",
       "strength": "strong",
       "strategy": "trend",
       "regime": "bull",
       "stock_phase": "BULL",
-      "rs_pct": 87.6,
-      "entry": 166.14,
-      "stop": 142.66,
-      "target": 232.88,
+      "rs_pct": 88.0,
+      "entry": 110.56,
+      "stop": 84.89,
+      "target": 210.18,
       "entry_type": "gap_up",
-      "exit_type": "stop",
-      "outcome": "loss",
-      "gain_pct": -14.13,
-      "actual_rr": 2.84,
+      "exit_type": "expired",
+      "outcome": "win",
+      "gain_pct": 44.54,
+      "actual_rr": 3.88,
       "confirmations": 5,
-      "pos_factor": 0.0608,
+      "pos_factor": 0.0277,
+      "market_er": 0.048,
+      "market_factor": 0.352,
+      "sector_key": "電腦週邊",
+      "sector_rs_pct": 64.7,
+      "high_vol": false
+    },
+    {
+      "date": "2024-05-10",
+      "code": "2812",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "RANGE",
+      "rs_pct": 70.2,
+      "entry": 15.42,
+      "stop": 14.77,
+      "target": 16.47,
+      "entry_type": "gap_up",
+      "exit_type": "expired",
+      "outcome": "win",
+      "gain_pct": 0.37,
+      "actual_rr": 1.62,
+      "confirmations": 3,
+      "pos_factor": 0.1063,
       "market_er": 0.009,
       "market_factor": 0.345,
-      "sector_key": "航運",
-      "sector_rs_pct": 88.2
+      "sector_key": "金融保險",
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-05-13",
@@ -4809,7 +4969,8 @@
       "market_er": 0.024,
       "market_factor": 0.36,
       "sector_key": "航運",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-05-22",
@@ -4834,7 +4995,34 @@
       "market_er": 0.56,
       "market_factor": 1.5,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
+    },
+    {
+      "date": "2024-05-22",
+      "code": "4532",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "BULL",
+      "rs_pct": 85.6,
+      "entry": 25.66,
+      "stop": 24.8,
+      "target": 27.89,
+      "entry_type": "gap_up",
+      "exit_type": "stop",
+      "outcome": "loss",
+      "gain_pct": -3.35,
+      "actual_rr": 2.59,
+      "confirmations": 3,
+      "pos_factor": 0.2,
+      "market_er": 0.56,
+      "market_factor": 1.5,
+      "sector_key": "",
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-05-27",
@@ -4859,7 +5047,8 @@
       "market_er": 0.611,
       "market_factor": 1.5,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-05-27",
@@ -4884,7 +5073,8 @@
       "market_er": 0.611,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-05-29",
@@ -4909,7 +5099,34 @@
       "market_er": 0.5,
       "market_factor": 1.5,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
+    },
+    {
+      "date": "2024-06-03",
+      "code": "6257",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "BULL",
+      "rs_pct": 73.2,
+      "entry": 74.04,
+      "stop": 71.65,
+      "target": 81.6,
+      "entry_type": "intraday",
+      "exit_type": "expired",
+      "outcome": "loss",
+      "gain_pct": -0.45,
+      "actual_rr": 3.16,
+      "confirmations": 3,
+      "pos_factor": 0.2,
+      "market_er": 0.349,
+      "market_factor": 1.5,
+      "sector_key": "",
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-06-07",
@@ -4934,7 +5151,8 @@
       "market_er": 0.358,
       "market_factor": 1.5,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-06-12",
@@ -4959,7 +5177,8 @@
       "market_er": 0.326,
       "market_factor": 1.035,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-06-13",
@@ -4984,7 +5203,8 @@
       "market_er": 0.347,
       "market_factor": 1.245,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-06-13",
@@ -5009,7 +5229,60 @@
       "market_er": 0.347,
       "market_factor": 1.245,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
+    },
+    {
+      "date": "2024-06-13",
+      "code": "3062",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull_pullback",
+      "stock_phase": "BULL",
+      "rs_pct": 61.5,
+      "entry": 24.85,
+      "stop": 23.81,
+      "target": 26.75,
+      "entry_type": "gap_up",
+      "exit_type": "target",
+      "outcome": "win",
+      "gain_pct": 7.65,
+      "actual_rr": 1.83,
+      "confirmations": 1,
+      "pos_factor": 0.2,
+      "market_er": 0.347,
+      "market_factor": 1.245,
+      "sector_key": "",
+      "sector_rs_pct": 50.0,
+      "high_vol": false
+    },
+    {
+      "date": "2024-06-14",
+      "code": "2834",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "BULL",
+      "rs_pct": 62.5,
+      "entry": 14.29,
+      "stop": 13.88,
+      "target": 15.27,
+      "entry_type": "intraday",
+      "exit_type": "expired",
+      "outcome": "win",
+      "gain_pct": 5.61,
+      "actual_rr": 2.39,
+      "confirmations": 2,
+      "pos_factor": 0.2,
+      "market_er": 0.354,
+      "market_factor": 1.429,
+      "sector_key": "金融保險",
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2024-06-18",
@@ -5034,7 +5307,8 @@
       "market_er": 0.412,
       "market_factor": 1.5,
       "sector_key": "金融保險",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-06-24",
@@ -5059,7 +5333,34 @@
       "market_er": 0.284,
       "market_factor": 1.188,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
+    },
+    {
+      "date": "2024-06-25",
+      "code": "2610",
+      "type": "ma_pullback",
+      "label": "均線回測(主升型)",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "RANGE",
+      "rs_pct": 60.2,
+      "entry": 22.27,
+      "stop": 21.29,
+      "target": 23.91,
+      "entry_type": "intraday",
+      "exit_type": "expired",
+      "outcome": "win",
+      "gain_pct": 3.31,
+      "actual_rr": 1.67,
+      "confirmations": 2,
+      "pos_factor": 0.2,
+      "market_er": 0.254,
+      "market_factor": 1.09,
+      "sector_key": "航運",
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-07-01",
@@ -5084,32 +5385,34 @@
       "market_er": 0.492,
       "market_factor": 1.472,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2024-07-01",
-      "code": "6139",
+      "code": "1477",
       "type": "high_base",
       "label": "強整再突",
       "strength": "strong",
       "strategy": "trend",
       "regime": "bull",
       "stock_phase": "BULL",
-      "rs_pct": 86.0,
-      "entry": 251.2,
-      "stop": 207.7,
-      "target": 406.88,
-      "entry_type": "gap_up",
+      "rs_pct": 71.9,
+      "entry": 384.78,
+      "stop": 345.36,
+      "target": 535.45,
+      "entry_type": "intraday",
       "exit_type": "stop",
       "outcome": "loss",
-      "gain_pct": -17.32,
-      "actual_rr": 3.58,
+      "gain_pct": -10.24,
+      "actual_rr": 3.82,
       "confirmations": 5,
-      "pos_factor": 0.1858,
+      "pos_factor": 0.2,
       "market_er": 0.492,
       "market_factor": 1.472,
-      "sector_key": "建材營造",
-      "sector_rs_pct": 52.9
+      "sector_key": "",
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-07-02",
@@ -5134,7 +5437,34 @@
       "market_er": 0.368,
       "market_factor": 1.411,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
+    },
+    {
+      "date": "2024-07-02",
+      "code": "2890",
+      "type": "high_base",
+      "label": "強整再突",
+      "strength": "medium",
+      "strategy": "trend",
+      "regime": "bull",
+      "stock_phase": "BULL",
+      "rs_pct": 79.6,
+      "entry": 23.21,
+      "stop": 20.29,
+      "target": 34.97,
+      "entry_type": "intraday",
+      "exit_type": "expired",
+      "outcome": "loss",
+      "gain_pct": -2.63,
+      "actual_rr": 4.03,
+      "confirmations": 4,
+      "pos_factor": 0.2,
+      "market_er": 0.368,
+      "market_factor": 1.411,
+      "sector_key": "金融保險",
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-07-09",
@@ -5159,57 +5489,34 @@
       "market_er": 0.551,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
-      "date": "2024-07-10",
-      "code": "2834",
+      "date": "2024-07-18",
+      "code": "4968",
       "type": "ma_pullback",
       "label": "均線回測(主升型)",
       "strength": "medium",
       "strategy": "trend",
       "regime": "bull",
       "stock_phase": "BULL",
-      "rs_pct": 66.6,
-      "entry": 15.45,
-      "stop": 14.78,
-      "target": 17.12,
-      "entry_type": "intraday",
-      "exit_type": "expired",
-      "outcome": "loss",
-      "gain_pct": -0.98,
-      "actual_rr": 2.49,
-      "confirmations": 2,
-      "pos_factor": 0.2,
-      "market_er": 0.532,
-      "market_factor": 1.5,
-      "sector_key": "金融保險",
-      "sector_rs_pct": 58.8
-    },
-    {
-      "date": "2024-07-11",
-      "code": "2845",
-      "type": "ma_pullback",
-      "label": "均線回測(主升型)",
-      "strength": "medium",
-      "strategy": "trend",
-      "regime": "bull",
-      "stock_phase": "BULL",
-      "rs_pct": 66.6,
-      "entry": 14.47,
-      "stop": 13.98,
-      "target": 15.36,
+      "rs_pct": 88.6,
+      "entry": 237.85,
+      "stop": 228.56,
+      "target": 269.21,
       "entry_type": "intraday",
       "exit_type": "stop",
       "outcome": "loss",
-      "gain_pct": -3.39,
-      "actual_rr": 1.82,
-      "confirmations": 2,
-      "pos_factor": 0.2,
-      "market_er": 0.547,
-      "market_factor": 1.5,
+      "gain_pct": -3.91,
+      "actual_rr": 3.38,
+      "confirmations": 4,
+      "pos_factor": 0.1163,
+      "market_er": 0.002,
+      "market_factor": 0.344,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-07-22",
@@ -5234,7 +5541,8 @@
       "market_er": 0.125,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-07-22",
@@ -5259,7 +5567,8 @@
       "market_er": 0.125,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-07-22",
@@ -5284,7 +5593,8 @@
       "market_er": 0.125,
       "market_factor": 0.3,
       "sector_key": "紡織",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2024-07-22",
@@ -5309,7 +5619,8 @@
       "market_er": 0.125,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-08-16",
@@ -5334,7 +5645,8 @@
       "market_er": 0.144,
       "market_factor": 0.424,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-08-23",
@@ -5359,7 +5671,8 @@
       "market_er": 0.005,
       "market_factor": 0.389,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2024-08-23",
@@ -5384,7 +5697,8 @@
       "market_er": 0.005,
       "market_factor": 0.389,
       "sector_key": "金融保險",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-08-23",
@@ -5409,7 +5723,8 @@
       "market_er": 0.005,
       "market_factor": 0.389,
       "sector_key": "金融保險",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-08-26",
@@ -5434,7 +5749,8 @@
       "market_er": 0.01,
       "market_factor": 0.433,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-08-27",
@@ -5459,7 +5775,8 @@
       "market_er": 0.005,
       "market_factor": 0.449,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-08-28",
@@ -5484,7 +5801,8 @@
       "market_er": 0.023,
       "market_factor": 0.453,
       "sector_key": "航運",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-08-29",
@@ -5509,7 +5827,8 @@
       "market_er": 0.06,
       "market_factor": 0.441,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-08-29",
@@ -5534,7 +5853,8 @@
       "market_er": 0.06,
       "market_factor": 0.441,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-08-30",
@@ -5559,7 +5879,8 @@
       "market_er": 0.099,
       "market_factor": 0.509,
       "sector_key": "金融保險",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-08-30",
@@ -5584,7 +5905,8 @@
       "market_er": 0.099,
       "market_factor": 0.509,
       "sector_key": "通信網路",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2024-09-18",
@@ -5609,7 +5931,8 @@
       "market_er": 0.2,
       "market_factor": 0.498,
       "sector_key": "航運",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-09-19",
@@ -5634,7 +5957,8 @@
       "market_er": 0.05,
       "market_factor": 0.325,
       "sector_key": "金融保險",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-09-19",
@@ -5659,7 +5983,8 @@
       "market_er": 0.05,
       "market_factor": 0.325,
       "sector_key": "金融保險",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5684,7 +6009,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "航運",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5709,7 +6035,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "航運",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5734,7 +6061,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "金融保險",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5759,7 +6087,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "航運",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5784,7 +6113,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "金融保險",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5809,7 +6139,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "金融保險",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5834,7 +6165,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5859,7 +6191,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5884,7 +6217,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "金融保險",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-09-24",
@@ -5909,7 +6243,8 @@
       "market_er": 0.046,
       "market_factor": 0.367,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-09-25",
@@ -5934,7 +6269,8 @@
       "market_er": 0.131,
       "market_factor": 0.642,
       "sector_key": "航運",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2024-09-25",
@@ -5959,7 +6295,8 @@
       "market_er": 0.131,
       "market_factor": 0.642,
       "sector_key": "航運",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2024-09-25",
@@ -5984,7 +6321,8 @@
       "market_er": 0.131,
       "market_factor": 0.642,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-09-25",
@@ -6009,7 +6347,8 @@
       "market_er": 0.131,
       "market_factor": 0.642,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-10-01",
@@ -6034,7 +6373,8 @@
       "market_er": 0.032,
       "market_factor": 0.437,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2024-10-01",
@@ -6059,7 +6399,8 @@
       "market_er": 0.032,
       "market_factor": 0.437,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-10-01",
@@ -6084,7 +6425,8 @@
       "market_er": 0.032,
       "market_factor": 0.437,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-10-07",
@@ -6109,7 +6451,8 @@
       "market_er": 0.383,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2024-10-14",
@@ -6134,7 +6477,8 @@
       "market_er": 0.484,
       "market_factor": 1.239,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2024-10-22",
@@ -6159,7 +6503,8 @@
       "market_er": 0.404,
       "market_factor": 1.384,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-10-25",
@@ -6184,7 +6529,8 @@
       "market_er": 0.241,
       "market_factor": 0.747,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-10-30",
@@ -6209,7 +6555,8 @@
       "market_er": 0.001,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-01",
@@ -6234,7 +6581,8 @@
       "market_er": 0.168,
       "market_factor": 0.367,
       "sector_key": "航運",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-11-04",
@@ -6259,7 +6607,8 @@
       "market_er": 0.173,
       "market_factor": 0.379,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2024-11-06",
@@ -6284,7 +6633,8 @@
       "market_er": 0.166,
       "market_factor": 0.43,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-11-07",
@@ -6309,7 +6659,8 @@
       "market_er": 0.249,
       "market_factor": 0.974,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-07",
@@ -6334,7 +6685,8 @@
       "market_er": 0.249,
       "market_factor": 0.974,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-11-13",
@@ -6359,7 +6711,8 @@
       "market_er": 0.129,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-14",
@@ -6384,7 +6737,8 @@
       "market_er": 0.092,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-11-14",
@@ -6409,7 +6763,8 @@
       "market_er": 0.092,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2024-11-18",
@@ -6434,7 +6789,8 @@
       "market_er": 0.317,
       "market_factor": 0.487,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-11-21",
@@ -6459,7 +6815,8 @@
       "market_er": 0.236,
       "market_factor": 0.487,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6484,7 +6841,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6509,7 +6867,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6534,7 +6893,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6559,7 +6919,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6584,7 +6945,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6609,7 +6971,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "生技醫療",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-11-25",
@@ -6634,7 +6997,8 @@
       "market_er": 0.118,
       "market_factor": 0.428,
       "sector_key": "居家生活",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-11-26",
@@ -6659,7 +7023,8 @@
       "market_er": 0.148,
       "market_factor": 0.502,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-11-26",
@@ -6684,7 +7049,8 @@
       "market_er": 0.148,
       "market_factor": 0.502,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6709,7 +7075,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6734,7 +7101,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6759,7 +7127,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "金融保險",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6784,7 +7153,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "電機機械",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6809,7 +7179,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6834,7 +7205,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-04",
@@ -6859,7 +7231,8 @@
       "market_er": 0.009,
       "market_factor": 0.339,
       "sector_key": "居家生活",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2024-12-05",
@@ -6884,7 +7257,8 @@
       "market_er": 0.036,
       "market_factor": 0.316,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-05",
@@ -6909,7 +7283,8 @@
       "market_er": 0.036,
       "market_factor": 0.316,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2024-12-06",
@@ -6934,7 +7309,8 @@
       "market_er": 0.094,
       "market_factor": 0.35,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-10",
@@ -6959,7 +7335,8 @@
       "market_er": 0.041,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-11",
@@ -6984,7 +7361,8 @@
       "market_er": 0.012,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-12-11",
@@ -7009,7 +7387,8 @@
       "market_er": 0.012,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2024-12-19",
@@ -7034,7 +7413,8 @@
       "market_er": 0.117,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-19",
@@ -7059,7 +7439,8 @@
       "market_er": 0.117,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-23",
@@ -7084,7 +7465,8 @@
       "market_er": 0.041,
       "market_factor": 0.3,
       "sector_key": "航運",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2024-12-23",
@@ -7109,7 +7491,8 @@
       "market_er": 0.041,
       "market_factor": 0.3,
       "sector_key": "半導體",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2024-12-25",
@@ -7134,7 +7517,8 @@
       "market_er": 0.266,
       "market_factor": 0.688,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-25",
@@ -7159,7 +7543,8 @@
       "market_er": 0.266,
       "market_factor": 0.688,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2024-12-31",
@@ -7184,7 +7569,8 @@
       "market_er": 0.003,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2024-12-31",
@@ -7209,7 +7595,8 @@
       "market_er": 0.003,
       "market_factor": 0.3,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2025-01-16",
@@ -7234,7 +7621,8 @@
       "market_er": 0.029,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-01-17",
@@ -7259,7 +7647,8 @@
       "market_er": 0.045,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2025-01-21",
@@ -7284,7 +7673,8 @@
       "market_er": 0.049,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-01-21",
@@ -7309,7 +7699,8 @@
       "market_er": 0.049,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-01-21",
@@ -7334,7 +7725,8 @@
       "market_er": 0.049,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-03",
@@ -7359,7 +7751,8 @@
       "market_er": 0.107,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-02-03",
@@ -7384,7 +7777,8 @@
       "market_er": 0.107,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-05",
@@ -7409,7 +7803,8 @@
       "market_er": 0.021,
       "market_factor": 0.312,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-02-05",
@@ -7434,7 +7829,8 @@
       "market_er": 0.021,
       "market_factor": 0.312,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-05",
@@ -7459,7 +7855,8 @@
       "market_er": 0.021,
       "market_factor": 0.312,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-06",
@@ -7484,7 +7881,8 @@
       "market_er": 0.023,
       "market_factor": 0.412,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-02-06",
@@ -7509,7 +7907,8 @@
       "market_er": 0.023,
       "market_factor": 0.412,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-02-06",
@@ -7534,7 +7933,8 @@
       "market_er": 0.023,
       "market_factor": 0.412,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-06",
@@ -7559,7 +7959,8 @@
       "market_er": 0.023,
       "market_factor": 0.412,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-06",
@@ -7584,7 +7985,8 @@
       "market_er": 0.023,
       "market_factor": 0.412,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2025-02-07",
@@ -7609,7 +8011,8 @@
       "market_er": 0.082,
       "market_factor": 0.436,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-02-07",
@@ -7634,7 +8037,8 @@
       "market_er": 0.082,
       "market_factor": 0.436,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-07",
@@ -7659,7 +8063,8 @@
       "market_er": 0.082,
       "market_factor": 0.436,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2025-02-07",
@@ -7684,7 +8089,8 @@
       "market_er": 0.082,
       "market_factor": 0.436,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-07",
@@ -7709,7 +8115,8 @@
       "market_er": 0.082,
       "market_factor": 0.436,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-07",
@@ -7734,7 +8141,8 @@
       "market_er": 0.082,
       "market_factor": 0.436,
       "sector_key": "居家生活",
-      "sector_rs_pct": 94.1
+      "sector_rs_pct": 94.1,
+      "high_vol": false
     },
     {
       "date": "2025-02-10",
@@ -7759,7 +8167,8 @@
       "market_er": 0.077,
       "market_factor": 0.405,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-02-10",
@@ -7784,7 +8193,8 @@
       "market_er": 0.077,
       "market_factor": 0.405,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-02-10",
@@ -7809,7 +8219,8 @@
       "market_er": 0.077,
       "market_factor": 0.405,
       "sector_key": "生技醫療",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-10",
@@ -7834,7 +8245,8 @@
       "market_er": 0.077,
       "market_factor": 0.405,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-02-14",
@@ -7859,7 +8271,8 @@
       "market_er": 0.052,
       "market_factor": 0.445,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-02-17",
@@ -7884,7 +8297,8 @@
       "market_er": 0.085,
       "market_factor": 0.458,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2025-02-17",
@@ -7909,7 +8323,8 @@
       "market_er": 0.085,
       "market_factor": 0.458,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-02-18",
@@ -7934,7 +8349,8 @@
       "market_er": 0.129,
       "market_factor": 0.663,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-02-21",
@@ -7959,7 +8375,8 @@
       "market_er": 0.278,
       "market_factor": 1.465,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2025-03-03",
@@ -7984,7 +8401,8 @@
       "market_er": 0.168,
       "market_factor": 0.563,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-03-04",
@@ -8009,7 +8427,8 @@
       "market_er": 0.025,
       "market_factor": 0.309,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-03-04",
@@ -8034,7 +8453,8 @@
       "market_er": 0.025,
       "market_factor": 0.309,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-03-18",
@@ -8059,7 +8479,8 @@
       "market_er": 0.32,
       "market_factor": 0.741,
       "sector_key": "電機機械",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-03-21",
@@ -8084,7 +8505,8 @@
       "market_er": 0.29,
       "market_factor": 0.664,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-03-21",
@@ -8109,7 +8531,8 @@
       "market_er": 0.29,
       "market_factor": 0.664,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-05-09",
@@ -8134,7 +8557,8 @@
       "market_er": 0.38,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 0.0
+      "sector_rs_pct": 0.0,
+      "high_vol": false
     },
     {
       "date": "2025-05-09",
@@ -8159,7 +8583,8 @@
       "market_er": 0.38,
       "market_factor": 1.5,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-05-09",
@@ -8184,7 +8609,8 @@
       "market_er": 0.38,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-05-13",
@@ -8209,7 +8635,8 @@
       "market_er": 0.37,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-05-14",
@@ -8234,7 +8661,8 @@
       "market_er": 0.383,
       "market_factor": 1.5,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-05-14",
@@ -8259,7 +8687,8 @@
       "market_er": 0.383,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 11.8
+      "sector_rs_pct": 11.8,
+      "high_vol": false
     },
     {
       "date": "2025-05-14",
@@ -8284,7 +8713,8 @@
       "market_er": 0.383,
       "market_factor": 1.5,
       "sector_key": "航運",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2025-05-14",
@@ -8309,7 +8739,8 @@
       "market_er": 0.383,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 11.8
+      "sector_rs_pct": 11.8,
+      "high_vol": false
     },
     {
       "date": "2025-05-16",
@@ -8334,7 +8765,8 @@
       "market_er": 0.536,
       "market_factor": 1.5,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2025-05-20",
@@ -8359,7 +8791,8 @@
       "market_er": 0.521,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 5.9
+      "sector_rs_pct": 5.9,
+      "high_vol": false
     },
     {
       "date": "2025-05-20",
@@ -8384,7 +8817,8 @@
       "market_er": 0.521,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-05-26",
@@ -8409,7 +8843,8 @@
       "market_er": 0.478,
       "market_factor": 1.5,
       "sector_key": "建材營造",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-05-27",
@@ -8434,7 +8869,8 @@
       "market_er": 0.37,
       "market_factor": 1.338,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2025-06-02",
@@ -8459,7 +8895,8 @@
       "market_er": 0.068,
       "market_factor": 0.3,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2025-06-02",
@@ -8484,7 +8921,8 @@
       "market_er": 0.068,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-06-06",
@@ -8509,7 +8947,8 @@
       "market_er": 0.316,
       "market_factor": 0.933,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-06-09",
@@ -8534,7 +8973,8 @@
       "market_er": 0.266,
       "market_factor": 0.671,
       "sector_key": "金融保險",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2025-06-09",
@@ -8559,7 +8999,8 @@
       "market_er": 0.266,
       "market_factor": 0.671,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-06-12",
@@ -8584,7 +9025,8 @@
       "market_er": 0.154,
       "market_factor": 0.56,
       "sector_key": "半導體",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2025-06-13",
@@ -8609,7 +9051,8 @@
       "market_er": 0.099,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-06-13",
@@ -8634,7 +9077,8 @@
       "market_er": 0.099,
       "market_factor": 0.3,
       "sector_key": "通信網路",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-06-17",
@@ -8659,7 +9103,8 @@
       "market_er": 0.215,
       "market_factor": 0.71,
       "sector_key": "半導體",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2025-06-20",
@@ -8684,7 +9129,8 @@
       "market_er": 0.113,
       "market_factor": 0.3,
       "sector_key": "半導體",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8709,7 +9155,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8734,7 +9181,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8759,7 +9207,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8784,7 +9233,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8809,7 +9259,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8834,7 +9285,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-06-23",
@@ -8859,7 +9311,8 @@
       "market_er": 0.022,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-06-24",
@@ -8884,7 +9337,8 @@
       "market_er": 0.165,
       "market_factor": 0.521,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-06-30",
@@ -8909,7 +9363,8 @@
       "market_er": 0.305,
       "market_factor": 0.934,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-01",
@@ -8934,7 +9389,8 @@
       "market_er": 0.334,
       "market_factor": 1.26,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-07",
@@ -8959,7 +9415,8 @@
       "market_er": 0.158,
       "market_factor": 0.463,
       "sector_key": "金融保險",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2025-07-07",
@@ -8984,7 +9441,8 @@
       "market_er": 0.158,
       "market_factor": 0.463,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-07",
@@ -9009,7 +9467,8 @@
       "market_er": 0.158,
       "market_factor": 0.463,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-08",
@@ -9034,7 +9493,8 @@
       "market_er": 0.033,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2025-07-08",
@@ -9059,7 +9519,8 @@
       "market_er": 0.033,
       "market_factor": 0.3,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2025-07-08",
@@ -9084,7 +9545,8 @@
       "market_er": 0.033,
       "market_factor": 0.3,
       "sector_key": "半導體",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2025-07-08",
@@ -9109,7 +9571,8 @@
       "market_er": 0.033,
       "market_factor": 0.3,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2025-07-11",
@@ -9134,7 +9597,8 @@
       "market_er": 0.199,
       "market_factor": 0.734,
       "sector_key": "金融保險",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-07-15",
@@ -9159,7 +9623,8 @@
       "market_er": 0.174,
       "market_factor": 0.654,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2025-07-15",
@@ -9184,7 +9649,8 @@
       "market_er": 0.174,
       "market_factor": 0.654,
       "sector_key": "電子通路",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2025-07-15",
@@ -9209,7 +9675,8 @@
       "market_er": 0.174,
       "market_factor": 0.654,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-15",
@@ -9234,7 +9701,8 @@
       "market_er": 0.174,
       "market_factor": 0.654,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-15",
@@ -9259,7 +9727,8 @@
       "market_er": 0.174,
       "market_factor": 0.654,
       "sector_key": "半導體",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-07-16",
@@ -9284,7 +9753,8 @@
       "market_er": 0.188,
       "market_factor": 0.765,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-07-16",
@@ -9309,7 +9779,8 @@
       "market_er": 0.188,
       "market_factor": 0.765,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-07-16",
@@ -9334,7 +9805,8 @@
       "market_er": 0.188,
       "market_factor": 0.765,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2025-07-16",
@@ -9359,7 +9831,8 @@
       "market_er": 0.188,
       "market_factor": 0.765,
       "sector_key": "金融保險",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-07-16",
@@ -9384,7 +9857,8 @@
       "market_er": 0.188,
       "market_factor": 0.765,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-18",
@@ -9409,7 +9883,8 @@
       "market_er": 0.373,
       "market_factor": 1.5,
       "sector_key": "電子工業",
-      "sector_rs_pct": 100.0
+      "sector_rs_pct": 100.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-21",
@@ -9434,7 +9909,8 @@
       "market_er": 0.485,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-22",
@@ -9459,7 +9935,8 @@
       "market_er": 0.249,
       "market_factor": 0.848,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-28",
@@ -9484,7 +9961,8 @@
       "market_er": 0.394,
       "market_factor": 1.5,
       "sector_key": "電機機械",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2025-07-28",
@@ -9509,7 +9987,8 @@
       "market_er": 0.394,
       "market_factor": 1.5,
       "sector_key": "通信網路",
-      "sector_rs_pct": 23.5
+      "sector_rs_pct": 23.5,
+      "high_vol": false
     },
     {
       "date": "2025-07-28",
@@ -9534,7 +10013,8 @@
       "market_er": 0.394,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-07-30",
@@ -9559,7 +10039,8 @@
       "market_er": 0.286,
       "market_factor": 1.334,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-08-04",
@@ -9584,7 +10065,8 @@
       "market_er": 0.326,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-08-11",
@@ -9609,7 +10091,8 @@
       "market_er": 0.434,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-08-15",
@@ -9634,7 +10117,8 @@
       "market_er": 0.297,
       "market_factor": 1.477,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-08-22",
@@ -9659,7 +10143,8 @@
       "market_er": 0.101,
       "market_factor": 0.402,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-09-15",
@@ -9684,7 +10169,8 @@
       "market_er": 0.207,
       "market_factor": 0.624,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-09-18",
@@ -9709,7 +10195,8 @@
       "market_er": 0.472,
       "market_factor": 1.5,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-09-19",
@@ -9734,7 +10221,8 @@
       "market_er": 0.475,
       "market_factor": 1.481,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-09-22",
@@ -9759,7 +10247,8 @@
       "market_er": 0.444,
       "market_factor": 1.5,
       "sector_key": "金融保險",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-09-30",
@@ -9784,7 +10273,8 @@
       "market_er": 0.417,
       "market_factor": 1.382,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-09-30",
@@ -9809,7 +10299,8 @@
       "market_er": 0.417,
       "market_factor": 1.382,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2025-09-30",
@@ -9834,7 +10325,8 @@
       "market_er": 0.417,
       "market_factor": 1.382,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-09-30",
@@ -9859,7 +10351,8 @@
       "market_er": 0.417,
       "market_factor": 1.382,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-01",
@@ -9884,7 +10377,8 @@
       "market_er": 0.457,
       "market_factor": 1.22,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-03",
@@ -9909,7 +10403,8 @@
       "market_er": 0.525,
       "market_factor": 1.133,
       "sector_key": "通信網路",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-10-03",
@@ -9934,7 +10429,8 @@
       "market_er": 0.525,
       "market_factor": 1.133,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-07",
@@ -9959,7 +10455,8 @@
       "market_er": 0.538,
       "market_factor": 1.351,
       "sector_key": "油電燃氣",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2025-10-08",
@@ -9984,7 +10481,8 @@
       "market_er": 0.489,
       "market_factor": 1.305,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-08",
@@ -10009,7 +10507,8 @@
       "market_er": 0.489,
       "market_factor": 1.305,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10034,7 +10533,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "金融保險",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10059,7 +10559,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "通信網路",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10084,7 +10585,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "半導體",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10109,7 +10611,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "綠能環保",
-      "sector_rs_pct": 17.6
+      "sector_rs_pct": 17.6,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10134,7 +10637,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10159,7 +10663,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-13",
@@ -10184,7 +10689,8 @@
       "market_er": 0.338,
       "market_factor": 1.052,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-16",
@@ -10209,7 +10715,8 @@
       "market_er": 0.402,
       "market_factor": 1.221,
       "sector_key": "通信網路",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-10-16",
@@ -10234,7 +10741,8 @@
       "market_er": 0.402,
       "market_factor": 1.221,
       "sector_key": "綠能環保",
-      "sector_rs_pct": 0.0
+      "sector_rs_pct": 0.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-21",
@@ -10259,7 +10767,8 @@
       "market_er": 0.348,
       "market_factor": 1.274,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-21",
@@ -10284,7 +10793,8 @@
       "market_er": 0.348,
       "market_factor": 1.274,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-21",
@@ -10309,7 +10819,8 @@
       "market_er": 0.348,
       "market_factor": 1.274,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-22",
@@ -10334,7 +10845,8 @@
       "market_er": 0.369,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-27",
@@ -10359,7 +10871,8 @@
       "market_er": 0.316,
       "market_factor": 1.333,
       "sector_key": "電機機械",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2025-10-29",
@@ -10384,7 +10897,8 @@
       "market_er": 0.399,
       "market_factor": 1.383,
       "sector_key": "半導體",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2025-10-30",
@@ -10409,7 +10923,8 @@
       "market_er": 0.515,
       "market_factor": 1.274,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-10-30",
@@ -10434,7 +10949,8 @@
       "market_er": 0.515,
       "market_factor": 1.274,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-03",
@@ -10459,7 +10975,8 @@
       "market_er": 0.47,
       "market_factor": 1.169,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-03",
@@ -10484,7 +11001,8 @@
       "market_er": 0.47,
       "market_factor": 1.169,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-06",
@@ -10509,7 +11027,8 @@
       "market_er": 0.15,
       "market_factor": 0.417,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-06",
@@ -10534,7 +11053,8 @@
       "market_er": 0.15,
       "market_factor": 0.417,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-07",
@@ -10559,7 +11079,8 @@
       "market_er": 0.126,
       "market_factor": 0.303,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-07",
@@ -10584,7 +11105,8 @@
       "market_er": 0.126,
       "market_factor": 0.303,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-10",
@@ -10609,7 +11131,8 @@
       "market_er": 0.122,
       "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-11",
@@ -10634,7 +11157,8 @@
       "market_er": 0.197,
       "market_factor": 0.488,
       "sector_key": "電機機械",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-11-19",
@@ -10659,7 +11183,8 @@
       "market_er": 0.278,
       "market_factor": 0.343,
       "sector_key": "電機機械",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2025-11-19",
@@ -10684,7 +11209,8 @@
       "market_er": 0.278,
       "market_factor": 0.343,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-25",
@@ -10705,11 +11231,12 @@
       "gain_pct": -1.7,
       "actual_rr": 2.8,
       "confirmations": 4,
-      "pos_factor": 0.0974,
+      "pos_factor": 0.0868,
       "market_er": 0.179,
-      "market_factor": 0.337,
+      "market_factor": 0.3,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": true
     },
     {
       "date": "2025-11-28",
@@ -10734,7 +11261,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "金融保險",
-      "sector_rs_pct": 47.1
+      "sector_rs_pct": 47.1,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10759,7 +11287,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10784,7 +11313,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "電腦週邊",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10809,7 +11339,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10834,7 +11365,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 35.3
+      "sector_rs_pct": 35.3,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10859,7 +11391,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "化學",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10884,7 +11417,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "化學",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10909,7 +11443,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-11-28",
@@ -10934,7 +11469,8 @@
       "market_er": 0.099,
       "market_factor": 0.372,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-12-01",
@@ -10959,7 +11495,8 @@
       "market_er": 0.158,
       "market_factor": 0.515,
       "sector_key": "紡織",
-      "sector_rs_pct": 5.9
+      "sector_rs_pct": 5.9,
+      "high_vol": false
     },
     {
       "date": "2025-12-01",
@@ -10984,7 +11521,8 @@
       "market_er": 0.158,
       "market_factor": 0.515,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-12-02",
@@ -11009,7 +11547,8 @@
       "market_er": 0.088,
       "market_factor": 0.316,
       "sector_key": "金融保險",
-      "sector_rs_pct": 41.2
+      "sector_rs_pct": 41.2,
+      "high_vol": false
     },
     {
       "date": "2025-12-03",
@@ -11034,7 +11573,8 @@
       "market_er": 0.012,
       "market_factor": 0.391,
       "sector_key": "化學",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-12-03",
@@ -11059,7 +11599,8 @@
       "market_er": 0.012,
       "market_factor": 0.391,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-12-03",
@@ -11084,7 +11625,8 @@
       "market_er": 0.012,
       "market_factor": 0.391,
       "sector_key": "半導體",
-      "sector_rs_pct": 76.5
+      "sector_rs_pct": 76.5,
+      "high_vol": false
     },
     {
       "date": "2025-12-03",
@@ -11109,32 +11651,34 @@
       "market_er": 0.012,
       "market_factor": 0.391,
       "sector_key": "電機機械",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
-      "date": "2025-12-08",
-      "code": "2851",
+      "date": "2025-12-05",
+      "code": "3673",
       "type": "ma_pullback",
       "label": "均線回測(主升型)",
       "strength": "medium",
       "strategy": "trend",
       "regime": "bull",
       "stock_phase": "BULL",
-      "rs_pct": 83.6,
-      "entry": 26.53,
-      "stop": 25.95,
-      "target": 28.08,
+      "rs_pct": 89.0,
+      "entry": 43.0,
+      "stop": 41.07,
+      "target": 49.21,
       "entry_type": "intraday",
       "exit_type": "stop",
       "outcome": "loss",
-      "gain_pct": -2.19,
-      "actual_rr": 2.67,
-      "confirmations": 3,
-      "pos_factor": 0.2,
-      "market_er": 0.073,
-      "market_factor": 0.406,
-      "sector_key": "",
-      "sector_rs_pct": 50.0
+      "gain_pct": -4.49,
+      "actual_rr": 3.22,
+      "confirmations": 4,
+      "pos_factor": 0.0954,
+      "market_er": 0.056,
+      "market_factor": 0.383,
+      "sector_key": "電子零組件",
+      "sector_rs_pct": 11.8,
+      "high_vol": false
     },
     {
       "date": "2025-12-09",
@@ -11159,7 +11703,8 @@
       "market_er": 0.066,
       "market_factor": 0.394,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 11.8
+      "sector_rs_pct": 11.8,
+      "high_vol": false
     },
     {
       "date": "2025-12-12",
@@ -11184,7 +11729,8 @@
       "market_er": 0.132,
       "market_factor": 0.571,
       "sector_key": "通信網路",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2025-12-15",
@@ -11209,32 +11755,34 @@
       "market_er": 0.066,
       "market_factor": 0.398,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
-      "date": "2025-12-18",
-      "code": "2442",
+      "date": "2025-12-16",
+      "code": "2504",
       "type": "ma_pullback",
       "label": "均線回測(主升型)",
       "strength": "medium",
       "strategy": "trend",
       "regime": "bull_pullback",
       "stock_phase": "BULL",
-      "rs_pct": 79.6,
-      "entry": 25.93,
-      "stop": 24.73,
-      "target": 29.19,
+      "rs_pct": 67.6,
+      "entry": 36.6,
+      "stop": 35.02,
+      "target": 41.14,
       "entry_type": "intraday",
-      "exit_type": "stop",
-      "outcome": "loss",
-      "gain_pct": -4.63,
-      "actual_rr": 2.72,
-      "confirmations": 2,
-      "pos_factor": 0.0778,
-      "market_er": 0.008,
-      "market_factor": 0.3,
+      "exit_type": "expired",
+      "outcome": "win",
+      "gain_pct": 3.28,
+      "actual_rr": 2.87,
+      "confirmations": 4,
+      "pos_factor": 0.1364,
+      "market_er": 0.13,
+      "market_factor": 0.446,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2025-12-29",
@@ -11259,7 +11807,8 @@
       "market_er": 0.282,
       "market_factor": 1.17,
       "sector_key": "電機機械",
-      "sector_rs_pct": 70.6
+      "sector_rs_pct": 70.6,
+      "high_vol": false
     },
     {
       "date": "2025-12-29",
@@ -11284,7 +11833,8 @@
       "market_er": 0.282,
       "market_factor": 1.17,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-01-09",
@@ -11309,7 +11859,8 @@
       "market_er": 0.387,
       "market_factor": 1.5,
       "sector_key": "電子零組件",
-      "sector_rs_pct": 11.8
+      "sector_rs_pct": 11.8,
+      "high_vol": false
     },
     {
       "date": "2026-01-21",
@@ -11334,7 +11885,8 @@
       "market_er": 0.599,
       "market_factor": 1.5,
       "sector_key": "紡織",
-      "sector_rs_pct": 29.4
+      "sector_rs_pct": 29.4,
+      "high_vol": false
     },
     {
       "date": "2026-01-21",
@@ -11359,7 +11911,8 @@
       "market_er": 0.599,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-01-28",
@@ -11384,7 +11937,8 @@
       "market_er": 0.687,
       "market_factor": 1.5,
       "sector_key": "通信網路",
-      "sector_rs_pct": 64.7
+      "sector_rs_pct": 64.7,
+      "high_vol": false
     },
     {
       "date": "2026-01-28",
@@ -11409,7 +11963,8 @@
       "market_er": 0.687,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-01-28",
@@ -11434,7 +11989,8 @@
       "market_er": 0.687,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-01-30",
@@ -11459,7 +12015,8 @@
       "market_er": 0.448,
       "market_factor": 1.197,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-02-02",
@@ -11484,7 +12041,8 @@
       "market_er": 0.264,
       "market_factor": 0.561,
       "sector_key": "半導體",
-      "sector_rs_pct": 88.2
+      "sector_rs_pct": 88.2,
+      "high_vol": false
     },
     {
       "date": "2026-02-06",
@@ -11509,7 +12067,8 @@
       "market_er": 0.243,
       "market_factor": 0.465,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-02-06",
@@ -11534,7 +12093,8 @@
       "market_er": 0.243,
       "market_factor": 0.465,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-02-10",
@@ -11559,7 +12119,8 @@
       "market_er": 0.337,
       "market_factor": 0.807,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-02-11",
@@ -11584,7 +12145,8 @@
       "market_er": 0.364,
       "market_factor": 1.069,
       "sector_key": "金融保險",
-      "sector_rs_pct": 52.9
+      "sector_rs_pct": 52.9,
+      "high_vol": false
     },
     {
       "date": "2026-02-11",
@@ -11609,7 +12171,8 @@
       "market_er": 0.364,
       "market_factor": 1.069,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-02-23",
@@ -11634,7 +12197,8 @@
       "market_er": 0.402,
       "market_factor": 1.5,
       "sector_key": "化學",
-      "sector_rs_pct": 58.8
+      "sector_rs_pct": 58.8,
+      "high_vol": false
     },
     {
       "date": "2026-02-23",
@@ -11659,7 +12223,8 @@
       "market_er": 0.402,
       "market_factor": 1.5,
       "sector_key": "半導體",
-      "sector_rs_pct": 82.4
+      "sector_rs_pct": 82.4,
+      "high_vol": false
     },
     {
       "date": "2026-02-23",
@@ -11684,7 +12249,8 @@
       "market_er": 0.402,
       "market_factor": 1.5,
       "sector_key": "造紙",
-      "sector_rs_pct": 17.6
+      "sector_rs_pct": 17.6,
+      "high_vol": false
     },
     {
       "date": "2026-02-24",
@@ -11709,7 +12275,8 @@
       "market_er": 0.428,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-03-02",
@@ -11734,7 +12301,8 @@
       "market_er": 0.49,
       "market_factor": 1.5,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-03-16",
@@ -11759,7 +12327,8 @@
       "market_er": 0.088,
       "market_factor": 0.302,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-03-17",
@@ -11784,7 +12353,8 @@
       "market_er": 0.171,
       "market_factor": 0.708,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     },
     {
       "date": "2026-03-17",
@@ -11809,190 +12379,191 @@
       "market_er": 0.171,
       "market_factor": 0.708,
       "sector_key": "",
-      "sector_rs_pct": 50.0
+      "sector_rs_pct": 50.0,
+      "high_vol": false
     }
   ],
   "hedge_trades": [
     {
-      "date": "2024-01-17",
+      "date": "2024-01-18",
       "exit_date": "2024-01-19",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 4.639999866485596,
+      "entry": 4.630000114440918,
       "exit": 4.53000020980835,
-      "hold_days": 2,
-      "gain_pct": -2.37,
+      "hold_days": 1,
+      "gain_pct": -2.16,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2024-07-26",
+      "date": "2024-07-29",
       "exit_date": "2024-08-01",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 3.509999990463257,
+      "entry": 3.5,
       "exit": 3.430000066757202,
-      "hold_days": 6,
-      "gain_pct": -2.28,
+      "hold_days": 3,
+      "gain_pct": -2.0,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2024-08-02",
+      "date": "2024-08-05",
       "exit_date": "2024-08-15",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 3.5799999237060547,
+      "entry": 3.930000066757202,
       "exit": 3.5,
-      "hold_days": 13,
-      "gain_pct": -2.23,
+      "hold_days": 10,
+      "gain_pct": -10.94,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2024-09-04",
+      "date": "2024-09-05",
       "exit_date": "2024-09-16",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
       "entry": 3.619999885559082,
       "exit": 3.4800000190734863,
-      "hold_days": 12,
+      "hold_days": 11,
       "gain_pct": -3.87,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2024-11-27",
+      "date": "2024-11-28",
       "exit_date": "2024-12-02",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
       "entry": 3.390000104904175,
       "exit": 23.170000076293945,
-      "hold_days": 5,
+      "hold_days": 4,
       "gain_pct": 583.48,
       "outcome": "win",
       "pos_factor": 0.25
     },
     {
-      "date": "2024-12-20",
+      "date": "2024-12-23",
       "exit_date": "2024-12-23",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 23.309999465942383,
+      "entry": 22.809999465942383,
       "exit": 22.809999465942383,
-      "hold_days": 3,
-      "gain_pct": -2.15,
+      "hold_days": 0,
+      "gain_pct": 0.0,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-01-02",
+      "date": "2025-01-03",
       "exit_date": "2025-01-06",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 23.149999618530273,
+      "entry": 22.959999084472656,
       "exit": 22.350000381469727,
-      "hold_days": 4,
-      "gain_pct": -3.46,
+      "hold_days": 3,
+      "gain_pct": -2.66,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-01-10",
+      "date": "2025-01-13",
       "exit_date": "2025-01-16",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 22.81999969482422,
+      "entry": 23.350000381469727,
       "exit": 22.93000030517578,
-      "hold_days": 6,
-      "gain_pct": 0.48,
-      "outcome": "win",
+      "hold_days": 3,
+      "gain_pct": -1.8,
+      "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-02-04",
+      "date": "2025-02-05",
       "exit_date": "2025-02-05",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 23.149999618530273,
+      "entry": 22.709999084472656,
       "exit": 22.709999084472656,
-      "hold_days": 1,
-      "gain_pct": -1.9,
+      "hold_days": 0,
+      "gain_pct": 0.0,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-03-11",
+      "date": "2025-03-12",
       "exit_date": "2025-03-18",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 23.950000762939453,
+      "entry": 23.860000610351562,
       "exit": 23.709999084472656,
-      "hold_days": 7,
-      "gain_pct": -1.0,
+      "hold_days": 6,
+      "gain_pct": -0.63,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-03-19",
+      "date": "2025-03-20",
       "exit_date": "2025-03-20",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 23.979999542236328,
+      "entry": 23.579999923706055,
       "exit": 23.579999923706055,
-      "hold_days": 1,
-      "gain_pct": -1.67,
+      "hold_days": 0,
+      "gain_pct": 0.0,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-03-24",
+      "date": "2025-03-25",
       "exit_date": "2025-04-25",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 23.81999969482422,
+      "entry": 23.6299991607666,
       "exit": 25.170000076293945,
-      "hold_days": 32,
-      "gain_pct": 5.67,
+      "hold_days": 31,
+      "gain_pct": 6.52,
       "outcome": "win",
       "pos_factor": 0.25
     },
     {
-      "date": "2025-11-21",
+      "date": "2025-11-24",
       "exit_date": "2025-11-25",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 17.940000534057617,
+      "entry": 17.93000030517578,
       "exit": 17.729999542236328,
-      "hold_days": 4,
-      "gain_pct": -1.17,
+      "hold_days": 1,
+      "gain_pct": -1.12,
       "outcome": "loss",
       "pos_factor": 0.25
     },
     {
-      "date": "2026-03-31",
+      "date": "2026-04-01",
       "exit_date": "2026-03-31",
       "code": "00632R",
       "type": "hedge",
       "regime": "bear",
-      "entry": 14.819999694824219,
+      "entry": 14.140000343322754,
       "exit": 14.819999694824219,
-      "hold_days": 0,
-      "gain_pct": 0.0,
-      "outcome": "loss",
+      "hold_days": -1,
+      "gain_pct": 4.81,
+      "outcome": "win",
       "pos_factor": 0.25
     }
   ]
