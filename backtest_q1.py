@@ -200,6 +200,20 @@ def _efficiency_ratio(closes, i, n=20):
     return round(net / path, 3) if path > 0 else 0.5
 
 
+# ── 高波動偵測（5日已實現波動率 vs 60日基準）──────────────────────────
+def _vol_flag(closes, i, n_fast=5, n_slow=60, threshold=2.0):
+    """5日平均絕對日報酬 > 前60日基準 × threshold → True（高波動模式）
+    邏輯依據：動能策略在高波動環境失效（方向不穩定）；threshold=2 為圓整設計值。
+    """
+    if i < n_slow + n_fast:
+        return False
+    fast_vol = sum(abs(closes[k] / closes[k - 1] - 1)
+                   for k in range(i - n_fast + 1, i + 1)) / n_fast
+    slow_vol = sum(abs(closes[k] / closes[k - 1] - 1)
+                   for k in range(i - n_slow - n_fast + 1, i - n_fast + 1)) / n_slow
+    return (fast_vol / slow_vol) >= threshold if slow_vol > 0 else False
+
+
 # ── 日 RS 序列（個股 vs 大盤，只用截至當日的資料）─────────────────────
 def _daily_rs(stock_c, bm_c):
     n   = min(len(stock_c), len(bm_c))
@@ -539,13 +553,15 @@ def main():
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
-        _brf          = max(0.3, min(1.5, breadth_pct / 0.5))
-        _mmf          = max(0.3, min(1.5, 1.0 + twii_mom_20))
-        # ER 連續乘數：市場越趨勢效率越高 → 倉位越大；震盪 → 自動縮減
-        # er_scale ∈ [0.3, 1.2]；ER=0.30 → 1.0x（基準）；ER=0.15 → 0.5x；ER=0.60 → 1.2x（上限）
-        _er           = _efficiency_ratio(bm_closes, bm_i, 20)
-        _er_scale     = max(0.3, min(_er / 0.30, 1.2))
-        market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale)), 3)
+        _brf        = max(0.3, min(1.5, breadth_pct / 0.5))
+        _mmf        = max(0.3, min(1.5, 1.0 + twii_mom_20))
+        # ER 連續乘數
+        _er         = _efficiency_ratio(bm_closes, bm_i, 20)
+        _er_scale   = max(0.3, min(_er / 0.30, 1.2))
+        # 高波動乘數：5日波動 > 2× 60日基準 → 新倉縮半（高波動環境動能策略失效）
+        _high_vol   = _vol_flag(bm_closes, bm_i)
+        _vol_mult   = 0.5 if _high_vol else 1.0
+        market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult)), 3)
 
         # ── 清除已到期的 heat 部位（依信號日判斷）
         open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
@@ -742,10 +758,12 @@ def main():
                     "market_factor":  market_factor,
                     "sector_key":     _code_sk,
                     "sector_rs_pct":  round(_code_sec_pct, 1),
+                    "high_vol":       _high_vol,
                 })
                 day_count += 1
 
-        print(f"  {q_date}  regime={regime:<14}  訊號={day_count:3d}筆  累計={len(trades)}")
+        _hv_tag = " ⚡高波動" if _high_vol else ""
+        print(f"  {q_date}  regime={regime:<14}{_hv_tag:<6}  訊號={day_count:3d}筆  累計={len(trades)}")
 
     print(f"\n  ✓ 回測完成：共 {len(trades)} 筆觸發交易")
 
@@ -768,8 +786,8 @@ def main():
     hedge_trades = []
     _hedge_dates_sorted = sorted(hedge_date_idx.keys())
     for _bs, _be in bear_periods:
-        # 找空頭開始後第一個有效交易日（進場）
-        _entry_date = next((d for d in _hedge_dates_sorted if d >= _bs), None)
+        # 找空頭開始後「次一個」有效交易日進場（當天收盤才得知 regime，次日才能買）
+        _entry_date = next((d for d in _hedge_dates_sorted if d > _bs), None)
         if _entry_date is None:
             continue
         _entry_px = hedge_closes[hedge_date_idx[_entry_date]]
