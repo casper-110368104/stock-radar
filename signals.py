@@ -21,10 +21,13 @@ _REGIME_TARGET_MULT = {
     "bear":          0.7,
 }
 
-# ATR 止損乘數：趨勢訊號給更大空間，短線訊號更緊；熊市全面縮緊
-_ATR_MULT = {
-    "trend": {"bull": 2.5, "bull_pullback": 2.0, "range": 2.0, "bear": 1.5},
-    "swing": {"bull": 1.5, "bull_pullback": 1.2, "range": 1.2, "bear": 1.0},
+# ATR buffer 乘數：停損錨在結構（low20/avwap/ma），ATR 只提供結構下方的噪音容忍空間
+# k 刻意設小（0.2~0.4）：避免 buffer 變成主要停損距離；熊市更緊
+_ATR_BUFFER = {
+    "bull":          0.4,
+    "bull_pullback": 0.3,
+    "range":         0.3,
+    "bear":          0.2,
 }
 
 _ALLOWED_SIGNALS = {
@@ -183,14 +186,16 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
 
         target = round(entry + risk * rr, 2)
 
-        # ATR 停損下限：只對長持倉趨勢型訊號擴寬（高基底/突破/趨勢延伸）
-        # ma_pullback 持倉 10 天，ATR 擴寬會讓目標價不可達，用結構性停損即可
-        _ATR_TYPES = {"high_base", "breakout", "trend_cont"}
+        # ATR 噪音緩衝：stop = 結構低點 − k×ATR
+        # 錨點永遠是市場結構（low20/avwap/ma），ATR 只在結構下方加容忍空間
+        # 避免被結構支撐附近的隨機 wick 掃出場
+        _ATR_BUFFER_TYPES = {"high_base", "breakout", "trend_cont"}
         atr = yahoo.get("atr_14")
-        _atr_mult = _ATR_MULT[_strategy].get(market_regime, 2.0)
-        atr_stop = round(entry - _atr_mult * atr, 2) if atr is not None else None
-        if type_ in _ATR_TYPES and atr_stop is not None and atr_stop < stop:
-            stop   = atr_stop
+        atr_stop = None
+        if type_ in _ATR_BUFFER_TYPES and atr is not None:
+            _buf   = _ATR_BUFFER.get(market_regime, 0.3)
+            stop   = round(stop - _buf * atr, 2)
+            atr_stop = stop   # 記錄實際 stop 供前端顯示
             risk   = round(entry - stop, 2)
             if risk <= 0:
                 return None
