@@ -1,0 +1,537 @@
+#!/usr/bin/env python3
+"""
+backtest_yearly.py — 逐年獨立回測（樣本外驗證）
+
+每年以全新資本起算，母體依「前一年平均成交量」選出（無向前看、無倖存者偏差）。
+12/31 強制平倉所有未結持倉——任何單年若在 12/31 前未碰停損或目標，以末日收盤出場。
+
+年份：2022（熊市）、2023（反彈）、2024（波動）、2025（多頭）
+目的：測試策略在各市場環境是否有真實 edge，而非針對特定年份過擬合。
+
+執行：python backtest_yearly.py
+輸出：docs/backtest_yearly.json
+"""
+import json, math, sys, time, requests
+import yfinance as yf
+from datetime import date, timedelta, datetime
+from collections import defaultdict
+
+from signals import calc_signals
+from backtest_q1 import (
+    _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
+    _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
+    SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
+    MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING,
+    MAX_HEAT, HEDGE_SIZE, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
+)
+
+YEARS              = [2022, 2023, 2024, 2025]
+OUTPUT_PATH        = "docs/backtest_yearly.json"
+DATA_START         = "2020-01-01"   # 足夠計算 MA60 / RS240
+DATA_END           = "2026-06-01"
+UNIVERSE_CANDIDATES = 500
+UNIVERSE_FINAL      = 300
+
+
+def main():
+    print("=" * 60)
+    print("  逐年獨立回測（樣本外驗證）")
+    print(f"  測試年份：{YEARS}")
+    print("  設計：每年 100 萬重算、12/31 強制平倉、無任何向前看")
+    print("=" * 60)
+
+    # ── 板塊對應 ────────────────────────────────────────────────────
+    sector_map   = {}
+    sector_codes = defaultdict(list)
+    try:
+        with open("docs/stocks.json", encoding="utf-8") as _f:
+            _sj = json.load(_f)
+        for _s in _sj.get("stocks", []):
+            _c  = _s.get("code", "")
+            _sk = _s.get("sector_key", "")
+            if _c and _sk:
+                sector_map[_c]  = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except Exception as _e:
+        print(f"  板塊載入失敗（{_e}）")
+
+    # ── 下載 TWII + 00632R（一次，全區間共用）──────────────────────
+    print(f"\n[1] 下載 TWII + 00632R...")
+    bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
+    if bm.empty:
+        print("TWII 下載失敗，中止"); sys.exit(1)
+    bm_dates    = [d.date() for d in bm.index]
+    bm_closes   = [float(v) for v in bm["Close"].tolist()]
+    bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
+    print(f"  TWII：{len(bm_dates)} 日")
+
+    try:
+        _h = yf.Ticker("00632R.TW").history(start=DATA_START, end=DATA_END)
+        if _h.empty:
+            raise ValueError("empty")
+        hedge_dates    = [d.date() for d in _h.index]
+        hedge_closes   = [float(v) for v in _h["Close"].tolist()]
+        hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
+        print(f"  00632R：{len(hedge_dates)} 日")
+    except Exception as _e:
+        print(f"  00632R 失敗（{_e}），以 TWII 反向模擬")
+        hedge_dates  = bm_dates[:]
+        hedge_closes = [bm_closes[0]]
+        for _k in range(1, len(bm_closes)):
+            _dr = bm_closes[_k] / bm_closes[_k - 1] - 1
+            hedge_closes.append(round(hedge_closes[-1] * (1 - _dr), 4))
+        hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
+
+    # ── 下載個股（一次，各年共用）──────────────────────────────────
+    print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
+    candidates = []
+    try:
+        r = requests.get(
+            "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY_ALL?response=json",
+            headers=HEADERS, timeout=15)
+        _d = r.json()
+        fields  = _d.get("fields", [])
+        rows    = _d.get("data", [])
+        i_code  = fields.index("證券代號") if "證券代號" in fields else 0
+        i_vol   = fields.index("成交股數")  if "成交股數"  in fields else 2
+        tmp = []
+        for row in rows:
+            try:
+                code = row[i_code].strip()
+                if not (code.isdigit() and len(code) == 4): continue
+                if code.startswith("00"): continue
+                if int(code) < 1000: continue
+                vol = int(row[i_vol].replace(",", ""))
+                tmp.append((code, vol))
+            except Exception:
+                continue
+        tmp.sort(key=lambda x: x[1], reverse=True)
+        candidates = [c for c, _ in tmp[:UNIVERSE_CANDIDATES]]
+    except Exception as e:
+        print(f"  TWSE API 失敗（{e}），使用內建清單")
+        candidates = [
+            "2330","2317","2454","2382","2308","2303","2412","3711",
+            "2881","2882","2891","2886","2884","2885","1301","1303",
+            "6505","2002","2912","2207","1216","2327","3034","3037",
+        ]
+    candidates = list(dict.fromkeys(candidates))
+
+    print(f"\n[3] 下載 {len(candidates)} 檔個股資料（DATA_START={DATA_START}）...")
+    print("    （每 20 檔暫停 3 秒，預計 15~25 分鐘）")
+    stock_data = {}
+    for idx, code in enumerate(candidates):
+        print(f"  [{idx+1:3d}/{len(candidates)}] {code}", end="  ")
+        try:
+            h = yf.Ticker(code + ".TW").history(start=DATA_START, end=DATA_END)
+            if h.empty or len(h) < MIN_HIST_DAYS:
+                print("skip"); continue
+            stock_data[code] = {
+                "dates":  [d.date() for d in h.index],
+                "closes": [float(v) for v in h["Close"].tolist()],
+                "highs":  [float(v) for v in h["High"].tolist()],
+                "lows":   [float(v) for v in h["Low"].tolist()],
+                "vols":   [float(v) for v in h["Volume"].tolist()],
+                "opens":  [float(v) for v in h["Open"].tolist()],
+            }
+            print(f"OK ({len(h)} 日)")
+        except Exception as e:
+            print(f"fail: {e}")
+        time.sleep(0.4)
+        if (idx + 1) % 20 == 0:
+            time.sleep(3)
+    print(f"  → 下載完成：{len(stock_data)} 檔")
+
+    # ── 逐年回測 ────────────────────────────────────────────────────
+    yearly_results = {}
+
+    for year in YEARS:
+        print(f"\n{'='*60}")
+        print(f"  {year} 年回測")
+        print(f"{'='*60}")
+
+        bt_start       = date(year, 1, 2)
+        bt_end         = date(year, 12, 31)
+        pre_vol_start  = date(year - 1, 1, 1)
+        pre_vol_end    = date(year - 1, 12, 31)
+
+        year_dates = [d for d in bm_dates if bt_start <= d <= bt_end]
+        if not year_dates:
+            print(f"  {year} 無交易日，跳過"); continue
+        last_year_date = max(year_dates)
+
+        # 母體：前一年成交量（無向前看）
+        pre_vol = {}
+        for code, sd in stock_data.items():
+            vols = [sd["vols"][i] for i, d in enumerate(sd["dates"])
+                    if pre_vol_start <= d <= pre_vol_end
+                    and not math.isnan(sd["vols"][i]) and sd["vols"][i] > 0]
+            if vols:
+                pre_vol[code] = sum(vols) / len(vols)
+
+        universe  = sorted(pre_vol, key=lambda c: pre_vol[c], reverse=True)[:UNIVERSE_FINAL]
+        year_data = {c: stock_data[c] for c in universe if c in stock_data}
+        no_pre    = [c for c in stock_data if c not in pre_vol]
+        print(f"  母體：{len(year_data)} 檔（依 {year-1} 年成交量選出）")
+        if no_pre:
+            print(f"  排除 {len(no_pre)} 檔無 {year-1} 量能資料（新上市等）")
+
+        year_date_idx = {
+            code: {d: i for i, d in enumerate(sd["dates"])}
+            for code, sd in year_data.items()
+        }
+
+        # Walk-Forward 主迴圈
+        trades          = []
+        open_positions  = []
+        regime_timeline = {}
+
+        for q_date in year_dates:
+            bm_i = bm_date_idx.get(q_date)
+            if bm_i is None:
+                continue
+
+            # RS scalar + 廣度
+            rs_scalar_map = {}
+            rs_cache      = {}
+            _above_ma20   = 0
+            _breadth_n    = 0
+            for code, sd in year_data.items():
+                si = year_date_idx[code].get(q_date)
+                if si is None or si < 10:
+                    continue
+                n_align        = min(si + 1, bm_i + 1)
+                dr             = _daily_rs(sd["closes"][:n_align], bm_closes[:n_align])
+                rs_cache[code] = dr
+                _, scalar      = _rs_metrics(dr)
+                if scalar is not None:
+                    rs_scalar_map[code] = scalar
+                if si >= 20:
+                    _cl = sd["closes"][si]
+                    if not math.isnan(_cl):
+                        _ma20v = sum(sd["closes"][si - 19:si + 1]) / 20
+                        _breadth_n += 1
+                        if _cl > _ma20v:
+                            _above_ma20 += 1
+
+            breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
+            regime      = _market_regime(bm_closes, bm_i, breadth_pct)
+            regime_timeline[q_date] = regime
+
+            # market_factor（廣度 × 動能 × ER × vol）
+            twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
+            _brf        = max(0.3, min(1.5, breadth_pct / 0.5))
+            _mmf        = max(0.3, min(1.5, 1.0 + twii_mom_20))
+            _er         = _efficiency_ratio(bm_closes, bm_i, 20)
+            _er_scale   = max(0.3, min(_er / 0.30, 1.2))
+            _high_vol   = _vol_flag(bm_closes, bm_i)
+            _vol_mult   = 0.5 if _high_vol else 1.0
+            market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult)), 3)
+
+            open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
+
+            # RS 百分位
+            if len(rs_scalar_map) > 1:
+                _sc = sorted(rs_scalar_map, key=lambda c: rs_scalar_map[c])
+                _nr = len(_sc)
+                rs_pct_map = {c: round(i / (_nr - 1) * 100, 1) for i, c in enumerate(_sc)}
+            else:
+                rs_pct_map = {c: 50.0 for c in rs_scalar_map}
+
+            # 類股 RS 百分位
+            _sec_sum = defaultdict(float)
+            _sec_cnt = defaultdict(int)
+            for _c, _sv in rs_scalar_map.items():
+                _sk = sector_map.get(_c, "")
+                if _sk:
+                    _sec_sum[_sk] += _sv
+                    _sec_cnt[_sk] += 1
+            _sec_avg = {sk: _sec_sum[sk] / _sec_cnt[sk] for sk in _sec_sum}
+            if len(_sec_avg) > 1:
+                _ss = sorted(_sec_avg, key=lambda s: _sec_avg[s])
+                _sn = len(_ss)
+                _sec_pct = {s: round(i / (_sn - 1) * 100, 1) for i, s in enumerate(_ss)}
+            else:
+                _sec_pct = {s: 50.0 for s in _sec_avg}
+
+            day_count = 0
+
+            for code, sd in year_data.items():
+                si = year_date_idx[code].get(q_date)
+                if si is None or si < 62:
+                    continue
+                if sd["dates"][si] != q_date:
+                    continue
+                if si + 1 >= len(sd["closes"]):
+                    continue
+
+                snap = _snapshot(sd["closes"], sd["highs"], sd["lows"],
+                                 sd["vols"], sd["opens"], si)
+                if snap is None:
+                    continue
+
+                rs_pct      = rs_pct_map.get(code, 50.0)
+                dr          = rs_cache.get(code, [])
+                m_z, _      = _rs_metrics(dr)
+                slope       = _rs_slope(dr)
+                _code_sk    = sector_map.get(code, "")
+                _code_sec_pct = _sec_pct.get(_code_sk, 50.0)
+
+                snap["m_z"]            = m_z
+                snap["rs_trend_stock"] = slope
+                snap["sector_rs"]      = _code_sec_pct
+
+                phase = _stock_phase(rs_pct, m_z, snap)
+                sigs  = calc_signals(snap, {}, rs_pct,
+                                     stock_phase=phase,
+                                     market_regime=regime,
+                                     composite_score=50)
+                if not sigs:
+                    continue
+
+                ni        = si + 1
+                nxt_open  = sd["opens"][ni]
+                nxt_high  = sd["highs"][ni]
+
+                # 年末強制平倉：持倉不跨年
+                _last_code_si = max(
+                    (i for i, d in enumerate(sd["dates"]) if d <= last_year_date),
+                    default=ni
+                )
+
+                for sig in sigs:
+                    trigger  = sig.get("trigger_price", sig["entry"])
+                    stop     = sig["stop_loss"]
+                    target   = sig["target"]
+                    sig_type = sig["type"]
+
+                    if nxt_open > trigger:
+                        gap_pct = (nxt_open - trigger) / trigger
+                        if gap_pct > GAP_LIMIT.get(sig_type, 0.02):
+                            continue
+                        actual_entry = round(nxt_open * (1 + SLIP), 2)
+                        entry_type   = "gap_up"
+                    elif nxt_high >= trigger:
+                        actual_entry = round(trigger * (1 + SLIP), 2)
+                        entry_type   = "intraday"
+                    else:
+                        continue
+
+                    actual_risk = actual_entry - stop
+                    if actual_risk <= 0:
+                        continue
+                    actual_rr = round((target - actual_entry) / actual_risk, 2)
+                    if actual_rr < 1.5:
+                        continue
+                    if sig_type == "retest":
+                        continue
+                    if sig_type not in REGIME_ACTIVE_SIGNALS.get(regime, set()):
+                        continue
+
+                    confs         = sig.get("confirmations", 0)
+                    conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
+                    sig_scale     = SIGNAL_SCALE.get(sig_type, 1.0)
+                    _sector_mult  = round(0.8 + 0.004 * _code_sec_pct, 3)
+                    target_R      = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
+                    _stop_dist    = actual_risk / actual_entry if actual_entry > 0 else 0.05
+                    pos_size      = min(target_R / _stop_dist, 0.20)
+                    _trade_heat   = round(pos_size * _stop_dist, 5)
+                    _total_heat   = sum(h for _, h in open_positions)
+                    if _total_heat + _trade_heat > MAX_HEAT:
+                        continue
+
+                    if sig_type == "high_base":
+                        max_days = MAX_HOLD_LONG
+                    elif sig_type == "ma_pullback":
+                        max_days = MAX_HOLD_PULLBACK
+                    elif sig_type in TREND_TYPES:
+                        max_days = MAX_HOLD_TREND
+                    else:
+                        max_days = MAX_HOLD_SWING
+
+                    # 年末上限：不跨年持倉
+                    final_si = min(ni + max_days, _last_code_si, len(sd["closes"]) - 1)
+                    open_positions.append((q_date + timedelta(days=max_days + 1), _trade_heat))
+
+                    outcome = "inconclusive"
+                    _fsi    = final_si
+                    while _fsi > ni and math.isnan(sd["closes"][_fsi]):
+                        _fsi -= 1
+                    exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+
+                    for d_off in range(1, final_si - ni + 1):
+                        fh, fl, fo = sd["highs"][ni + d_off], sd["lows"][ni + d_off], sd["opens"][ni + d_off]
+                        if fh >= target and fl <= stop:
+                            outcome = "win" if fo >= (target + stop) / 2 else "loss"
+                            exit_px = target if outcome == "win" else stop
+                            break
+                        elif fh >= target:
+                            outcome = "win";  exit_px = target; break
+                        elif fl <= stop:
+                            outcome = "loss"; exit_px = stop;   break
+
+                    if outcome == "inconclusive":
+                        exit_type = "expired"
+                        outcome   = "win" if exit_px > actual_entry else "loss"
+                    else:
+                        exit_type = "target" if outcome == "win" else "stop"
+
+                    gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
+
+                    trades.append({
+                        "date":           q_date.strftime("%Y-%m-%d"),
+                        "code":           code,
+                        "type":           sig_type,
+                        "label":          sig["label"],
+                        "strength":       sig["strength"],
+                        "strategy":       sig["strategy"],
+                        "regime":         regime,
+                        "stock_phase":    phase,
+                        "rs_pct":         rs_pct,
+                        "entry":          round(actual_entry, 2),
+                        "stop":           round(stop,         2),
+                        "target":         round(target,       2),
+                        "entry_type":     entry_type,
+                        "exit_type":      exit_type,
+                        "outcome":        outcome,
+                        "gain_pct":       gain_pct,
+                        "actual_rr":      actual_rr,
+                        "confirmations":  confs,
+                        "pos_factor":     round(pos_size, 4),
+                        "market_er":      round(_er, 3),
+                        "market_factor":  market_factor,
+                        "sector_key":     _code_sk,
+                        "sector_rs_pct":  round(_code_sec_pct, 1),
+                        "high_vol":       _high_vol,
+                    })
+                    day_count += 1
+
+            _hv = " ⚡" if _high_vol else ""
+            print(f"  {q_date}  {regime:<14}{_hv}  訊號={day_count:2d}筆  累計={len(trades)}")
+
+        print(f"\n  ✓ {year} 走步回測完成：{len(trades)} 筆")
+
+        # 00632R 對沖（限年內）
+        print(f"  計算 00632R 對沖...")
+        bear_periods = []
+        _in_bear     = False
+        _bear_start  = None
+        for _d in sorted(regime_timeline.keys()):
+            if regime_timeline[_d] == "bear" and not _in_bear:
+                _in_bear = True;  _bear_start = _d
+            elif regime_timeline[_d] != "bear" and _in_bear:
+                _in_bear = False; bear_periods.append((_bear_start, _d))
+        if _in_bear:
+            bear_periods.append((_bear_start, bt_end))
+
+        hedge_trades   = []
+        _hedge_sorted  = sorted(hedge_date_idx.keys())
+        for _bs, _be in bear_periods:
+            _entry_date = next((d for d in _hedge_sorted if d > _bs and d <= bt_end), None)
+            if _entry_date is None:
+                continue
+            _entry_px   = hedge_closes[hedge_date_idx[_entry_date]]
+            _candidates = [d for d in _hedge_sorted if d >= _be and d <= bt_end]
+            if not _candidates:
+                _candidates = [d for d in _hedge_sorted if d <= bt_end]
+            if not _candidates:
+                continue
+            _exit_date  = min(_candidates)
+            _exit_px    = hedge_closes[hedge_date_idx[_exit_date]]
+            _gp         = round((_exit_px - _entry_px) / _entry_px * 100, 2)
+            hedge_trades.append({
+                "date":      _entry_date.strftime("%Y-%m-%d"),
+                "exit_date": _exit_date.strftime("%Y-%m-%d"),
+                "code":      "00632R",
+                "type":      "hedge",
+                "regime":    "bear",
+                "entry":     _entry_px,
+                "exit":      _exit_px,
+                "hold_days": (_exit_date - _entry_date).days,
+                "gain_pct":  _gp,
+                "outcome":   "win" if _gp > 0 else "loss",
+                "pos_factor": HEDGE_SIZE,
+            })
+            print(f"  → {_entry_date} ~ {_exit_date}  00632R {_gp:+.2f}%  ({(_exit_date - _entry_date).days}天)")
+        print(f"  → {len(hedge_trades)} 筆對沖")
+
+        # 統計
+        overall   = _stats(trades)
+        by_type   = defaultdict(list)
+        by_regime = defaultdict(list)
+        by_month  = defaultdict(list)
+        for t in trades:
+            by_type[t["type"]].append(t)
+            by_regime[t["regime"]].append(t)
+            by_month[t["date"][:7]].append(t)
+
+        all_trades = sorted(trades + hedge_trades, key=lambda t: t["date"])
+        curves     = _capital_curves(all_trades, bt_start)
+
+        print(f"\n  === {year} 結果 ===")
+        print(f"  筆數={overall['count']}  WR={overall['win_rate']}%  EV={str(overall['expectancy'])+'%'}")
+        print(f"  固定: {curves['fixed']['total_return_pct']:+.1f}%  MaxDD={curves['fixed']['max_drawdown_pct']:.1f}%")
+        print(f"  複利: {curves['compound']['total_return_pct']:+.1f}%  MaxDD={curves['compound']['max_drawdown_pct']:.1f}%")
+
+        yearly_results[str(year)] = {
+            "year":          year,
+            "trading_days":  len(year_dates),
+            "universe_size": len(year_data),
+            "overall":       overall,
+            "by_type":       {k: _stats(v) for k, v in by_type.items()},
+            "by_regime":     {k: _stats(v) for k, v in by_regime.items()},
+            "by_month":      {k: _stats(v) for k, v in sorted(by_month.items())},
+            "capital_curves": curves,
+            "trades":        trades,
+            "hedge_trades":  hedge_trades,
+        }
+
+    # ── 最終輸出 ─────────────────────────────────────────────────────
+    result = {
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "years":        YEARS,
+        "yearly":       yearly_results,
+        "summary": {
+            str(y): {
+                "return_fixed":    yearly_results[str(y)]["capital_curves"]["fixed"]["total_return_pct"],
+                "maxdd_fixed":     yearly_results[str(y)]["capital_curves"]["fixed"]["max_drawdown_pct"],
+                "return_compound": yearly_results[str(y)]["capital_curves"]["compound"]["total_return_pct"],
+                "maxdd_compound":  yearly_results[str(y)]["capital_curves"]["compound"]["max_drawdown_pct"],
+                "win_rate":        yearly_results[str(y)]["overall"]["win_rate"],
+                "expectancy":      yearly_results[str(y)]["overall"]["expectancy"],
+                "count":           yearly_results[str(y)]["overall"]["count"],
+            }
+            for y in YEARS if str(y) in yearly_results
+        }
+    }
+
+    def _sanitize(obj):
+        if isinstance(obj, float):
+            return None if (math.isnan(obj) or math.isinf(obj)) else obj
+        if isinstance(obj, dict):
+            return {k: _sanitize(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_sanitize(v) for v in obj]
+        return obj
+
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(_sanitize(result), f, ensure_ascii=False, indent=2)
+
+    print(f"\n{'='*60}")
+    print("  四年回測摘要")
+    print(f"{'='*60}")
+    print(f"  {'年份':>6}  {'筆數':>5}  {'WR':>7}  {'EV':>8}  {'固定報酬':>9}  {'MaxDD':>7}  備注")
+    notes = {2022: "熊市（真正樣本外）", 2023: "反彈（真正樣本外）",
+             2024: "波動+閃崩",         2025: "多頭延伸"}
+    for y in YEARS:
+        if str(y) not in result["summary"]:
+            continue
+        s = result["summary"][str(y)]
+        print(f"  {y:>6}  {s['count']:>5}  {str(s['win_rate'])+'%':>7}  "
+              f"{(str(s['expectancy'])+'%') if s['expectancy'] is not None else 'N/A':>8}  "
+              f"{s['return_fixed']:>+9.1f}%  {s['maxdd_fixed']:>6.1f}%  {notes.get(y,'')}")
+    print(f"\n  ✓ 結果已寫入 {OUTPUT_PATH}")
+
+
+if __name__ == "__main__":
+    main()
