@@ -695,7 +695,8 @@ var bizCycle={light:'green',label:'載入中...'};  // 景氣燈號資料（預�
 var sectorData={};   // 產業輪動資料
 var marketRegime={};  // 大盤相位資料
 var expansionData={updated_at:'',signal_count:0,stocks:[]};
-var q1BtData=null;  // Q1 2025 walk-forward 回測結果
+var q1BtData=null;      // Walk-forward 回測結果
+var yearlyBtData=null;  // 逐年獨立回測結果（2022~2025）
 var stocksBtStats={};
 var stocksBtTracking=[];
 var totalCapital=1000000; // 模擬總資金（預設100萬）
@@ -711,6 +712,7 @@ var _pageBase=(function(){var h=location.href.split('?')[0];return h.endsWith('/
 function stocksUrl(){return _pageBase+'stocks.json?t='+Date.now();}
 function expansionUrl(){return _pageBase+'expansion.json?t='+Date.now();}
 function q1BtUrl(){return _pageBase+'backtest_q1.json?t='+Date.now();}
+function yearlyBtUrl(){return _pageBase+'backtest_yearly.json?t='+Date.now();}
 function escapeHtml(s){if(s==null)return '';var d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
 
 // 共用交易計劃 HTML（rSignals + rExpCard 皆呼叫）
@@ -1532,6 +1534,38 @@ function _q1Pill(label,val,col){
   '</div>';
 }
 
+function _renderYearlyBacktest(){
+  if(!yearlyBtData||!yearlyBtData.summary) return '';
+  var s=yearlyBtData.summary;
+  var years=yearlyBtData.years||[2022,2023,2024,2025];
+  var notes={2022:'熊市 ✅OOS',2023:'反彈 ✅OOS',2024:'波動+閃崩',2025:'多頭延伸'};
+  var rowStyle='display:grid;grid-template-columns:60px 44px 52px 58px 64px 56px 1fr;gap:2px;font-size:11px;padding:4px 2px;border-bottom:.5px solid var(--border);align-items:center';
+  var hdStyle=rowStyle+';color:var(--text3);font-weight:700;font-size:10px;border-bottom:1px solid var(--border)';
+  var rows='<div style="'+hdStyle+'"><span>年份</span><span>筆數</span><span>勝率</span><span>期望值</span><span>固定報酬</span><span>MaxDD</span><span>備注</span></div>';
+  years.forEach(function(y){
+    var d=s[String(y)]; if(!d) return;
+    var ret=d.return_fixed; var dd=d.maxdd_fixed;
+    var wr=d.win_rate; var ev=d.expectancy;
+    var retColor=ret>=0?'var(--green)':'var(--red)';
+    var ddColor=dd<=15?'var(--green)':(dd<=30?'var(--orange)':'var(--red)');
+    var isOOS=(y===2022||y===2023);
+    var rowBg=isOOS?'rgba(74,158,255,.06)':'';
+    rows+='<div style="'+rowStyle+';background:'+rowBg+'">'+
+      '<span style="font-weight:700;color:'+(isOOS?'var(--blue)':'var(--text1)')+'">'+y+'</span>'+
+      '<span>'+d.count+'</span>'+
+      '<span>'+(wr!==null?wr+'%':'—')+'</span>'+
+      '<span style="color:'+(ev>=0?'var(--green)':'var(--red)')+'">'+(ev!==null?(ev>0?'+':'')+ev+'%':'—')+'</span>'+
+      '<span style="color:'+retColor+';font-weight:700">'+(ret>0?'+':'')+ret.toFixed(1)+'%</span>'+
+      '<span style="color:'+ddColor+'">'+dd.toFixed(1)+'%</span>'+
+      '<span style="color:var(--text3);font-size:10px">'+notes[y]+'</span>'+
+    '</div>';
+  });
+  return '<div style="background:var(--bg2);border-radius:8px;padding:10px 12px;margin-bottom:12px">'+
+    '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">產生於 '+yearlyBtData.generated_at+
+    ' ｜ 藍色 = 真正樣本外（未曾用於策略設計）</div>'+
+    rows+'</div>';
+}
+
 function renderBacktest(){
   var app=document.getElementById('bt-app');
   if(!app) return;
@@ -1539,9 +1573,11 @@ function renderBacktest(){
   var stocksHtml=_renderBtTracking(stocksBtTracking,'bts');
   var expHtml=_renderBtTracking(expansionData.signal_tracking,'bte');
   app.innerHTML=
-    '<div style="'+secStyle+'">📊 Q1 2025 Walk-Forward 回測</div>'+
+    '<div style="'+secStyle+'">📊 Walk-Forward 回測（2024-Q1 ~ 2026-Q1）</div>'+
     _renderQ1Backtest()+
     _renderEquityCurve()+
+    '<div style="'+secStyle+';margin-top:16px">🧪 逐年獨立回測（樣本外驗證）</div>'+
+    (yearlyBtData?_renderYearlyBacktest():'<div style="font-size:12px;color:var(--text3);padding:8px 0">尚未產生（執行 python backtest_yearly.py）</div>')+
     '<div style="'+secStyle+';margin-top:16px;display:flex;justify-content:space-between;align-items:center">'+
       '<span>📈 個股選股雷達</span>'+
       '<button onclick="_clearBtData()" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer">🗑 永久重置</button>'+
@@ -3889,6 +3925,15 @@ async function loadQ1Backtest(){
   }catch(e){console.error('[loadQ1Backtest]',e);}
 }
 loadQ1Backtest();
+async function loadYearlyBacktest(){
+  try{
+    var res=await fetch(yearlyBtUrl());
+    if(!res.ok) return;
+    yearlyBtData=await res.json();
+    if(curView==='backtest') renderBacktest();
+  }catch(e){console.error('[loadYearlyBacktest]',e);}
+}
+loadYearlyBacktest();
 loadExpansion();
 </script>
 </body>
