@@ -70,10 +70,19 @@ def main():
         _h = yf.Ticker("00632R.TW").history(start=DATA_START, end=DATA_END)
         if _h.empty:
             raise ValueError("empty")
-        hedge_dates    = [d.date() for d in _h.index]
-        hedge_closes   = [float(v) for v in _h["Close"].tolist()]
+        hedge_dates      = [d.date() for d in _h.index]
+        _raw_closes      = [float(v) for v in _h["Close"].tolist()]
+        hedge_closes     = [_raw_closes[0]]
+        _patched         = 0
+        for _k in range(1, len(_raw_closes)):
+            _prev, _curr = hedge_closes[-1], _raw_closes[_k]
+            if _prev > 0 and abs(_curr / _prev - 1) > 0.20:
+                hedge_closes.append(_prev)   # replace anomaly with last valid price
+                _patched += 1
+            else:
+                hedge_closes.append(_curr)
         hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
-        print(f"  00632R：{len(hedge_dates)} 日")
+        print(f"  00632R：{len(hedge_dates)} 日（修正異常價格 {_patched} 筆）")
     except Exception as _e:
         print(f"  00632R 失敗（{_e}），以 TWII 反向模擬")
         hedge_dates  = bm_dates[:]
