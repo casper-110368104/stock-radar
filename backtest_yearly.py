@@ -75,9 +75,10 @@ def main():
         hedge_closes     = [_raw_closes[0]]
         _patched         = 0
         for _k in range(1, len(_raw_closes)):
-            _prev, _curr = hedge_closes[-1], _raw_closes[_k]
-            if _prev > 0 and abs(_curr / _prev - 1) > 0.20:
-                hedge_closes.append(_prev)   # replace anomaly with last valid price
+            _prev_raw = _raw_closes[_k - 1]   # compare consecutive RAW prices to avoid cascade
+            _curr     = _raw_closes[_k]
+            if _prev_raw > 0 and abs(_curr / _prev_raw - 1) > 0.20:
+                hedge_closes.append(hedge_closes[-1])   # replace anomaly with last valid price
                 _patched += 1
             else:
                 hedge_closes.append(_curr)
