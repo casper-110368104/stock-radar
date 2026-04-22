@@ -318,8 +318,6 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 .ec-expansion{background:linear-gradient(135deg,#0f1520,#1a1a35)}
 /* ─ 策略回測卡片 ─ */
 .ec-backtest{background:linear-gradient(135deg,#0f1a14,#1a2a20)}
-/* ─ 主頁資金模擬卡片 ─ */
-.ec-capsim{background:var(--bg2);border:.5px solid var(--border)!important}
 
 /* ─ 隨機500股訊號卡 ─ */
 .exp-card{background:var(--bg2);border:.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:8px}
@@ -487,6 +485,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
         </div>
         <div class="ec-arr">›</div>
       </div>
+      <!-- Walk-Forward 關鍵統計 -->
       <div class="ec-body" id="bt-home-stats" style="display:none">
         <div class="ec-stat">
           <div class="ec-stat-lbl">勝率</div>
@@ -505,11 +504,14 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
           <div class="ec-stat-val" id="bt-ev-home">─</div>
         </div>
       </div>
-    </div>
-    <!-- 資金模擬卡片（Walk-Forward 歷史 + 目前追蹤）-->
-    <div class="entry-card ec-capsim" style="cursor:default">
-      <div id="home-capsim-inner" style="padding:2px 0 4px">
-        <div style="font-size:12px;color:var(--text3);padding:16px;text-align:center">載入中...</div>
+      <!-- 逐年 OOS 快覽 -->
+      <div id="bt-home-yearly" style="display:none;padding:0 16px 14px;border-top:.5px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin-bottom:8px;padding-top:10px">樣本外逐年驗證</div>
+        <div id="bt-home-yearly-inner" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <!-- 資金模擬（移入回測卡） -->
+      <div id="home-capsim-inner" onclick="event.stopPropagation()" style="border-top:.5px solid var(--border);padding:2px 0 4px">
+        <div style="font-size:12px;color:var(--text3);padding:12px;text-align:center">資金模擬載入中...</div>
       </div>
     </div>
   </div><!-- /home-wrap -->
@@ -3925,11 +3927,32 @@ async function loadQ1Backtest(){
   }catch(e){console.error('[loadQ1Backtest]',e);}
 }
 loadQ1Backtest();
+function _renderHomeYearly(){
+  var wrap=document.getElementById('bt-home-yearly');
+  var inner=document.getElementById('bt-home-yearly-inner');
+  if(!wrap||!inner) return;
+  if(!yearlyBtData||!yearlyBtData.yearly){wrap.style.display='none';return;}
+  var years=yearlyBtData.years||[2022,2023,2024,2025];
+  var chips=years.map(function(yr){
+    var y=yearlyBtData.yearly[String(yr)]||{};
+    var curves=y.capital_curves||{};
+    var fixed=curves.fixed||{};
+    var ret=fixed.total_return_pct;
+    if(ret==null) return '';
+    var oos=yr===2022||yr===2023;
+    var col=ret>=0?'var(--green)':'var(--red)';
+    var retStr=(ret>=0?'+':'')+ret.toFixed(1)+'%';
+    return '<div style="background:var(--bg3);border-radius:8px;padding:6px 10px;text-align:center;'+(oos?'border:.5px solid rgba(74,158,255,.35)':'')+'">'+'<div style="font-size:10px;color:var(--text3);margin-bottom:2px">'+yr+(oos?' ★':'')+' </div>'+'<div style="font-size:13px;font-weight:700;color:'+col+'">'+retStr+'</div>'+(oos?'<div style="font-size:9px;color:var(--blue);margin-top:1px">樣本外</div>':'')+'</div>';
+  }).join('');
+  inner.innerHTML=chips;
+  wrap.style.display='block';
+}
 async function loadYearlyBacktest(){
   try{
     var res=await fetch(yearlyBtUrl());
     if(!res.ok) return;
     yearlyBtData=await res.json();
+    _renderHomeYearly();
     if(curView==='backtest') renderBacktest();
   }catch(e){console.error('[loadYearlyBacktest]',e);}
 }
