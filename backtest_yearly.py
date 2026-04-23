@@ -22,7 +22,7 @@ from backtest_q1 import (
     _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING,
-    MAX_HEAT, HEDGE_SIZE, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
+    MAX_HEAT, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -56,8 +56,8 @@ def main():
     except Exception as _e:
         print(f"  板塊載入失敗（{_e}）")
 
-    # ── 下載 TWII + 00632R（一次，全區間共用）──────────────────────
-    print(f"\n[1] 下載 TWII + 00632R...")
+    # ── 下載 TWII（一次，全區間共用）──────────────────────
+    print(f"\n[1] 下載 TWII...")
     bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
     if bm.empty:
         print("TWII 下載失敗，中止"); sys.exit(1)
@@ -65,33 +65,6 @@ def main():
     bm_closes   = [float(v) for v in bm["Close"].tolist()]
     bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
     print(f"  TWII：{len(bm_dates)} 日")
-
-    try:
-        _h = yf.Ticker("00632R.TW").history(start=DATA_START, end=DATA_END)
-        if _h.empty:
-            raise ValueError("empty")
-        hedge_dates      = [d.date() for d in _h.index]
-        _raw_closes      = [float(v) for v in _h["Close"].tolist()]
-        hedge_closes     = [_raw_closes[0]]
-        _patched         = 0
-        for _k in range(1, len(_raw_closes)):
-            _prev_raw = _raw_closes[_k - 1]   # compare consecutive RAW prices to avoid cascade
-            _curr     = _raw_closes[_k]
-            if _prev_raw > 0 and abs(_curr / _prev_raw - 1) > 0.20:
-                hedge_closes.append(hedge_closes[-1])   # replace anomaly with last valid price
-                _patched += 1
-            else:
-                hedge_closes.append(_curr)
-        hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
-        print(f"  00632R：{len(hedge_dates)} 日（修正異常價格 {_patched} 筆）")
-    except Exception as _e:
-        print(f"  00632R 失敗（{_e}），以 TWII 反向模擬")
-        hedge_dates  = bm_dates[:]
-        hedge_closes = [bm_closes[0]]
-        for _k in range(1, len(bm_closes)):
-            _dr = bm_closes[_k] / bm_closes[_k - 1] - 1
-            hedge_closes.append(round(hedge_closes[-1] * (1 - _dr), 4))
-        hedge_date_idx = {d: i for i, d in enumerate(hedge_dates)}
 
     # ── 下載個股（一次，各年共用）──────────────────────────────────
     print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
@@ -194,7 +167,6 @@ def main():
         # Walk-Forward 主迴圈
         trades          = []
         open_positions  = []
-        regime_timeline = {}
 
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
@@ -226,7 +198,6 @@ def main():
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
             regime      = _market_regime(bm_closes, bm_i, breadth_pct)
-            regime_timeline[q_date] = regime
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -421,50 +392,6 @@ def main():
 
         print(f"\n  ✓ {year} 走步回測完成：{len(trades)} 筆")
 
-        # 00632R 對沖（限年內）
-        print(f"  計算 00632R 對沖...")
-        bear_periods = []
-        _in_bear     = False
-        _bear_start  = None
-        for _d in sorted(regime_timeline.keys()):
-            if regime_timeline[_d] == "bear" and not _in_bear:
-                _in_bear = True;  _bear_start = _d
-            elif regime_timeline[_d] != "bear" and _in_bear:
-                _in_bear = False; bear_periods.append((_bear_start, _d))
-        if _in_bear:
-            bear_periods.append((_bear_start, bt_end))
-
-        hedge_trades   = []
-        _hedge_sorted  = sorted(hedge_date_idx.keys())
-        for _bs, _be in bear_periods:
-            _entry_date = next((d for d in _hedge_sorted if d > _bs and d <= bt_end), None)
-            if _entry_date is None:
-                continue
-            _entry_px   = hedge_closes[hedge_date_idx[_entry_date]]
-            _candidates = [d for d in _hedge_sorted if d >= _be and d <= bt_end]
-            if not _candidates:
-                _candidates = [d for d in _hedge_sorted if d <= bt_end]
-            if not _candidates:
-                continue
-            _exit_date  = min(_candidates)
-            _exit_px    = hedge_closes[hedge_date_idx[_exit_date]]
-            _gp         = round((_exit_px - _entry_px) / _entry_px * 100, 2)
-            hedge_trades.append({
-                "date":      _entry_date.strftime("%Y-%m-%d"),
-                "exit_date": _exit_date.strftime("%Y-%m-%d"),
-                "code":      "00632R",
-                "type":      "hedge",
-                "regime":    "bear",
-                "entry":     _entry_px,
-                "exit":      _exit_px,
-                "hold_days": (_exit_date - _entry_date).days,
-                "gain_pct":  _gp,
-                "outcome":   "win" if _gp > 0 else "loss",
-                "pos_factor": HEDGE_SIZE,
-            })
-            print(f"  → {_entry_date} ~ {_exit_date}  00632R {_gp:+.2f}%  ({(_exit_date - _entry_date).days}天)")
-        print(f"  → {len(hedge_trades)} 筆對沖")
-
         # 統計
         overall   = _stats(trades)
         by_type   = defaultdict(list)
@@ -475,7 +402,7 @@ def main():
             by_regime[t["regime"]].append(t)
             by_month[t["date"][:7]].append(t)
 
-        all_trades = sorted(trades + hedge_trades, key=lambda t: t["date"])
+        all_trades = sorted(trades, key=lambda t: t["date"])
         curves     = _capital_curves(all_trades, bt_start)
 
         print(f"\n  === {year} 結果 ===")
@@ -493,7 +420,6 @@ def main():
             "by_month":      {k: _stats(v) for k, v in sorted(by_month.items())},
             "capital_curves": curves,
             "trades":        trades,
-            "hedge_trades":  hedge_trades,
         }
 
     # ── 最終輸出 ─────────────────────────────────────────────────────
