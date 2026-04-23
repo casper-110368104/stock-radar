@@ -2435,6 +2435,67 @@ function renderMacroFull(){
     '</div>';
   }
 
+  // ── 板塊噴前雷達 ──────────────────────────────────────────────
+  var sdKeys2=Object.keys(sectorData);
+  if(sdKeys2.length){
+    // 排序：pre_breakout_score 降冪，取前 8
+    var _preList=sdKeys2.map(function(name){
+      var d=sectorData[name]||{};
+      return {
+        name:name,
+        score:+(d.pre_breakout_score||0),
+        sub_phase:d.sub_phase||'整理觀察',
+        rs_slope_10d:+(d.rs_slope_10d||0),
+        atr_comp:+(d.atr_compression||1),
+        breadth:d.breadth!=null?+(d.breadth):null,
+        rs_up_days:+(d.rs_up_days||0),
+        chg_pct:+(d.chg_pct||0),
+      };
+    }).filter(function(x){return x.score>0;})
+      .sort(function(a,b){return b.score-a.score;})
+      .slice(0,8);
+
+    if(_preList.length){
+      var _phaseTag=function(sp){
+        var cfg={'準備噴':{c:'#3b82f6',bg:'rgba(59,130,246,.15)'},'主升段':{c:'#22c55e',bg:'rgba(34,197,94,.15)'},'主升回檔':{c:'#f97316',bg:'rgba(249,115,22,.15)'},'高檔震盪':{c:'#f59e0b',bg:'rgba(245,158,11,.15)'},'空頭':{c:'#ef4444',bg:'rgba(239,68,68,.15)'},'整理觀察':{c:'#6b7280',bg:'rgba(107,114,128,.12)'}};
+        var v=cfg[sp]||cfg['整理觀察'];
+        return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:'+v.bg+';color:'+v.c+'">'+sp+'</span>';
+      };
+      h+='<div style="background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:10px">'+
+        '<div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px;margin-bottom:12px">🔭 板塊噴前雷達 <span style="font-size:10px;font-weight:400;color:var(--text3)">RS加速×廣度×ATR壓縮，Phase 2 蓄力偵測</span></div>'+
+        _preList.map(function(it){
+          var rsArrow=it.rs_slope_10d>0?'<span style="color:var(--green)">↑</span>':'<span style="color:var(--red)">↓</span>';
+          var atrBar=Math.round(Math.max(0,Math.min(1,1-it.atr_comp))*100);
+          var bdStr=it.breadth!=null?Math.round(it.breadth*100)+'%':'─';
+          var scoreW=Math.round(it.score*100);
+          var scoreCol=scoreW>=60?'var(--green)':scoreW>=40?'var(--orange)':'var(--text3)';
+          var isHot=it.sub_phase==='準備噴';
+          return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">'+(isHot?'<span style="font-size:16px">🔥</span>':'<span style="font-size:16px;opacity:.3">·</span>')+
+            '<div style="flex:1;min-width:0">'+
+              '<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">'+
+                '<span style="font-size:13px;font-weight:600;color:var(--text)">'+it.name+'</span>'+
+                _phaseTag(it.sub_phase)+
+                '<span style="font-size:10px;color:'+(it.chg_pct>=0?'var(--green)':'var(--red)')+'">'+
+                  (it.chg_pct>=0?'+':'')+it.chg_pct.toFixed(2)+'%'+
+                '</span>'+
+              '</div>'+
+              '<div style="display:flex;gap:8px;align-items:center">'+
+                '<span style="font-size:10px;color:var(--text3)">RS10d'+rsArrow+'</span>'+
+                '<span style="font-size:10px;color:var(--text3)">廣度 '+bdStr+'</span>'+
+                '<span style="font-size:10px;color:var(--text3)">ATR壓縮 '+atrBar+'%</span>'+
+                '<span style="font-size:10px;color:var(--text3)">連漲 '+it.rs_up_days+'日</span>'+
+              '</div>'+
+            '</div>'+
+            '<div style="text-align:right;flex-shrink:0">'+
+              '<div style="font-size:15px;font-weight:800;color:'+scoreCol+'">'+scoreW+'</div>'+
+              '<div style="font-size:9px;color:var(--text3)">噴前分</div>'+
+            '</div>'+
+          '</div>';
+        }).join('')+
+      '</div>';
+    }
+  }
+
   el.innerHTML=h;
   if(Object.keys(sectorData).length) setTimeout(_initHeatmap,30);
 }

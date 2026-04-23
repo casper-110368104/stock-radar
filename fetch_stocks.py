@@ -285,17 +285,32 @@ def fetch_sector_rotation(days=60, breadth_map=None):
             else:
                 break
 
+        # RS 10日斜率（板塊噴前核心指標：RS是否在加速翻升）
+        rs_slope_10d = round(linear_slope(rs_vals[-10:]), 4) if len(rs_vals) >= 10 else 0.0
+
+        # ATR 壓縮比（近10日ATR / 近60日ATR；< 1 表示收縮蓄力）
+        prices = price_history[s]
+        def _atr_n(px, n):
+            if len(px) < n + 1:
+                return None
+            return sum(abs(px[i] - px[i-1]) for i in range(len(px)-n, len(px))) / n
+        _atr10 = _atr_n(prices, 10)
+        _atr60 = _atr_n(prices, 60)
+        atr_compression = round(_atr10 / _atr60, 3) if (_atr10 and _atr60 and _atr60 > 0) else 1.0
+
         prev_rs = rs_vals[-2] if len(rs_vals) >= 2 else today_rs
         prev_m  = m_series[-2] if (len(m_series) >= 2 and m_series[-2] is not None) else today_m
         raw[s] = {
-            "rs":          today_rs,
-            "m":           today_m,
-            "a":           today_a,
-            "rs_trend":    rs_trend,
-            "trend_struct": trend_struct,
-            "rs_up_days":  rs_up_days,
-            "vector":      {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)},
-            "trend":       [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]],
+            "rs":             today_rs,
+            "m":              today_m,
+            "a":              today_a,
+            "rs_trend":       rs_trend,
+            "rs_slope_10d":   rs_slope_10d,
+            "trend_struct":   trend_struct,
+            "rs_up_days":     rs_up_days,
+            "atr_compression": atr_compression,
+            "vector":         {"dx": round(today_rs - prev_rs, 4), "dy": round(today_m - prev_m, 4)},
+            "trend":          [{"date": h["date"], "rs": h["rs"]} for h in hist[-15:]],
         }
 
     # ── 第二階段：跨産業 rank → Score → 六象限 ────────────────────
@@ -320,12 +335,20 @@ def fetch_sector_rotation(days=60, breadth_map=None):
         b_val    = breadth if breadth is not None else 0.5  # 無資料時用中性值
         score    = round(0.4 * rs_rank[s] + 0.3 * m_rank[s] + 0.2 * a_rank[s] + 0.1 * b_val, 3)
 
+        # 板塊噴前得分：RS加速 × 廣度 × ATR壓縮 × 連漲天數
+        # 用途：識別「還沒噴但正在蓄力」的板塊（Phase 2）
+        _rs10_pos   = 1.0 if d["rs_slope_10d"] > 0 else 0.0
+        _atr_comp   = max(0.0, 1.0 - d["atr_compression"])  # 越壓縮越高
+        _up_score   = min(d["rs_up_days"] / 5, 1.0)
+        pre_breakout_score = round(
+            0.4 * _rs10_pos + 0.3 * b_val + 0.2 * _atr_comp + 0.1 * _up_score, 3)
+
         # 六象限：以 Score + trend_struct + rs_trend 決定
-        sc = score; ts = d["trend_struct"]; rt = d["rs_trend"]
+        sc = score; ts = d["trend_struct"]; rt = d["rs_trend"]; rs10 = d["rs_slope_10d"]
         if   sc >= 0.7 and ts > 0 and rt > 0:
             sub_phase = "主升段"      # 高分 + 多頭 + 趨勢向上
-        elif sc >= 0.6 and ts < 0 and rt > 0:
-            sub_phase = "準備噴"      # 高分 + 空頭結構 + RS剛翻升（底部轉強）
+        elif sc >= 0.5 and rs10 > 0 and d["atr_compression"] < 0.85:
+            sub_phase = "準備噴"      # RS加速翻升 + ATR收縮蓄力（不限多空結構）
         elif 0.4 <= sc < 0.7 and ts > 0 and rt > 0:
             sub_phase = "主升回檔"    # 中分 + 多頭 + 趨勢仍上
         elif 0.4 <= sc < 0.7 and ts > 0 and rt <= 0:
@@ -336,17 +359,20 @@ def fetch_sector_rotation(days=60, breadth_map=None):
             sub_phase = "整理觀察"    # 過渡中性
 
         result[s] = {
-            "rs":           round(d["rs"], 4),
-            "rs_mom":       round(d["m"],  4),   # key 保持 rs_mom（前端相容）
-            "acceleration": round(d["a"],  4),
-            "rs_trend":     d["rs_trend"],
-            "breadth":      breadth,              # None 若無法計算
-            "score":        score,
-            "sub_phase":    sub_phase,
-            "rs_up_days":   d["rs_up_days"],
-            "vector":       d["vector"],
-            "trend":        d["trend"],
-            "chg_pct":      latest_chg.get(s, 0),
+            "rs":                 round(d["rs"], 4),
+            "rs_mom":             round(d["m"],  4),   # key 保持 rs_mom（前端相容）
+            "acceleration":       round(d["a"],  4),
+            "rs_trend":           d["rs_trend"],
+            "rs_slope_10d":       d["rs_slope_10d"],
+            "atr_compression":    d["atr_compression"],
+            "breadth":            breadth,              # None 若無法計算
+            "score":              score,
+            "pre_breakout_score": pre_breakout_score,
+            "sub_phase":          sub_phase,
+            "rs_up_days":         d["rs_up_days"],
+            "vector":             d["vector"],
+            "trend":              d["trend"],
+            "chg_pct":            latest_chg.get(s, 0),
         }
 
     phase_counts = {}
