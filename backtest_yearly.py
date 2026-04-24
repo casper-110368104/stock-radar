@@ -17,12 +17,14 @@ from datetime import date, timedelta, datetime
 from collections import defaultdict
 
 from signals import calc_signals
+from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
     _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
+    _vix_overlay, _breadth_divergence,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING,
-    MAX_HEAT, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
+    MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -57,7 +59,7 @@ def main():
         print(f"  板塊載入失敗（{_e}）")
 
     # ── 下載 TWII + 0050（一次，全區間共用）──────────────────────
-    print(f"\n[1] 下載 TWII + 0050...")
+    print(f"\n[1] 下載 TWII + 0050 + VIX...")
     bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
     if bm.empty:
         print("TWII 下載失敗，中止"); sys.exit(1)
@@ -76,6 +78,17 @@ def main():
             print(f"  0050：{len(etf0050_dict)} 日")
     except Exception as _be:
         print(f"  0050 下載失敗（{_be}），benchmark 跳過")
+
+    # VIX（各年共用）
+    vix_dict = {}
+    try:
+        _vr = yf.Ticker("^VIX").history(start=DATA_START, end=DATA_END)
+        if not _vr.empty:
+            vix_dict = {d.date(): float(v)
+                        for d, v in zip(_vr.index, _vr["Close"].tolist())}
+            print(f"  VIX：{len(vix_dict)} 日")
+    except Exception as _ve:
+        print(f"  VIX 下載失敗（{_ve}），overlay 跳過")
 
     # ── 下載個股（一次，各年共用）──────────────────────────────────
     print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
@@ -178,6 +191,8 @@ def main():
         # Walk-Forward 主迴圈
         trades          = []
         open_positions  = []
+        breadth_history = deque(maxlen=15)
+        vix_history     = deque(maxlen=25)
 
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
@@ -219,6 +234,23 @@ def main():
             _high_vol   = _vol_flag(bm_closes, bm_i)
             _vol_mult   = 0.5 if _high_vol else 1.0
             market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult)), 3)
+
+            # VIX overlay + 廣度背離
+            breadth_history.append(breadth_pct)
+            _vix_today = vix_dict.get(q_date)
+            if _vix_today is None:
+                for _doff in (1, 2, 3):
+                    _vix_today = vix_dict.get(q_date - timedelta(days=_doff))
+                    if _vix_today is not None:
+                        break
+            vix_history.append(_vix_today)
+            _vix_mult, _reversal_probe = _vix_overlay(_vix_today, list(vix_history)[:-1])
+            market_factor = round(max(0.0, market_factor * _vix_mult), 3)
+            _bd = (regime == "bear"
+                   and _breadth_divergence(bm_closes, bm_i, list(breadth_history)))
+            _eff_regime = ("reversal_probe"
+                           if regime == "bear" and (_reversal_probe or _bd)
+                           else regime)
 
             open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
 
@@ -317,7 +349,11 @@ def main():
                         continue
                     if sig_type == "retest":
                         continue
-                    if sig_type not in REGIME_ACTIVE_SIGNALS.get(regime, set()):
+                    if sig_type not in REGIME_ACTIVE_SIGNALS.get(_eff_regime, set()):
+                        continue
+
+                    # RS 加速篩選：震盪/回檔相位只取 RS 持續上升的個股
+                    if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
                     confs         = sig.get("confirmations", 0)
@@ -329,7 +365,8 @@ def main():
                     pos_size      = min(target_R / _stop_dist, 0.20)
                     _trade_heat   = round(pos_size * _stop_dist, 5)
                     _total_heat   = sum(h for _, h in open_positions)
-                    if _total_heat + _trade_heat > MAX_HEAT:
+                    _regime_heat  = MAX_HEAT_BY_REGIME.get(_eff_regime, 0.15)
+                    if _total_heat + _trade_heat > _regime_heat:
                         continue
 
                     if sig_type == "high_base":
@@ -377,7 +414,7 @@ def main():
                         "label":          sig["label"],
                         "strength":       sig["strength"],
                         "strategy":       sig["strategy"],
-                        "regime":         regime,
+                        "regime":         _eff_regime,
                         "stock_phase":    phase,
                         "rs_pct":         rs_pct,
                         "entry":          round(actual_entry, 2),
@@ -398,8 +435,9 @@ def main():
                     })
                     day_count += 1
 
-            _hv = " ⚡" if _high_vol else ""
-            print(f"  {q_date}  {regime:<14}{_hv}  訊號={day_count:2d}筆  累計={len(trades)}")
+            _hv      = " ⚡" if _high_vol else ""
+            _eff_tag = f"→{_eff_regime}" if _eff_regime != regime else ""
+            print(f"  {q_date}  {regime:<14}{_eff_tag:<16}{_hv}  訊號={day_count:2d}筆  累計={len(trades)}")
 
         print(f"\n  ✓ {year} 走步回測完成：{len(trades)} 筆")
 
