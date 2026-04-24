@@ -56,8 +56,8 @@ def main():
     except Exception as _e:
         print(f"  板塊載入失敗（{_e}）")
 
-    # ── 下載 TWII（一次，全區間共用）──────────────────────
-    print(f"\n[1] 下載 TWII...")
+    # ── 下載 TWII + 0050（一次，全區間共用）──────────────────────
+    print(f"\n[1] 下載 TWII + 0050...")
     bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
     if bm.empty:
         print("TWII 下載失敗，中止"); sys.exit(1)
@@ -65,6 +65,17 @@ def main():
     bm_closes   = [float(v) for v in bm["Close"].tolist()]
     bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
     print(f"  TWII：{len(bm_dates)} 日")
+
+    # 0050 基準（正規化至各年 1/1 = 1.0）
+    etf0050_dict = {}
+    try:
+        _e = yf.Ticker("0050.TW").history(start=DATA_START, end=DATA_END)
+        if not _e.empty:
+            etf0050_dict = {d.date(): float(c)
+                            for d, c in zip(_e.index, _e["Close"].tolist())}
+            print(f"  0050：{len(etf0050_dict)} 日")
+    except Exception as _be:
+        print(f"  0050 下載失敗（{_be}），benchmark 跳過")
 
     # ── 下載個股（一次，各年共用）──────────────────────────────────
     print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
@@ -405,21 +416,33 @@ def main():
         all_trades = sorted(trades, key=lambda t: t["date"])
         curves     = _capital_curves(all_trades, bt_start)
 
+        # 0050 本年比較基準（正規化：year 第一個交易日 = 1.0）
+        _bench = []
+        if etf0050_dict:
+            _yr_base_d = next((d for d in sorted(etf0050_dict) if d >= bt_start), None)
+            _yr_base_px = etf0050_dict[_yr_base_d] if _yr_base_d else None
+            if _yr_base_px:
+                _bench = [
+                    {"date": d.strftime("%Y-%m-%d"), "equity": round(etf0050_dict[d] / _yr_base_px, 4)}
+                    for d in sorted(etf0050_dict) if bt_start <= d <= bt_end
+                ]
+
         print(f"\n  === {year} 結果 ===")
         print(f"  筆數={overall['count']}  WR={overall['win_rate']}%  EV={str(overall['expectancy'])+'%'}")
         print(f"  固定: {curves['fixed']['total_return_pct']:+.1f}%  MaxDD={curves['fixed']['max_drawdown_pct']:.1f}%")
         print(f"  複利: {curves['compound']['total_return_pct']:+.1f}%  MaxDD={curves['compound']['max_drawdown_pct']:.1f}%")
 
         yearly_results[str(year)] = {
-            "year":          year,
-            "trading_days":  len(year_dates),
-            "universe_size": len(year_data),
-            "overall":       overall,
-            "by_type":       {k: _stats(v) for k, v in by_type.items()},
-            "by_regime":     {k: _stats(v) for k, v in by_regime.items()},
-            "by_month":      {k: _stats(v) for k, v in sorted(by_month.items())},
+            "year":           year,
+            "trading_days":   len(year_dates),
+            "universe_size":  len(year_data),
+            "overall":        overall,
+            "by_type":        {k: _stats(v) for k, v in by_type.items()},
+            "by_regime":      {k: _stats(v) for k, v in by_regime.items()},
+            "by_month":       {k: _stats(v) for k, v in sorted(by_month.items())},
             "capital_curves": curves,
-            "trades":        trades,
+            "benchmark_curve": _bench,
+            "trades":         trades,
         }
 
     # ── 最終輸出 ─────────────────────────────────────────────────────

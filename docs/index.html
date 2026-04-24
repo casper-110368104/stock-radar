@@ -1194,10 +1194,12 @@ function _buildCurveFromStats(stats, posPct){
   return {points:points,maxDD:+maxDD.toFixed(1),totalReturn:+(capital-100).toFixed(2),count:interleaved.length,wins:ws.length,simulated:true};
 }
 
-// SVG 折線圖
+// SVG 折線圖（日期軸 + 可選 0050 比較線）
+// curve / benchmark: [{date:"YYYY-MM-DD", equity:1.23}, ...]  equity 以 1.0 為基準
 function _svgEquityCurve(points,W,H){
+  // legacy: points 為 {x,y} 格式（追蹤曲線仍用此路徑）
   if(!points||points.length<2) return '<div style="color:var(--text3);text-align:center;padding:28px 0;font-size:12px">尚無完成交易紀錄</div>';
-  var pl=18,pr=10,pt=10,pb=20;
+  var pl=22,pr=10,pt=10,pb=20;
   var w=W-pl-pr,h=H-pt-pb;
   var ys=points.map(function(p){return p.y;});
   var minY=Math.min.apply(null,ys),maxY=Math.max.apply(null,ys);
@@ -1211,24 +1213,97 @@ function _svgEquityCurve(points,W,H){
   var ptStr=points.map(function(p){return px(p.x)+','+py(p.y);}).join(' ');
   var fillStr=ptStr+' '+px(maxX)+','+py(minY)+' '+px(0)+','+py(minY);
   var svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="display:block;max-width:100%">';
-  // grid
   for(var gi=0;gi<=4;gi++){
     var gv=minY+ry*gi/4,gyp=py(gv);
     svg+='<line x1="'+pl+'" y1="'+gyp+'" x2="'+(W-pr)+'" y2="'+gyp+'" stroke="var(--bg4)" stroke-width="0.5"/>';
-    svg+='<text x="'+(pl-2)+'" y="'+(gyp+3)+'" font-size="7" fill="var(--text3)" text-anchor="end">'+gv.toFixed(1)+'</text>';
+    svg+='<text x="'+(pl-3)+'" y="'+(gyp+3)+'" font-size="7" fill="var(--text3)" text-anchor="end">'+gv.toFixed(0)+'</text>';
   }
-  // baseline 100%
-  if(y100>=pt&&y100<=pt+h){
-    svg+='<line x1="'+pl+'" y1="'+y100+'" x2="'+(W-pr)+'" y2="'+y100+'" stroke="#6b7280" stroke-width="0.8" stroke-dasharray="4,3"/>';
-  }
+  if(y100>=pt&&y100<=pt+h) svg+='<line x1="'+pl+'" y1="'+y100+'" x2="'+(W-pr)+'" y2="'+y100+'" stroke="#6b7280" stroke-width="0.8" stroke-dasharray="4,3"/>';
   svg+='<polygon points="'+fillStr+'" fill="'+lineCol+'" opacity="0.08"/>';
   svg+='<polyline points="'+ptStr+'" fill="none" stroke="'+lineCol+'" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';
   svg+='<circle cx="'+px(maxX)+'" cy="'+py(lastY)+'" r="3" fill="'+lineCol+'"/>';
-  // x labels
-  svg+='<text x="'+px(0)+'" y="'+(H-5)+'" font-size="7" fill="var(--text3)" text-anchor="middle">0</text>';
-  svg+='<text x="'+px(maxX)+'" y="'+(H-5)+'" font-size="7" fill="var(--text3)" text-anchor="middle">'+maxX+'筆</text>';
-  var mid=Math.round(maxX/2);
-  svg+='<text x="'+px(mid)+'" y="'+(H-5)+'" font-size="7" fill="var(--text3)" text-anchor="middle">'+mid+'</text>';
+  svg+='</svg>';
+  return svg;
+}
+
+// 日期軸雙線圖（策略 vs 0050）
+// curve/benchmark: [{date:"YYYY-MM-DD", equity:1.23}]
+function _svgDateCurve(curve, benchmark, W, H){
+  if(!curve||curve.length<2) return '<div style="color:var(--text3);text-align:center;padding:28px 0;font-size:12px">尚無資料</div>';
+  var pl=28,pr=10,pt=12,pb=22;
+  var w=W-pl-pr, h=H-pt-pb;
+
+  // 轉換：equity × 100 → %
+  var toY=function(e){return Math.round(e*10000)/100;};
+  var cPts=curve.map(function(p){return{d:p.date,y:toY(p.equity)};});
+  var bPts=benchmark?benchmark.map(function(p){return{d:p.date,y:toY(p.equity)};}):[];
+
+  // Y 軸範圍（包含兩條線）
+  var allY=cPts.map(function(p){return p.y;}).concat(bPts.map(function(p){return p.y;}));
+  var minY=Math.min.apply(null,allY),maxY=Math.max.apply(null,allY);
+  var pad=(maxY-minY)*0.08||2; minY-=pad; maxY+=pad;
+  var ry=maxY-minY||1;
+
+  // X 軸：日期範圍
+  var allDates=cPts.map(function(p){return p.d;}).concat(bPts.map(function(p){return p.d;}));
+  allDates.sort();
+  var d0=new Date(allDates[0]),d1=new Date(allDates[allDates.length-1]);
+  var dRange=d1-d0||1;
+  function px(dateStr){return pl+(new Date(dateStr)-d0)/dRange*w;}
+  function py(y){return pt+h-(y-minY)/ry*h;}
+
+  var svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="display:block;max-width:100%">';
+
+  // Y grid + labels
+  for(var gi=0;gi<=4;gi++){
+    var gv=minY+ry*gi/4,gyp=py(gv);
+    svg+='<line x1="'+pl+'" y1="'+gyp.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+gyp.toFixed(1)+'" stroke="rgba(255,255,255,.06)" stroke-width="0.5"/>';
+    svg+='<text x="'+(pl-3)+'" y="'+(gyp+3).toFixed(1)+'" font-size="7" fill="rgba(150,150,160,.7)" text-anchor="end">'+gv.toFixed(0)+'%</text>';
+  }
+
+  // baseline 100%
+  var y100=py(100);
+  if(y100>=pt&&y100<=pt+h) svg+='<line x1="'+pl+'" y1="'+y100.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y100.toFixed(1)+'" stroke="#6b7280" stroke-width="0.8" stroke-dasharray="4,3"/>';
+
+  // X 軸年度標記
+  var yr0=d0.getFullYear(),yr1=d1.getFullYear();
+  for(var yr=yr0;yr<=yr1;yr++){
+    var yrD=new Date(yr+'-01-01');
+    if(yrD>=d0&&yrD<=d1){
+      var xp=px(yrD.toISOString().slice(0,10));
+      svg+='<line x1="'+xp.toFixed(1)+'" y1="'+pt+'" x2="'+xp.toFixed(1)+'" y2="'+(pt+h)+'" stroke="rgba(255,255,255,.1)" stroke-width="0.5" stroke-dasharray="3,3"/>';
+      svg+='<text x="'+xp.toFixed(1)+'" y="'+(H-6)+'" font-size="8" fill="rgba(150,150,160,.7)" text-anchor="middle">'+yr+'</text>';
+    }
+  }
+
+  // 0050 線（灰）
+  if(bPts.length>=2){
+    var bStr=bPts.map(function(p){return px(p.d).toFixed(1)+','+py(p.y).toFixed(1);}).join(' ');
+    svg+='<polyline points="'+bStr+'" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="5,3" stroke-linejoin="round"/>';
+    var bLast=bPts[bPts.length-1];
+    svg+='<circle cx="'+px(bLast.d).toFixed(1)+'" cy="'+py(bLast.y).toFixed(1)+'" r="2.5" fill="#6b7280"/>';
+    svg+='<text x="'+(px(bLast.d)+4).toFixed(1)+'" y="'+(py(bLast.y)+3).toFixed(1)+'" font-size="8" fill="#6b7280">0050</text>';
+  }
+
+  // 策略線（綠/紅）
+  var lastY=cPts[cPts.length-1].y;
+  var lCol=lastY>=100?'#22c55e':'#ef4444';
+  var cStr=cPts.map(function(p){return px(p.d).toFixed(1)+','+py(p.y).toFixed(1);}).join(' ');
+  var cFirst=cPts[0],cLast=cPts[cPts.length-1];
+  var fillStr=cStr+' '+px(cLast.d).toFixed(1)+','+py(minY).toFixed(1)+' '+px(cFirst.d).toFixed(1)+','+py(minY).toFixed(1);
+  svg+='<polygon points="'+fillStr+'" fill="'+lCol+'" opacity="0.08"/>';
+  svg+='<polyline points="'+cStr+'" fill="none" stroke="'+lCol+'" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';
+  svg+='<circle cx="'+px(cLast.d).toFixed(1)+'" cy="'+py(cLast.y).toFixed(1)+'" r="3" fill="'+lCol+'"/>';
+
+  // 凡例
+  var legY=pt+4;
+  svg+='<rect x="'+pl+'" y="'+legY+'" width="28" height="8" rx="2" fill="'+lCol+'" opacity="0.7"/>';
+  svg+='<text x="'+(pl+31)+'" y="'+(legY+7)+'" font-size="8" fill="rgba(200,200,210,.8)">策略</text>';
+  if(bPts.length>=2){
+    svg+='<line x1="'+(pl+70)+'" y1="'+(legY+4)+'" x2="'+(pl+98)+'" y2="'+(legY+4)+'" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4,2"/>';
+    svg+='<text x="'+(pl+101)+'" y="'+(legY+7)+'" font-size="8" fill="rgba(150,150,160,.8)">0050</text>';
+  }
+
   svg+='</svg>';
   return svg;
 }
@@ -1497,13 +1572,12 @@ function _renderQ1CapSim(){
   }).join('');
   var cur = cc[active] || {};
   var curve = cur.curve || [];
-  // equity 以 1.0 為基準，乘以 100 對齊 _svgEquityCurve 的 baseline=100
-  var pts = curve.map(function(p,i){ return {x:i, y:+(Math.max(p.equity,0)*100).toFixed(2)}; });
+  var bench = q1BtData.benchmark_curve || [];
   var tr  = cur.total_return_pct;
   var mdd = cur.max_drawdown_pct;
   var retCol = tr>=0 ? 'var(--green)' : 'var(--red)';
   var cnt = (q1BtData.overall||{}).count || 0;
-  var chart = _svgEquityCurve(pts, 320, 120);
+  var chart = _svgDateCurve(curve, bench.length?bench:null, 320, 130);
   var statsHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px">'+
     _ecStat('總報酬',(tr>=0?'+':'')+tr+'%',retCol)+
     _ecStat('最大回撤','-'+mdd+'%','var(--orange)')+
@@ -1562,10 +1636,37 @@ function _renderYearlyBacktest(){
       '<span style="color:var(--text3);font-size:10px">'+notes[y]+'</span>'+
     '</div>';
   });
+  // 每年資金曲線（策略 vs 0050）
+  var charts='';
+  years.forEach(function(y){
+    var yd=yearlyBtData.yearly&&yearlyBtData.yearly[String(y)];
+    if(!yd) return;
+    var cc=yd.capital_curves||{};
+    var cur=cc.fixed||{};
+    var curve=cur.curve||[];
+    var bench=yd.benchmark_curve||[];
+    var isOOS=(y===2022||y===2023);
+    var ret=cur.total_return_pct||0;
+    var bRet=bench.length?Math.round((bench[bench.length-1].equity-1)*10000)/100:null;
+    var retCol=ret>=0?'#22c55e':'#ef4444';
+    charts+='<div style="background:var(--bg3);border-radius:10px;padding:10px 12px;margin-bottom:8px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+        '<span style="font-size:12px;font-weight:700;color:'+(isOOS?'var(--blue)':'var(--text1)')+'">'+y+(isOOS?' ★OOS':'')+'</span>'+
+        '<div style="display:flex;gap:10px;font-size:11px">'+
+          '<span style="color:'+retCol+'">策略 '+(ret>=0?'+':'')+ret.toFixed(1)+'%</span>'+
+          (bRet!=null?'<span style="color:#6b7280">0050 '+(bRet>=0?'+':'')+bRet.toFixed(1)+'%</span>':'')+
+        '</div>'+
+      '</div>'+
+      _svgDateCurve(curve, bench.length?bench:null, 300, 100)+
+    '</div>';
+  });
+
   return '<div style="background:var(--bg2);border-radius:8px;padding:10px 12px;margin-bottom:12px">'+
     '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">產生於 '+yearlyBtData.generated_at+
     ' ｜ 藍色 = 真正樣本外（未曾用於策略設計）</div>'+
-    rows+'</div>';
+    rows+
+    '<div style="margin-top:12px">'+charts+'</div>'+
+  '</div>';
 }
 
 function renderBacktest(){

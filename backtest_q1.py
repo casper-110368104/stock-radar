@@ -420,7 +420,7 @@ def main():
     DATA_START = "2023-06-01"
     DATA_END   = "2026-06-01"
 
-    print(f"\n[2] 下載 TWII 基準...")
+    print(f"\n[2] 下載 TWII 基準 + 0050 比較基準...")
     bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
     if bm.empty:
         print("TWII 下載失敗，中止"); sys.exit(1)
@@ -429,6 +429,26 @@ def main():
     bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
     q1_dates    = [d for d in bm_dates if BT_START <= d <= BT_END]
     print(f"  TWII：{len(bm_dates)} 日 | 回測交易日：{len(q1_dates)} 天")
+
+    # 0050 比較基準曲線（正規化到 BT_START = 1.0）
+    benchmark_curve = []
+    try:
+        _etf = yf.Ticker("0050.TW").history(start=DATA_START, end=DATA_END)
+        if not _etf.empty:
+            _edates  = [d.date() for d in _etf.index]
+            _eclose  = [float(v) for v in _etf["Close"].tolist()]
+            _edict   = {d: c for d, c in zip(_edates, _eclose)}
+            # 找 BT_START 當日或之後最近的價格作為基準
+            _base_d  = next((d for d in sorted(_edict) if d >= BT_START), None)
+            _base_px = _edict[_base_d] if _base_d else None
+            if _base_px:
+                benchmark_curve = [
+                    {"date": d.strftime("%Y-%m-%d"), "equity": round(_edict[d] / _base_px, 4)}
+                    for d in sorted(_edict) if BT_START <= d <= BT_END
+                ]
+                print(f"  0050：{len(benchmark_curve)} 日 benchmark 曲線")
+    except Exception as _be:
+        print(f"  0050 下載失敗（{_be}），benchmark 跳過")
 
     print(f"\n[3] 下載 {len(universe_candidates)} 檔候選個股資料...")
     print("    (每 20 檔暫停 3 秒避免限速，預計 8~15 分鐘)")
@@ -802,6 +822,7 @@ def main():
         "capital_curves":     _capital_curves(
                                   trades,
                                   BT_START),
+        "benchmark_curve":    benchmark_curve,
         "trades":             trades,
     }
 
