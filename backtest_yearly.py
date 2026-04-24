@@ -22,7 +22,7 @@ from backtest_q1 import (
     _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING,
-    MAX_HEAT, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
+    MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -320,6 +320,10 @@ def main():
                     if sig_type not in REGIME_ACTIVE_SIGNALS.get(regime, set()):
                         continue
 
+                    # RS 加速篩選：震盪/回檔相位只取 RS 持續上升的個股
+                    if regime in ("range", "bull_pullback") and slope <= 0:
+                        continue
+
                     confs         = sig.get("confirmations", 0)
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                     sig_scale     = SIGNAL_SCALE.get(sig_type, 1.0)
@@ -329,7 +333,8 @@ def main():
                     pos_size      = min(target_R / _stop_dist, 0.20)
                     _trade_heat   = round(pos_size * _stop_dist, 5)
                     _total_heat   = sum(h for _, h in open_positions)
-                    if _total_heat + _trade_heat > MAX_HEAT:
+                    _regime_heat  = MAX_HEAT_BY_REGIME.get(regime, 0.15)
+                    if _total_heat + _trade_heat > _regime_heat:
                         continue
 
                     if sig_type == "high_base":

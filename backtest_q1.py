@@ -38,7 +38,14 @@ HEADERS        = {"User-Agent": "Mozilla/5.0 (stock-radar-backtest/1.0)"}
 TREND_TYPES = {"breakout", "high_base", "trend_cont"}
 
 # ── 優化：訊號分級 × Portfolio Heat ──────────────────────────────────
-MAX_HEAT     = 0.15   # 同時總 stop risk 上限（15% 資本）；值由風險承受度決定，非回測最佳化
+# 相位分離倉位：bull 主動重壓，震盪/空頭收縮；結構設計，非回測最佳化
+MAX_HEAT_BY_REGIME = {
+    "bull":          0.25,   # 多頭：積極進場，讓贏的年份真的贏
+    "bull_pullback": 0.15,   # 回檔：維持正常風控
+    "range":         0.10,   # 震盪：保守，機會少做少錯
+    "bear":          0.05,   # 空頭：幾乎不開倉（REGIME_ACTIVE_SIGNALS 已封鎖）
+}
+MAX_HEAT     = 0.15   # 向後相容（backtest_yearly 直接引用舊常數時的備用）
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
@@ -157,31 +164,45 @@ def _snapshot(closes, highs, lows, vols, opens, i):
     }
 
 
-# ── 大盤相位（截至第 i 日的 TWII + 市場廣度雙確認）───────────────────────
+# ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
 def _market_regime(bm_closes, i, breadth_pct=0.5):
     """
-    雙確認 regime：TWII vs MA60（趨勢方向）× 市場廣度（% 股票在 MA20 以上）
-    防止猴市中 MA60 假突破/假跌破導致誤判。
+    三重確認 regime：
+      1. MA60 趨勢方向（主判斷）
+      2. 市場廣度（% 股票在 MA20 以上）
+      3. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
 
-    bear 需要 TWII < MA60 AND 廣度 < 35%（雙確認）；
-    僅 MA60 破位但廣度健康 → range（猴市或短暫急跌）。
+    early_bear：距52週高點 >65% 回落（pct52 < 0.35）且 10週動能已負 (-5%+)。
+    → 即使 MA60 仍在上方，先把 regime 降為 range 或 bear 防線，
+      避免 MA60 落後指標延誤 4~6 週才反應。
     """
     if i < 60:
         return "range"
     p    = bm_closes[i]
     ma60 = sum(bm_closes[i - 59:i + 1]) / 60
 
+    # 52週高低點百分位（約 250 個交易日）
+    _w52   = min(i, 249)
+    _hi52  = max(bm_closes[i - _w52:i + 1])
+    _lo52  = min(bm_closes[i - _w52:i + 1])
+    pct52  = (p - _lo52) / (_hi52 - _lo52) if _hi52 > _lo52 else 0.5
+
+    # 10週動能（約 50 個交易日）
+    week10_mom = (p / bm_closes[i - 50] - 1) if i >= 50 else 0.0
+
+    # 提前熊市信號：52週位置低 + 10週動能轉負
+    early_bear = pct52 < 0.35 and week10_mom < -0.05
+
     above_ma60 = p > ma60
-    if above_ma60 and breadth_pct > 0.55:
+
+    if above_ma60 and breadth_pct > 0.55 and not early_bear:
         return "bull"
-    if above_ma60:                       # 廣度 ≤ 55%：多頭結構仍在但開始轉弱
+    if above_ma60 and not early_bear:     # 廣度偏弱或 early_bear 尚未成立
         return "bull_pullback"
-    if breadth_pct < 0.35:               # MA60 跌破 + 廣度崩潰 → 真熊市
-        return "bear"
-    return "range"                       # MA60 附近震盪 or 廣度居中 → 猴市
-    if p > ma60 and p <= ma20:
-        return "bull_pullback"
-    if p < ma60 * 0.97:
+    if above_ma60 and early_bear:         # MA60 仍在但領先指標已轉弱
+        return "range"
+    # p <= ma60
+    if breadth_pct < 0.40 or early_bear:  # 廣度崩潰 or 領先信號確認 → 真熊
         return "bear"
     return "range"
 
@@ -689,9 +710,10 @@ def main():
                 target_R   = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                 _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
                 pos_size   = min(target_R / _stop_dist, 0.20)
-                _trade_heat = round(pos_size * _stop_dist, 5)
-                _total_heat = sum(h for _, h in open_positions)
-                if _total_heat + _trade_heat > MAX_HEAT:
+                _trade_heat  = round(pos_size * _stop_dist, 5)
+                _total_heat  = sum(h for _, h in open_positions)
+                _regime_heat = MAX_HEAT_BY_REGIME.get(regime, 0.15)
+                if _total_heat + _trade_heat > _regime_heat:
                     continue   # 超過整體風險預算
 
                 # ── 4e: 追蹤結果（只看已過去的資料）

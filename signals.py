@@ -89,9 +89,12 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     _mm_ok    = avwap_vol   is None or price >= avwap_vol
     _short_ok = avwap_short is None or price >= avwap_short
 
-    # BULL 型態動能額外條件：M>1.2 且 RS 斜率向上 且 產業RS≥0（中性產業允許）
+    # BULL 型態動能額外條件：M>閾值 且 RS 斜率向上 且 產業RS≥0
+    # bull 市場：m_z 門檻降至 0.8（大盤提供順風，個股不需已達到全速動能）
+    # 其他市場：m_z 門檻維持 1.2（需較強動能確認才進場）
+    _mz_threshold = 0.8 if market_regime == "bull" else 1.2
     _bull_momentum = (stock_phase != "BULL") or (
-        m_z_val is not None and m_z_val > 1.2 and
+        m_z_val is not None and m_z_val > _mz_threshold and
         rs_trend_val is not None and rs_trend_val > 0 and
         (sector_rs is None or sector_rs >= 0)
     )
@@ -245,8 +248,11 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             "exit_style":         exit_style,
         }
 
-    # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥70 + BULL動能確認
-    if high20 and price > high20 and vol_day >= 1.5 and rs_pct >= 70 and _short_ok and _bull_momentum:
+    # 1. 突破（Breakout）：收盤突破20日高 + 量比≥1.5 + RS百分位≥閾值 + BULL動能確認
+    # bull 市場：rs_pct 降至 60（寬鬆進場，大盤提供系統性順風）
+    # 其他市場：rs_pct 維持 70（需已是強股才進場）
+    _bk_rs_gate = 60 if market_regime == "bull" else 70
+    if high20 and price > high20 and vol_day >= 1.5 and rs_pct >= _bk_rs_gate and _short_ok and _bull_momentum:
         _stop_bk = max(
             low20 or price * 0.95,
             round(avwap_swing * 0.99, 2) if avwap_swing else 0,
@@ -277,8 +283,10 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
                      f"均線多頭，RS百分位{rs_pct}(≥60)")
             if s: signals.append(s)
 
-    # 4. 強整再突（High Base Breakout）：距20日高≤5% + MA5之上 + RS≥70 + BULL動能確認
-    if high20 and ma5 and price > ma5 and rs_pct >= 70 and _short_ok and _bull_momentum:
+    # 4. 強整再突（High Base Breakout）：距20日高≤5% + MA5之上 + RS≥閾值 + BULL動能確認
+    # bull 市場：rs_pct 降至 60，與 breakout 一致
+    _hb_rs_gate = 60 if market_regime == "bull" else 70
+    if high20 and ma5 and price > ma5 and rs_pct >= _hb_rs_gate and _short_ok and _bull_momentum:
         dist_high20 = (high20 - price) / high20
         if 0 <= dist_high20 <= 0.05:
             _stop_hb = round(avwap_swing * 0.99, 2) if avwap_swing else (ma10 or round(price * 0.95, 2))
