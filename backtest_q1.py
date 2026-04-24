@@ -18,7 +18,7 @@ backtest_q1.py — Walk-Forward Backtest（走步式回測）
 import json, time, math, sys, requests
 import yfinance as yf
 from datetime import datetime, date, timedelta
-from collections import defaultdict
+from collections import defaultdict, deque
 from signals import calc_signals
 
 # ── 設定 ────────────────────────────────────────────────────────────
@@ -40,10 +40,11 @@ TREND_TYPES = {"breakout", "high_base", "trend_cont"}
 # ── 優化：訊號分級 × Portfolio Heat ──────────────────────────────────
 # 相位分離倉位：bull 主動重壓，震盪/空頭收縮；結構設計，非回測最佳化
 MAX_HEAT_BY_REGIME = {
-    "bull":          0.25,   # 多頭：積極進場，讓贏的年份真的贏
-    "bull_pullback": 0.15,   # 回檔：維持正常風控
-    "range":         0.10,   # 震盪：保守，機會少做少錯
-    "bear":          0.05,   # 空頭：幾乎不開倉（REGIME_ACTIVE_SIGNALS 已封鎖）
+    "bull":           0.25,   # 多頭：積極進場，讓贏的年份真的贏
+    "bull_pullback":  0.15,   # 回檔：維持正常風控
+    "range":          0.10,   # 震盪：保守，機會少做少錯
+    "bear":           0.05,   # 空頭：幾乎不開倉（REGIME_ACTIVE_SIGNALS 已封鎖）
+    "reversal_probe": 0.08,   # VIX 逆轉 or 廣度背離 → 小倉試水
 }
 MAX_HEAT     = 0.15   # 向後相容（backtest_yearly 直接引用舊常數時的備用）
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
@@ -58,10 +59,11 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
 
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
-    "bull":          {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown"},
-    "bull_pullback": {"ma_pullback", "false_breakdown"},
-    "range":         {"false_breakdown", "ma_pullback"},
-    "bear":          set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
+    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown"},
+    "bull_pullback":  {"ma_pullback", "false_breakdown"},
+    "range":          {"false_breakdown", "ma_pullback"},
+    "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
+    "reversal_probe": {"false_breakdown"},  # 轉折試水：VIX 峰值逆轉 or 廣度背離，小倉卡位
 }
 
 BASE_R      = 0.012   # base risk per trade as fraction of capital (1.2%)
@@ -231,6 +233,63 @@ def _vol_flag(closes, i, n_fast=5, n_slow=60, threshold=2.0):
     slow_vol = sum(abs(closes[k] / closes[k - 1] - 1)
                    for k in range(i - n_slow - n_fast + 1, i - n_fast + 1)) / n_slow
     return (fast_vol / slow_vol) >= threshold if slow_vol > 0 else False
+
+
+# ── VIX 風險敞口控制層 ────────────────────────────────────────────────
+def _vix_overlay(vix_val, vix_recent=None):
+    """
+    把 US VIX 當作全球恐慌程度的代理，疊加在 market_factor 之上：
+    - VIX > 35: 停止開新倉（heat_mult = 0）
+    - VIX 25~35: 線性收縮（1.0 → 0.5）
+    - VIX < 25: 正常（heat_mult = 1.0）
+    - reversal_probe: 近 25 日內 VIX 曾 ≥ 30，且今天比峰值回落 ≥ 5 點
+      → 恐慌消退窗口，允許空頭相位小倉試水
+
+    返回 (heat_mult: float, reversal_probe: bool)
+    """
+    if vix_val is None or math.isnan(vix_val):
+        return 1.0, False
+
+    if vix_val > 35:
+        heat_mult = 0.0
+    elif vix_val > 25:
+        heat_mult = round(1.0 - 0.5 * (vix_val - 25) / 10.0, 3)
+    else:
+        heat_mult = 1.0
+
+    reversal_probe = False
+    if vix_recent:
+        valid = [v for v in vix_recent if v is not None and not math.isnan(v)]
+        if valid:
+            peak = max(valid)
+            if peak >= 30 and (peak - vix_val) >= 5:
+                reversal_probe = True
+
+    return heat_mult, reversal_probe
+
+
+# ── 廣度背離偵測（空頭轉折的領先訊號）────────────────────────────────
+def _breadth_divergence(bm_closes, bm_i, breadth_history, n=10):
+    """
+    指數在近期低點附近，但廣度不創低 → 跌勢在收斂，可能底部
+
+    條件：
+    1. 今日 TWII 在近 n 日最低點 1.5% 以內（接近低點）
+    2. 今日廣度 ≥ 近 n 日最低廣度 + 0.05（廣度相對守住）
+
+    返回 True 表示廣度背離（配合 bear regime 使用）
+    """
+    if len(breadth_history) < n or bm_i < n:
+        return False
+
+    bm_min       = min(bm_closes[bm_i - n + 1:bm_i + 1])
+    at_low       = bm_closes[bm_i] <= bm_min * 1.015
+    if not at_low:
+        return False
+
+    b_min        = min(breadth_history[-n:])
+    b_cur        = breadth_history[-1]
+    return b_cur >= b_min + 0.05
 
 
 # ── 日 RS 序列（個股 vs 大盤，只用截至當日的資料）─────────────────────
@@ -471,6 +530,17 @@ def main():
     except Exception as _be:
         print(f"  0050 下載失敗（{_be}），benchmark 跳過")
 
+    # VIX（US 恐慌指數，作為風險敞口控制 overlay）
+    vix_dict = {}
+    try:
+        _vix_raw = yf.Ticker("^VIX").history(start=DATA_START, end=DATA_END)
+        if not _vix_raw.empty:
+            vix_dict = {d.date(): float(v)
+                        for d, v in zip(_vix_raw.index, _vix_raw["Close"].tolist())}
+            print(f"  VIX：{len(vix_dict)} 日")
+    except Exception as _ve:
+        print(f"  VIX 下載失敗（{_ve}），overlay 跳過（heat_mult=1.0）")
+
     print(f"\n[3] 下載 {len(universe_candidates)} 檔候選個股資料...")
     print("    (每 20 檔暫停 3 秒避免限速，預計 8~15 分鐘)")
     stock_data = {}
@@ -533,8 +603,10 @@ def main():
 
     # ── Step 3: Walk-Forward 主迴圈 ──────────────────────────────
     print(f"\n[4] Walk-Forward 逐日掃描（{len(q1_dates)} 個交易日）...")
-    trades         = []
-    open_positions = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
+    trades          = []
+    open_positions  = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
+    breadth_history = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
+    vix_history     = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
 
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
@@ -581,6 +653,29 @@ def main():
         _high_vol   = _vol_flag(bm_closes, bm_i)
         _vol_mult   = 0.5 if _high_vol else 1.0
         market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult)), 3)
+
+        # ── VIX overlay + 廣度背離 → 有效 regime ───────────────────────
+        breadth_history.append(breadth_pct)
+        # VIX：找今日或往前最近 3 個美股交易日的值（台股開盤美股未必同步）
+        _vix_today = vix_dict.get(q_date)
+        if _vix_today is None:
+            for _doff in (1, 2, 3):
+                _vix_today = vix_dict.get(q_date - timedelta(days=_doff))
+                if _vix_today is not None:
+                    break
+        vix_history.append(_vix_today)
+
+        _vix_mult, _reversal_probe = _vix_overlay(_vix_today, list(vix_history)[:-1])
+        market_factor = round(max(0.0, market_factor * _vix_mult), 3)
+
+        # 廣度背離（只在空頭相位才有意義）
+        _bd = (regime == "bear"
+               and _breadth_divergence(bm_closes, bm_i, list(breadth_history)))
+
+        # 有效 regime：bear + (VIX 逆轉 or 廣度背離) → reversal_probe
+        _eff_regime = ("reversal_probe"
+                       if regime == "bear" and (_reversal_probe or _bd)
+                       else regime)
 
         # ── 清除已到期的 heat 部位（依信號日判斷）
         open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
@@ -693,12 +788,12 @@ def main():
                 if sig_type == "retest":
                     continue
 
-                # ── 依市場相位篩選訊號類型（空頭不跑趨勢單；震盪不跑高基底）
-                if sig_type not in REGIME_ACTIVE_SIGNALS.get(regime, set()):
+                # ── 依有效市場相位篩選訊號類型
+                if sig_type not in REGIME_ACTIVE_SIGNALS.get(_eff_regime, set()):
                     continue
 
                 # ── RS 加速篩選：震盪/回檔相位只取 RS 持續上升的個股
-                if regime in ("range", "bull_pullback") and slope <= 0:
+                if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
                 # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
@@ -712,7 +807,7 @@ def main():
                 pos_size   = min(target_R / _stop_dist, 0.20)
                 _trade_heat  = round(pos_size * _stop_dist, 5)
                 _total_heat  = sum(h for _, h in open_positions)
-                _regime_heat = MAX_HEAT_BY_REGIME.get(regime, 0.15)
+                _regime_heat = MAX_HEAT_BY_REGIME.get(_eff_regime, 0.15)
                 if _total_heat + _trade_heat > _regime_heat:
                     continue   # 超過整體風險預算
 
@@ -765,7 +860,7 @@ def main():
                     "label":         sig["label"],
                     "strength":      sig["strength"],
                     "strategy":      sig["strategy"],
-                    "regime":        regime,
+                    "regime":        _eff_regime,
                     "stock_phase":   phase,
                     "rs_pct":        rs_pct,
                     "entry":         round(actual_entry, 2),
@@ -786,8 +881,10 @@ def main():
                 })
                 day_count += 1
 
-        _hv_tag = " ⚡高波動" if _high_vol else ""
-        print(f"  {q_date}  regime={regime:<14}{_hv_tag:<6}  訊號={day_count:3d}筆  累計={len(trades)}")
+        _hv_tag  = " ⚡高波動" if _high_vol else ""
+        _eff_tag = f"→{_eff_regime}" if _eff_regime != regime else ""
+        _vix_tag = f"  VIX={_vix_today:.1f}" if _vix_today else ""
+        print(f"  {q_date}  regime={regime:<14}{_eff_tag:<16}{_hv_tag:<6}{_vix_tag}  訊號={day_count:3d}筆  累計={len(trades)}")
 
     print(f"\n  ✓ 回測完成：共 {len(trades)} 筆觸發交易")
 

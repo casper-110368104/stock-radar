@@ -261,6 +261,21 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
                  f"收盤({price})突破20日高({high20})，量比{vol_day:.1f}x，RS百分位{rs_pct}")
         if s: signals.append(s)
 
+    # 1b. 量能爆發突破：3倍量 + RS 50~gate + RS 加速 → 飆股早期卡位
+    # 飆股型態：主力爆量進場時 RS 尚未到頂，不等 RS 到 70th 才追
+    if (high20 and price > high20 and vol_day >= 3.0
+            and rs_pct >= 50 and rs_pct < _bk_rs_gate
+            and rs_trend_val is not None and rs_trend_val > 0
+            and _short_ok
+            and not any(sig["type"] == "breakout" for sig in signals)):
+        _stop_vt = max(
+            low20 or price * 0.95,
+            round(avwap_swing * 0.99, 2) if avwap_swing else 0,
+        )
+        s = _sig("breakout", "量能爆發突破", "strong", price, _stop_vt,
+                 f"爆量({vol_day:.1f}x)突破20日高，RS百分位{rs_pct}(加速上升中)，早期卡位")
+        if s: signals.append(s)
+
     # 2. 假跌破（False Breakdown）：昨收跌破前低今日強力收復 + RS≥50
     if low20 and prev_close and prev_low20 and prev_close < prev_low20 and price > low20 and rs_pct >= 50:
         s = _sig("false_breakdown", "假跌破", "medium", price, round(low20 * 0.98, 2),
