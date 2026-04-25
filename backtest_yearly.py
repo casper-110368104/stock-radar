@@ -356,6 +356,12 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
+                    # 板塊品質門檻：high_base / breakout 只在板塊 RS≥50/45 的主流板塊進場
+                    if sig_type == "high_base" and _code_sec_pct < 50:
+                        continue
+                    if sig_type == "breakout" and _code_sec_pct < 45:
+                        continue
+
                     confs         = sig.get("confirmations", 0)
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                     sig_scale     = SIGNAL_SCALE.get(sig_type, 1.0)
@@ -388,16 +394,26 @@ def main():
                         _fsi -= 1
                     exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
 
+                    # 追蹤停損：持倉到達目標 50% 後，停損移至成本（鎖住利潤不轉虧）
+                    _mid_target   = actual_entry + 0.5 * (target - actual_entry)
+                    trail_stop    = stop
+                    _be_activated = False
+
                     for d_off in range(1, final_si - ni + 1):
                         fh, fl, fo = sd["highs"][ni + d_off], sd["lows"][ni + d_off], sd["opens"][ni + d_off]
-                        if fh >= target and fl <= stop:
-                            outcome = "win" if fo >= (target + stop) / 2 else "loss"
-                            exit_px = target if outcome == "win" else stop
+
+                        if not _be_activated and fh >= _mid_target:
+                            trail_stop    = max(trail_stop, actual_entry)
+                            _be_activated = True
+
+                        if fh >= target and fl <= trail_stop:
+                            outcome = "win" if fo >= (target + trail_stop) / 2 else "loss"
+                            exit_px = target if outcome == "win" else trail_stop
                             break
                         elif fh >= target:
-                            outcome = "win";  exit_px = target; break
-                        elif fl <= stop:
-                            outcome = "loss"; exit_px = stop;   break
+                            outcome = "win";  exit_px = target;     break
+                        elif fl <= trail_stop:
+                            outcome = "loss"; exit_px = trail_stop; break
 
                     if outcome == "inconclusive":
                         exit_type = "expired"

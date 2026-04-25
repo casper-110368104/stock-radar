@@ -169,14 +169,19 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
 def _market_regime(bm_closes, i, breadth_pct=0.5):
     """
-    三重確認 regime：
+    四重確認 regime：
       1. MA60 趨勢方向（主判斷）
       2. 市場廣度（% 股票在 MA20 以上）
       3. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
+      4. 52週位置門檻：bull 需在 52 週區間上半部（pct52 >= 0.50）
 
     early_bear：距52週高點 >65% 回落（pct52 < 0.35）且 10週動能已負 (-5%+)。
     → 即使 MA60 仍在上方，先把 regime 降為 range 或 bear 防線，
       避免 MA60 落後指標延誤 4~6 週才反應。
+
+    pct52 < 0.50（在 52 週下半部）→ 最高 bull_pullback：
+    → 熊市反彈雖能暫時突破 MA60，但位置仍在 52 週低位，
+      不視為真正多頭，避免高基準突破訊號在反彈末段進場。
     """
     if i < 60:
         return "range"
@@ -195,11 +200,12 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
     # 提前熊市信號：52週位置低 + 10週動能轉負
     early_bear = pct52 < 0.35 and week10_mom < -0.05
 
-    above_ma60 = p > ma60
+    above_ma60  = p > ma60
+    upper_half  = pct52 >= 0.50   # 真正多頭需在 52 週區間上半部
 
-    if above_ma60 and breadth_pct > 0.55 and not early_bear:
+    if above_ma60 and upper_half and breadth_pct > 0.55 and not early_bear:
         return "bull"
-    if above_ma60 and not early_bear:     # 廣度偏弱或 early_bear 尚未成立
+    if above_ma60 and not early_bear:     # 廣度偏弱 or 52週下半部：保守回檔相位
         return "bull_pullback"
     if above_ma60 and early_bear:         # MA60 仍在但領先指標已轉弱
         return "range"
@@ -796,6 +802,13 @@ def main():
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
+                # ── 板塊品質門檻：high_base / breakout 只在板塊 RS≥50 的主流板塊進場
+                # high_base 需要板塊順風才能持續整理再突；breakout 更需要強板塊背景
+                if sig_type == "high_base" and _code_sec_pct < 50:
+                    continue
+                if sig_type == "breakout" and _code_sec_pct < 45:
+                    continue
+
                 # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 confs      = sig.get("confirmations", 0)
                 conf_mult  = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
@@ -827,22 +840,34 @@ def main():
                 _fsi = final_si
                 while _fsi > ni and math.isnan(sd["closes"][_fsi]):
                     _fsi -= 1
-                exit_px   = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+                exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+
+                # 追蹤停損：持倉到達目標 50% 後，停損移至成本（鎖住利潤不轉虧）
+                # 邏輯：price 達到 entry + 50%(target-entry) → trail_stop 升至 entry
+                _mid_target    = actual_entry + 0.5 * (target - actual_entry)
+                trail_stop     = stop
+                _be_activated  = False
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
                     fl = sd["lows"][ni + d]
                     fo = sd["opens"][ni + d]
+
+                    # 啟動移動到成本：價格觸及半目標後停損升至成本
+                    if not _be_activated and fh >= _mid_target:
+                        trail_stop   = max(trail_stop, actual_entry)
+                        _be_activated = True
+
                     hit_t = fh >= target
-                    hit_s = fl <= stop
+                    hit_s = fl <= trail_stop
                     if hit_t and hit_s:
-                        outcome = "win" if fo >= (target + stop) / 2 else "loss"
-                        exit_px = target if outcome == "win" else stop
+                        outcome = "win" if fo >= (target + trail_stop) / 2 else "loss"
+                        exit_px = target if outcome == "win" else trail_stop
                         break
                     elif hit_t:
-                        outcome = "win";  exit_px = target; break
+                        outcome = "win";  exit_px = target;     break
                     elif hit_s:
-                        outcome = "loss"; exit_px = stop;   break
+                        outcome = "loss"; exit_px = trail_stop; break
 
                 # 持倉期滿未碰停損/目標 → 以最後一天收盤價強制平倉
                 if outcome == "inconclusive":
