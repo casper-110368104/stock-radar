@@ -193,7 +193,6 @@ def main():
         open_positions  = []
         breadth_history = deque(maxlen=15)
         vix_history     = deque(maxlen=25)
-        rs_pct_history  = deque(maxlen=21)   # 近 21 日 RS 百分位快照
 
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
@@ -262,10 +261,6 @@ def main():
                 rs_pct_map = {c: round(i / (_nr - 1) * 100, 1) for i, c in enumerate(_sc)}
             else:
                 rs_pct_map = {c: 50.0 for c in rs_scalar_map}
-
-            # RS 百分位歷史快照（用於 20 日 RS 動能計算）
-            rs_pct_history.append(dict(rs_pct_map))
-            rs_pct_20d = rs_pct_history[0] if len(rs_pct_history) == 21 else {}
 
             # 類股 RS 百分位
             _sec_sum = defaultdict(float)
@@ -364,13 +359,6 @@ def main():
                     # RS 加速篩選：震盪/回檔相位只取 RS 持續上升的個股
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
-
-                    # RS 20日動能方向過濾：high_base / breakout 需要 RS 仍在提升
-                    if sig_type in ("high_base", "breakout") and rs_pct_20d:
-                        _rs_20d_ago    = rs_pct_20d.get(code, rs_pct)
-                        _rs_change_20d = rs_pct - _rs_20d_ago
-                        if _rs_change_20d <= 0:
-                            continue
 
                     # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
                     if sig_type == "high_base":
