@@ -1,7 +1,14 @@
 name: 逐年獨立回測（2022~2025 樣本外驗證）
 
 on:
-  workflow_dispatch:   # 手動觸發，可在 Run workflow 選擇要跑的 branch
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/strategy-review-session-a2yXS
+    paths:
+      - backtest_yearly.py
+      - backtest_q1.py
+      - signals.py
 
 jobs:
   backtest:

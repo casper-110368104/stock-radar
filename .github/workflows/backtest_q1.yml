@@ -1,7 +1,13 @@
 name: Walk-Forward 回測（2024-Q1 ~ 2026-Q1）
 
 on:
-  workflow_dispatch:   # 手動觸發，可在 Run workflow 選擇要跑的 branch
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/strategy-review-session-a2yXS
+    paths:
+      - backtest_q1.py
+      - signals.py
 
 jobs:
   backtest:
