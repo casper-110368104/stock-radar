@@ -1,0 +1,38 @@
+name: 策略 V4 完整驗證（yearly + Q1 合併）
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300   # yearly ~150min + Q1 ~70min + buffer
+
+    steps:
+      - name: Checkout repo（固定跑 strategy branch）
+        uses: actions/checkout@v4
+        with:
+          ref: claude/strategy-review-session-a2yXS
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Yearly backtest（2022~2025 樣本外驗證）
+        run: python backtest_yearly.py
+
+      - name: Run Q1 Walk-Forward backtest（2024Q1~2026Q1）
+        run: python backtest_q1.py
+
+      - name: Commit and push both results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/backtest_yearly.json docs/backtest_q1.json
+          git diff --staged --quiet || git commit -m "策略V4 完整驗證：$(date +'%Y-%m-%d %H:%M')"
+          git pull --rebase origin claude/strategy-review-session-a2yXS
+          git push origin HEAD:claude/strategy-review-session-a2yXS
