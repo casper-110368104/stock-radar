@@ -25,10 +25,11 @@ from signals import calc_signals
 BT_START       = date(2024, 1, 2)    # 回測起始（含 2024 OOS + 2025 in-sample）
 BT_END         = date(2026, 3, 31)   # 回測結束
 BT_PERIOD      = "2024-Q1~2026-Q1"  # 顯示標籤
-MAX_HOLD_LONG    = 60   # high_base：需要時間發酵，expired win avg +14.7%
-MAX_HOLD_TREND   = 25   # breakout / trend_cont
+MAX_HOLD_LONG    = 120  # high_base：MA追蹤停損取代時限，安全上限延長至 120 天
+MAX_HOLD_TREND   = 40   # breakout / trend_cont：同上
 MAX_HOLD_PULLBACK = 10  # ma_pullback：技術面 2 週內不確認即失效
 MAX_HOLD_SWING   = 8    # false_breakdown / ma60_support 等短線
+MA_TRAIL_BUFFER  = 0.02 # MA10 追蹤停損緩衝（2%）：止跌點 = MA10 × (1 - buffer)
 BENCHMARK_TID  = "^TWII"
 OUTPUT_PATH    = "docs/backtest_q1.json"
 SLIP           = 0.002    # 滑價估計 0.2%
@@ -169,19 +170,14 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
 def _market_regime(bm_closes, i, breadth_pct=0.5):
     """
-    四重確認 regime：
+    三重確認 regime：
       1. MA60 趨勢方向（主判斷）
       2. 市場廣度（% 股票在 MA20 以上）
       3. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
-      4. 52週位置門檻：bull 需在 52 週區間上半部（pct52 >= 0.50）
 
     early_bear：距52週高點 >65% 回落（pct52 < 0.35）且 10週動能已負 (-5%+)。
     → 即使 MA60 仍在上方，先把 regime 降為 range 或 bear 防線，
       避免 MA60 落後指標延誤 4~6 週才反應。
-
-    pct52 < 0.50（在 52 週下半部）→ 最高 bull_pullback：
-    → 熊市反彈雖能暫時突破 MA60，但位置仍在 52 週低位，
-      不視為真正多頭，避免高基準突破訊號在反彈末段進場。
     """
     if i < 60:
         return "range"
@@ -200,17 +196,16 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
     # 提前熊市信號：52週位置低 + 10週動能轉負
     early_bear = pct52 < 0.35 and week10_mom < -0.05
 
-    above_ma60  = p > ma60
-    upper_half  = pct52 >= 0.50   # 真正多頭需在 52 週區間上半部
+    above_ma60 = p > ma60
 
-    if above_ma60 and upper_half and breadth_pct > 0.55 and not early_bear:
+    if above_ma60 and breadth_pct > 0.55 and not early_bear:
         return "bull"
-    if above_ma60 and not early_bear:     # 廣度偏弱 or 52週下半部：保守回檔相位
+    if above_ma60 and not early_bear:
         return "bull_pullback"
-    if above_ma60 and early_bear:         # MA60 仍在但領先指標已轉弱
+    if above_ma60 and early_bear:
         return "range"
     # p <= ma60
-    if breadth_pct < 0.40 or early_bear:  # 廣度崩潰 or 領先信號確認 → 真熊
+    if breadth_pct < 0.40 or early_bear:
         return "bear"
     return "range"
 
@@ -613,6 +608,7 @@ def main():
     open_positions  = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
     breadth_history = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
     vix_history     = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
+    rs_pct_history  = deque(maxlen=21)   # 近 21 日 RS 百分位快照，供 20 日 RS 動能計算
 
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
@@ -695,6 +691,10 @@ def main():
         else:
             rs_pct_map = {c: 50.0 for c in rs_scalar_map}
 
+        # RS 百分位歷史快照（用於 20 日 RS 動能計算）
+        rs_pct_history.append(dict(rs_pct_map))
+        rs_pct_20d = rs_pct_history[0] if len(rs_pct_history) == 21 else {}
+
         # ── 類股 RS 百分位（每日計算，用於個股倉位加權）
         _sec_sum = defaultdict(float)
         _sec_cnt = defaultdict(int)
@@ -712,10 +712,14 @@ def main():
         else:
             _sec_pct = {s: 50.0 for s in _sec_avg}
 
-        day_count = 0
+        day_count     = 0
+        daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
+        daily_bk_cnt  = 0   # 當日 breakout 進場上限計數
 
-        # ── 4c: 對每支股票產生訊號
-        for code, sd in stock_data.items():
+        # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
+        for code, sd in sorted(stock_data.items(),
+                               key=lambda x: rs_pct_map.get(x[0], 0),
+                               reverse=True):
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 62:
                 continue
@@ -802,12 +806,26 @@ def main():
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
-                # ── 板塊品質門檻：high_base / breakout 只在板塊 RS≥50 的主流板塊進場
-                # high_base 需要板塊順風才能持續整理再突；breakout 更需要強板塊背景
-                if sig_type == "high_base" and _code_sec_pct < 50:
-                    continue
-                if sig_type == "breakout" and _code_sec_pct < 45:
-                    continue
+                # ── RS 20日動能方向過濾：high_base / breakout 需要 RS 仍在提升
+                # 區分「動能新鮮（剛竄升）」vs「動能衰退（高位但已下滑）」
+                # 避免在 RS 已到頂部開始回落的股票上做高基準突破
+                if sig_type in ("high_base", "breakout") and rs_pct_20d:
+                    _rs_20d_ago   = rs_pct_20d.get(code, rs_pct)
+                    _rs_change_20d = rs_pct - _rs_20d_ago
+                    if _rs_change_20d <= 0:
+                        continue
+
+                # ── 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
+                # 當大量股票同日出現相同型態 = 趨勢末段擁擠，不是機會
+                # 依 RS 排序後優先取強股，再超過上限的跳過
+                if sig_type == "high_base":
+                    if daily_hb_cnt >= 3:
+                        continue
+                    daily_hb_cnt += 1
+                elif sig_type == "breakout":
+                    if daily_bk_cnt >= 2:
+                        continue
+                    daily_bk_cnt += 1
 
                 # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 confs      = sig.get("confirmations", 0)
@@ -836,29 +854,36 @@ def main():
                 open_positions.append((q_date + timedelta(days=max_days + 1), _trade_heat))
                 final_si  = min(ni + max_days, len(sd["closes"]) - 1)
                 outcome   = "inconclusive"
-                # 向前找最後一個有效收盤價（yfinance 偶爾回傳 NaN）
                 _fsi = final_si
                 while _fsi > ni and math.isnan(sd["closes"][_fsi]):
                     _fsi -= 1
                 exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
 
-                # 追蹤停損：持倉到達目標 50% 後，停損移至成本（鎖住利潤不轉虧）
-                # 邏輯：price 達到 entry + 50%(target-entry) → trail_stop 升至 entry
-                _mid_target    = actual_entry + 0.5 * (target - actual_entry)
+                _is_trend      = sig_type in TREND_TYPES
                 trail_stop     = stop
+                _mid_target    = actual_entry + 0.5 * (target - actual_entry)
                 _be_activated  = False
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
                     fl = sd["lows"][ni + d]
                     fo = sd["opens"][ni + d]
+                    _idx = ni + d
 
-                    # 啟動移動到成本：價格觸及半目標後停損升至成本
-                    if not _be_activated and fh >= _mid_target:
-                        trail_stop   = max(trail_stop, actual_entry)
-                        _be_activated = True
+                    if _is_trend:
+                        # MA10 追蹤停損：讓趨勢決定持倉長度，不是時鐘
+                        # stop 隨 MA10 上升而上升，趨勢破壞時自然出場
+                        if _idx >= 10:
+                            _ma10 = sum(sd["closes"][_idx - 9: _idx + 1]) / 10
+                            trail_stop = max(trail_stop, _ma10 * (1 - MA_TRAIL_BUFFER))
+                        hit_t = False   # 趨勢型無固定目標
+                    else:
+                        # 短線型：保留 break-even 保護
+                        if not _be_activated and fh >= _mid_target:
+                            trail_stop    = max(trail_stop, actual_entry)
+                            _be_activated = True
+                        hit_t = fh >= target
 
-                    hit_t = fh >= target
                     hit_s = fl <= trail_stop
                     if hit_t and hit_s:
                         outcome = "win" if fo >= (target + trail_stop) / 2 else "loss"
@@ -867,14 +892,16 @@ def main():
                     elif hit_t:
                         outcome = "win";  exit_px = target;     break
                     elif hit_s:
-                        outcome = "loss"; exit_px = trail_stop; break
+                        # MA 追蹤出場可能在成本以上（記錄實際出場價判斷勝負）
+                        exit_px = trail_stop
+                        outcome = "win" if exit_px > actual_entry else "loss"
+                        break
 
-                # 持倉期滿未碰停損/目標 → 以最後一天收盤價強制平倉
                 if outcome == "inconclusive":
                     exit_type = "expired"
                     outcome   = "win" if exit_px > actual_entry else "loss"
                 else:
-                    exit_type = "target" if outcome == "win" else "stop"
+                    exit_type = "target" if (not _is_trend and outcome == "win") else "stop"
 
                 gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
 
