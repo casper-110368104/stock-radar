@@ -193,6 +193,7 @@ def main():
         open_positions  = []
         breadth_history = deque(maxlen=15)
         vix_history     = deque(maxlen=25)
+        rs_pct_history  = deque(maxlen=21)   # 近 21 日 RS 百分位快照
 
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
@@ -262,6 +263,10 @@ def main():
             else:
                 rs_pct_map = {c: 50.0 for c in rs_scalar_map}
 
+            # RS 百分位歷史快照（用於 20 日 RS 動能計算）
+            rs_pct_history.append(dict(rs_pct_map))
+            rs_pct_20d = rs_pct_history[0] if len(rs_pct_history) == 21 else {}
+
             # 類股 RS 百分位
             _sec_sum = defaultdict(float)
             _sec_cnt = defaultdict(int)
@@ -278,9 +283,13 @@ def main():
             else:
                 _sec_pct = {s: 50.0 for s in _sec_avg}
 
-            day_count = 0
+            day_count    = 0
+            daily_hb_cnt = 0
+            daily_bk_cnt = 0
 
-            for code, sd in year_data.items():
+            for code, sd in sorted(year_data.items(),
+                                   key=lambda x: rs_pct_map.get(x[0], 0),
+                                   reverse=True):
                 si = year_date_idx[code].get(q_date)
                 if si is None or si < 62:
                     continue
@@ -356,6 +365,23 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
+                    # RS 20日動能方向過濾：high_base / breakout 需要 RS 仍在提升
+                    if sig_type in ("high_base", "breakout") and rs_pct_20d:
+                        _rs_20d_ago    = rs_pct_20d.get(code, rs_pct)
+                        _rs_change_20d = rs_pct - _rs_20d_ago
+                        if _rs_change_20d <= 0:
+                            continue
+
+                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
+                    if sig_type == "high_base":
+                        if daily_hb_cnt >= 3:
+                            continue
+                        daily_hb_cnt += 1
+                    elif sig_type == "breakout":
+                        if daily_bk_cnt >= 2:
+                            continue
+                        daily_bk_cnt += 1
+
                     confs         = sig.get("confirmations", 0)
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                     sig_scale     = SIGNAL_SCALE.get(sig_type, 1.0)
@@ -388,22 +414,45 @@ def main():
                         _fsi -= 1
                     exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
 
+                    _is_trend     = sig_type in TREND_TYPES
+                    trail_stop    = stop
+                    _mid_target   = actual_entry + 0.5 * (target - actual_entry)
+                    _be_activated = False
+
                     for d_off in range(1, final_si - ni + 1):
-                        fh, fl, fo = sd["highs"][ni + d_off], sd["lows"][ni + d_off], sd["opens"][ni + d_off]
-                        if fh >= target and fl <= stop:
-                            outcome = "win" if fo >= (target + stop) / 2 else "loss"
-                            exit_px = target if outcome == "win" else stop
+                        fh   = sd["highs"][ni + d_off]
+                        fl   = sd["lows"][ni + d_off]
+                        fo   = sd["opens"][ni + d_off]
+                        _idx = ni + d_off
+
+                        if _is_trend:
+                            if _idx >= 10:
+                                _ma10 = sum(sd["closes"][_idx - 9: _idx + 1]) / 10
+                                trail_stop = max(trail_stop, _ma10 * (1 - MA_TRAIL_BUFFER))
+                            hit_t = False
+                        else:
+                            if not _be_activated and fh >= _mid_target:
+                                trail_stop    = max(trail_stop, actual_entry)
+                                _be_activated = True
+                            hit_t = fh >= target
+
+                        hit_s = fl <= trail_stop
+                        if hit_t and hit_s:
+                            outcome = "win" if fo >= (target + trail_stop) / 2 else "loss"
+                            exit_px = target if outcome == "win" else trail_stop
                             break
-                        elif fh >= target:
+                        elif hit_t:
                             outcome = "win";  exit_px = target; break
-                        elif fl <= stop:
-                            outcome = "loss"; exit_px = stop;   break
+                        elif hit_s:
+                            exit_px = trail_stop
+                            outcome = "win" if exit_px > actual_entry else "loss"
+                            break
 
                     if outcome == "inconclusive":
                         exit_type = "expired"
                         outcome   = "win" if exit_px > actual_entry else "loss"
                     else:
-                        exit_type = "target" if outcome == "win" else "stop"
+                        exit_type = "target" if (not _is_trend and outcome == "win") else "stop"
 
                     gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
 
