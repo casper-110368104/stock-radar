@@ -170,19 +170,23 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
 def _market_regime(bm_closes, i, breadth_pct=0.5):
     """
-    三重確認 regime：
+    四重確認 regime：
       1. MA60 趨勢方向（主判斷）
-      2. 市場廣度（% 股票在 MA20 以上）
-      3. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
+      2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
+         → 熊市反彈可短暫突破 MA60，但難以持續站在 MA120 之上
+      3. 市場廣度（% 股票在 MA20 以上）
+      4. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
 
     early_bear：距52週高點 >65% 回落（pct52 < 0.35）且 10週動能已負 (-5%+)。
-    → 即使 MA60 仍在上方，先把 regime 降為 range 或 bear 防線，
-      避免 MA60 落後指標延誤 4~6 週才反應。
     """
     if i < 60:
         return "range"
     p    = bm_closes[i]
     ma60 = sum(bm_closes[i - 59:i + 1]) / 60
+
+    # MA120：六個月均線，需同時站上才確認多頭
+    ma120      = sum(bm_closes[i - 119:i + 1]) / 120 if i >= 119 else ma60
+    above_ma120 = p > ma120
 
     # 52週高低點百分位（約 250 個交易日）
     _w52   = min(i, 249)
@@ -198,7 +202,8 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
 
     above_ma60 = p > ma60
 
-    if above_ma60 and breadth_pct > 0.55 and not early_bear:
+    # bull：MA60 + MA120 雙確認 + 廣度 + 非早期空頭
+    if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear:
         return "bull"
     if above_ma60 and not early_bear:
         return "bull_pullback"
@@ -608,7 +613,6 @@ def main():
     open_positions  = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
     breadth_history = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
     vix_history     = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
-    rs_pct_history  = deque(maxlen=21)   # 近 21 日 RS 百分位快照，供 20 日 RS 動能計算
 
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
@@ -690,10 +694,6 @@ def main():
                             for i, c in enumerate(sorted_codes)}
         else:
             rs_pct_map = {c: 50.0 for c in rs_scalar_map}
-
-        # RS 百分位歷史快照（用於 20 日 RS 動能計算）
-        rs_pct_history.append(dict(rs_pct_map))
-        rs_pct_20d = rs_pct_history[0] if len(rs_pct_history) == 21 else {}
 
         # ── 類股 RS 百分位（每日計算，用於個股倉位加權）
         _sec_sum = defaultdict(float)
@@ -805,15 +805,6 @@ def main():
                 # ── RS 加速篩選：震盪/回檔相位只取 RS 持續上升的個股
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
-
-                # ── RS 20日動能方向過濾：high_base / breakout 需要 RS 仍在提升
-                # 區分「動能新鮮（剛竄升）」vs「動能衰退（高位但已下滑）」
-                # 避免在 RS 已到頂部開始回落的股票上做高基準突破
-                if sig_type in ("high_base", "breakout") and rs_pct_20d:
-                    _rs_20d_ago   = rs_pct_20d.get(code, rs_pct)
-                    _rs_change_20d = rs_pct - _rs_20d_ago
-                    if _rs_change_20d <= 0:
-                        continue
 
                 # ── 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
                 # 當大量股票同日出現相同型態 = 趨勢末段擁擠，不是機會
