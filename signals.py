@@ -299,14 +299,17 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
             if s: signals.append(s)
 
     # 4. 強整再突（High Base Breakout）：距20日高≤5% + MA5之上 + RS≥閾值 + BULL動能確認
+    # 結構條件：近10日需有回測MA20（確保整理後再突破，過濾連續飆升的假高整型態）
     # bull 市場：rs_pct 降至 60，與 breakout 一致
     _hb_rs_gate = 60 if market_regime == "bull" else 70
-    if high20 and ma5 and price > ma5 and rs_pct >= _hb_rs_gate and _short_ok and _bull_momentum:
+    _hb_pulled_back = yahoo.get("pulled_back_to_ma20", True)  # 預設 True 保持向後相容
+    if (high20 and ma5 and price > ma5 and rs_pct >= _hb_rs_gate
+            and _short_ok and _bull_momentum and _hb_pulled_back):
         dist_high20 = (high20 - price) / high20
         if 0 <= dist_high20 <= 0.05:
             _stop_hb = round(avwap_swing * 0.99, 2) if avwap_swing else (ma10 or round(price * 0.95, 2))
             s = _sig("high_base", "強整再突", "medium", price, _stop_hb,
-                     f"緊貼20日高({high20})整理，RS百分位{rs_pct}")
+                     f"緊貼20日高({high20})整理，RS百分位{rs_pct}，近10日回測MA20✓")
             if s: signals.append(s)
 
     # 5a. 縮量回測（起漲型）：RS 40~60 + RS斜率翻正 + 縮量

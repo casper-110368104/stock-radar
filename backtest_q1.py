@@ -48,6 +48,13 @@ MAX_HEAT_BY_REGIME = {
     "reversal_probe": 0.08,   # VIX 逆轉 or 廣度背離 → 小倉試水
 }
 MAX_HEAT     = 0.15   # 向後相容（backtest_yearly 直接引用舊常數時的備用）
+
+# RS Beta Layer：多頭確認時自動配置前 N 強股（填補 MAX_HEAT 帶來的系統性資本閒置）
+# 設計邏輯：MA60+MA120+廣度三重確認才進場，非參數擬合，屬趨勢跟蹤的結構性配置
+BETA_CONFIG = {
+    "bull":          {"n": 10, "alloc": 0.50},  # 確認多頭：前10強股 × 50% 資本
+    "bull_pullback": {"n": 5,  "alloc": 0.20},  # 多頭回檔：前5強股 × 20% 資本
+}
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
@@ -148,36 +155,50 @@ def _snapshot(closes, highs, lows, vols, opens, i):
             trs.append(max(hl, hc, lc))
         return round(sum(trs) / 14, 2)
 
+    # 近10日是否有回測MA20：高整型態需有整理動作，過濾連續飆升的假訊號
+    _ma20_ref = sum(closes[i - 19:i + 1]) / 20 if i >= 19 else None
+    _pulled_back_to_ma20 = False
+    if _ma20_ref:
+        for _k in range(max(0, i - 9), i + 1):
+            if not math.isnan(closes[_k]) and closes[_k] <= _ma20_ref * 1.03:
+                _pulled_back_to_ma20 = True
+                break
+
     return {
-        "price":         price,
-        "high":          highs[i],
-        "prev_close":    closes[i - 1],
-        "ma5":           ma(5),
-        "ma10":          ma(10),
-        "ma20":          ma(20),
-        "ma60":          ma(60),
-        "high20":        high20,
-        "low20":         low20,
-        "prev_low20":    prev_low20,
-        "vol_day_ratio": vol_day_ratio,
-        "avwap_swing":   rvwap(swing_anchor),
-        "avwap_vol":     rvwap(vol_anchor),
-        "avwap_short":   avwap_short,
-        "atr_14":        _atr14(),
+        "price":              price,
+        "high":               highs[i],
+        "prev_close":         closes[i - 1],
+        "ma5":                ma(5),
+        "ma10":               ma(10),
+        "ma20":               ma(20),
+        "ma60":               ma(60),
+        "high20":             high20,
+        "low20":              low20,
+        "prev_low20":         prev_low20,
+        "vol_day_ratio":      vol_day_ratio,
+        "avwap_swing":        rvwap(swing_anchor),
+        "avwap_vol":          rvwap(vol_anchor),
+        "avwap_short":        avwap_short,
+        "atr_14":             _atr14(),
+        "pulled_back_to_ma20": _pulled_back_to_ma20,
     }
 
 
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
-def _market_regime(bm_closes, i, breadth_pct=0.5):
+def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
     """
-    四重確認 regime：
-      1. MA60 趨勢方向（主判斷）
-      2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
-         → 熊市反彈可短暫突破 MA60，但難以持續站在 MA120 之上
-      3. 市場廣度（% 股票在 MA20 以上）
-      4. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
+    五重確認 regime（慢層 × 快層雙軌）：
+      慢層（趨勢確認）
+        1. MA60 趨勢方向（主判斷）
+        2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
+        3. 市場廣度靜態水位（% 股票在 MA20 以上）
+        4. 52週百分位 + 10週動能（early_bear 早期預警）
+      快層（轉折領先）
+        5. 廣度動能（10日廣度變化速率 breadth_slope）
+           fast_deteriorating < -0.10：廣度快速惡化 → 提前降相位，不等 MA60 跌破
+           fast_improving     > +0.10：廣度快速改善 → 提前升相位，不等 MA60 站回
 
-    early_bear：距52週高點 >65% 回落（pct52 < 0.35）且 10週動能已負 (-5%+)。
+    效果：相位轉折提前 3~5 週反應，減少滯後進出場損耗。
     """
     if i < 60:
         return "range"
@@ -185,7 +206,7 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
     ma60 = sum(bm_closes[i - 59:i + 1]) / 60
 
     # MA120：六個月均線，需同時站上才確認多頭
-    ma120      = sum(bm_closes[i - 119:i + 1]) / 120 if i >= 119 else ma60
+    ma120       = sum(bm_closes[i - 119:i + 1]) / 120 if i >= 119 else ma60
     above_ma120 = p > ma120
 
     # 52週高低點百分位（約 250 個交易日）
@@ -202,15 +223,22 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
 
     above_ma60 = p > ma60
 
-    # bull：MA60 + MA120 雙確認 + 廣度 + 非早期空頭
-    if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear:
+    # 廣度動能快層（10日變化速率）
+    fast_deteriorating = breadth_slope < -0.10   # 廣度10日跌逾10pp → 多頭在瓦解
+    fast_improving     = breadth_slope > +0.10   # 廣度10日升逾10pp → 空頭在收斂
+
+    # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
+    if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
         return "bull"
+    # bull_pullback：MA60 above，但廣度快速惡化 → 直接降到 range（不停在 pullback）
     if above_ma60 and not early_bear:
-        return "bull_pullback"
+        return "range" if fast_deteriorating else "bull_pullback"
     if above_ma60 and early_bear:
         return "range"
-    # p <= ma60
+    # 跌破 MA60：廣度快速改善且廣度不算太低 → 提前升回 range（底部形成訊號）
     if breadth_pct < 0.40 or early_bear:
+        if fast_improving and breadth_pct >= 0.35:
+            return "range"
         return "bear"
     return "range"
 
@@ -614,6 +642,12 @@ def main():
     breadth_history = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
     vix_history     = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
 
+    # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
+    beta_trades     = []
+    beta_mode       = None   # None / "bull" / "bull_pullback"
+    beta_entries    = {}     # code → entry_close_price
+    beta_entry_date = None
+
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
         if bm_i is None:
@@ -645,8 +679,13 @@ def main():
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-        # ── regime 在廣度計算後判斷（雙確認：MA60 × 廣度）
-        regime = _market_regime(bm_closes, bm_i, breadth_pct)
+        # ── 廣度動能（快層）：10日廣度變化速率，breadth_history 含截至昨日的資料
+        _b_hist = list(breadth_history)
+        _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
+        breadth_slope = round(breadth_pct - _b_ref, 4)
+
+        # ── regime 在廣度計算後判斷（慢層 MA60/MA120 × 快層廣度動能）
+        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -711,6 +750,67 @@ def main():
                            for i, s in enumerate(_sec_sorted)}
         else:
             _sec_pct = {s: 50.0 for s in _sec_avg}
+
+        # ── RS Beta Layer：多頭相位自動持有前 N 強股（結構性資本效率補強）
+        # 使用 regime（非 eff_regime）：基於基本面相位，不受 VIX 短線擾動
+        _beta_cfg = BETA_CONFIG.get(regime)
+
+        # 關閉 beta 部位：相位改變時出場（今日收盤價結算）
+        if beta_mode is not None and beta_mode != regime:
+            _old_cfg = BETA_CONFIG.get(beta_mode, {"n": 10, "alloc": 0.50})
+            for b_code, b_entry_px in beta_entries.items():
+                b_si = stock_date_idx[b_code].get(q_date)
+                b_exit_px = b_entry_px
+                if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                    _px = stock_data[b_code]["closes"][b_si]
+                    if not math.isnan(_px) and _px > 0:
+                        b_exit_px = _px
+                b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
+                beta_trades.append({
+                    "date":          q_date.strftime("%Y-%m-%d"),
+                    "code":          b_code,
+                    "type":          "beta_momentum",
+                    "label":         f"RSβ-{beta_mode}",
+                    "strength":      "beta",
+                    "strategy":      "beta",
+                    "regime":        beta_mode,
+                    "stock_phase":   "BULL",
+                    "rs_pct":        rs_pct_map.get(b_code, 80.0),
+                    "entry":         round(b_entry_px, 2),
+                    "stop":          0.0,
+                    "target":        0.0,
+                    "entry_type":    "beta",
+                    "exit_type":     "regime_change",
+                    "outcome":       "win" if b_gain >= 0 else "loss",
+                    "gain_pct":      b_gain,
+                    "actual_rr":     0.0,
+                    "confirmations": 0,
+                    "pos_factor":    round(_old_cfg["alloc"] / _old_cfg["n"], 4),
+                    "market_er":     0.0,
+                    "market_factor": 1.0,
+                    "sector_key":    sector_map.get(b_code, ""),
+                    "sector_rs_pct": 0.0,
+                    "high_vol":      _high_vol,
+                })
+            beta_entries = {}
+            beta_entry_date = None
+            beta_mode = None
+
+        # 開新 beta 部位：進入 bull 或 bull_pullback 相位時（今日收盤買入）
+        if beta_mode is None and _beta_cfg is not None:
+            _n = _beta_cfg["n"]
+            top_codes = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:_n]
+            new_beta = {}
+            for b_code in top_codes:
+                b_si = stock_date_idx[b_code].get(q_date)
+                if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                    _px = stock_data[b_code]["closes"][b_si]
+                    if not math.isnan(_px) and _px > 0:
+                        new_beta[b_code] = _px
+            if new_beta:
+                beta_entries    = new_beta
+                beta_entry_date = q_date
+                beta_mode       = regime
 
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
@@ -927,9 +1027,52 @@ def main():
         _hv_tag  = " ⚡高波動" if _high_vol else ""
         _eff_tag = f"→{_eff_regime}" if _eff_regime != regime else ""
         _vix_tag = f"  VIX={_vix_today:.1f}" if _vix_today else ""
-        print(f"  {q_date}  regime={regime:<14}{_eff_tag:<16}{_hv_tag:<6}{_vix_tag}  訊號={day_count:3d}筆  累計={len(trades)}")
+        _bs_tag  = f"  bs={breadth_slope:+.2f}" if abs(breadth_slope) >= 0.05 else ""
+        print(f"  {q_date}  regime={regime:<14}{_eff_tag:<16}{_hv_tag:<6}{_vix_tag}{_bs_tag}  訊號={day_count:3d}筆  累計={len(trades)}")
 
-    print(f"\n  ✓ 回測完成：共 {len(trades)} 筆觸發交易")
+    # ── 回測結束：關閉未平倉的 beta 部位（用最後一個交易日收盤價結算）
+    if beta_mode is not None and beta_entries and q1_dates:
+        _last_bt_d = q1_dates[-1]
+        _old_cfg   = BETA_CONFIG.get(beta_mode, {"n": 10, "alloc": 0.50})
+        for b_code, b_entry_px in beta_entries.items():
+            b_si = stock_date_idx[b_code].get(_last_bt_d)
+            b_exit_px = b_entry_px
+            if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                _px = stock_data[b_code]["closes"][b_si]
+                if not math.isnan(_px) and _px > 0:
+                    b_exit_px = _px
+            b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
+            beta_trades.append({
+                "date":          _last_bt_d.strftime("%Y-%m-%d"),
+                "code":          b_code,
+                "type":          "beta_momentum",
+                "label":         f"RSβ-{beta_mode}",
+                "strength":      "beta",
+                "strategy":      "beta",
+                "regime":        beta_mode,
+                "stock_phase":   "BULL",
+                "rs_pct":        80.0,
+                "entry":         round(b_entry_px, 2),
+                "stop":          0.0,
+                "target":        0.0,
+                "entry_type":    "beta",
+                "exit_type":     "bt_end",
+                "outcome":       "win" if b_gain >= 0 else "loss",
+                "gain_pct":      b_gain,
+                "actual_rr":     0.0,
+                "confirmations": 0,
+                "pos_factor":    round(_old_cfg["alloc"] / _old_cfg["n"], 4),
+                "market_er":     0.0,
+                "market_factor": 1.0,
+                "sector_key":    "",
+                "sector_rs_pct": 0.0,
+                "high_vol":      False,
+            })
+        beta_entries = {}
+        beta_mode = None
+
+    _beta_contrib = sum(t["pos_factor"] * t["gain_pct"] / 100 for t in beta_trades)
+    print(f"\n  ✓ 回測完成：共 {len(trades)} 筆信號交易  beta 層貢獻 {_beta_contrib*100:+.1f}%")
 
     # ── Step 4: 統計 ──────────────────────────────────────────────
     print("\n[5] 統計彙整...")
@@ -982,10 +1125,11 @@ def main():
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
         "by_sector":          {k: _stats(v) for k, v in sorted(by_sector.items())},
         "capital_curves":     _capital_curves(
-                                  trades,
+                                  trades + beta_trades,  # 信號層 + Beta 層合併曲線
                                   BT_START),
         "benchmark_curve":    benchmark_curve,
         "trades":             trades,
+        "beta_trades":        beta_trades,
     }
 
     curves = result["capital_curves"]
