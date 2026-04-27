@@ -230,7 +230,13 @@ def main():
                             _above_ma20 += 1
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
-            regime      = _market_regime(bm_closes, bm_i, breadth_pct)
+
+            # 廣度動能快層
+            _b_hist = list(breadth_history)
+            _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
+            breadth_slope = round(breadth_pct - _b_ref, 4)
+
+            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0

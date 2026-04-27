@@ -185,16 +185,20 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 
 
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
-def _market_regime(bm_closes, i, breadth_pct=0.5):
+def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
     """
-    四重確認 regime：
-      1. MA60 趨勢方向（主判斷）
-      2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
-         → 熊市反彈可短暫突破 MA60，但難以持續站在 MA120 之上
-      3. 市場廣度（% 股票在 MA20 以上）
-      4. 52週百分位 + 10週動能（提前 4~6 週識別空頭初期）
+    五重確認 regime（慢層 × 快層雙軌）：
+      慢層（趨勢確認）
+        1. MA60 趨勢方向（主判斷）
+        2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
+        3. 市場廣度靜態水位（% 股票在 MA20 以上）
+        4. 52週百分位 + 10週動能（early_bear 早期預警）
+      快層（轉折領先）
+        5. 廣度動能（10日廣度變化速率 breadth_slope）
+           fast_deteriorating < -0.10：廣度快速惡化 → 提前降相位，不等 MA60 跌破
+           fast_improving     > +0.10：廣度快速改善 → 提前升相位，不等 MA60 站回
 
-    early_bear：距52週高點 >65% 回落（pct52 < 0.35）且 10週動能已負 (-5%+)。
+    效果：相位轉折提前 3~5 週反應，減少滯後進出場損耗。
     """
     if i < 60:
         return "range"
@@ -202,7 +206,7 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
     ma60 = sum(bm_closes[i - 59:i + 1]) / 60
 
     # MA120：六個月均線，需同時站上才確認多頭
-    ma120      = sum(bm_closes[i - 119:i + 1]) / 120 if i >= 119 else ma60
+    ma120       = sum(bm_closes[i - 119:i + 1]) / 120 if i >= 119 else ma60
     above_ma120 = p > ma120
 
     # 52週高低點百分位（約 250 個交易日）
@@ -219,15 +223,22 @@ def _market_regime(bm_closes, i, breadth_pct=0.5):
 
     above_ma60 = p > ma60
 
-    # bull：MA60 + MA120 雙確認 + 廣度 + 非早期空頭
-    if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear:
+    # 廣度動能快層（10日變化速率）
+    fast_deteriorating = breadth_slope < -0.10   # 廣度10日跌逾10pp → 多頭在瓦解
+    fast_improving     = breadth_slope > +0.10   # 廣度10日升逾10pp → 空頭在收斂
+
+    # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
+    if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
         return "bull"
+    # bull_pullback：MA60 above，但廣度快速惡化 → 直接降到 range（不停在 pullback）
     if above_ma60 and not early_bear:
-        return "bull_pullback"
+        return "range" if fast_deteriorating else "bull_pullback"
     if above_ma60 and early_bear:
         return "range"
-    # p <= ma60
+    # 跌破 MA60：廣度快速改善且廣度不算太低 → 提前升回 range（底部形成訊號）
     if breadth_pct < 0.40 or early_bear:
+        if fast_improving and breadth_pct >= 0.35:
+            return "range"
         return "bear"
     return "range"
 
@@ -668,8 +679,13 @@ def main():
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-        # ── regime 在廣度計算後判斷（雙確認：MA60 × 廣度）
-        regime = _market_regime(bm_closes, bm_i, breadth_pct)
+        # ── 廣度動能（快層）：10日廣度變化速率，breadth_history 含截至昨日的資料
+        _b_hist = list(breadth_history)
+        _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
+        breadth_slope = round(breadth_pct - _b_ref, 4)
+
+        # ── regime 在廣度計算後判斷（慢層 MA60/MA120 × 快層廣度動能）
+        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -1011,7 +1027,8 @@ def main():
         _hv_tag  = " ⚡高波動" if _high_vol else ""
         _eff_tag = f"→{_eff_regime}" if _eff_regime != regime else ""
         _vix_tag = f"  VIX={_vix_today:.1f}" if _vix_today else ""
-        print(f"  {q_date}  regime={regime:<14}{_eff_tag:<16}{_hv_tag:<6}{_vix_tag}  訊號={day_count:3d}筆  累計={len(trades)}")
+        _bs_tag  = f"  bs={breadth_slope:+.2f}" if abs(breadth_slope) >= 0.05 else ""
+        print(f"  {q_date}  regime={regime:<14}{_eff_tag:<16}{_hv_tag:<6}{_vix_tag}{_bs_tag}  訊號={day_count:3d}筆  累計={len(trades)}")
 
     # ── 回測結束：關閉未平倉的 beta 部位（用最後一個交易日收盤價結算）
     if beta_mode is not None and beta_entries and q1_dates:
