@@ -48,6 +48,13 @@ MAX_HEAT_BY_REGIME = {
     "reversal_probe": 0.08,   # VIX 逆轉 or 廣度背離 → 小倉試水
 }
 MAX_HEAT     = 0.15   # 向後相容（backtest_yearly 直接引用舊常數時的備用）
+
+# RS Beta Layer：多頭確認時自動配置前 N 強股（填補 MAX_HEAT 帶來的系統性資本閒置）
+# 設計邏輯：MA60+MA120+廣度三重確認才進場，非參數擬合，屬趨勢跟蹤的結構性配置
+BETA_CONFIG = {
+    "bull":          {"n": 10, "alloc": 0.50},  # 確認多頭：前10強股 × 50% 資本
+    "bull_pullback": {"n": 5,  "alloc": 0.20},  # 多頭回檔：前5強股 × 20% 資本
+}
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
@@ -148,22 +155,32 @@ def _snapshot(closes, highs, lows, vols, opens, i):
             trs.append(max(hl, hc, lc))
         return round(sum(trs) / 14, 2)
 
+    # 近10日是否有回測MA20：高整型態需有整理動作，過濾連續飆升的假訊號
+    _ma20_ref = sum(closes[i - 19:i + 1]) / 20 if i >= 19 else None
+    _pulled_back_to_ma20 = False
+    if _ma20_ref:
+        for _k in range(max(0, i - 9), i + 1):
+            if not math.isnan(closes[_k]) and closes[_k] <= _ma20_ref * 1.03:
+                _pulled_back_to_ma20 = True
+                break
+
     return {
-        "price":         price,
-        "high":          highs[i],
-        "prev_close":    closes[i - 1],
-        "ma5":           ma(5),
-        "ma10":          ma(10),
-        "ma20":          ma(20),
-        "ma60":          ma(60),
-        "high20":        high20,
-        "low20":         low20,
-        "prev_low20":    prev_low20,
-        "vol_day_ratio": vol_day_ratio,
-        "avwap_swing":   rvwap(swing_anchor),
-        "avwap_vol":     rvwap(vol_anchor),
-        "avwap_short":   avwap_short,
-        "atr_14":        _atr14(),
+        "price":              price,
+        "high":               highs[i],
+        "prev_close":         closes[i - 1],
+        "ma5":                ma(5),
+        "ma10":               ma(10),
+        "ma20":               ma(20),
+        "ma60":               ma(60),
+        "high20":             high20,
+        "low20":              low20,
+        "prev_low20":         prev_low20,
+        "vol_day_ratio":      vol_day_ratio,
+        "avwap_swing":        rvwap(swing_anchor),
+        "avwap_vol":          rvwap(vol_anchor),
+        "avwap_short":        avwap_short,
+        "atr_14":             _atr14(),
+        "pulled_back_to_ma20": _pulled_back_to_ma20,
     }
 
 
@@ -614,6 +631,12 @@ def main():
     breadth_history = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
     vix_history     = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
 
+    # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
+    beta_trades     = []
+    beta_mode       = None   # None / "bull" / "bull_pullback"
+    beta_entries    = {}     # code → entry_close_price
+    beta_entry_date = None
+
     for q_date in q1_dates:
         bm_i = bm_date_idx.get(q_date)
         if bm_i is None:
@@ -711,6 +734,67 @@ def main():
                            for i, s in enumerate(_sec_sorted)}
         else:
             _sec_pct = {s: 50.0 for s in _sec_avg}
+
+        # ── RS Beta Layer：多頭相位自動持有前 N 強股（結構性資本效率補強）
+        # 使用 regime（非 eff_regime）：基於基本面相位，不受 VIX 短線擾動
+        _beta_cfg = BETA_CONFIG.get(regime)
+
+        # 關閉 beta 部位：相位改變時出場（今日收盤價結算）
+        if beta_mode is not None and beta_mode != regime:
+            _old_cfg = BETA_CONFIG.get(beta_mode, {"n": 10, "alloc": 0.50})
+            for b_code, b_entry_px in beta_entries.items():
+                b_si = stock_date_idx[b_code].get(q_date)
+                b_exit_px = b_entry_px
+                if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                    _px = stock_data[b_code]["closes"][b_si]
+                    if not math.isnan(_px) and _px > 0:
+                        b_exit_px = _px
+                b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
+                beta_trades.append({
+                    "date":          q_date.strftime("%Y-%m-%d"),
+                    "code":          b_code,
+                    "type":          "beta_momentum",
+                    "label":         f"RSβ-{beta_mode}",
+                    "strength":      "beta",
+                    "strategy":      "beta",
+                    "regime":        beta_mode,
+                    "stock_phase":   "BULL",
+                    "rs_pct":        rs_pct_map.get(b_code, 80.0),
+                    "entry":         round(b_entry_px, 2),
+                    "stop":          0.0,
+                    "target":        0.0,
+                    "entry_type":    "beta",
+                    "exit_type":     "regime_change",
+                    "outcome":       "win" if b_gain >= 0 else "loss",
+                    "gain_pct":      b_gain,
+                    "actual_rr":     0.0,
+                    "confirmations": 0,
+                    "pos_factor":    round(_old_cfg["alloc"] / _old_cfg["n"], 4),
+                    "market_er":     0.0,
+                    "market_factor": 1.0,
+                    "sector_key":    sector_map.get(b_code, ""),
+                    "sector_rs_pct": 0.0,
+                    "high_vol":      _high_vol,
+                })
+            beta_entries = {}
+            beta_entry_date = None
+            beta_mode = None
+
+        # 開新 beta 部位：進入 bull 或 bull_pullback 相位時（今日收盤買入）
+        if beta_mode is None and _beta_cfg is not None:
+            _n = _beta_cfg["n"]
+            top_codes = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:_n]
+            new_beta = {}
+            for b_code in top_codes:
+                b_si = stock_date_idx[b_code].get(q_date)
+                if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                    _px = stock_data[b_code]["closes"][b_si]
+                    if not math.isnan(_px) and _px > 0:
+                        new_beta[b_code] = _px
+            if new_beta:
+                beta_entries    = new_beta
+                beta_entry_date = q_date
+                beta_mode       = regime
 
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
@@ -929,7 +1013,49 @@ def main():
         _vix_tag = f"  VIX={_vix_today:.1f}" if _vix_today else ""
         print(f"  {q_date}  regime={regime:<14}{_eff_tag:<16}{_hv_tag:<6}{_vix_tag}  訊號={day_count:3d}筆  累計={len(trades)}")
 
-    print(f"\n  ✓ 回測完成：共 {len(trades)} 筆觸發交易")
+    # ── 回測結束：關閉未平倉的 beta 部位（用最後一個交易日收盤價結算）
+    if beta_mode is not None and beta_entries and q1_dates:
+        _last_bt_d = q1_dates[-1]
+        _old_cfg   = BETA_CONFIG.get(beta_mode, {"n": 10, "alloc": 0.50})
+        for b_code, b_entry_px in beta_entries.items():
+            b_si = stock_date_idx[b_code].get(_last_bt_d)
+            b_exit_px = b_entry_px
+            if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                _px = stock_data[b_code]["closes"][b_si]
+                if not math.isnan(_px) and _px > 0:
+                    b_exit_px = _px
+            b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
+            beta_trades.append({
+                "date":          _last_bt_d.strftime("%Y-%m-%d"),
+                "code":          b_code,
+                "type":          "beta_momentum",
+                "label":         f"RSβ-{beta_mode}",
+                "strength":      "beta",
+                "strategy":      "beta",
+                "regime":        beta_mode,
+                "stock_phase":   "BULL",
+                "rs_pct":        80.0,
+                "entry":         round(b_entry_px, 2),
+                "stop":          0.0,
+                "target":        0.0,
+                "entry_type":    "beta",
+                "exit_type":     "bt_end",
+                "outcome":       "win" if b_gain >= 0 else "loss",
+                "gain_pct":      b_gain,
+                "actual_rr":     0.0,
+                "confirmations": 0,
+                "pos_factor":    round(_old_cfg["alloc"] / _old_cfg["n"], 4),
+                "market_er":     0.0,
+                "market_factor": 1.0,
+                "sector_key":    "",
+                "sector_rs_pct": 0.0,
+                "high_vol":      False,
+            })
+        beta_entries = {}
+        beta_mode = None
+
+    _beta_contrib = sum(t["pos_factor"] * t["gain_pct"] / 100 for t in beta_trades)
+    print(f"\n  ✓ 回測完成：共 {len(trades)} 筆信號交易  beta 層貢獻 {_beta_contrib*100:+.1f}%")
 
     # ── Step 4: 統計 ──────────────────────────────────────────────
     print("\n[5] 統計彙整...")
@@ -982,10 +1108,11 @@ def main():
         "by_confirmations":   {k: _stats(v) for k, v in sorted(by_conf.items())},
         "by_sector":          {k: _stats(v) for k, v in sorted(by_sector.items())},
         "capital_curves":     _capital_curves(
-                                  trades,
+                                  trades + beta_trades,  # 信號層 + Beta 層合併曲線
                                   BT_START),
         "benchmark_curve":    benchmark_curve,
         "trades":             trades,
+        "beta_trades":        beta_trades,
     }
 
     curves = result["capital_curves"]
