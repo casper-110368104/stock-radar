@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-29 07:01",
+  "generated_at": "2026-04-29 14:14",
   "years": [
     2022,
     2023,
@@ -12,67 +12,67 @@
       "trading_days": 246,
       "universe_size": 300,
       "overall": {
-        "count": 70,
+        "count": 67,
         "wins": 24,
-        "losses": 46,
+        "losses": 43,
         "expired": 17,
-        "win_rate": 34.3,
-        "avg_gain_pct": 3.9,
-        "avg_loss_pct": -4.37,
-        "expectancy": -1.53
+        "win_rate": 35.8,
+        "avg_gain_pct": 5.09,
+        "avg_loss_pct": -4.49,
+        "expectancy": -1.06
       },
       "by_type": {
         "high_base": {
-          "count": 31,
+          "count": 32,
           "wins": 8,
-          "losses": 23,
+          "losses": 24,
           "expired": 0,
-          "win_rate": 25.8,
-          "avg_gain_pct": 4.13,
-          "avg_loss_pct": -5.4,
-          "expectancy": -2.94
+          "win_rate": 25.0,
+          "avg_gain_pct": 6.63,
+          "avg_loss_pct": -5.43,
+          "expectancy": -2.42
         },
         "ma_pullback": {
-          "count": 33,
+          "count": 30,
           "wins": 15,
-          "losses": 18,
+          "losses": 15,
           "expired": 17,
-          "win_rate": 45.5,
-          "avg_gain_pct": 3.61,
-          "avg_loss_pct": -2.89,
-          "expectancy": 0.07
+          "win_rate": 50.0,
+          "avg_gain_pct": 4.16,
+          "avg_loss_pct": -2.97,
+          "expectancy": 0.59
         },
         "breakout": {
-          "count": 6,
+          "count": 5,
           "wins": 1,
-          "losses": 5,
+          "losses": 4,
           "expired": 0,
-          "win_rate": 16.7,
+          "win_rate": 20.0,
           "avg_gain_pct": 6.52,
-          "avg_loss_pct": -4.97,
-          "expectancy": -3.05
+          "avg_loss_pct": -4.52,
+          "expectancy": -2.31
         }
       },
       "by_regime": {
         "bull": {
-          "count": 56,
-          "wins": 19,
-          "losses": 37,
+          "count": 54,
+          "wins": 20,
+          "losses": 34,
           "expired": 9,
-          "win_rate": 33.9,
-          "avg_gain_pct": 4.34,
-          "avg_loss_pct": -4.71,
-          "expectancy": -1.64
+          "win_rate": 37.0,
+          "avg_gain_pct": 5.85,
+          "avg_loss_pct": -4.89,
+          "expectancy": -0.92
         },
         "range": {
-          "count": 14,
-          "wins": 5,
+          "count": 13,
+          "wins": 4,
           "losses": 9,
           "expired": 8,
-          "win_rate": 35.7,
-          "avg_gain_pct": 2.24,
+          "win_rate": 30.8,
+          "avg_gain_pct": 1.24,
           "avg_loss_pct": -2.98,
-          "expectancy": -1.12
+          "expectancy": -1.68
         }
       },
       "by_month": {
@@ -127,24 +127,24 @@
           "expectancy": -1.47
         },
         "2022-11": {
-          "count": 22,
-          "wins": 9,
-          "losses": 13,
-          "expired": 5,
-          "win_rate": 40.9,
-          "avg_gain_pct": 2.53,
-          "avg_loss_pct": -2.8,
-          "expectancy": -0.62
+          "count": 17,
+          "wins": 8,
+          "losses": 9,
+          "expired": 4,
+          "win_rate": 47.1,
+          "avg_gain_pct": 6.09,
+          "avg_loss_pct": -2.56,
+          "expectancy": 1.51
         },
         "2022-12": {
-          "count": 1,
-          "wins": 0,
-          "losses": 1,
-          "expired": 0,
-          "win_rate": 0.0,
-          "avg_gain_pct": 0,
-          "avg_loss_pct": -8.05,
-          "expectancy": -8.05
+          "count": 3,
+          "wins": 1,
+          "losses": 2,
+          "expired": 1,
+          "win_rate": 33.3,
+          "avg_gain_pct": 2.39,
+          "avg_loss_pct": -6.65,
+          "expectancy": -3.64
         }
       },
       "capital_curves": {
@@ -344,43 +344,39 @@
             },
             {
               "date": "2022-02-17",
-              "equity": 0.9273
+              "equity": 0.9263
             },
             {
               "date": "2022-02-17",
-              "equity": 0.9215
+              "equity": 0.9206
             },
             {
               "date": "2022-02-17",
-              "equity": 0.9325
+              "equity": 0.9316
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9257
+              "equity": 0.9247
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9248
+              "equity": 0.9239
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9269
+              "equity": 0.926
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9222
+              "equity": 0.9213
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9216
+              "equity": 0.9207
             },
             {
               "date": "2022-02-22",
-              "equity": 0.921
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9208
+              "equity": 0.92
             },
             {
               "date": "2022-02-22",
@@ -388,255 +384,287 @@
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9188
+              "equity": 0.9189
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9178
+              "equity": 0.9179
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9175
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9162
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9155
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9162
-            },
-            {
-              "date": "2022-07-22",
               "equity": 0.9169
             },
             {
-              "date": "2022-08-18",
-              "equity": 0.9206
+              "date": "2022-02-22",
+              "equity": 0.9166
+            },
+            {
+              "date": "2022-02-22",
+              "equity": 0.9153
+            },
+            {
+              "date": "2022-02-22",
+              "equity": 0.9145
+            },
+            {
+              "date": "2022-02-22",
+              "equity": 0.9152
+            },
+            {
+              "date": "2022-07-22",
+              "equity": 0.916
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9116
+              "equity": 0.9197
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9112
+              "equity": 0.9106
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9079
+              "equity": 0.9103
             },
             {
               "date": "2022-08-18",
-              "equity": 0.8993
+              "equity": 0.907
             },
             {
               "date": "2022-08-18",
-              "equity": 0.8923
+              "equity": 0.8984
+            },
+            {
+              "date": "2022-08-18",
+              "equity": 0.8913
             },
             {
               "date": "2022-08-19",
-              "equity": 0.8944
+              "equity": 0.8935
             },
             {
               "date": "2022-08-29",
-              "equity": 0.8905
+              "equity": 0.8895
             },
             {
               "date": "2022-08-30",
-              "equity": 0.892
+              "equity": 0.8911
             },
             {
               "date": "2022-08-30",
-              "equity": 0.8873
+              "equity": 0.8863
             },
             {
               "date": "2022-09-01",
-              "equity": 0.8865
+              "equity": 0.8855
             },
             {
               "date": "2022-09-02",
-              "equity": 0.8827
+              "equity": 0.8818
             },
             {
               "date": "2022-11-22",
-              "equity": 0.8952
+              "equity": 0.9205
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9076
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9052
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9052
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9192
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9317
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9292
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9309
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9383
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9413
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9413
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9403
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9393
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9384
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.939
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9383
             },
             {
               "date": "2022-11-24",
-              "equity": 0.895
+              "equity": 0.9381
             },
             {
               "date": "2022-11-24",
-              "equity": 0.903
+              "equity": 0.9461
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8959
+              "equity": 0.9389
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8879
+              "equity": 0.931
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8883
+              "equity": 0.9314
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8876
+              "equity": 0.9306
             },
             {
               "date": "2022-11-24",
-              "equity": 0.895
+              "equity": 0.9381
             },
             {
               "date": "2022-11-24",
-              "equity": 0.904
+              "equity": 0.9471
             },
             {
               "date": "2022-11-25",
-              "equity": 0.9047
+              "equity": 0.9478
             },
             {
               "date": "2022-11-25",
-              "equity": 0.8931
-            },
-            {
-              "date": "2022-11-25",
-              "equity": 0.8933
+              "equity": 0.9362
             },
             {
               "date": "2022-11-28",
-              "equity": 0.893
+              "equity": 0.9358
             },
             {
               "date": "2022-11-28",
-              "equity": 0.8953
+              "equity": 0.9382
             },
             {
               "date": "2022-11-28",
-              "equity": 0.8997
+              "equity": 0.9425
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9089
+              "equity": 0.9517
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9222
+              "equity": 0.965
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9214
+              "equity": 0.9642
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9236
+              "equity": 0.9664
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9271
+              "equity": 0.9699
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9248
+              "equity": 0.9677
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9259
+              "equity": 0.9687
             },
             {
               "date": "2022-11-29",
-              "equity": 0.9124
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.9107
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.9028
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8968
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8898
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8809
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8827
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8827
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8827
-            },
-            {
-              "date": "2022-11-30",
-              "equity": 0.8832
+              "equity": 0.967
             },
             {
               "date": "2022-12-05",
-              "equity": 0.8676
+              "equity": 0.9514
+            },
+            {
+              "date": "2022-12-06",
+              "equity": 0.9409
+            },
+            {
+              "date": "2022-12-06",
+              "equity": 0.9457
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8702
+              "equity": 0.9483
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8735
+              "equity": 0.9517
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8707
+              "equity": 0.9489
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8704
+              "equity": 0.9485
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8695
+              "equity": 0.9476
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8738
+              "equity": 0.952
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8769
+              "equity": 0.955
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8788
+              "equity": 0.9569
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8739
+              "equity": 0.9521
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8699
+              "equity": 0.9481
             }
           ],
-          "total_return_pct": -13.01,
-          "max_drawdown_pct": 13.24
+          "total_return_pct": -5.19,
+          "max_drawdown_pct": 11.82
         },
         "compound": {
           "curve": [
@@ -834,43 +862,39 @@
             },
             {
               "date": "2022-02-17",
-              "equity": 0.9284
+              "equity": 0.9276
             },
             {
               "date": "2022-02-17",
-              "equity": 0.9231
+              "equity": 0.9223
             },
             {
               "date": "2022-02-17",
-              "equity": 0.9332
+              "equity": 0.9324
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9269
+              "equity": 0.926
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9261
+              "equity": 0.9252
             },
             {
               "date": "2022-02-18",
-              "equity": 0.928
+              "equity": 0.9272
             },
             {
               "date": "2022-02-18",
-              "equity": 0.9237
+              "equity": 0.9228
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9231
+              "equity": 0.9223
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9225
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9224
+              "equity": 0.9216
             },
             {
               "date": "2022-02-22",
@@ -878,255 +902,287 @@
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9205
+              "equity": 0.9206
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9196
+              "equity": 0.9197
             },
             {
               "date": "2022-02-22",
-              "equity": 0.9193
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9182
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9174
-            },
-            {
-              "date": "2022-02-22",
-              "equity": 0.9181
-            },
-            {
-              "date": "2022-07-22",
               "equity": 0.9188
             },
             {
-              "date": "2022-08-18",
-              "equity": 0.9222
+              "date": "2022-02-22",
+              "equity": 0.9185
+            },
+            {
+              "date": "2022-02-22",
+              "equity": 0.9173
+            },
+            {
+              "date": "2022-02-22",
+              "equity": 0.9166
+            },
+            {
+              "date": "2022-02-22",
+              "equity": 0.9172
+            },
+            {
+              "date": "2022-07-22",
+              "equity": 0.9179
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9138
+              "equity": 0.9213
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9135
+              "equity": 0.913
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9105
+              "equity": 0.9127
             },
             {
               "date": "2022-08-18",
-              "equity": 0.9026
+              "equity": 0.9096
             },
             {
               "date": "2022-08-18",
-              "equity": 0.8963
+              "equity": 0.9018
+            },
+            {
+              "date": "2022-08-18",
+              "equity": 0.8955
             },
             {
               "date": "2022-08-19",
-              "equity": 0.8982
+              "equity": 0.8974
             },
             {
               "date": "2022-08-29",
-              "equity": 0.8947
+              "equity": 0.8938
             },
             {
               "date": "2022-08-30",
-              "equity": 0.8961
+              "equity": 0.8952
             },
             {
               "date": "2022-08-30",
-              "equity": 0.8918
+              "equity": 0.8909
             },
             {
               "date": "2022-09-01",
-              "equity": 0.8911
+              "equity": 0.8903
             },
             {
               "date": "2022-09-02",
-              "equity": 0.8878
+              "equity": 0.8869
             },
             {
               "date": "2022-11-22",
-              "equity": 0.8988
+              "equity": 0.9213
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9093
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9072
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9072
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9199
+            },
+            {
+              "date": "2022-11-22",
+              "equity": 0.9314
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9291
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9306
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9375
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9403
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9403
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9394
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9384
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9376
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9381
+            },
+            {
+              "date": "2022-11-23",
+              "equity": 0.9375
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8986
+              "equity": 0.9373
             },
             {
               "date": "2022-11-24",
-              "equity": 0.9058
+              "equity": 0.9448
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8994
+              "equity": 0.9381
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8923
+              "equity": 0.9306
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8926
+              "equity": 0.931
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8919
+              "equity": 0.9303
             },
             {
               "date": "2022-11-24",
-              "equity": 0.8986
+              "equity": 0.9372
             },
             {
               "date": "2022-11-24",
-              "equity": 0.9066
+              "equity": 0.9456
             },
             {
               "date": "2022-11-25",
-              "equity": 0.9073
+              "equity": 0.9463
             },
             {
               "date": "2022-11-25",
-              "equity": 0.8967
-            },
-            {
-              "date": "2022-11-25",
-              "equity": 0.897
+              "equity": 0.9353
             },
             {
               "date": "2022-11-28",
-              "equity": 0.8966
+              "equity": 0.935
             },
             {
               "date": "2022-11-28",
-              "equity": 0.8987
+              "equity": 0.9372
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9026
+              "equity": 0.9412
             },
             {
               "date": "2022-11-28",
-              "equity": 0.911
+              "equity": 0.9499
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9231
+              "equity": 0.9625
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9223
+              "equity": 0.9618
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9244
+              "equity": 0.9639
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9276
+              "equity": 0.9673
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9255
+              "equity": 0.9651
             },
             {
               "date": "2022-11-28",
-              "equity": 0.9265
+              "equity": 0.9661
             },
             {
               "date": "2022-11-29",
-              "equity": 0.914
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.9124
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.9052
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8998
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8935
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8856
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8871
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8871
-            },
-            {
-              "date": "2022-11-29",
-              "equity": 0.8871
-            },
-            {
-              "date": "2022-11-30",
-              "equity": 0.8875
+              "equity": 0.9645
             },
             {
               "date": "2022-12-05",
-              "equity": 0.8737
+              "equity": 0.9494
+            },
+            {
+              "date": "2022-12-06",
+              "equity": 0.9395
+            },
+            {
+              "date": "2022-12-06",
+              "equity": 0.944
             },
             {
               "date": "2022-12-07",
-              "equity": 0.876
+              "equity": 0.9464
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8789
+              "equity": 0.9496
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8765
+              "equity": 0.9469
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8762
+              "equity": 0.9466
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8754
+              "equity": 0.9458
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8792
+              "equity": 0.9499
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8819
+              "equity": 0.9528
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8835
+              "equity": 0.9546
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8792
+              "equity": 0.9499
             },
             {
               "date": "2022-12-07",
-              "equity": 0.8758
+              "equity": 0.9462
             }
           ],
-          "total_return_pct": -12.42,
-          "max_drawdown_pct": 12.63
+          "total_return_pct": -5.38,
+          "max_drawdown_pct": 11.31
         }
       },
       "benchmark_curve": [
@@ -2829,15 +2885,15 @@
           "stock_phase": "BULL",
           "rs_pct": 98.7,
           "entry": 30.08,
-          "stop": 23.47,
-          "target": 57.84,
+          "stop": 25.13,
+          "target": 50.67,
           "entry_type": "intraday",
           "exit_type": "stop",
           "outcome": "loss",
           "gain_pct": -7.28,
-          "actual_rr": 4.2,
+          "actual_rr": 4.16,
           "confirmations": 5,
-          "pos_factor": 0.0385,
+          "pos_factor": 0.0513,
           "market_er": 0.007,
           "market_factor": 0.326,
           "sector_key": "航運",
@@ -3227,9 +3283,9 @@
           "gain_pct": -5.3,
           "actual_rr": 1.81,
           "confirmations": 4,
-          "pos_factor": 0.0745,
+          "pos_factor": 0.0749,
           "market_er": 0.024,
-          "market_factor": 0.315,
+          "market_factor": 0.317,
           "sector_key": "電子零組件",
           "sector_rs_pct": 37.5,
           "high_vol": false
@@ -3340,28 +3396,158 @@
         },
         {
           "date": "2022-11-22",
+          "code": "1795",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 99.3,
+          "entry": 189.92,
+          "stop": 157.88,
+          "target": 313.76,
+          "entry_type": "gap_up",
+          "exit_type": "stop",
+          "outcome": "win",
+          "gain_pct": 20.17,
+          "actual_rr": 3.87,
+          "confirmations": 5,
+          "pos_factor": 0.1921,
+          "market_er": 0.66,
+          "market_factor": 1.5,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-22",
+          "code": "1802",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 98.7,
+          "entry": 25.05,
+          "stop": 20.04,
+          "target": 44.83,
+          "entry_type": "gap_up",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -7.11,
+          "actual_rr": 3.95,
+          "confirmations": 5,
+          "pos_factor": 0.1822,
+          "market_er": 0.66,
+          "market_factor": 1.5,
+          "sector_key": "建材營造",
+          "sector_rs_pct": 81.2,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-22",
+          "code": "2308",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 96.7,
+          "entry": 279.44,
+          "stop": 249.34,
+          "target": 386.54,
+          "entry_type": "gap_up",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -1.18,
+          "actual_rr": 3.56,
+          "confirmations": 4,
+          "pos_factor": 0.2,
+          "market_er": 0.66,
+          "market_factor": 1.5,
+          "sector_key": "電子零組件",
+          "sector_rs_pct": 56.2,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-22",
+          "code": "2009",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 89.3,
+          "entry": 30.71,
+          "stop": 28.85,
+          "target": 34.49,
+          "entry_type": "intraday",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": 0.0,
+          "actual_rr": 2.03,
+          "confirmations": 3,
+          "pos_factor": 0.2,
+          "market_er": 0.66,
+          "market_factor": 1.5,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-22",
           "code": "2027",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
           "strength": "medium",
           "strategy": "trend",
-          "regime": "range",
+          "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 76.3,
           "entry": 29.64,
           "stop": 28.56,
-          "target": 31.49,
+          "target": 32.39,
           "entry_type": "intraday",
-          "exit_type": "target",
+          "exit_type": "expired",
           "outcome": "win",
-          "gain_pct": 6.24,
-          "actual_rr": 1.71,
-          "confirmations": 2,
+          "gain_pct": 6.99,
+          "actual_rr": 2.55,
+          "confirmations": 3,
           "pos_factor": 0.2,
           "market_er": 0.66,
           "market_factor": 1.5,
           "sector_key": "鋼鐵",
           "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-22",
+          "code": "1710",
+          "type": "ma_pullback",
+          "label": "均線回測(起漲型)",
+          "strength": "weak",
+          "strategy": "swing",
+          "regime": "bull",
+          "stock_phase": "RANGE",
+          "rs_pct": 58.2,
+          "entry": 17.57,
+          "stop": 16.86,
+          "target": 18.67,
+          "entry_type": "gap_up",
+          "exit_type": "target",
+          "outcome": "win",
+          "gain_pct": 6.26,
+          "actual_rr": 1.55,
+          "confirmations": 3,
+          "pos_factor": 0.2,
+          "market_er": 0.66,
+          "market_factor": 1.5,
+          "sector_key": "化學",
+          "sector_rs_pct": 6.2,
           "high_vol": false
         },
         {
@@ -3625,58 +3811,6 @@
           "high_vol": false
         },
         {
-          "date": "2022-11-25",
-          "code": "3017",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 91.0,
-          "entry": 107.61,
-          "stop": 97.22,
-          "target": 134.41,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "win",
-          "gain_pct": 0.13,
-          "actual_rr": 2.58,
-          "confirmations": 5,
-          "pos_factor": 0.2,
-          "market_er": 0.739,
-          "market_factor": 1.5,
-          "sector_key": "電子零組件",
-          "sector_rs_pct": 56.2,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "3047",
-          "type": "breakout",
-          "label": "突破",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 97.0,
-          "entry": 16.66,
-          "stop": 14.84,
-          "target": 24.1,
-          "entry_type": "gap_up",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -6.77,
-          "actual_rr": 4.09,
-          "confirmations": 5,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
           "date": "2022-11-29",
           "code": "4958",
           "type": "high_base",
@@ -3699,214 +3833,6 @@
           "market_er": 0.594,
           "market_factor": 1.5,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "2474",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 91.0,
-          "entry": 151.49,
-          "stop": 143.44,
-          "target": 171.53,
-          "entry_type": "gap_up",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -3.95,
-          "actual_rr": 2.49,
-          "confirmations": 5,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "電機機械",
-          "sector_rs_pct": 37.5,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "2838",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 90.6,
-          "entry": 13.08,
-          "stop": 12.69,
-          "target": 14.02,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -2.98,
-          "actual_rr": 2.41,
-          "confirmations": 3,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "3380",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 86.3,
-          "entry": 28.53,
-          "stop": 25.72,
-          "target": 39.66,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -3.51,
-          "actual_rr": 3.96,
-          "confirmations": 5,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "1326",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 81.9,
-          "entry": 70.12,
-          "stop": 67.02,
-          "target": 80.43,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -4.42,
-          "actual_rr": 3.33,
-          "confirmations": 4,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "化學",
-          "sector_rs_pct": 12.5,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "2385",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 77.9,
-          "entry": 69.46,
-          "stop": 66.99,
-          "target": 77.52,
-          "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 0.86,
-          "actual_rr": 3.26,
-          "confirmations": 5,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "電腦週邊",
-          "sector_rs_pct": 31.2,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "6282",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "RANGE",
-          "rs_pct": 77.3,
-          "entry": 27.91,
-          "stop": 26.93,
-          "target": 29.42,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": 0.0,
-          "actual_rr": 1.54,
-          "confirmations": 3,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "電機機械",
-          "sector_rs_pct": 37.5,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-29",
-          "code": "2337",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "RANGE",
-          "rs_pct": 73.9,
-          "entry": 32.06,
-          "stop": 30.73,
-          "target": 34.26,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": 0.0,
-          "actual_rr": 1.65,
-          "confirmations": 2,
-          "pos_factor": 0.2,
-          "market_er": 0.594,
-          "market_factor": 1.5,
-          "sector_key": "半導體",
-          "sector_rs_pct": 25.0,
-          "high_vol": false
-        },
-        {
-          "date": "2022-11-30",
-          "code": "3033",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 62.5,
-          "entry": 21.96,
-          "stop": 21.37,
-          "target": 23.5,
-          "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 0.25,
-          "actual_rr": 2.61,
-          "confirmations": 4,
-          "pos_factor": 0.2,
-          "market_er": 0.608,
-          "market_factor": 1.5,
-          "sector_key": "",
           "sector_rs_pct": 50.0,
           "high_vol": false
         },
@@ -3934,6 +3860,58 @@
           "market_factor": 1.5,
           "sector_key": "生技醫療",
           "sector_rs_pct": 100.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-12-06",
+          "code": "2913",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 94.3,
+          "entry": 23.87,
+          "stop": 21.69,
+          "target": 31.32,
+          "entry_type": "intraday",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -5.24,
+          "actual_rr": 3.42,
+          "confirmations": 5,
+          "pos_factor": 0.2,
+          "market_er": 0.478,
+          "market_factor": 1.5,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-12-06",
+          "code": "2385",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 79.6,
+          "entry": 70.21,
+          "stop": 67.7,
+          "target": 78.02,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 2.39,
+          "actual_rr": 3.11,
+          "confirmations": 4,
+          "pos_factor": 0.2,
+          "market_er": 0.478,
+          "market_factor": 1.5,
+          "sector_key": "電腦週邊",
+          "sector_rs_pct": 50.0,
           "high_vol": false
         }
       ],
@@ -4719,6 +4697,266 @@
           "high_vol": false
         },
         {
+          "date": "2022-11-23",
+          "code": "8033",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 100.0,
+          "entry": 44.56,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "loss",
+          "gain_pct": -3.3,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "4763",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 99.3,
+          "entry": 10.86,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 2.19,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "1795",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 99.7,
+          "entry": 187.18,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 9.85,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "2201",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 99.0,
+          "entry": 50.14,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 4.01,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "1802",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 98.7,
+          "entry": 24.7,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 0.0,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "建材營造",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "2495",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 98.3,
+          "entry": 17.76,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "loss",
+          "gain_pct": -1.27,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "2376",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 97.3,
+          "entry": 98.61,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "loss",
+          "gain_pct": -1.4,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "2402",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 96.7,
+          "entry": 16.12,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "loss",
+          "gain_pct": -1.11,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "電子零組件",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "1605",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 97.7,
+          "entry": 38.8,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 0.7,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "鋼鐵",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2022-11-23",
+          "code": "6153",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 95.7,
+          "entry": 27.44,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "loss",
+          "gain_pct": -0.89,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.075,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
           "date": "2022-11-28",
           "code": "8033",
           "type": "beta_momentum",
@@ -5246,56 +5484,56 @@
       "universe_size": 300,
       "overall": {
         "count": 121,
-        "wins": 66,
-        "losses": 55,
+        "wins": 71,
+        "losses": 50,
         "expired": 36,
-        "win_rate": 54.5,
-        "avg_gain_pct": 8.73,
-        "avg_loss_pct": -3.63,
-        "expectancy": 3.11
+        "win_rate": 58.7,
+        "avg_gain_pct": 9.4,
+        "avg_loss_pct": -3.56,
+        "expectancy": 4.05
       },
       "by_type": {
         "high_base": {
-          "count": 61,
-          "wins": 31,
-          "losses": 30,
+          "count": 63,
+          "wins": 35,
+          "losses": 28,
           "expired": 3,
-          "win_rate": 50.8,
-          "avg_gain_pct": 9.27,
-          "avg_loss_pct": -4.98,
-          "expectancy": 2.26
+          "win_rate": 55.6,
+          "avg_gain_pct": 11.96,
+          "avg_loss_pct": -4.63,
+          "expectancy": 4.59
         },
         "ma_pullback": {
-          "count": 47,
-          "wins": 28,
-          "losses": 19,
+          "count": 46,
+          "wins": 30,
+          "losses": 16,
           "expired": 33,
-          "win_rate": 59.6,
-          "avg_gain_pct": 4.03,
-          "avg_loss_pct": -1.34,
-          "expectancy": 1.86
+          "win_rate": 65.2,
+          "avg_gain_pct": 4.01,
+          "avg_loss_pct": -1.46,
+          "expectancy": 2.11
         },
         "breakout": {
-          "count": 13,
-          "wins": 7,
+          "count": 12,
+          "wins": 6,
           "losses": 6,
           "expired": 0,
-          "win_rate": 53.8,
-          "avg_gain_pct": 25.2,
+          "win_rate": 50.0,
+          "avg_gain_pct": 21.43,
           "avg_loss_pct": -4.12,
-          "expectancy": 11.65
+          "expectancy": 8.65
         }
       },
       "by_regime": {
         "bull": {
           "count": 121,
-          "wins": 66,
-          "losses": 55,
+          "wins": 71,
+          "losses": 50,
           "expired": 36,
-          "win_rate": 54.5,
-          "avg_gain_pct": 8.73,
-          "avg_loss_pct": -3.63,
-          "expectancy": 3.11
+          "win_rate": 58.7,
+          "avg_gain_pct": 9.4,
+          "avg_loss_pct": -3.56,
+          "expectancy": 4.05
         }
       },
       "by_month": {
@@ -5311,23 +5549,23 @@
         },
         "2023-02": {
           "count": 5,
-          "wins": 0,
-          "losses": 5,
+          "wins": 1,
+          "losses": 4,
           "expired": 3,
-          "win_rate": 0.0,
-          "avg_gain_pct": 0,
-          "avg_loss_pct": -1.68,
-          "expectancy": -1.68
+          "win_rate": 20.0,
+          "avg_gain_pct": 11.4,
+          "avg_loss_pct": -1.37,
+          "expectancy": 1.18
         },
         "2023-03": {
-          "count": 7,
-          "wins": 6,
-          "losses": 1,
-          "expired": 2,
-          "win_rate": 85.7,
-          "avg_gain_pct": 6.19,
-          "avg_loss_pct": -1.0,
-          "expectancy": 5.16
+          "count": 6,
+          "wins": 4,
+          "losses": 2,
+          "expired": 1,
+          "win_rate": 66.7,
+          "avg_gain_pct": 4.11,
+          "avg_loss_pct": -2.73,
+          "expectancy": 1.83
         },
         "2023-04": {
           "count": 1,
@@ -5340,64 +5578,64 @@
           "expectancy": 17.73
         },
         "2023-05": {
-          "count": 18,
-          "wins": 11,
-          "losses": 7,
-          "expired": 4,
-          "win_rate": 61.1,
-          "avg_gain_pct": 17.84,
-          "avg_loss_pct": -3.07,
-          "expectancy": 9.71
+          "count": 23,
+          "wins": 18,
+          "losses": 5,
+          "expired": 7,
+          "win_rate": 78.3,
+          "avg_gain_pct": 16.64,
+          "avg_loss_pct": -3.65,
+          "expectancy": 12.24
         },
         "2023-06": {
-          "count": 4,
-          "wins": 3,
+          "count": 2,
+          "wins": 1,
           "losses": 1,
-          "expired": 3,
-          "win_rate": 75.0,
-          "avg_gain_pct": 1.97,
-          "avg_loss_pct": -2.79,
-          "expectancy": 0.78
+          "expired": 1,
+          "win_rate": 50.0,
+          "avg_gain_pct": 0.96,
+          "avg_loss_pct": -0.21,
+          "expectancy": 0.38
         },
         "2023-07": {
-          "count": 12,
+          "count": 10,
           "wins": 2,
-          "losses": 10,
+          "losses": 8,
           "expired": 2,
-          "win_rate": 16.7,
+          "win_rate": 20.0,
           "avg_gain_pct": 13.81,
-          "avg_loss_pct": -4.5,
-          "expectancy": -1.44
+          "avg_loss_pct": -4.0,
+          "expectancy": -0.44
         },
         "2023-09": {
-          "count": 1,
+          "count": 2,
           "wins": 0,
-          "losses": 1,
+          "losses": 2,
           "expired": 0,
           "win_rate": 0.0,
           "avg_gain_pct": 0,
-          "avg_loss_pct": -10.93,
-          "expectancy": -10.93
+          "avg_loss_pct": -8.04,
+          "expectancy": -8.04
         },
         "2023-11": {
           "count": 35,
           "wins": 24,
           "losses": 11,
-          "expired": 13,
+          "expired": 14,
           "win_rate": 68.6,
-          "avg_gain_pct": 6.46,
-          "avg_loss_pct": -5.58,
-          "expectancy": 2.68
+          "avg_gain_pct": 6.54,
+          "avg_loss_pct": -5.67,
+          "expectancy": 2.71
         },
         "2023-12": {
-          "count": 5,
-          "wins": 1,
-          "losses": 4,
-          "expired": 3,
-          "win_rate": 20.0,
-          "avg_gain_pct": 20.89,
-          "avg_loss_pct": -3.59,
-          "expectancy": 1.31
+          "count": 4,
+          "wins": 2,
+          "losses": 2,
+          "expired": 2,
+          "win_rate": 50.0,
+          "avg_gain_pct": 10.62,
+          "avg_loss_pct": -1.91,
+          "expectancy": 4.35
         }
       },
       "capital_curves": {
@@ -5417,139 +5655,131 @@
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0076
+              "equity": 1.0079
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0069
+              "equity": 1.0073
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0184
+              "equity": 1.0187
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0121
+              "equity": 1.0125
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0232
+              "equity": 1.0236
             },
             {
               "date": "2023-01-10",
-              "equity": 1.022
+              "equity": 1.0224
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0319
+              "equity": 1.0323
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0319
+              "equity": 1.0323
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0427
+              "equity": 1.0431
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0435
+              "equity": 1.044
             },
             {
               "date": "2023-01-11",
-              "equity": 1.042
+              "equity": 1.0423
             },
             {
               "date": "2023-01-11",
-              "equity": 1.0402
+              "equity": 1.0406
             },
             {
               "date": "2023-01-11",
-              "equity": 1.0559
+              "equity": 1.0562
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0559
+              "equity": 1.0562
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0603
+              "equity": 1.0607
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0601
+              "equity": 1.0605
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0626
+              "equity": 1.063
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0626
+              "equity": 1.063
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0613
+              "equity": 1.0617
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0631
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0628
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0612
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0598
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0594
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0581
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0582
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0579
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.057
-            },
-            {
-              "date": "2023-01-16",
               "equity": 1.0635
             },
             {
+              "date": "2023-01-13",
+              "equity": 1.0632
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0616
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0602
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0597
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0585
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0586
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0583
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0574
+            },
+            {
               "date": "2023-01-16",
-              "equity": 1.0761
+              "equity": 1.0639
+            },
+            {
+              "date": "2023-01-16",
+              "equity": 1.0765
             },
             {
               "date": "2023-01-17",
-              "equity": 1.0839
+              "equity": 1.0843
             },
             {
               "date": "2023-01-17",
-              "equity": 1.0742
-            },
-            {
-              "date": "2023-01-17",
-              "equity": 1.0701
-            },
-            {
-              "date": "2023-01-17",
-              "equity": 1.0735
+              "equity": 1.0745
             },
             {
               "date": "2023-01-17",
@@ -5557,943 +5787,951 @@
             },
             {
               "date": "2023-01-17",
-              "equity": 1.0646
+              "equity": 1.0739
+            },
+            {
+              "date": "2023-01-17",
+              "equity": 1.0709
+            },
+            {
+              "date": "2023-01-17",
+              "equity": 1.0649
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0647
+              "equity": 1.0651
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0556
+              "equity": 1.056
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0588
+              "equity": 1.0592
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0675
+              "equity": 1.0678
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0687
+              "equity": 1.0691
             },
             {
               "date": "2023-02-02",
-              "equity": 1.0684
+              "equity": 1.0688
             },
             {
               "date": "2023-02-13",
-              "equity": 1.0679
+              "equity": 1.0682
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0727
+              "equity": 1.073
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0772
+              "equity": 1.0776
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0867
+              "equity": 1.0871
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0911
+              "equity": 1.0915
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0983
+              "equity": 1.0987
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1031
+              "equity": 1.1034
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1054
+              "equity": 1.1058
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1037
-            },
-            {
-              "date": "2023-02-15",
-              "equity": 1.1035
-            },
-            {
-              "date": "2023-02-15",
-              "equity": 1.1093
-            },
-            {
-              "date": "2023-02-20",
               "equity": 1.104
             },
             {
+              "date": "2023-02-15",
+              "equity": 1.1039
+            },
+            {
+              "date": "2023-02-15",
+              "equity": 1.1096
+            },
+            {
               "date": "2023-02-20",
-              "equity": 1.0992
+              "equity": 1.1044
+            },
+            {
+              "date": "2023-02-20",
+              "equity": 1.0995
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1019
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1038
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1194
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1173
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1149
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1166
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1244
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1245
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1266
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.123
-            },
-            {
-              "date": "2023-02-23",
-              "equity": 1.1172
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1077
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1108
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1046
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1059
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1065
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1049
-            },
-            {
-              "date": "2023-03-01",
-              "equity": 1.1041
-            },
-            {
-              "date": "2023-03-01",
               "equity": 1.1023
             },
             {
-              "date": "2023-03-01",
-              "equity": 1.1028
+              "date": "2023-02-22",
+              "equity": 1.1042
             },
             {
-              "date": "2023-03-01",
-              "equity": 1.0983
+              "date": "2023-02-22",
+              "equity": 1.1197
             },
             {
-              "date": "2023-03-03",
-              "equity": 1.099
+              "date": "2023-02-22",
+              "equity": 1.1176
             },
             {
-              "date": "2023-03-03",
-              "equity": 1.1122
+              "date": "2023-02-22",
+              "equity": 1.1153
             },
             {
-              "date": "2023-03-06",
-              "equity": 1.1272
+              "date": "2023-02-22",
+              "equity": 1.117
             },
             {
-              "date": "2023-03-09",
+              "date": "2023-02-22",
+              "equity": 1.1248
+            },
+            {
+              "date": "2023-02-22",
+              "equity": 1.1249
+            },
+            {
+              "date": "2023-02-22",
               "equity": 1.127
             },
             {
-              "date": "2023-03-09",
-              "equity": 1.1293
+              "date": "2023-02-22",
+              "equity": 1.1234
+            },
+            {
+              "date": "2023-02-24",
+              "equity": 1.1462
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1367
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1399
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1336
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.135
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1356
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.134
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1331
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1314
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1319
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1273
+            },
+            {
+              "date": "2023-03-03",
+              "equity": 1.1281
+            },
+            {
+              "date": "2023-03-07",
+              "equity": 1.1191
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1291
+              "equity": 1.1189
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1305
+              "equity": 1.1212
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1348
+              "equity": 1.1211
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1342
+              "equity": 1.1225
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1337
+              "equity": 1.1268
             },
             {
               "date": "2023-03-09",
-              "equity": 1.133
+              "equity": 1.1262
             },
             {
               "date": "2023-03-09",
-              "equity": 1.132
+              "equity": 1.1257
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1317
+              "equity": 1.125
+            },
+            {
+              "date": "2023-03-09",
+              "equity": 1.1239
+            },
+            {
+              "date": "2023-03-09",
+              "equity": 1.1237
             },
             {
               "date": "2023-03-24",
-              "equity": 1.1377
+              "equity": 1.1297
             },
             {
               "date": "2023-03-24",
-              "equity": 1.137
+              "equity": 1.129
             },
             {
               "date": "2023-03-24",
-              "equity": 1.1396
+              "equity": 1.1315
             },
             {
               "date": "2023-03-24",
-              "equity": 1.1474
+              "equity": 1.1394
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1476
+              "equity": 1.1395
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1496
+              "equity": 1.1416
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1492
+              "equity": 1.1412
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1477
+              "equity": 1.1397
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1491
+              "equity": 1.1411
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1474
+              "equity": 1.1394
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1442
+              "equity": 1.1361
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1414
+              "equity": 1.1333
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1391
+              "equity": 1.131
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1385
+              "equity": 1.1304
             },
             {
               "date": "2023-04-06",
-              "equity": 1.1481
+              "equity": 1.14
             },
             {
               "date": "2023-04-20",
-              "equity": 1.149
+              "equity": 1.141
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1576
+              "equity": 1.1496
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1641
+              "equity": 1.1562
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1634
+              "equity": 1.1555
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1619
+              "equity": 1.154
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1704
+              "equity": 1.1625
+            },
+            {
+              "date": "2023-04-20",
+              "equity": 1.1635
+            },
+            {
+              "date": "2023-04-20",
+              "equity": 1.1657
+            },
+            {
+              "date": "2023-04-20",
+              "equity": 1.1664
             },
             {
               "date": "2023-04-20",
               "equity": 1.1714
             },
             {
-              "date": "2023-04-20",
-              "equity": 1.1736
+              "date": "2023-05-17",
+              "equity": 1.1728
             },
             {
-              "date": "2023-04-20",
-              "equity": 1.1743
+              "date": "2023-05-17",
+              "equity": 1.1995
             },
             {
-              "date": "2023-04-20",
-              "equity": 1.1792
+              "date": "2023-05-17",
+              "equity": 1.2348
             },
             {
-              "date": "2023-05-18",
-              "equity": 1.1773
+              "date": "2023-05-17",
+              "equity": 1.2385
             },
             {
-              "date": "2023-05-18",
-              "equity": 1.1933
+              "date": "2023-05-17",
+              "equity": 1.242
             },
             {
-              "date": "2023-05-18",
-              "equity": 1.2008
-            },
-            {
-              "date": "2023-05-18",
-              "equity": 1.1969
+              "date": "2023-05-17",
+              "equity": 1.2489
             },
             {
               "date": "2023-05-18",
-              "equity": 1.2288
+              "equity": 1.247
             },
             {
               "date": "2023-05-18",
-              "equity": 1.2372
+              "equity": 1.263
             },
             {
               "date": "2023-05-18",
-              "equity": 1.2481
+              "equity": 1.2705
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.2666
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.2985
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.3069
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.3178
             },
             {
               "date": "2023-05-19",
-              "equity": 1.2702
+              "equity": 1.3399
             },
             {
               "date": "2023-05-19",
-              "equity": 1.2712
+              "equity": 1.3409
             },
             {
               "date": "2023-05-19",
-              "equity": 1.282
-            },
-            {
-              "date": "2023-05-19",
-              "equity": 1.3264
-            },
-            {
-              "date": "2023-05-19",
-              "equity": 1.3259
+              "equity": 1.3404
             },
             {
               "date": "2023-05-29",
-              "equity": 1.3245
+              "equity": 1.3635
             },
             {
               "date": "2023-05-30",
-              "equity": 1.3194
+              "equity": 1.3702
             },
             {
               "date": "2023-05-31",
-              "equity": 1.3099
+              "equity": 1.3607
             },
             {
               "date": "2023-05-31",
-              "equity": 1.3182
-            },
-            {
-              "date": "2023-05-31",
-              "equity": 1.3115
-            },
-            {
-              "date": "2023-05-31",
-              "equity": 1.3377
-            },
-            {
-              "date": "2023-06-08",
-              "equity": 1.339
-            },
-            {
-              "date": "2023-06-09",
-              "equity": 1.3476
-            },
-            {
-              "date": "2023-06-12",
-              "equity": 1.3496
-            },
-            {
-              "date": "2023-06-13",
-              "equity": 1.344
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3443
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3599
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3558
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3575
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3705
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3739
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3721
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3787
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.3913
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.4138
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.4223
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.4197
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.4157
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.4188
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.4177
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4169
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4159
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4164
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4166
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4177
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4175
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4168
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4185
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4189
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.4201
-            },
-            {
-              "date": "2023-07-27",
-              "equity": 1.4184
-            },
-            {
-              "date": "2023-07-27",
-              "equity": 1.4184
-            },
-            {
-              "date": "2023-07-27",
-              "equity": 1.4182
-            },
-            {
-              "date": "2023-07-27",
-              "equity": 1.4084
-            },
-            {
-              "date": "2023-07-28",
-              "equity": 1.4061
-            },
-            {
-              "date": "2023-07-28",
-              "equity": 1.3988
-            },
-            {
-              "date": "2023-07-28",
-              "equity": 1.3928
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3905
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3879
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3864
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3881
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3866
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3903
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3907
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3879
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3886
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.3871
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3853
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3844
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3827
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.381
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3798
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.378
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3771
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3769
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3767
-            },
-            {
-              "date": "2023-08-02",
-              "equity": 1.3753
-            },
-            {
-              "date": "2023-09-15",
-              "equity": 1.3674
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3657
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3629
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3581
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3564
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3534
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3509
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3487
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3464
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3477
-            },
-            {
-              "date": "2023-09-18",
-              "equity": 1.3455
-            },
-            {
-              "date": "2023-11-07",
-              "equity": 1.3416
-            },
-            {
-              "date": "2023-11-07",
-              "equity": 1.3388
-            },
-            {
-              "date": "2023-11-07",
-              "equity": 1.35
-            },
-            {
-              "date": "2023-11-07",
-              "equity": 1.3671
-            },
-            {
-              "date": "2023-11-07",
               "equity": 1.3691
             },
             {
-              "date": "2023-11-08",
-              "equity": 1.3854
+              "date": "2023-05-31",
+              "equity": 1.3624
             },
             {
-              "date": "2023-11-08",
-              "equity": 1.3796
+              "date": "2023-05-31",
+              "equity": 1.3886
             },
             {
-              "date": "2023-11-08",
-              "equity": 1.3726
+              "date": "2023-05-31",
+              "equity": 1.4005
             },
             {
-              "date": "2023-11-09",
-              "equity": 1.3732
+              "date": "2023-06-12",
+              "equity": 1.4001
             },
             {
-              "date": "2023-11-09",
-              "equity": 1.3755
+              "date": "2023-06-12",
+              "equity": 1.402
             },
             {
-              "date": "2023-11-09",
-              "equity": 1.3764
+              "date": "2023-06-16",
+              "equity": 1.4021
             },
             {
-              "date": "2023-11-09",
-              "equity": 1.3984
+              "date": "2023-06-16",
+              "equity": 1.4113
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3955
+              "date": "2023-06-16",
+              "equity": 1.4092
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3943
+              "date": "2023-06-16",
+              "equity": 1.4104
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3929
+              "date": "2023-06-16",
+              "equity": 1.4115
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3943
+              "date": "2023-06-16",
+              "equity": 1.4179
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3939
+              "date": "2023-06-16",
+              "equity": 1.4171
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3937
+              "date": "2023-06-16",
+              "equity": 1.4216
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3936
+              "date": "2023-06-16",
+              "equity": 1.432
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3934
+              "date": "2023-06-16",
+              "equity": 1.4361
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3903
+              "date": "2023-07-17",
+              "equity": 1.4446
             },
             {
-              "date": "2023-11-10",
-              "equity": 1.3903
+              "date": "2023-07-17",
+              "equity": 1.442
             },
             {
-              "date": "2023-11-13",
-              "equity": 1.3894
+              "date": "2023-07-17",
+              "equity": 1.438
             },
             {
-              "date": "2023-11-13",
-              "equity": 1.3982
+              "date": "2023-07-17",
+              "equity": 1.4411
             },
             {
-              "date": "2023-11-13",
+              "date": "2023-07-17",
+              "equity": 1.44
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4392
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4382
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4387
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4389
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.44
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4398
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4391
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4408
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4412
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.4424
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.4407
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.4407
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.4405
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.4307
+            },
+            {
+              "date": "2023-07-28",
+              "equity": 1.4247
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4224
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4198
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4182
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.42
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4184
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4222
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4226
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4197
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4205
+            },
+            {
+              "date": "2023-07-31",
+              "equity": 1.4189
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4172
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4163
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4145
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4128
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4116
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4098
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4089
+            },
+            {
+              "date": "2023-08-02",
+              "equity": 1.4087
+            },
+            {
+              "date": "2023-08-02",
               "equity": 1.4086
             },
             {
-              "date": "2023-11-13",
+              "date": "2023-08-02",
+              "equity": 1.4072
+            },
+            {
+              "date": "2023-09-15",
+              "equity": 1.3992
+            },
+            {
+              "date": "2023-09-15",
+              "equity": 1.3889
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3872
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3845
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3797
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3779
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3749
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3724
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3702
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3679
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.3692
+            },
+            {
+              "date": "2023-09-18",
+              "equity": 1.367
+            },
+            {
+              "date": "2023-11-07",
+              "equity": 1.3631
+            },
+            {
+              "date": "2023-11-07",
+              "equity": 1.3604
+            },
+            {
+              "date": "2023-11-07",
+              "equity": 1.3715
+            },
+            {
+              "date": "2023-11-07",
+              "equity": 1.3886
+            },
+            {
+              "date": "2023-11-07",
+              "equity": 1.3906
+            },
+            {
+              "date": "2023-11-08",
+              "equity": 1.407
+            },
+            {
+              "date": "2023-11-08",
+              "equity": 1.4011
+            },
+            {
+              "date": "2023-11-08",
+              "equity": 1.3941
+            },
+            {
+              "date": "2023-11-09",
+              "equity": 1.3948
+            },
+            {
+              "date": "2023-11-09",
+              "equity": 1.397
+            },
+            {
+              "date": "2023-11-09",
+              "equity": 1.3979
+            },
+            {
+              "date": "2023-11-09",
+              "equity": 1.42
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.417
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4159
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4145
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4158
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4155
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4153
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4151
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4149
+            },
+            {
+              "date": "2023-11-10",
+              "equity": 1.4119
+            },
+            {
+              "date": "2023-11-10",
               "equity": 1.4118
             },
             {
               "date": "2023-11-13",
-              "equity": 1.4119
+              "equity": 1.4109
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.4197
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.4301
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.4333
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.4335
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4153
+              "equity": 1.4368
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4077
+              "equity": 1.4292
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4055
+              "equity": 1.4271
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4
+              "equity": 1.4216
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4015
+              "equity": 1.423
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4058
+              "equity": 1.4273
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4102
+              "equity": 1.4317
             },
             {
               "date": "2023-11-15",
-              "equity": 1.4029
+              "equity": 1.4245
             },
             {
               "date": "2023-11-15",
-              "equity": 1.459
+              "equity": 1.4805
+            },
+            {
+              "date": "2023-11-15",
+              "equity": 1.4866
+            },
+            {
+              "date": "2023-11-16",
+              "equity": 1.4846
             },
             {
               "date": "2023-11-20",
-              "equity": 1.4625
+              "equity": 1.4881
             },
             {
               "date": "2023-11-20",
-              "equity": 1.4643
+              "equity": 1.4899
             },
             {
               "date": "2023-11-24",
-              "equity": 1.4643
+              "equity": 1.4946
             },
             {
               "date": "2023-11-27",
-              "equity": 1.4768
+              "equity": 1.5071
             },
             {
               "date": "2023-11-27",
-              "equity": 1.4817
+              "equity": 1.512
             },
             {
               "date": "2023-11-27",
-              "equity": 1.4833
+              "equity": 1.5135
             },
             {
               "date": "2023-11-27",
-              "equity": 1.4759
-            },
-            {
-              "date": "2023-11-27",
-              "equity": 1.477
-            },
-            {
-              "date": "2023-11-27",
-              "equity": 1.4829
+              "equity": 1.5061
             },
             {
               "date": "2023-12-01",
-              "equity": 1.5247
+              "equity": 1.5479
             },
             {
               "date": "2023-12-05",
-              "equity": 1.5247
+              "equity": 1.5479
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5249
+              "equity": 1.5481
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5252
+              "equity": 1.5484
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5245
+              "equity": 1.5477
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5226
+              "equity": 1.5458
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5254
+              "equity": 1.5486
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5324
+              "equity": 1.5556
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5369
+              "equity": 1.5601
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5369
+              "equity": 1.5601
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5369
+              "equity": 1.5601
             },
             {
               "date": "2023-12-06",
-              "equity": 1.5369
+              "equity": 1.5601
             },
             {
               "date": "2023-12-27",
-              "equity": 1.5292
+              "equity": 1.5525
             },
             {
               "date": "2023-12-27",
-              "equity": 1.5104
-            },
-            {
-              "date": "2023-12-27",
-              "equity": 1.5081
+              "equity": 1.5531
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5041
+              "equity": 1.5492
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5019
+              "equity": 1.547
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5043
+              "equity": 1.5493
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5031
+              "equity": 1.5482
             },
             {
               "date": "2023-12-29",
-              "equity": 1.501
+              "equity": 1.546
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5005
+              "equity": 1.5455
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5002
+              "equity": 1.5452
             },
             {
               "date": "2023-12-29",
-              "equity": 1.4996
+              "equity": 1.5446
             },
             {
               "date": "2023-12-29",
-              "equity": 1.5012
+              "equity": 1.5462
             },
             {
               "date": "2023-12-29",
-              "equity": 1.4988
+              "equity": 1.5438
             }
           ],
-          "total_return_pct": 49.88,
-          "max_drawdown_pct": 5.87
+          "total_return_pct": 54.38,
+          "max_drawdown_pct": 5.83
         },
         "compound": {
           "curve": [
@@ -6511,79 +6749,83 @@
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0075
+              "equity": 1.0079
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0069
+              "equity": 1.0072
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0184
+              "equity": 1.0188
             },
             {
               "date": "2023-01-09",
-              "equity": 1.012
+              "equity": 1.0124
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0233
+              "equity": 1.0236
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0221
+              "equity": 1.0224
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0322
+              "equity": 1.0326
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0322
+              "equity": 1.0326
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0433
+              "equity": 1.0437
             },
             {
               "date": "2023-01-10",
-              "equity": 1.0441
+              "equity": 1.0446
             },
             {
               "date": "2023-01-11",
-              "equity": 1.0425
+              "equity": 1.0429
             },
             {
               "date": "2023-01-11",
-              "equity": 1.0407
+              "equity": 1.0411
             },
             {
               "date": "2023-01-11",
-              "equity": 1.057
+              "equity": 1.0574
             },
             {
               "date": "2023-01-12",
-              "equity": 1.057
+              "equity": 1.0574
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0617
+              "equity": 1.0621
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0615
+              "equity": 1.0619
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0641
+              "equity": 1.0645
             },
             {
               "date": "2023-01-12",
-              "equity": 1.0641
+              "equity": 1.0645
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0628
+              "equity": 1.0632
+            },
+            {
+              "date": "2023-01-13",
+              "equity": 1.0651
             },
             {
               "date": "2023-01-13",
@@ -6591,11 +6833,11 @@
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0643
+              "equity": 1.0631
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0627
+              "equity": 1.0615
             },
             {
               "date": "2023-01-13",
@@ -6603,11 +6845,11 @@
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0607
+              "equity": 1.0597
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0593
+              "equity": 1.0599
             },
             {
               "date": "2023-01-13",
@@ -6615,35 +6857,23 @@
             },
             {
               "date": "2023-01-13",
-              "equity": 1.0591
-            },
-            {
-              "date": "2023-01-13",
-              "equity": 1.0582
+              "equity": 1.0586
             },
             {
               "date": "2023-01-16",
-              "equity": 1.065
+              "equity": 1.0654
             },
             {
               "date": "2023-01-16",
-              "equity": 1.0785
+              "equity": 1.0789
             },
             {
               "date": "2023-01-17",
-              "equity": 1.0869
+              "equity": 1.0873
             },
             {
               "date": "2023-01-17",
-              "equity": 1.0763
-            },
-            {
-              "date": "2023-01-17",
-              "equity": 1.0719
-            },
-            {
-              "date": "2023-01-17",
-              "equity": 1.0756
+              "equity": 1.0767
             },
             {
               "date": "2023-01-17",
@@ -6651,943 +6881,951 @@
             },
             {
               "date": "2023-01-17",
-              "equity": 1.066
+              "equity": 1.076
+            },
+            {
+              "date": "2023-01-17",
+              "equity": 1.0728
+            },
+            {
+              "date": "2023-01-17",
+              "equity": 1.0664
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0661
+              "equity": 1.0665
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0565
+              "equity": 1.0569
             },
             {
               "date": "2023-01-30",
-              "equity": 1.0598
+              "equity": 1.0602
             },
             {
               "date": "2023-01-30",
-              "equity": 1.069
-            },
-            {
-              "date": "2023-01-30",
-              "equity": 1.0703
-            },
-            {
-              "date": "2023-02-02",
-              "equity": 1.07
-            },
-            {
-              "date": "2023-02-13",
               "equity": 1.0694
             },
             {
-              "date": "2023-02-15",
-              "equity": 1.0745
+              "date": "2023-01-30",
+              "equity": 1.0707
+            },
+            {
+              "date": "2023-02-02",
+              "equity": 1.0704
+            },
+            {
+              "date": "2023-02-13",
+              "equity": 1.0698
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0794
+              "equity": 1.0749
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0897
+              "equity": 1.0798
             },
             {
               "date": "2023-02-15",
-              "equity": 1.0945
+              "equity": 1.0901
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1024
+              "equity": 1.0949
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1076
+              "equity": 1.1028
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1102
+              "equity": 1.108
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1083
+              "equity": 1.1106
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1081
+              "equity": 1.1087
             },
             {
               "date": "2023-02-15",
-              "equity": 1.1145
+              "equity": 1.1085
+            },
+            {
+              "date": "2023-02-15",
+              "equity": 1.1149
             },
             {
               "date": "2023-02-20",
-              "equity": 1.1086
+              "equity": 1.109
             },
             {
               "date": "2023-02-20",
-              "equity": 1.1032
+              "equity": 1.1037
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1063
+              "equity": 1.1067
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1084
+              "equity": 1.1088
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1256
+              "equity": 1.126
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1232
+              "equity": 1.1237
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1206
+              "equity": 1.121
             },
             {
               "date": "2023-02-22",
-              "equity": 1.1225
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1313
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1314
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1338
-            },
-            {
-              "date": "2023-02-22",
-              "equity": 1.1297
-            },
-            {
-              "date": "2023-02-23",
               "equity": 1.123
             },
             {
-              "date": "2023-03-01",
-              "equity": 1.1124
+              "date": "2023-02-22",
+              "equity": 1.1317
+            },
+            {
+              "date": "2023-02-22",
+              "equity": 1.1318
+            },
+            {
+              "date": "2023-02-22",
+              "equity": 1.1342
+            },
+            {
+              "date": "2023-02-22",
+              "equity": 1.1301
+            },
+            {
+              "date": "2023-02-24",
+              "equity": 1.1559
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1159
+              "equity": 1.1449
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1089
+              "equity": 1.1485
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1105
+              "equity": 1.1413
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1111
+              "equity": 1.1429
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1093
+              "equity": 1.1436
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1084
+              "equity": 1.1418
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1064
+              "equity": 1.1408
             },
             {
               "date": "2023-03-01",
-              "equity": 1.107
+              "equity": 1.1388
             },
             {
               "date": "2023-03-01",
-              "equity": 1.1019
+              "equity": 1.1394
+            },
+            {
+              "date": "2023-03-01",
+              "equity": 1.1342
             },
             {
               "date": "2023-03-03",
-              "equity": 1.1027
+              "equity": 1.135
             },
             {
-              "date": "2023-03-03",
-              "equity": 1.1173
-            },
-            {
-              "date": "2023-03-06",
-              "equity": 1.1341
+              "date": "2023-03-07",
+              "equity": 1.1249
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1339
+              "equity": 1.1246
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1364
+              "equity": 1.1272
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1363
+              "equity": 1.1271
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1378
+              "equity": 1.1286
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1427
+              "equity": 1.1335
             },
             {
               "date": "2023-03-09",
-              "equity": 1.142
+              "equity": 1.1328
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1414
+              "equity": 1.1323
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1407
+              "equity": 1.1315
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1395
+              "equity": 1.1303
             },
             {
               "date": "2023-03-09",
-              "equity": 1.1392
+              "equity": 1.13
             },
             {
               "date": "2023-03-24",
-              "equity": 1.146
+              "equity": 1.1367
             },
             {
               "date": "2023-03-24",
-              "equity": 1.1452
+              "equity": 1.136
             },
             {
               "date": "2023-03-24",
-              "equity": 1.1481
+              "equity": 1.1389
             },
             {
               "date": "2023-03-24",
-              "equity": 1.1572
+              "equity": 1.1478
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1573
+              "equity": 1.148
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1597
+              "equity": 1.1503
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1592
+              "equity": 1.1499
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1575
+              "equity": 1.1482
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1591
+              "equity": 1.1498
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1572
+              "equity": 1.1478
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1534
+              "equity": 1.1441
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1501
+              "equity": 1.1409
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1475
+              "equity": 1.1383
             },
             {
               "date": "2023-03-28",
-              "equity": 1.1468
+              "equity": 1.1376
             },
             {
               "date": "2023-04-06",
-              "equity": 1.1578
+              "equity": 1.1485
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1589
+              "equity": 1.1496
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1688
+              "equity": 1.1595
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1765
+              "equity": 1.1671
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1757
+              "equity": 1.1663
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1739
+              "equity": 1.1645
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1839
+              "equity": 1.1744
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1851
+              "equity": 1.1756
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1876
+              "equity": 1.1782
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1884
+              "equity": 1.179
             },
             {
               "date": "2023-04-20",
-              "equity": 1.1944
+              "equity": 1.1849
+            },
+            {
+              "date": "2023-05-17",
+              "equity": 1.1866
+            },
+            {
+              "date": "2023-05-17",
+              "equity": 1.2183
+            },
+            {
+              "date": "2023-05-17",
+              "equity": 1.2612
+            },
+            {
+              "date": "2023-05-17",
+              "equity": 1.2659
+            },
+            {
+              "date": "2023-05-17",
+              "equity": 1.2704
+            },
+            {
+              "date": "2023-05-17",
+              "equity": 1.2792
             },
             {
               "date": "2023-05-18",
-              "equity": 1.192
+              "equity": 1.2767
             },
             {
               "date": "2023-05-18",
-              "equity": 1.2112
+              "equity": 1.2972
             },
             {
               "date": "2023-05-18",
-              "equity": 1.2202
-            },
-            {
-              "date": "2023-05-18",
-              "equity": 1.2155
-            },
-            {
-              "date": "2023-05-18",
-              "equity": 1.2542
-            },
-            {
-              "date": "2023-05-18",
-              "equity": 1.2648
-            },
-            {
-              "date": "2023-05-18",
-              "equity": 1.2786
-            },
-            {
-              "date": "2023-05-19",
               "equity": 1.3068
             },
             {
-              "date": "2023-05-19",
-              "equity": 1.3081
+              "date": "2023-05-18",
+              "equity": 1.3018
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.3433
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.3546
+            },
+            {
+              "date": "2023-05-18",
+              "equity": 1.3694
             },
             {
               "date": "2023-05-19",
-              "equity": 1.3223
+              "equity": 1.3997
             },
             {
               "date": "2023-05-19",
-              "equity": 1.3809
+              "equity": 1.401
             },
             {
               "date": "2023-05-19",
-              "equity": 1.3803
+              "equity": 1.4004
             },
             {
               "date": "2023-05-29",
-              "equity": 1.3784
+              "equity": 1.4326
             },
             {
               "date": "2023-05-30",
-              "equity": 1.3712
+              "equity": 1.4423
             },
             {
               "date": "2023-05-31",
-              "equity": 1.3582
+              "equity": 1.4286
             },
             {
               "date": "2023-05-31",
-              "equity": 1.3696
+              "equity": 1.4406
             },
             {
               "date": "2023-05-31",
-              "equity": 1.3603
+              "equity": 1.4309
             },
             {
               "date": "2023-05-31",
-              "equity": 1.3961
+              "equity": 1.4684
             },
             {
-              "date": "2023-06-08",
-              "equity": 1.3978
-            },
-            {
-              "date": "2023-06-09",
-              "equity": 1.4099
+              "date": "2023-05-31",
+              "equity": 1.4858
             },
             {
               "date": "2023-06-12",
-              "equity": 1.4126
+              "equity": 1.4852
             },
             {
-              "date": "2023-06-13",
-              "equity": 1.4047
-            },
-            {
-              "date": "2023-06-16",
-              "equity": 1.4051
+              "date": "2023-06-12",
+              "equity": 1.4881
             },
             {
               "date": "2023-06-16",
-              "equity": 1.4271
+              "equity": 1.4883
             },
             {
               "date": "2023-06-16",
-              "equity": 1.4212
+              "equity": 1.5019
             },
             {
               "date": "2023-06-16",
-              "equity": 1.4236
+              "equity": 1.4987
             },
             {
               "date": "2023-06-16",
-              "equity": 1.4421
+              "equity": 1.5005
             },
             {
               "date": "2023-06-16",
-              "equity": 1.447
+              "equity": 1.5022
             },
             {
               "date": "2023-06-16",
-              "equity": 1.4444
+              "equity": 1.5119
             },
             {
               "date": "2023-06-16",
-              "equity": 1.454
+              "equity": 1.5106
             },
             {
               "date": "2023-06-16",
-              "equity": 1.4723
+              "equity": 1.5175
             },
             {
               "date": "2023-06-16",
-              "equity": 1.5054
+              "equity": 1.5332
+            },
+            {
+              "date": "2023-06-16",
+              "equity": 1.5395
             },
             {
               "date": "2023-07-17",
+              "equity": 1.5526
+            },
+            {
+              "date": "2023-07-17",
+              "equity": 1.5486
+            },
+            {
+              "date": "2023-07-17",
+              "equity": 1.5424
+            },
+            {
+              "date": "2023-07-17",
+              "equity": 1.5471
+            },
+            {
+              "date": "2023-07-17",
+              "equity": 1.5454
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5442
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5427
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5434
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5438
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5455
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5451
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5441
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5466
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5474
+            },
+            {
+              "date": "2023-07-18",
+              "equity": 1.5492
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.5465
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.5465
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.5462
+            },
+            {
+              "date": "2023-07-27",
+              "equity": 1.531
+            },
+            {
+              "date": "2023-07-28",
+              "equity": 1.5218
+            },
+            {
+              "date": "2023-07-31",
               "equity": 1.5183
             },
             {
-              "date": "2023-07-17",
-              "equity": 1.5143
+              "date": "2023-07-31",
+              "equity": 1.5144
             },
             {
-              "date": "2023-07-17",
-              "equity": 1.5082
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.5129
-            },
-            {
-              "date": "2023-07-17",
-              "equity": 1.5112
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.51
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5085
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5092
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5096
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5113
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5109
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5099
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5124
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5131
-            },
-            {
-              "date": "2023-07-18",
-              "equity": 1.5149
-            },
-            {
-              "date": "2023-07-27",
-              "equity": 1.5123
-            },
-            {
-              "date": "2023-07-27",
-              "equity": 1.5123
-            },
-            {
-              "date": "2023-07-27",
+              "date": "2023-07-31",
               "equity": 1.512
             },
             {
-              "date": "2023-07-27",
-              "equity": 1.4971
-            },
-            {
-              "date": "2023-07-28",
-              "equity": 1.4937
-            },
-            {
-              "date": "2023-07-28",
-              "equity": 1.4828
-            },
-            {
-              "date": "2023-07-28",
-              "equity": 1.474
+              "date": "2023-07-31",
+              "equity": 1.5147
             },
             {
               "date": "2023-07-31",
-              "equity": 1.4705
+              "equity": 1.5123
             },
             {
               "date": "2023-07-31",
-              "equity": 1.4668
+              "equity": 1.518
             },
             {
               "date": "2023-07-31",
-              "equity": 1.4644
+              "equity": 1.5186
             },
             {
               "date": "2023-07-31",
-              "equity": 1.467
+              "equity": 1.5143
             },
             {
               "date": "2023-07-31",
-              "equity": 1.4648
+              "equity": 1.5154
             },
             {
               "date": "2023-07-31",
-              "equity": 1.4703
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.4709
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.4667
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.4677
-            },
-            {
-              "date": "2023-07-31",
-              "equity": 1.4655
+              "equity": 1.5131
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4629
+              "equity": 1.5104
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4616
+              "equity": 1.5091
             },
             {
               "date": "2023-08-02",
-              "equity": 1.459
+              "equity": 1.5064
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4566
+              "equity": 1.5039
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4548
+              "equity": 1.502
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4522
+              "equity": 1.4994
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4509
+              "equity": 1.498
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4506
+              "equity": 1.4977
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4504
+              "equity": 1.4975
             },
             {
               "date": "2023-08-02",
-              "equity": 1.4483
+              "equity": 1.4953
             },
             {
               "date": "2023-09-15",
-              "equity": 1.4368
+              "equity": 1.4835
+            },
+            {
+              "date": "2023-09-15",
+              "equity": 1.4682
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4344
+              "equity": 1.4657
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4304
+              "equity": 1.4616
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4236
+              "equity": 1.4546
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4211
+              "equity": 1.4521
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4169
+              "equity": 1.4478
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4133
+              "equity": 1.4441
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4102
+              "equity": 1.4409
             },
             {
               "date": "2023-09-18",
-              "equity": 1.407
+              "equity": 1.4377
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4087
+              "equity": 1.4395
             },
             {
               "date": "2023-09-18",
-              "equity": 1.4057
+              "equity": 1.4363
             },
             {
               "date": "2023-11-07",
-              "equity": 1.4002
+              "equity": 1.4308
             },
             {
               "date": "2023-11-07",
-              "equity": 1.3963
+              "equity": 1.4268
             },
             {
               "date": "2023-11-07",
-              "equity": 1.4119
+              "equity": 1.4428
             },
             {
               "date": "2023-11-07",
-              "equity": 1.4361
+              "equity": 1.4674
             },
             {
               "date": "2023-11-07",
-              "equity": 1.4389
+              "equity": 1.4703
             },
             {
               "date": "2023-11-08",
-              "equity": 1.4625
+              "equity": 1.4944
             },
             {
               "date": "2023-11-08",
-              "equity": 1.4539
+              "equity": 1.4856
             },
             {
               "date": "2023-11-08",
-              "equity": 1.4438
+              "equity": 1.4753
             },
             {
               "date": "2023-11-09",
-              "equity": 1.4447
+              "equity": 1.4762
             },
             {
               "date": "2023-11-09",
-              "equity": 1.4479
+              "equity": 1.4795
             },
             {
               "date": "2023-11-09",
-              "equity": 1.4492
+              "equity": 1.4808
             },
             {
               "date": "2023-11-09",
-              "equity": 1.4812
+              "equity": 1.5135
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4768
+              "equity": 1.509
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4751
+              "equity": 1.5073
             },
             {
               "date": "2023-11-10",
-              "equity": 1.473
+              "equity": 1.5052
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4751
+              "equity": 1.5072
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4745
+              "equity": 1.5067
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4742
+              "equity": 1.5064
             },
             {
               "date": "2023-11-10",
-              "equity": 1.474
+              "equity": 1.5062
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4737
+              "equity": 1.5059
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4692
+              "equity": 1.5013
             },
             {
               "date": "2023-11-10",
-              "equity": 1.4691
-            },
-            {
-              "date": "2023-11-13",
-              "equity": 1.4678
-            },
-            {
-              "date": "2023-11-13",
-              "equity": 1.4807
-            },
-            {
-              "date": "2023-11-13",
-              "equity": 1.4961
-            },
-            {
-              "date": "2023-11-13",
-              "equity": 1.5009
-            },
-            {
-              "date": "2023-11-13",
               "equity": 1.5011
             },
             {
-              "date": "2023-11-14",
-              "equity": 1.5061
+              "date": "2023-11-13",
+              "equity": 1.4998
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.513
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.5287
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.5337
+            },
+            {
+              "date": "2023-11-13",
+              "equity": 1.5339
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4947
+              "equity": 1.539
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4915
+              "equity": 1.5273
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4833
+              "equity": 1.5241
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4854
+              "equity": 1.5156
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4919
+              "equity": 1.5179
             },
             {
               "date": "2023-11-14",
-              "equity": 1.4984
+              "equity": 1.5244
+            },
+            {
+              "date": "2023-11-14",
+              "equity": 1.5311
             },
             {
               "date": "2023-11-15",
-              "equity": 1.4876
+              "equity": 1.52
             },
             {
               "date": "2023-11-15",
-              "equity": 1.5709
+              "equity": 1.6052
+            },
+            {
+              "date": "2023-11-15",
+              "equity": 1.6149
+            },
+            {
+              "date": "2023-11-16",
+              "equity": 1.6117
             },
             {
               "date": "2023-11-20",
-              "equity": 1.5765
+              "equity": 1.6174
             },
             {
               "date": "2023-11-20",
-              "equity": 1.5793
+              "equity": 1.6203
             },
             {
               "date": "2023-11-24",
-              "equity": 1.5793
+              "equity": 1.6278
             },
             {
               "date": "2023-11-27",
-              "equity": 1.5991
+              "equity": 1.6482
             },
             {
               "date": "2023-11-27",
-              "equity": 1.6069
+              "equity": 1.6563
             },
             {
               "date": "2023-11-27",
-              "equity": 1.6094
+              "equity": 1.6589
             },
             {
               "date": "2023-11-27",
-              "equity": 1.5975
-            },
-            {
-              "date": "2023-11-27",
-              "equity": 1.5992
-            },
-            {
-              "date": "2023-11-27",
-              "equity": 1.6087
+              "equity": 1.6466
             },
             {
               "date": "2023-12-01",
-              "equity": 1.676
+              "equity": 1.7154
             },
             {
               "date": "2023-12-05",
-              "equity": 1.676
+              "equity": 1.7154
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6762
+              "equity": 1.7157
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6767
+              "equity": 1.7162
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6755
+              "equity": 1.715
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6724
+              "equity": 1.7118
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6771
+              "equity": 1.7166
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6889
+              "equity": 1.7286
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6965
+              "equity": 1.7364
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6964
+              "equity": 1.7363
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6965
+              "equity": 1.7364
             },
             {
               "date": "2023-12-06",
-              "equity": 1.6964
+              "equity": 1.7363
             },
             {
               "date": "2023-12-27",
-              "equity": 1.6835
+              "equity": 1.7231
             },
             {
               "date": "2023-12-27",
-              "equity": 1.6517
-            },
-            {
-              "date": "2023-12-27",
-              "equity": 1.648
+              "equity": 1.7242
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6414
+              "equity": 1.7174
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6378
+              "equity": 1.7136
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6416
+              "equity": 1.7176
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6397
+              "equity": 1.7156
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6362
+              "equity": 1.712
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6354
+              "equity": 1.7111
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6349
+              "equity": 1.7106
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6339
+              "equity": 1.7095
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6365
+              "equity": 1.7123
             },
             {
               "date": "2023-12-29",
-              "equity": 1.6327
+              "equity": 1.7082
             }
           ],
-          "total_return_pct": 63.27,
-          "max_drawdown_pct": 8.03
+          "total_return_pct": 70.82,
+          "max_drawdown_pct": 8.11
         }
       },
       "benchmark_curve": [
@@ -8612,15 +8850,15 @@
           "stock_phase": "BULL",
           "rs_pct": 97.3,
           "entry": 44.04,
-          "stop": 39.88,
-          "target": 58.39,
+          "stop": 40.04,
+          "target": 57.7,
           "entry_type": "intraday",
           "exit_type": "stop",
           "outcome": "win",
           "gain_pct": 8.59,
-          "actual_rr": 3.45,
+          "actual_rr": 3.42,
           "confirmations": 4,
-          "pos_factor": 0.103,
+          "pos_factor": 0.1071,
           "market_er": 0.019,
           "market_factor": 0.417,
           "sector_key": "鋼鐵",
@@ -8750,9 +8988,9 @@
           "gain_pct": -2.98,
           "actual_rr": 4.2,
           "confirmations": 5,
-          "pos_factor": 0.0401,
+          "pos_factor": 0.0403,
           "market_er": 0.08,
-          "market_factor": 0.411,
+          "market_factor": 0.413,
           "sector_key": "電子零組件",
           "sector_rs_pct": 50.0,
           "high_vol": false
@@ -8776,9 +9014,9 @@
           "gain_pct": 9.24,
           "actual_rr": 1.82,
           "confirmations": 4,
-          "pos_factor": 0.1071,
+          "pos_factor": 0.1076,
           "market_er": 0.08,
-          "market_factor": 0.411,
+          "market_factor": 0.413,
           "sector_key": "",
           "sector_rs_pct": 50.0,
           "high_vol": false
@@ -8802,9 +9040,9 @@
           "gain_pct": 0.0,
           "actual_rr": 2.29,
           "confirmations": 4,
-          "pos_factor": 0.1537,
+          "pos_factor": 0.1544,
           "market_er": 0.08,
-          "market_factor": 0.411,
+          "market_factor": 0.413,
           "sector_key": "鋼鐵",
           "sector_rs_pct": 94.4,
           "high_vol": false
@@ -8828,9 +9066,9 @@
           "gain_pct": 8.61,
           "actual_rr": 3.71,
           "confirmations": 5,
-          "pos_factor": 0.1251,
+          "pos_factor": 0.1257,
           "market_er": 0.08,
-          "market_factor": 0.411,
+          "market_factor": 0.413,
           "sector_key": "半導體",
           "sector_rs_pct": 61.1,
           "high_vol": false
@@ -8854,9 +9092,9 @@
           "gain_pct": 0.62,
           "actual_rr": 3.74,
           "confirmations": 4,
-          "pos_factor": 0.1321,
+          "pos_factor": 0.1327,
           "market_er": 0.08,
-          "market_factor": 0.411,
+          "market_factor": 0.413,
           "sector_key": "",
           "sector_rs_pct": 50.0,
           "high_vol": false
@@ -8872,15 +9110,15 @@
           "stock_phase": "BULL",
           "rs_pct": 93.0,
           "entry": 27.31,
-          "stop": 23.16,
-          "target": 43.75,
+          "stop": 23.33,
+          "target": 43.02,
           "entry_type": "intraday",
           "exit_type": "stop",
           "outcome": "loss",
           "gain_pct": -2.6,
-          "actual_rr": 3.96,
+          "actual_rr": 3.95,
           "confirmations": 4,
-          "pos_factor": 0.0594,
+          "pos_factor": 0.0619,
           "market_er": 0.097,
           "market_factor": 0.446,
           "sector_key": "化學",
@@ -9512,29 +9750,29 @@
           "high_vol": false
         },
         {
-          "date": "2023-02-23",
-          "code": "2455",
+          "date": "2023-02-24",
+          "code": "2402",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
           "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 87.3,
-          "entry": 82.18,
-          "stop": 79.76,
-          "target": 88.59,
+          "rs_pct": 74.9,
+          "entry": 17.45,
+          "stop": 16.62,
+          "target": 19.44,
           "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -2.94,
-          "actual_rr": 2.65,
-          "confirmations": 3,
+          "exit_type": "target",
+          "outcome": "win",
+          "gain_pct": 11.4,
+          "actual_rr": 2.4,
+          "confirmations": 4,
           "pos_factor": 0.2,
-          "market_er": 0.266,
-          "market_factor": 1.391,
-          "sector_key": "半導體",
-          "sector_rs_pct": 66.7,
+          "market_er": 0.212,
+          "market_factor": 1.012,
+          "sector_key": "電子零組件",
+          "sector_rs_pct": 33.3,
           "high_vol": false
         },
         {
@@ -9556,61 +9794,35 @@
           "gain_pct": 1.29,
           "actual_rr": 4.02,
           "confirmations": 5,
-          "pos_factor": 0.0573,
+          "pos_factor": 0.0577,
           "market_er": 0.102,
-          "market_factor": 0.431,
+          "market_factor": 0.434,
           "sector_key": "",
           "sector_rs_pct": 50.0,
           "high_vol": false
         },
         {
-          "date": "2023-03-03",
-          "code": "3231",
+          "date": "2023-03-07",
+          "code": "2328",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
           "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 86.6,
-          "entry": 30.32,
-          "stop": 29.13,
-          "target": 34.08,
+          "rs_pct": 79.3,
+          "entry": 36.71,
+          "stop": 35.07,
+          "target": 39.81,
           "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 9.02,
-          "actual_rr": 3.16,
-          "confirmations": 3,
-          "pos_factor": 0.1464,
-          "market_er": 0.102,
-          "market_factor": 0.431,
-          "sector_key": "電腦週邊",
-          "sector_rs_pct": 77.8,
-          "high_vol": false
-        },
-        {
-          "date": "2023-03-06",
-          "code": "2413",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 87.0,
-          "entry": 29.68,
-          "stop": 28.26,
-          "target": 33.15,
-          "entry_type": "intraday",
-          "exit_type": "target",
-          "outcome": "win",
-          "gain_pct": 11.69,
-          "actual_rr": 2.44,
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -4.47,
+          "actual_rr": 1.89,
           "confirmations": 4,
-          "pos_factor": 0.1283,
-          "market_er": 0.092,
-          "market_factor": 0.465,
+          "pos_factor": 0.1997,
+          "market_er": 0.133,
+          "market_factor": 0.676,
           "sector_key": "",
           "sector_rs_pct": 50.0,
           "high_vol": false
@@ -9743,6 +9955,162 @@
           "market_factor": 0.373,
           "sector_key": "",
           "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-05-17",
+          "code": "3701",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 94.6,
+          "entry": 63.25,
+          "stop": 51.58,
+          "target": 104.78,
+          "entry_type": "intraday",
+          "exit_type": "stop",
+          "outcome": "win",
+          "gain_pct": 3.29,
+          "actual_rr": 3.56,
+          "confirmations": 5,
+          "pos_factor": 0.0442,
+          "market_er": 0.032,
+          "market_factor": 0.333,
+          "sector_key": "電腦週邊",
+          "sector_rs_pct": 83.3,
+          "high_vol": false
+        },
+        {
+          "date": "2023-05-17",
+          "code": "2376",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 90.0,
+          "entry": 140.82,
+          "stop": 118.29,
+          "target": 221.97,
+          "entry_type": "gap_up",
+          "exit_type": "stop",
+          "outcome": "win",
+          "gain_pct": 59.28,
+          "actual_rr": 3.6,
+          "confirmations": 5,
+          "pos_factor": 0.045,
+          "market_er": 0.032,
+          "market_factor": 0.333,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-05-17",
+          "code": "3583",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 87.6,
+          "entry": 91.23,
+          "stop": 79.37,
+          "target": 136.4,
+          "entry_type": "gap_up",
+          "exit_type": "stop",
+          "outcome": "win",
+          "gain_pct": 62.42,
+          "actual_rr": 3.81,
+          "confirmations": 5,
+          "pos_factor": 0.0565,
+          "market_er": 0.032,
+          "market_factor": 0.333,
+          "sector_key": "半導體",
+          "sector_rs_pct": 55.6,
+          "high_vol": false
+        },
+        {
+          "date": "2023-05-17",
+          "code": "8112",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 79.6,
+          "entry": 35.75,
+          "stop": 34.4,
+          "target": 39.88,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 2.84,
+          "actual_rr": 3.06,
+          "confirmations": 5,
+          "pos_factor": 0.1298,
+          "market_er": 0.032,
+          "market_factor": 0.333,
+          "sector_key": "半導體",
+          "sector_rs_pct": 55.6,
+          "high_vol": false
+        },
+        {
+          "date": "2023-05-17",
+          "code": "6239",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "RANGE",
+          "rs_pct": 70.9,
+          "entry": 81.88,
+          "stop": 78.34,
+          "target": 87.44,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 3.88,
+          "actual_rr": 1.57,
+          "confirmations": 3,
+          "pos_factor": 0.0924,
+          "market_er": 0.032,
+          "market_factor": 0.333,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-05-17",
+          "code": "6176",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 70.6,
+          "entry": 93.68,
+          "stop": 91.03,
+          "target": 101.67,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 4.08,
+          "actual_rr": 3.02,
+          "confirmations": 4,
+          "pos_factor": 0.1692,
+          "market_er": 0.032,
+          "market_factor": 0.333,
+          "sector_key": "電子零組件",
+          "sector_rs_pct": 72.2,
           "high_vol": false
         },
         {
@@ -9981,58 +10349,6 @@
         },
         {
           "date": "2023-05-19",
-          "code": "3005",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 94.0,
-          "entry": 56.97,
-          "stop": 48.37,
-          "target": 90.3,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "win",
-          "gain_pct": 7.57,
-          "actual_rr": 3.88,
-          "confirmations": 4,
-          "pos_factor": 0.1431,
-          "market_er": 0.251,
-          "market_factor": 1.091,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
-          "date": "2023-05-19",
-          "code": "2376",
-          "type": "breakout",
-          "label": "突破",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 92.3,
-          "entry": 151.74,
-          "stop": 120.89,
-          "target": 281.82,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "win",
-          "gain_pct": 47.82,
-          "actual_rr": 4.22,
-          "confirmations": 5,
-          "pos_factor": 0.0927,
-          "market_er": 0.251,
-          "market_factor": 1.091,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
-          "date": "2023-05-19",
           "code": "1229",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
@@ -10059,24 +10375,24 @@
         },
         {
           "date": "2023-05-29",
-          "code": "2633",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
+          "code": "2352",
+          "type": "high_base",
+          "label": "強整再突",
           "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 68.2,
-          "entry": 29.91,
-          "stop": 28.83,
-          "target": 32.5,
+          "rs_pct": 87.3,
+          "entry": 41.81,
+          "stop": 34.45,
+          "target": 71.15,
           "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "loss",
-          "gain_pct": -0.69,
-          "actual_rr": 2.4,
-          "confirmations": 2,
-          "pos_factor": 0.2,
+          "exit_type": "stop",
+          "outcome": "win",
+          "gain_pct": 13.64,
+          "actual_rr": 3.99,
+          "confirmations": 4,
+          "pos_factor": 0.1687,
           "market_er": 0.592,
           "market_factor": 1.5,
           "sector_key": "",
@@ -10085,28 +10401,28 @@
         },
         {
           "date": "2023-05-30",
-          "code": "3380",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "strong",
+          "code": "2349",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 77.9,
-          "entry": 34.48,
-          "stop": 31.67,
-          "target": 43.32,
+          "rs_pct": 69.9,
+          "entry": 9.43,
+          "stop": 8.98,
+          "target": 10.36,
           "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -2.59,
-          "actual_rr": 3.15,
-          "confirmations": 5,
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 3.39,
+          "actual_rr": 2.07,
+          "confirmations": 2,
           "pos_factor": 0.2,
           "market_er": 0.566,
           "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
+          "sector_key": "電腦週邊",
+          "sector_rs_pct": 94.4,
           "high_vol": false
         },
         {
@@ -10214,55 +10530,55 @@
           "high_vol": false
         },
         {
-          "date": "2023-06-08",
-          "code": "2887",
+          "date": "2023-05-31",
+          "code": "8112",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
           "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "RANGE",
-          "rs_pct": 75.6,
-          "entry": 15.57,
-          "stop": 15.02,
-          "target": 16.42,
+          "rs_pct": 71.6,
+          "entry": 36.62,
+          "stop": 35.25,
+          "target": 38.79,
           "entry_type": "intraday",
-          "exit_type": "expired",
+          "exit_type": "target",
           "outcome": "win",
-          "gain_pct": 0.64,
-          "actual_rr": 1.55,
+          "gain_pct": 5.93,
+          "actual_rr": 1.58,
           "confirmations": 3,
           "pos_factor": 0.2,
-          "market_er": 0.616,
+          "market_er": 0.602,
           "market_factor": 1.5,
-          "sector_key": "金融保險",
-          "sector_rs_pct": 55.6,
+          "sector_key": "半導體",
+          "sector_rs_pct": 66.7,
           "high_vol": false
         },
         {
-          "date": "2023-06-09",
-          "code": "2105",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
+          "date": "2023-06-12",
+          "code": "2408",
+          "type": "high_base",
+          "label": "強整再突",
           "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 71.6,
-          "entry": 35.87,
-          "stop": 34.94,
-          "target": 38.61,
-          "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 4.31,
-          "actual_rr": 2.95,
+          "rs_pct": 81.3,
+          "entry": 71.63,
+          "stop": 63.99,
+          "target": 99.74,
+          "entry_type": "gap_up",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -0.21,
+          "actual_rr": 3.68,
           "confirmations": 4,
           "pos_factor": 0.2,
-          "market_er": 0.653,
+          "market_er": 0.685,
           "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
+          "sector_key": "半導體",
+          "sector_rs_pct": 72.2,
           "high_vol": false
         },
         {
@@ -10289,32 +10605,6 @@
           "market_factor": 1.5,
           "sector_key": "電子通路",
           "sector_rs_pct": 66.7,
-          "high_vol": false
-        },
-        {
-          "date": "2023-06-13",
-          "code": "3056",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 84.9,
-          "entry": 20.45,
-          "stop": 19.88,
-          "target": 22.01,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -2.79,
-          "actual_rr": 2.74,
-          "confirmations": 4,
-          "pos_factor": 0.2,
-          "market_er": 0.693,
-          "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
           "high_vol": false
         },
         {
@@ -10553,58 +10843,6 @@
         },
         {
           "date": "2023-07-28",
-          "code": "2383",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "strong",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 97.0,
-          "entry": 406.81,
-          "stop": 244.74,
-          "target": 1048.33,
-          "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -5.21,
-          "actual_rr": 3.96,
-          "confirmations": 5,
-          "pos_factor": 0.0434,
-          "market_er": 0.177,
-          "market_factor": 0.72,
-          "sector_key": "電子零組件",
-          "sector_rs_pct": 77.8,
-          "high_vol": false
-        },
-        {
-          "date": "2023-07-28",
-          "code": "2402",
-          "type": "high_base",
-          "label": "強整再突",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 90.3,
-          "entry": 34.01,
-          "stop": 28.27,
-          "target": 53.22,
-          "entry_type": "gap_up",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": -7.77,
-          "actual_rr": 3.35,
-          "confirmations": 4,
-          "pos_factor": 0.0938,
-          "market_er": 0.177,
-          "market_factor": 0.72,
-          "sector_key": "電子零組件",
-          "sector_rs_pct": 77.8,
-          "high_vol": false
-        },
-        {
-          "date": "2023-07-28",
           "code": "2887",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
@@ -10653,6 +10891,32 @@
           "market_factor": 1.309,
           "sector_key": "",
           "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-09-15",
+          "code": "2388",
+          "type": "high_base",
+          "label": "強整再突",
+          "strength": "strong",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 93.0,
+          "entry": 122.12,
+          "stop": 107.67,
+          "target": 170.71,
+          "entry_type": "intraday",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -5.16,
+          "actual_rr": 3.36,
+          "confirmations": 5,
+          "pos_factor": 0.2,
+          "market_er": 0.269,
+          "market_factor": 1.309,
+          "sector_key": "半導體",
+          "sector_rs_pct": 88.9,
           "high_vol": false
         },
         {
@@ -11332,6 +11596,58 @@
           "high_vol": false
         },
         {
+          "date": "2023-11-15",
+          "code": "2474",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 66.2,
+          "entry": 163.76,
+          "stop": 157.47,
+          "target": 180.24,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 3.01,
+          "actual_rr": 2.62,
+          "confirmations": 4,
+          "pos_factor": 0.2,
+          "market_er": 0.33,
+          "market_factor": 1.5,
+          "sector_key": "電機機械",
+          "sector_rs_pct": 66.7,
+          "high_vol": false
+        },
+        {
+          "date": "2023-11-16",
+          "code": "2887",
+          "type": "ma_pullback",
+          "label": "均線回測(起漲型)",
+          "strength": "weak",
+          "strategy": "swing",
+          "regime": "bull",
+          "stock_phase": "RANGE",
+          "rs_pct": 53.2,
+          "entry": 15.98,
+          "stop": 15.36,
+          "target": 16.97,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "loss",
+          "gain_pct": -0.98,
+          "actual_rr": 1.6,
+          "confirmations": 3,
+          "pos_factor": 0.2,
+          "market_er": 0.34,
+          "market_factor": 1.5,
+          "sector_key": "金融保險",
+          "sector_rs_pct": 55.6,
+          "high_vol": false
+        },
+        {
           "date": "2023-11-20",
           "code": "3042",
           "type": "ma_pullback",
@@ -11385,28 +11701,28 @@
         },
         {
           "date": "2023-11-24",
-          "code": "2329",
+          "code": "2006",
           "type": "ma_pullback",
           "label": "均線回測(主升型)",
           "strength": "medium",
           "strategy": "trend",
           "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 94.6,
-          "entry": 46.89,
-          "stop": 44.06,
-          "target": 53.05,
+          "stock_phase": "RANGE",
+          "rs_pct": 80.9,
+          "entry": 58.81,
+          "stop": 56.42,
+          "target": 62.42,
           "entry_type": "intraday",
-          "exit_type": "stop",
-          "outcome": "loss",
-          "gain_pct": 0.0,
-          "actual_rr": 2.18,
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 2.32,
+          "actual_rr": 1.51,
           "confirmations": 3,
           "pos_factor": 0.2,
           "market_er": 0.629,
           "market_factor": 1.5,
-          "sector_key": "半導體",
-          "sector_rs_pct": 94.4,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
           "high_vol": false
         },
         {
@@ -11514,58 +11830,6 @@
           "high_vol": false
         },
         {
-          "date": "2023-11-27",
-          "code": "2891",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 75.3,
-          "entry": 24.85,
-          "stop": 23.25,
-          "target": 28.14,
-          "entry_type": "gap_up",
-          "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 0.53,
-          "actual_rr": 2.06,
-          "confirmations": 3,
-          "pos_factor": 0.2,
-          "market_er": 0.502,
-          "market_factor": 1.5,
-          "sector_key": "金融保險",
-          "sector_rs_pct": 55.6,
-          "high_vol": false
-        },
-        {
-          "date": "2023-11-27",
-          "code": "2441",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 66.9,
-          "entry": 54.5,
-          "stop": 52.71,
-          "target": 57.28,
-          "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 2.98,
-          "actual_rr": 1.55,
-          "confirmations": 3,
-          "pos_factor": 0.2,
-          "market_er": 0.502,
-          "market_factor": 1.5,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
-          "high_vol": false
-        },
-        {
           "date": "2023-12-01",
           "code": "6239",
           "type": "breakout",
@@ -11645,54 +11909,28 @@
         },
         {
           "date": "2023-12-27",
-          "code": "3006",
+          "code": "2344",
           "type": "high_base",
           "label": "強整再突",
           "strength": "strong",
           "strategy": "trend",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 91.0,
-          "entry": 105.45,
-          "stop": 89.68,
-          "target": 164.64,
-          "entry_type": "gap_up",
+          "rs_pct": 80.9,
+          "entry": 30.19,
+          "stop": 26.95,
+          "target": 41.04,
+          "entry_type": "intraday",
           "exit_type": "expired",
-          "outcome": "loss",
-          "gain_pct": -9.44,
-          "actual_rr": 3.75,
+          "outcome": "win",
+          "gain_pct": 0.34,
+          "actual_rr": 3.35,
           "confirmations": 5,
           "pos_factor": 0.2,
           "market_er": 0.406,
           "market_factor": 1.409,
           "sector_key": "半導體",
           "sector_rs_pct": 94.4,
-          "high_vol": false
-        },
-        {
-          "date": "2023-12-27",
-          "code": "2347",
-          "type": "ma_pullback",
-          "label": "均線回測(主升型)",
-          "strength": "medium",
-          "strategy": "trend",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 70.2,
-          "entry": 64.62,
-          "stop": 61.78,
-          "target": 73.49,
-          "entry_type": "intraday",
-          "exit_type": "expired",
-          "outcome": "loss",
-          "gain_pct": -1.13,
-          "actual_rr": 3.12,
-          "confirmations": 4,
-          "pos_factor": 0.2,
-          "market_er": 0.406,
-          "market_factor": 1.409,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
           "high_vol": false
         }
       ],
@@ -12756,7 +12994,7 @@
           "gain_pct": -0.89,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12782,7 +13020,7 @@
           "gain_pct": 10.59,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12808,7 +13046,7 @@
           "gain_pct": -0.64,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12834,7 +13072,7 @@
           "gain_pct": 6.24,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12860,7 +13098,7 @@
           "gain_pct": 19.84,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "電機機械",
@@ -12886,7 +13124,7 @@
           "gain_pct": -2.69,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12912,7 +13150,7 @@
           "gain_pct": -2.22,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "電腦週邊",
@@ -12938,7 +13176,7 @@
           "gain_pct": -3.05,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12964,7 +13202,7 @@
           "gain_pct": -4.99,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -12990,7 +13228,7 @@
           "gain_pct": -1.32,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0215,
+          "pos_factor": 0.0217,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13276,7 +13514,7 @@
           "gain_pct": 4.37,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13302,7 +13540,7 @@
           "gain_pct": 38.81,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13328,7 +13566,7 @@
           "gain_pct": 29.74,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13354,7 +13592,7 @@
           "gain_pct": -3.06,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "半導體",
@@ -13380,7 +13618,7 @@
           "gain_pct": -6.92,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13406,7 +13644,7 @@
           "gain_pct": 38.52,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "電機機械",
@@ -13432,7 +13670,7 @@
           "gain_pct": 4.66,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "電子零組件",
@@ -13458,7 +13696,7 @@
           "gain_pct": 9.9,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13484,7 +13722,7 @@
           "gain_pct": 3.04,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13510,7 +13748,7 @@
           "gain_pct": 22.7,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.022,
+          "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13527,16 +13765,16 @@
           "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 99.7,
-          "entry": 38.86,
+          "entry": 38.79,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "win",
-          "gain_pct": 0.72,
+          "gain_pct": 0.9,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13553,16 +13791,16 @@
           "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 100.0,
-          "entry": 93.86,
+          "entry": 85.47,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "win",
-          "gain_pct": 40.85,
+          "gain_pct": 54.67,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "電機機械",
@@ -13579,68 +13817,16 @@
           "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 92.6,
-          "entry": 492.04,
+          "entry": 502.52,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "loss",
-          "gain_pct": -10.78,
+          "gain_pct": -12.64,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
-          "market_er": 0.0,
-          "market_factor": 1.0,
-          "sector_key": "",
-          "sector_rs_pct": 0.0,
-          "high_vol": false
-        },
-        {
-          "date": "2023-06-16",
-          "code": "2457",
-          "type": "beta_momentum",
-          "label": "RSβ-bull",
-          "strength": "beta",
-          "strategy": "beta",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 91.3,
-          "entry": 74.16,
-          "stop": 0.0,
-          "target": 0.0,
-          "entry_type": "beta",
-          "exit_type": "regime_change",
-          "outcome": "win",
-          "gain_pct": 4.35,
-          "actual_rr": 0.0,
-          "confirmations": 0,
-          "pos_factor": 0.0384,
-          "market_er": 0.0,
-          "market_factor": 1.0,
-          "sector_key": "",
-          "sector_rs_pct": 0.0,
-          "high_vol": false
-        },
-        {
-          "date": "2023-06-16",
-          "code": "2206",
-          "type": "beta_momentum",
-          "label": "RSβ-bull",
-          "strength": "beta",
-          "strategy": "beta",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 99.0,
-          "entry": 61.38,
-          "stop": 0.0,
-          "target": 0.0,
-          "entry_type": "beta",
-          "exit_type": "regime_change",
-          "outcome": "win",
-          "gain_pct": 33.82,
-          "actual_rr": 0.0,
-          "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13657,16 +13843,68 @@
           "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 91.0,
-          "entry": 64.0,
+          "entry": 65.0,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "win",
-          "gain_pct": 8.91,
+          "gain_pct": 7.23,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-06-16",
+          "code": "2457",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 91.3,
+          "entry": 72.5,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 6.75,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.0167,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-06-16",
+          "code": "2206",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 99.0,
+          "entry": 59.32,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 38.46,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13683,16 +13921,16 @@
           "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 85.6,
-          "entry": 29.35,
+          "entry": 29.45,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "loss",
-          "gain_pct": -4.77,
+          "gain_pct": -5.09,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "",
@@ -13701,53 +13939,27 @@
         },
         {
           "date": "2023-06-16",
-          "code": "1504",
+          "code": "3661",
           "type": "beta_momentum",
           "label": "RSβ-bull",
           "strength": "beta",
           "strategy": "beta",
           "regime": "bull",
           "stock_phase": "BULL",
-          "rs_pct": 96.7,
-          "entry": 44.61,
+          "rs_pct": 97.0,
+          "entry": 1409.96,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "win",
-          "gain_pct": 17.35,
+          "gain_pct": 27.34,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
-          "sector_rs_pct": 0.0,
-          "high_vol": false
-        },
-        {
-          "date": "2023-06-16",
-          "code": "3017",
-          "type": "beta_momentum",
-          "label": "RSβ-bull",
-          "strength": "beta",
-          "strategy": "beta",
-          "regime": "bull",
-          "stock_phase": "BULL",
-          "rs_pct": 98.3,
-          "entry": 179.89,
-          "stop": 0.0,
-          "target": 0.0,
-          "entry_type": "beta",
-          "exit_type": "regime_change",
-          "outcome": "win",
-          "gain_pct": 32.8,
-          "actual_rr": 0.0,
-          "confirmations": 0,
-          "pos_factor": 0.0384,
-          "market_er": 0.0,
-          "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "半導體",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -13761,19 +13973,45 @@
           "regime": "bull",
           "stock_phase": "BULL",
           "rs_pct": 99.3,
-          "entry": 46.59,
+          "entry": 45.53,
           "stop": 0.0,
           "target": 0.0,
           "entry_type": "beta",
           "exit_type": "regime_change",
           "outcome": "win",
-          "gain_pct": 58.5,
+          "gain_pct": 62.18,
           "actual_rr": 0.0,
           "confirmations": 0,
-          "pos_factor": 0.0384,
+          "pos_factor": 0.0167,
           "market_er": 0.0,
           "market_factor": 1.0,
           "sector_key": "電腦週邊",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-06-16",
+          "code": "1504",
+          "type": "beta_momentum",
+          "label": "RSβ-bull",
+          "strength": "beta",
+          "strategy": "beta",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 96.7,
+          "entry": 42.1,
+          "stop": 0.0,
+          "target": 0.0,
+          "entry_type": "beta",
+          "exit_type": "regime_change",
+          "outcome": "win",
+          "gain_pct": 24.34,
+          "actual_rr": 0.0,
+          "confirmations": 0,
+          "pos_factor": 0.0167,
+          "market_er": 0.0,
+          "market_factor": 1.0,
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -19611,7 +19849,7 @@
           "confirmations": 4,
           "pos_factor": 0.2,
           "market_er": 0.308,
-          "market_factor": 1.305,
+          "market_factor": 1.297,
           "sector_key": "電腦週邊",
           "sector_rs_pct": 76.5,
           "high_vol": false
@@ -36154,21 +36392,21 @@
   },
   "summary": {
     "2022": {
-      "return_fixed": -13.01,
-      "maxdd_fixed": 13.24,
-      "return_compound": -12.42,
-      "maxdd_compound": 12.63,
-      "win_rate": 34.3,
-      "expectancy": -1.53,
-      "count": 70
+      "return_fixed": -5.19,
+      "maxdd_fixed": 11.82,
+      "return_compound": -5.38,
+      "maxdd_compound": 11.31,
+      "win_rate": 35.8,
+      "expectancy": -1.06,
+      "count": 67
     },
     "2023": {
-      "return_fixed": 49.88,
-      "maxdd_fixed": 5.87,
-      "return_compound": 63.27,
-      "maxdd_compound": 8.03,
-      "win_rate": 54.5,
-      "expectancy": 3.11,
+      "return_fixed": 54.38,
+      "maxdd_fixed": 5.83,
+      "return_compound": 70.82,
+      "maxdd_compound": 8.11,
+      "win_rate": 58.7,
+      "expectancy": 4.05,
       "count": 121
     },
     "2024": {
