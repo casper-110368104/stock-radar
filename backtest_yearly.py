@@ -25,7 +25,7 @@ from backtest_q1 import (
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
-    BETA_ALLOC_MAX, BETA_RS_THRESHOLD,
+    BETA_ALLOC_MAX, BETA_TOP_N,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -293,11 +293,11 @@ def main():
             else:
                 _sec_pct = {s: 50.0 for s in _sec_avg}
 
-            # ── RS Beta Layer：連續曝險 × 分散持股（非空頭相位自動持有）
-            _in_bear = (regime == "bear")
+            # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
+            _in_bull = (regime == "bull")
 
-            # 關閉 beta 部位：只在進入 bear 時出場（bull/pullback/range 之間不翻倉）
-            if beta_mode is not None and _in_bear:
+            # 關閉 beta 部位：離開 bull 即出場
+            if beta_mode is not None and not _in_bull:
                 _n_beta  = max(len(beta_entries), 1)
                 _pf_each = round(beta_alloc_at_open / _n_beta, 4)
                 for b_code, b_entry_px in beta_entries.items():
@@ -312,17 +312,17 @@ def main():
                         "date":          q_date.strftime("%Y-%m-%d"),
                         "code":          b_code,
                         "type":          "beta_momentum",
-                        "label":         f"RSβ({beta_open_regime})",
+                        "label":         "RSβ-bull",
                         "strength":      "beta",
                         "strategy":      "beta",
-                        "regime":        beta_open_regime,
+                        "regime":        "bull",
                         "stock_phase":   "BULL",
                         "rs_pct":        rs_pct_map.get(b_code, 80.0),
                         "entry":         round(b_entry_px, 2),
                         "stop":          0.0,
                         "target":        0.0,
                         "entry_type":    "beta",
-                        "exit_type":     "bear_entry",
+                        "exit_type":     "regime_change",
                         "outcome":       "win" if b_gain >= 0 else "loss",
                         "gain_pct":      b_gain,
                         "actual_rr":     0.0,
@@ -340,9 +340,9 @@ def main():
                 beta_alloc_at_open = 0.0
                 beta_open_regime   = None
 
-            # 開新 beta 部位：從 bear 進入非空頭相位，RS前20%等權（market_factor 連續縮放）
-            if beta_mode is None and not _in_bear:
-                top_codes   = [c for c in rs_pct_map if rs_pct_map[c] >= BETA_RS_THRESHOLD]
+            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（market_factor 連續縮放）
+            if beta_mode is None and _in_bull:
+                top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
                 _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
@@ -356,7 +356,7 @@ def main():
                     beta_entry_date    = q_date
                     beta_mode          = "active"
                     beta_alloc_at_open = _beta_alloc
-                    beta_open_regime   = regime
+                    beta_open_regime   = "bull"
 
             day_count    = 0
             daily_hb_cnt = 0
@@ -573,7 +573,7 @@ def main():
                     "date":          _yr_last_d.strftime("%Y-%m-%d"),
                     "code":          b_code,
                     "type":          "beta_momentum",
-                    "label":         f"RSβ({beta_open_regime})",
+                    "label":         "RSβ-bull",
                     "strength":      "beta",
                     "strategy":      "beta",
                     "regime":        beta_open_regime,
