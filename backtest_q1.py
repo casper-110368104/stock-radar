@@ -53,8 +53,9 @@ MAX_HEAT     = 0.15   # 向後相容備用
 # - 觸發：只在 bull（MA60+MA120+廣度三重確認），離開 bull 即平倉
 # - 持股：前 10 強 RS 個股（集中動能，非純分散 beta）
 # - 配置：market_factor × BETA_ALLOC_MAX（bull 強時多配，弱時少配，無新參數）
-BETA_ALLOC_MAX = 0.50   # bull 相位最大 beta 曝險（market_factor=1.0 時 = 50%）
-BETA_TOP_N     = 10     # beta 持股數
+BETA_ALLOC_MAX     = 0.50   # bull 相位最大 beta 曝險（market_factor=1.0 時 = 50%）
+BETA_TOP_N         = 10     # beta 持股數
+BETA_TOP_SECTORS   = 3      # beta pool 限縮在前 N 強類股（方向2）
 SECTOR_GATE_THRESHOLD = 30.0  # 類股綜合分數低於此值，bull/bull_pullback 不進場
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
@@ -382,6 +383,20 @@ def _stock_phase(rs_pct, m_z, snap):
 
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
+def _gate_blocked_summary(log):
+    if not log:
+        return {"total": 0, "by_sector": {}, "avg_combined": 0.0}
+    by_sec = {}
+    for r in log:
+        by_sec.setdefault(r["sector"], []).append(r["combined"])
+    return {
+        "total":      len(log),
+        "avg_combined": round(sum(r["combined"] for r in log) / len(log), 1),
+        "by_sector":  {s: {"count": len(v), "avg_combined": round(sum(v)/len(v), 1)}
+                       for s, v in sorted(by_sec.items(), key=lambda x: -len(x[1]))},
+    }
+
+
 def _stats(trades):
     wins    = [t for t in trades if t["outcome"] == "win"  and not math.isnan(t.get("gain_pct", 0))]
     loss    = [t for t in trades if t["outcome"] == "loss" and not math.isnan(t.get("gain_pct", 0))]
@@ -641,6 +656,7 @@ def main():
     breadth_history    = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
     vix_history        = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
     sector_rs_history  = defaultdict(lambda: deque(maxlen=20))  # 類股 RS 歷史（供 slope 計算）
+    gate_blocked_log   = []  # debug：被 sector gate 擋掉的紀錄
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
     beta_trades        = []
@@ -821,9 +837,12 @@ def main():
             beta_alloc_at_open = 0.0
             beta_open_regime   = None
 
-        # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（market_factor 連續縮放配置）
+        # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（限縮在前 N 強類股）
         if beta_mode is None and _in_bull:
-            top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+            _top_sec_keys = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)[:BETA_TOP_SECTORS]
+            _top_sec_set  = set(_top_sec_keys)
+            _beta_pool    = [c for c in rs_pct_map if sector_map.get(c, "") in _top_sec_set]
+            top_codes     = sorted(_beta_pool, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
             _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
             new_beta = {}
             for b_code in top_codes:
@@ -871,6 +890,13 @@ def main():
 
             # ── 類股門檻：多頭環境不在末段班類股開倉（底部三分之一排除）
             if _eff_regime in ("bull", "bull_pullback") and _code_sec_combined < SECTOR_GATE_THRESHOLD:
+                gate_blocked_log.append({
+                    "date":     q_date.strftime("%Y-%m-%d"),
+                    "code":     code,
+                    "sector":   _code_sk,
+                    "combined": _code_sec_combined,
+                    "regime":   _eff_regime,
+                })
                 continue
 
             snap["m_z"]            = m_z
@@ -1163,6 +1189,7 @@ def main():
         "benchmark_curve":    benchmark_curve,
         "trades":             trades,
         "beta_trades":        beta_trades,
+        "gate_blocked_summary": _gate_blocked_summary(gate_blocked_log),
     }
 
     curves = result["capital_curves"]

@@ -21,11 +21,11 @@ from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
     _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
-    _vix_overlay, _breadth_divergence,
+    _vix_overlay, _breadth_divergence, _gate_blocked_summary,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
-    BETA_ALLOC_MAX, BETA_TOP_N, SECTOR_GATE_THRESHOLD,
+    BETA_ALLOC_MAX, BETA_TOP_N, BETA_TOP_SECTORS, SECTOR_GATE_THRESHOLD,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -195,6 +195,7 @@ def main():
         breadth_history   = deque(maxlen=15)
         vix_history       = deque(maxlen=25)
         sector_rs_history = defaultdict(lambda: deque(maxlen=20))
+        gate_blocked_log  = []
 
         # ── RS Beta Layer 狀態（每年重置）
         beta_trades        = []
@@ -360,9 +361,12 @@ def main():
                 beta_alloc_at_open = 0.0
                 beta_open_regime   = None
 
-            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（market_factor 連續縮放）
+            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（限縮在前 N 強類股）
             if beta_mode is None and _in_bull:
-                top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                _top_sec_keys = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)[:BETA_TOP_SECTORS]
+                _top_sec_set  = set(_top_sec_keys)
+                _beta_pool    = [c for c in rs_pct_map if sector_map.get(c, "") in _top_sec_set]
+                top_codes     = sorted(_beta_pool, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
                 _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
@@ -407,6 +411,13 @@ def main():
                 _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
                 if _eff_regime in ("bull", "bull_pullback") and _code_sec_combined < SECTOR_GATE_THRESHOLD:
+                    gate_blocked_log.append({
+                        "date":     q_date.strftime("%Y-%m-%d"),
+                        "code":     code,
+                        "sector":   _code_sk,
+                        "combined": _code_sec_combined,
+                        "regime":   _eff_regime,
+                    })
                     continue
 
                 snap["m_z"]            = m_z
@@ -668,6 +679,7 @@ def main():
             "benchmark_curve": _bench,
             "trades":         trades,
             "beta_trades":    beta_trades,
+            "gate_blocked_summary": _gate_blocked_summary(gate_blocked_log),
         }
 
     # ── 最終輸出 ─────────────────────────────────────────────────────
