@@ -55,6 +55,7 @@ MAX_HEAT     = 0.15   # 向後相容備用
 # - 配置：market_factor × BETA_ALLOC_MAX（bull 強時多配，弱時少配，無新參數）
 BETA_ALLOC_MAX = 0.50   # bull 相位最大 beta 曝險（market_factor=1.0 時 = 50%）
 BETA_TOP_N     = 10     # beta 持股數
+SECTOR_GATE_THRESHOLD = 30.0  # 類股綜合分數低於此值，bull/bull_pullback 不進場
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
@@ -635,10 +636,11 @@ def main():
 
     # ── Step 3: Walk-Forward 主迴圈 ──────────────────────────────
     print(f"\n[4] Walk-Forward 逐日掃描（{len(q1_dates)} 個交易日）...")
-    trades          = []
-    open_positions  = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
-    breadth_history = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
-    vix_history     = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
+    trades             = []
+    open_positions     = []   # (exit_date, heat_fraction) — portfolio heat 追蹤
+    breadth_history    = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
+    vix_history        = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
+    sector_rs_history  = defaultdict(lambda: deque(maxlen=20))  # 類股 RS 歷史（供 slope 計算）
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
     beta_trades        = []
@@ -751,6 +753,26 @@ def main():
         else:
             _sec_pct = {s: 50.0 for s in _sec_avg}
 
+        # ── 類股動能（sector RS slope）：10日變化速率百分位
+        for _sk, _savg in _sec_avg.items():
+            sector_rs_history[_sk].append(_savg)
+        _sec_slope_raw = {
+            _sk: (list(sector_rs_history[_sk])[-1] - list(sector_rs_history[_sk])[-10])
+                 if len(sector_rs_history[_sk]) >= 10 else 0.0
+            for _sk in _sec_avg
+        }
+        if len(_sec_slope_raw) > 1:
+            _ssl  = sorted(_sec_slope_raw, key=lambda s: _sec_slope_raw[s])
+            _sln  = len(_ssl)
+            _sec_slope_pct = {s: round(i / (_sln - 1) * 100, 1) for i, s in enumerate(_ssl)}
+        else:
+            _sec_slope_pct = {s: 50.0 for s in _sec_slope_raw}
+        # 綜合分數：靜態水位（現在在哪）+ 動能方向（往哪走），各半
+        _sec_combined_pct = {
+            sk: round(0.5 * _sec_pct.get(sk, 50.0) + 0.5 * _sec_slope_pct.get(sk, 50.0), 1)
+            for sk in _sec_avg
+        }
+
         # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
         # 使用 regime（非 eff_regime）：基於基本面相位，不受 VIX 短線擾動
         _in_bull = (regime == "bull")
@@ -843,8 +865,13 @@ def main():
             m_z, _ = _rs_metrics(dr)
             slope  = _rs_slope(dr)
 
-            _code_sk       = sector_map.get(code, "")
-            _code_sec_pct  = _sec_pct.get(_code_sk, 50.0)
+            _code_sk           = sector_map.get(code, "")
+            _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
+            _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
+
+            # ── 類股門檻：多頭環境不在末段班類股開倉（底部三分之一排除）
+            if _eff_regime in ("bull", "bull_pullback") and _code_sec_combined < SECTOR_GATE_THRESHOLD:
+                continue
 
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
@@ -927,8 +954,8 @@ def main():
                 confs      = sig.get("confirmations", 0)
                 conf_mult  = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                 sig_scale  = SIGNAL_SCALE.get(sig_type, 1.0)
-                # 類股 RS 加權：強勢類股 +20%，弱勢類股 -20%（連續，無硬門檻）
-                _sector_mult = round(0.8 + 0.004 * _code_sec_pct, 3)
+                # 類股加權：靜態水位 + 動能方向綜合分數（0.70~1.30）
+                _sector_mult = round(0.7 + 0.006 * _code_sec_combined, 3)
                 target_R   = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                 _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
                 pos_size   = min(target_R / _stop_dist, 0.20)
