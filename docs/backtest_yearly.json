@@ -2760,8 +2760,8 @@
           "entry_type": "gap_up",
           "exit_type": "stop",
           "outcome": "loss",
-          "gain_pct": -5.74,
-          "actual_rr": 3.1,
+          "gain_pct": -0.45,
+          "actual_rr": 3.56,
           "confirmations": 5,
           "pos_factor": 0.0866,
           "market_er": 0.003,
@@ -2828,7 +2828,7 @@
           "type": "ma_pullback",
           "label": "均線回測(起漲型)",
           "strength": "weak",
-          "strategy": "swing",
+          "strategy": "trend",
           "regime": "bull",
           "stock_phase": "RANGE",
           "rs_pct": 57.9,
@@ -3104,8 +3104,8 @@
           "pos_factor": 0.2,
           "market_er": 0.248,
           "market_factor": 1.278,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
+          "sector_key": "金融保險",
+          "sector_rs_pct": 81.2,
           "high_vol": false
         },
         {
@@ -3283,11 +3283,11 @@
           "gain_pct": -5.3,
           "actual_rr": 1.81,
           "confirmations": 4,
-          "pos_factor": 0.0749,
+          "pos_factor": 0.0769,
           "market_er": 0.024,
           "market_factor": 0.317,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 37.5,
+          "sector_rs_pct": 43.8,
           "high_vol": false
         },
         {
@@ -3651,7 +3651,7 @@
           "market_er": 0.658,
           "market_factor": 1.5,
           "sector_key": "半導體",
-          "sector_rs_pct": 25.0,
+          "sector_rs_pct": 18.8,
           "high_vol": false
         },
         {
@@ -3938,7 +3938,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "化學",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -3964,7 +3964,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電腦週邊",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -4016,7 +4016,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -4198,7 +4198,7 @@
           "pos_factor": 0.0204,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電腦週邊",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -4302,7 +4302,7 @@
           "pos_factor": 0.0204,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -4328,7 +4328,7 @@
           "pos_factor": 0.0204,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "化學",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -4458,7 +4458,7 @@
           "pos_factor": 0.0172,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電腦週邊",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -4536,7 +4536,7 @@
           "pos_factor": 0.0172,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -5514,8 +5514,8 @@
           "expectancy": 2.11
         },
         "breakout": {
-          "count": 12,
-          "wins": 6,
+          "count": 11,
+          "wins": 5,
           "losses": 6,
           "expired": 0,
           "win_rate": 50.0,
@@ -5628,14 +5628,14 @@
           "expectancy": 2.71
         },
         "2023-12": {
-          "count": 4,
+          "count": 6,
           "wins": 2,
-          "losses": 2,
-          "expired": 2,
-          "win_rate": 50.0,
-          "avg_gain_pct": 10.62,
-          "avg_loss_pct": -1.91,
-          "expectancy": 4.35
+          "losses": 4,
+          "expired": 5,
+          "win_rate": 33.3,
+          "avg_gain_pct": 1.7,
+          "avg_loss_pct": -3.59,
+          "expectancy": -1.83
         }
       },
       "capital_curves": {
@@ -6765,7 +6765,7 @@
             },
             {
               "date": "2023-01-09",
-              "equity": 1.0236
+              "equity": 1.0239
             },
             {
               "date": "2023-01-10",
@@ -8888,7 +8888,7 @@
           "market_er": 0.019,
           "market_factor": 0.417,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 50.0,
+          "sector_rs_pct": 55.6,
           "high_vol": false
         },
         {
@@ -9772,7 +9772,7 @@
           "market_er": 0.212,
           "market_factor": 1.012,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 33.3,
+          "sector_rs_pct": 38.9,
           "high_vol": false
         },
         {
@@ -10202,8 +10202,8 @@
           "stock_phase": "BULL",
           "rs_pct": 95.3,
           "entry": 325.85,
-          "stop": 253.5,
-          "target": 609.83,
+          "stop": 253.15,
+          "target": 611.34,
           "entry_type": "gap_up",
           "exit_type": "stop",
           "outcome": "loss",
@@ -10292,7 +10292,7 @@
           "market_er": 0.179,
           "market_factor": 0.768,
           "sector_key": "電腦週邊",
-          "sector_rs_pct": 83.3,
+          "sector_rs_pct": 88.9,
           "high_vol": false
         },
         {
@@ -10578,7 +10578,7 @@
           "market_er": 0.685,
           "market_factor": 1.5,
           "sector_key": "半導體",
-          "sector_rs_pct": 72.2,
+          "sector_rs_pct": 83.3,
           "high_vol": false
         },
         {
@@ -11020,7 +11020,7 @@
           "market_er": 0.075,
           "market_factor": 0.408,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 77.8,
+          "sector_rs_pct": 72.2,
           "high_vol": false
         },
         {
@@ -11046,7 +11046,7 @@
           "market_er": 0.075,
           "market_factor": 0.408,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 77.8,
+          "sector_rs_pct": 72.2,
           "high_vol": false
         },
         {
@@ -11280,7 +11280,7 @@
           "market_er": 0.093,
           "market_factor": 0.357,
           "sector_key": "半導體",
-          "sector_rs_pct": 94.4,
+          "sector_rs_pct": 100.0,
           "high_vol": false
         },
         {
@@ -11384,7 +11384,7 @@
           "market_er": 0.132,
           "market_factor": 0.575,
           "sector_key": "半導體",
-          "sector_rs_pct": 94.4,
+          "sector_rs_pct": 100.0,
           "high_vol": false
         },
         {
@@ -11410,7 +11410,7 @@
           "market_er": 0.132,
           "market_factor": 0.575,
           "sector_key": "半導體",
-          "sector_rs_pct": 94.4,
+          "sector_rs_pct": 100.0,
           "high_vol": false
         },
         {
@@ -11696,7 +11696,7 @@
           "market_er": 0.491,
           "market_factor": 1.5,
           "sector_key": "金融保險",
-          "sector_rs_pct": 50.0,
+          "sector_rs_pct": 55.6,
           "high_vol": false
         },
         {
@@ -11845,14 +11845,40 @@
           "entry_type": "gap_up",
           "exit_type": "stop",
           "outcome": "win",
-          "gain_pct": 20.89,
-          "actual_rr": 3.51,
-          "confirmations": 5,
+          "gain_pct": 2.98,
+          "actual_rr": 1.55,
+          "confirmations": 3,
           "pos_factor": 0.2,
-          "market_er": 0.576,
+          "market_er": 0.502,
           "market_factor": 1.5,
           "sector_key": "",
           "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-12-01",
+          "code": "2885",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 65.6,
+          "entry": 23.2,
+          "stop": 22.16,
+          "target": 26.31,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 2.49,
+          "actual_rr": 2.99,
+          "confirmations": 3,
+          "pos_factor": 0.2,
+          "market_er": 0.576,
+          "market_factor": 1.5,
+          "sector_key": "金融保險",
+          "sector_rs_pct": 55.6,
           "high_vol": false
         },
         {
@@ -11882,6 +11908,32 @@
           "high_vol": false
         },
         {
+          "date": "2023-12-05",
+          "code": "2890",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 69.9,
+          "entry": 17.02,
+          "stop": 16.42,
+          "target": 19.03,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "win",
+          "gain_pct": 0.91,
+          "actual_rr": 3.35,
+          "confirmations": 3,
+          "pos_factor": 0.2,
+          "market_er": 0.415,
+          "market_factor": 1.5,
+          "sector_key": "金融保險",
+          "sector_rs_pct": 50.0,
+          "high_vol": false
+        },
+        {
           "date": "2023-12-27",
           "code": "2454",
           "type": "high_base",
@@ -11904,12 +11956,12 @@
           "market_er": 0.406,
           "market_factor": 1.409,
           "sector_key": "半導體",
-          "sector_rs_pct": 94.4,
+          "sector_rs_pct": 100.0,
           "high_vol": false
         },
         {
           "date": "2023-12-27",
-          "code": "2344",
+          "code": "3006",
           "type": "high_base",
           "label": "強整再突",
           "strength": "strong",
@@ -11922,15 +11974,41 @@
           "target": 41.04,
           "entry_type": "intraday",
           "exit_type": "expired",
-          "outcome": "win",
-          "gain_pct": 0.34,
-          "actual_rr": 3.35,
+          "outcome": "loss",
+          "gain_pct": -9.44,
+          "actual_rr": 3.75,
           "confirmations": 5,
           "pos_factor": 0.2,
           "market_er": 0.406,
           "market_factor": 1.409,
           "sector_key": "半導體",
-          "sector_rs_pct": 94.4,
+          "sector_rs_pct": 100.0,
+          "high_vol": false
+        },
+        {
+          "date": "2023-12-27",
+          "code": "2347",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 70.9,
+          "entry": 64.62,
+          "stop": 61.78,
+          "target": 73.49,
+          "entry_type": "intraday",
+          "exit_type": "expired",
+          "outcome": "loss",
+          "gain_pct": -1.13,
+          "actual_rr": 3.12,
+          "confirmations": 4,
+          "pos_factor": 0.2,
+          "market_er": 0.406,
+          "market_factor": 1.376,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
           "high_vol": false
         }
       ],
@@ -12113,7 +12191,7 @@
           "pos_factor": 0.0208,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電腦週邊",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -12425,7 +12503,7 @@
           "pos_factor": 0.0377,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電腦週邊",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -12711,7 +12789,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -13335,7 +13413,7 @@
           "pos_factor": 0.0464,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -13595,7 +13673,7 @@
           "pos_factor": 0.0221,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -14869,7 +14947,7 @@
           "pos_factor": 0.0654,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -15077,7 +15155,7 @@
           "pos_factor": 0.0204,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "半導體",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -16007,14 +16085,14 @@
           "expectancy": -11.61
         },
         "2024-11": {
-          "count": 10,
-          "wins": 3,
-          "losses": 7,
+          "count": 8,
+          "wins": 2,
+          "losses": 6,
           "expired": 1,
-          "win_rate": 30.0,
-          "avg_gain_pct": 11.17,
-          "avg_loss_pct": -4.42,
-          "expectancy": 0.26
+          "win_rate": 25.0,
+          "avg_gain_pct": 15.17,
+          "avg_loss_pct": -4.32,
+          "expectancy": 0.55
         },
         "2024-12": {
           "count": 8,
@@ -19067,11 +19145,11 @@
           "gain_pct": 0.0,
           "actual_rr": 1.9,
           "confirmations": 2,
-          "pos_factor": 0.1333,
+          "pos_factor": 0.1232,
           "market_er": 0.171,
           "market_factor": 0.488,
-          "sector_key": "電子零組件",
-          "sector_rs_pct": 70.6,
+          "sector_key": "",
+          "sector_rs_pct": 50.0,
           "high_vol": false
         },
         {
@@ -19093,11 +19171,11 @@
           "gain_pct": 8.01,
           "actual_rr": 1.56,
           "confirmations": 3,
-          "pos_factor": 0.176,
+          "pos_factor": 0.1838,
           "market_er": 0.209,
           "market_factor": 0.713,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 64.7,
+          "sector_rs_pct": 76.5,
           "high_vol": false
         },
         {
@@ -19799,7 +19877,7 @@
           "market_er": 0.543,
           "market_factor": 1.5,
           "sector_key": "金融保險",
-          "sector_rs_pct": 64.7,
+          "sector_rs_pct": 58.8,
           "high_vol": false
         },
         {
@@ -19929,7 +20007,7 @@
           "market_er": 0.354,
           "market_factor": 1.438,
           "sector_key": "半導體",
-          "sector_rs_pct": 58.8,
+          "sector_rs_pct": 52.9,
           "high_vol": false
         },
         {
@@ -20059,7 +20137,7 @@
           "market_er": 0.369,
           "market_factor": 1.5,
           "sector_key": "金融保險",
-          "sector_rs_pct": 58.8,
+          "sector_rs_pct": 52.9,
           "high_vol": false
         },
         {
@@ -20107,11 +20185,11 @@
           "gain_pct": 15.66,
           "actual_rr": 3.8,
           "confirmations": 5,
-          "pos_factor": 0.1491,
+          "pos_factor": 0.146,
           "market_er": 0.49,
           "market_factor": 1.5,
           "sector_key": "半導體",
-          "sector_rs_pct": 70.6,
+          "sector_rs_pct": 64.7,
           "high_vol": false
         },
         {
@@ -20137,7 +20215,7 @@
           "market_er": 0.49,
           "market_factor": 1.5,
           "sector_key": "半導體",
-          "sector_rs_pct": 70.6,
+          "sector_rs_pct": 64.7,
           "high_vol": false
         },
         {
@@ -20163,7 +20241,7 @@
           "market_er": 0.49,
           "market_factor": 1.5,
           "sector_key": "半導體",
-          "sector_rs_pct": 70.6,
+          "sector_rs_pct": 64.7,
           "high_vol": false
         },
         {
@@ -20267,7 +20345,7 @@
           "market_er": 0.254,
           "market_factor": 1.084,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 82.4,
+          "sector_rs_pct": 76.5,
           "high_vol": false
         },
         {
@@ -20423,7 +20501,7 @@
           "market_er": 0.046,
           "market_factor": 0.367,
           "sector_key": "航運",
-          "sector_rs_pct": 100.0,
+          "sector_rs_pct": 94.1,
           "high_vol": false
         },
         {
@@ -20475,7 +20553,7 @@
           "market_er": 0.046,
           "market_factor": 0.367,
           "sector_key": "航運",
-          "sector_rs_pct": 100.0,
+          "sector_rs_pct": 94.1,
           "high_vol": false
         },
         {
@@ -20865,7 +20943,7 @@
           "market_er": 0.249,
           "market_factor": 0.957,
           "sector_key": "通信網路",
-          "sector_rs_pct": 76.5,
+          "sector_rs_pct": 41.2,
           "high_vol": false
         },
         {
@@ -24064,7 +24142,7 @@
           "pos_factor": 0.0183,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "化學",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -24220,7 +24298,7 @@
           "pos_factor": 0.0223,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "化學",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -24558,7 +24636,7 @@
           "pos_factor": 0.0478,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "通信網路",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -25711,7 +25789,7 @@
             },
             {
               "date": "2025-02-17",
-              "equity": 0.9899
+              "equity": 0.9974
             },
             {
               "date": "2025-02-17",
@@ -29206,7 +29284,7 @@
           "market_er": 0.077,
           "market_factor": 0.387,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 50.0,
+          "sector_rs_pct": 55.6,
           "high_vol": false
         },
         {
@@ -29956,11 +30034,11 @@
           "gain_pct": -2.5,
           "actual_rr": 4.03,
           "confirmations": 4,
-          "pos_factor": 0.1459,
+          "pos_factor": 0.1428,
           "market_er": 0.129,
           "market_factor": 0.663,
           "sector_key": "金融保險",
-          "sector_rs_pct": 55.6,
+          "sector_rs_pct": 50.0,
           "high_vol": false
         },
         {
@@ -30086,11 +30164,11 @@
           "gain_pct": -4.41,
           "actual_rr": 3.48,
           "confirmations": 4,
-          "pos_factor": 0.1963,
+          "pos_factor": 0.2,
           "market_er": 0.134,
           "market_factor": 0.686,
           "sector_key": "半導體",
-          "sector_rs_pct": 38.9,
+          "sector_rs_pct": 50.0,
           "high_vol": false
         },
         {
@@ -30324,7 +30402,7 @@
           "market_er": 0.154,
           "market_factor": 0.585,
           "sector_key": "金融保險",
-          "sector_rs_pct": 72.2,
+          "sector_rs_pct": 77.8,
           "high_vol": false
         },
         {
@@ -30480,7 +30558,7 @@
           "market_er": 0.28,
           "market_factor": 1.121,
           "sector_key": "金融保險",
-          "sector_rs_pct": 66.7,
+          "sector_rs_pct": 77.8,
           "high_vol": false
         },
         {
@@ -30506,7 +30584,7 @@
           "market_er": 0.299,
           "market_factor": 1.293,
           "sector_key": "電腦週邊",
-          "sector_rs_pct": 66.7,
+          "sector_rs_pct": 77.8,
           "high_vol": false
         },
         {
@@ -30632,11 +30710,11 @@
           "gain_pct": 35.21,
           "actual_rr": 3.72,
           "confirmations": 4,
-          "pos_factor": 0.0852,
+          "pos_factor": 0.0869,
           "market_er": 0.252,
           "market_factor": 1.006,
           "sector_key": "電子零組件",
-          "sector_rs_pct": 77.8,
+          "sector_rs_pct": 83.3,
           "high_vol": false
         },
         {
@@ -30714,7 +30792,7 @@
           "market_er": 0.252,
           "market_factor": 1.006,
           "sector_key": "電子通路",
-          "sector_rs_pct": 94.4,
+          "sector_rs_pct": 55.6,
           "high_vol": false
         },
         {
@@ -30991,13 +31069,13 @@
           "stop": 14.66,
           "target": 17.8,
           "entry_type": "intraday",
-          "exit_type": "target",
-          "outcome": "win",
-          "gain_pct": 13.67,
-          "actual_rr": 2.14,
-          "confirmations": 3,
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": -4.97,
+          "actual_rr": 3.09,
+          "confirmations": 4,
           "pos_factor": 0.2,
-          "market_er": 0.443,
+          "market_er": 0.434,
           "market_factor": 1.5,
           "sector_key": "半導體",
           "sector_rs_pct": 33.3,
@@ -31030,8 +31108,34 @@
           "high_vol": false
         },
         {
-          "date": "2025-09-04",
-          "code": "3059",
+          "date": "2025-08-21",
+          "code": "2355",
+          "type": "ma_pullback",
+          "label": "均線回測(主升型)",
+          "strength": "medium",
+          "strategy": "trend",
+          "regime": "bull",
+          "stock_phase": "BULL",
+          "rs_pct": 85.6,
+          "entry": 35.65,
+          "stop": 34.28,
+          "target": 39.44,
+          "entry_type": "intraday",
+          "exit_type": "stop",
+          "outcome": "loss",
+          "gain_pct": 0.0,
+          "actual_rr": 2.77,
+          "confirmations": 3,
+          "pos_factor": 0.1686,
+          "market_er": 0.156,
+          "market_factor": 0.675,
+          "sector_key": "電子零組件",
+          "sector_rs_pct": 0.0,
+          "high_vol": false
+        },
+        {
+          "date": "2025-08-25",
+          "code": "2360",
           "type": "high_base",
           "label": "強整再突",
           "strength": "medium",
@@ -31045,8 +31149,8 @@
           "entry_type": "intraday",
           "exit_type": "stop",
           "outcome": "win",
-          "gain_pct": 0.87,
-          "actual_rr": 3.31,
+          "gain_pct": 6.49,
+          "actual_rr": 3.87,
           "confirmations": 4,
           "pos_factor": 0.0461,
           "market_er": 0.05,
@@ -31932,11 +32036,11 @@
           "gain_pct": -14.16,
           "actual_rr": 4.02,
           "confirmations": 4,
-          "pos_factor": 0.0231,
+          "pos_factor": 0.0185,
           "market_er": 0.066,
           "market_factor": 0.4,
-          "sector_key": "",
-          "sector_rs_pct": 50.0,
+          "sector_key": "電子零組件",
+          "sector_rs_pct": 0.0,
           "high_vol": false
         },
         {
@@ -33341,7 +33445,7 @@
           "pos_factor": 0.0649,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -33393,7 +33497,7 @@
           "pos_factor": 0.0649,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -33601,7 +33705,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -33679,7 +33783,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -33835,7 +33939,7 @@
           "pos_factor": 0.0341,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -33913,7 +34017,7 @@
           "pos_factor": 0.0341,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34121,7 +34225,7 @@
           "pos_factor": 0.0232,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34199,7 +34303,7 @@
           "pos_factor": 0.0232,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34355,7 +34459,7 @@
           "pos_factor": 0.0181,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34407,7 +34511,7 @@
           "pos_factor": 0.0181,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34433,7 +34537,7 @@
           "pos_factor": 0.0181,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34615,7 +34719,7 @@
           "pos_factor": 0.0723,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34641,7 +34745,7 @@
           "pos_factor": 0.0723,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34693,7 +34797,7 @@
           "pos_factor": 0.0723,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34875,7 +34979,7 @@
           "pos_factor": 0.0725,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -34927,7 +35031,7 @@
           "pos_factor": 0.0725,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -35161,7 +35265,7 @@
           "pos_factor": 0.073,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -35187,7 +35291,7 @@
           "pos_factor": 0.073,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -35551,7 +35655,7 @@
           "pos_factor": 0.0731,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -35785,7 +35889,7 @@
           "pos_factor": 0.0648,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -35993,7 +36097,7 @@
           "pos_factor": 0.0178,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -36227,7 +36331,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "",
+          "sector_key": "電子零組件",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
@@ -36279,7 +36383,7 @@
           "pos_factor": 0.075,
           "market_er": 0.0,
           "market_factor": 1.0,
-          "sector_key": "電子零組件",
+          "sector_key": "",
           "sector_rs_pct": 0.0,
           "high_vol": false
         },
