@@ -25,7 +25,7 @@ from backtest_q1 import (
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
-    BETA_CONFIG,
+    BETA_ALLOC_MAX, BETA_TOP_N, SECTOR_GATE_THRESHOLD,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -190,16 +190,19 @@ def main():
         }
 
         # Walk-Forward 主迴圈
-        trades          = []
-        open_positions  = []
-        breadth_history = deque(maxlen=15)
-        vix_history     = deque(maxlen=25)
+        trades            = []
+        open_positions    = []
+        breadth_history   = deque(maxlen=15)
+        vix_history       = deque(maxlen=25)
+        sector_rs_history = defaultdict(lambda: deque(maxlen=20))
 
         # ── RS Beta Layer 狀態（每年重置）
-        beta_trades     = []
-        beta_mode       = None
-        beta_entries    = {}
-        beta_entry_date = None
+        beta_trades        = []
+        beta_mode          = None
+        beta_entries       = {}
+        beta_entry_date    = None
+        beta_alloc_at_open = 0.0
+        beta_open_regime   = None
 
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
@@ -291,12 +294,32 @@ def main():
             else:
                 _sec_pct = {s: 50.0 for s in _sec_avg}
 
-            # ── RS Beta Layer：多頭相位自動持有前 N 強股（結構性資本效率補強）
-            _beta_cfg = BETA_CONFIG.get(regime)
+            # 類股動能（sector RS slope）：10日變化速率百分位
+            for _sk, _savg in _sec_avg.items():
+                sector_rs_history[_sk].append(_savg)
+            _sec_slope_raw = {
+                _sk: (list(sector_rs_history[_sk])[-1] - list(sector_rs_history[_sk])[-10])
+                     if len(sector_rs_history[_sk]) >= 10 else 0.0
+                for _sk in _sec_avg
+            }
+            if len(_sec_slope_raw) > 1:
+                _ssl  = sorted(_sec_slope_raw, key=lambda s: _sec_slope_raw[s])
+                _sln  = len(_ssl)
+                _sec_slope_pct = {s: round(i / (_sln - 1) * 100, 1) for i, s in enumerate(_ssl)}
+            else:
+                _sec_slope_pct = {s: 50.0 for s in _sec_slope_raw}
+            _sec_combined_pct = {
+                sk: round(0.5 * _sec_pct.get(sk, 50.0) + 0.5 * _sec_slope_pct.get(sk, 50.0), 1)
+                for sk in _sec_avg
+            }
 
-            # 關閉 beta 部位：相位改變時出場（今日收盤價結算）
-            if beta_mode is not None and beta_mode != regime:
-                _old_cfg = BETA_CONFIG.get(beta_mode, {"n": 10, "alloc": 0.50})
+            # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
+            _in_bull = (regime == "bull")
+
+            # 關閉 beta 部位：離開 bull 即出場
+            if beta_mode is not None and not _in_bull:
+                _n_beta  = max(len(beta_entries), 1)
+                _pf_each = round(beta_alloc_at_open / _n_beta, 4)
                 for b_code, b_entry_px in beta_entries.items():
                     b_si = year_date_idx.get(b_code, {}).get(q_date)
                     b_exit_px = b_entry_px
@@ -309,10 +332,10 @@ def main():
                         "date":          q_date.strftime("%Y-%m-%d"),
                         "code":          b_code,
                         "type":          "beta_momentum",
-                        "label":         f"RSβ-{beta_mode}",
+                        "label":         "RSβ-bull",
                         "strength":      "beta",
                         "strategy":      "beta",
-                        "regime":        beta_mode,
+                        "regime":        "bull",
                         "stock_phase":   "BULL",
                         "rs_pct":        rs_pct_map.get(b_code, 80.0),
                         "entry":         round(b_entry_px, 2),
@@ -324,21 +347,23 @@ def main():
                         "gain_pct":      b_gain,
                         "actual_rr":     0.0,
                         "confirmations": 0,
-                        "pos_factor":    round(_old_cfg["alloc"] / _old_cfg["n"], 4),
+                        "pos_factor":    _pf_each,
                         "market_er":     0.0,
                         "market_factor": 1.0,
                         "sector_key":    sector_map.get(b_code, ""),
                         "sector_rs_pct": 0.0,
                         "high_vol":      _high_vol,
                     })
-                beta_entries = {}
-                beta_entry_date = None
-                beta_mode = None
+                beta_entries       = {}
+                beta_entry_date    = None
+                beta_mode          = None
+                beta_alloc_at_open = 0.0
+                beta_open_regime   = None
 
-            # 開新 beta 部位：進入 bull 或 bull_pullback 相位時（今日收盤買入）
-            if beta_mode is None and _beta_cfg is not None:
-                _n = _beta_cfg["n"]
-                top_codes = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:_n]
+            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（market_factor 連續縮放）
+            if beta_mode is None and _in_bull:
+                top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
                     b_si = year_date_idx.get(b_code, {}).get(q_date)
@@ -347,9 +372,11 @@ def main():
                         if not math.isnan(_px) and _px > 0:
                             new_beta[b_code] = _px
                 if new_beta:
-                    beta_entries    = new_beta
-                    beta_entry_date = q_date
-                    beta_mode       = regime
+                    beta_entries       = new_beta
+                    beta_entry_date    = q_date
+                    beta_mode          = "active"
+                    beta_alloc_at_open = _beta_alloc
+                    beta_open_regime   = "bull"
 
             day_count    = 0
             daily_hb_cnt = 0
@@ -375,8 +402,12 @@ def main():
                 dr          = rs_cache.get(code, [])
                 m_z, _      = _rs_metrics(dr)
                 slope       = _rs_slope(dr)
-                _code_sk    = sector_map.get(code, "")
-                _code_sec_pct = _sec_pct.get(_code_sk, 50.0)
+                _code_sk           = sector_map.get(code, "")
+                _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
+                _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
+
+                if _eff_regime in ("bull", "bull_pullback") and _code_sec_combined < SECTOR_GATE_THRESHOLD:
+                    continue
 
                 snap["m_z"]            = m_z
                 snap["rs_trend_stock"] = slope
@@ -446,7 +477,7 @@ def main():
                     confs         = sig.get("confirmations", 0)
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                     sig_scale     = SIGNAL_SCALE.get(sig_type, 1.0)
-                    _sector_mult  = round(0.8 + 0.004 * _code_sec_pct, 3)
+                    _sector_mult  = round(0.7 + 0.006 * _code_sec_combined, 3)
                     target_R      = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                     _stop_dist    = actual_risk / actual_entry if actual_entry > 0 else 0.05
                     pos_size      = min(target_R / _stop_dist, 0.20)
@@ -552,7 +583,8 @@ def main():
         # ── 年末強制關閉 beta 部位（不跨年持倉）
         if beta_mode is not None and beta_entries and year_dates:
             _yr_last_d = year_dates[-1]
-            _old_cfg   = BETA_CONFIG.get(beta_mode, {"n": 10, "alloc": 0.50})
+            _n_beta    = max(len(beta_entries), 1)
+            _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
             for b_code, b_entry_px in beta_entries.items():
                 b_si = year_date_idx.get(b_code, {}).get(_yr_last_d)
                 b_exit_px = b_entry_px
@@ -565,10 +597,10 @@ def main():
                     "date":          _yr_last_d.strftime("%Y-%m-%d"),
                     "code":          b_code,
                     "type":          "beta_momentum",
-                    "label":         f"RSβ-{beta_mode}",
+                    "label":         "RSβ-bull",
                     "strength":      "beta",
                     "strategy":      "beta",
-                    "regime":        beta_mode,
+                    "regime":        beta_open_regime,
                     "stock_phase":   "BULL",
                     "rs_pct":        80.0,
                     "entry":         round(b_entry_px, 2),
@@ -580,7 +612,7 @@ def main():
                     "gain_pct":      b_gain,
                     "actual_rr":     0.0,
                     "confirmations": 0,
-                    "pos_factor":    round(_old_cfg["alloc"] / _old_cfg["n"], 4),
+                    "pos_factor":    _pf_each,
                     "market_er":     0.0,
                     "market_factor": 1.0,
                     "sector_key":    "",
@@ -588,7 +620,7 @@ def main():
                     "high_vol":      False,
                 })
             beta_entries = {}
-            beta_mode = None
+            beta_mode    = None
 
         _beta_contrib = sum(t["pos_factor"] * t["gain_pct"] / 100 for t in beta_trades)
         print(f"\n  ✓ {year} 走步回測完成：{len(trades)} 筆信號  beta 層貢獻 {_beta_contrib*100:+.1f}%")

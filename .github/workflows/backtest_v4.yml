@@ -34,5 +34,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/backtest_yearly.json docs/backtest_q1.json
           git diff --staged --quiet || git commit -m "策略V4 完整驗證：$(date +'%Y-%m-%d %H:%M')"
-          git pull --rebase origin claude/strategy-review-session-a2yXS
+          git pull --rebase -X theirs origin claude/strategy-review-session-a2yXS
           git push origin HEAD:claude/strategy-review-session-a2yXS
