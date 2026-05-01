@@ -888,16 +888,6 @@ def main():
             _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
             _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
-            # ── 類股門檻：多頭環境不在末段班類股開倉（底部三分之一排除）
-            if _eff_regime in ("bull", "bull_pullback") and _code_sec_combined < SECTOR_GATE_THRESHOLD:
-                gate_blocked_log.append({
-                    "date":     q_date.strftime("%Y-%m-%d"),
-                    "code":     code,
-                    "sector":   _code_sk,
-                    "combined": _code_sec_combined,
-                    "regime":   _eff_regime,
-                })
-                continue
 
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
