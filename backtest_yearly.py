@@ -21,11 +21,12 @@ from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
     _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
-    _vix_overlay, _breadth_divergence, _gate_blocked_summary,
+    _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
-    BETA_ALLOC_MAX, BETA_TOP_N, SECTOR_GATE_THRESHOLD,
+    BETA_ALLOC_MAX, BETA_ALLOC_DOMINANT, BETA_TOP_N,
+    SECTOR_DOMINANCE_GAP, SECTOR_DOMINANCE_MIN, SECTOR_EXIT_THRESHOLD, SECTOR_GATE_THRESHOLD,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -194,8 +195,9 @@ def main():
         open_positions    = []
         breadth_history   = deque(maxlen=15)
         vix_history       = deque(maxlen=25)
-        sector_rs_history = defaultdict(lambda: deque(maxlen=20))
-        gate_blocked_log  = []
+        sector_rs_history   = defaultdict(lambda: deque(maxlen=20))
+        gate_blocked_log    = []
+        daily_sec_slope_pct = {}   # {date: {sector: slope_pct}}
 
         # ── RS Beta Layer 狀態（每年重置）
         beta_trades        = []
@@ -314,6 +316,17 @@ def main():
                 for sk in _sec_avg
             }
 
+            # 記錄每日類股斜率百分位
+            daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
+
+            # 類股主導偵測
+            _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
+            _sector_dominant = (
+                len(_sorted_by_combined) >= 2
+                and _sec_combined_pct[_sorted_by_combined[0]] >= SECTOR_DOMINANCE_MIN
+                and (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]) >= SECTOR_DOMINANCE_GAP
+            )
+
             # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
             _in_bull = (regime == "bull")
 
@@ -361,10 +374,11 @@ def main():
                 beta_alloc_at_open = 0.0
                 beta_open_regime   = None
 
-            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（限縮在前 N 強類股）
+            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（類股主導時提高上限）
             if beta_mode is None and _in_bull:
-                top_codes = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-                _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
+                top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                _alloc_cap  = BETA_ALLOC_DOMINANT if _sector_dominant else BETA_ALLOC_MAX
+                _beta_alloc = round(market_factor * _alloc_cap, 3)
                 new_beta = {}
                 for b_code in top_codes:
                     b_si = year_date_idx.get(b_code, {}).get(q_date)
@@ -499,11 +513,12 @@ def main():
                     final_si = min(ni + max_days, _last_code_si, len(sd["closes"]) - 1)
                     open_positions.append((q_date + timedelta(days=max_days + 1), _trade_heat))
 
-                    outcome = "inconclusive"
-                    _fsi    = final_si
+                    outcome     = "inconclusive"
+                    _fsi        = final_si
                     while _fsi > ni and math.isnan(sd["closes"][_fsi]):
                         _fsi -= 1
-                    exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+                    exit_px     = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+                    _exit_si_at = _fsi
 
                     _is_trend     = sig_type in TREND_TYPES
                     trail_stop    = stop
@@ -529,14 +544,16 @@ def main():
 
                         hit_s = fl <= trail_stop
                         if hit_t and hit_s:
-                            outcome = "win" if fo >= (target + trail_stop) / 2 else "loss"
-                            exit_px = target if outcome == "win" else trail_stop
+                            outcome     = "win" if fo >= (target + trail_stop) / 2 else "loss"
+                            exit_px     = target if outcome == "win" else trail_stop
+                            _exit_si_at = ni + d_off
                             break
                         elif hit_t:
-                            outcome = "win";  exit_px = target; break
+                            outcome = "win";  exit_px = target;  _exit_si_at = ni + d_off;  break
                         elif hit_s:
-                            exit_px = trail_stop
-                            outcome = "win" if exit_px > actual_entry else "loss"
+                            exit_px     = trail_stop
+                            outcome     = "win" if exit_px > actual_entry else "loss"
+                            _exit_si_at = ni + d_off
                             break
 
                     if outcome == "inconclusive":
@@ -562,6 +579,7 @@ def main():
                         "target":         round(target,       2),
                         "entry_type":     entry_type,
                         "exit_type":      exit_type,
+                        "exit_date":      sd["dates"][_exit_si_at].strftime("%Y-%m-%d"),
                         "outcome":        outcome,
                         "gain_pct":       gain_pct,
                         "actual_rr":      actual_rr,
@@ -623,6 +641,11 @@ def main():
 
         _beta_contrib = sum(t["pos_factor"] * t["gain_pct"] / 100 for t in beta_trades)
         print(f"\n  ✓ {year} 走步回測完成：{len(trades)} 筆信號  beta 層貢獻 {_beta_contrib*100:+.1f}%")
+
+        # Sector Exit Post-Process
+        trades = _apply_sector_exits(
+            trades, year_data, year_date_idx, daily_sec_slope_pct, SECTOR_EXIT_THRESHOLD
+        )
 
         # 統計（信號交易）
         overall   = _stats(trades)
