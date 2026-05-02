@@ -386,8 +386,9 @@ def _stock_phase(rs_pct, m_z, snap):
 
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
-def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct, threshold):
-    """Post-process：若持倉期間類股斜率跌至末段，覆蓋出場日期與損益。"""
+def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, threshold):
+    """Post-process：類股惡化強制出場，僅在非多頭相位觸發（bull/bull_pullback 下類股輪動屬正常）。"""
+    SECTOR_EXIT_REGIMES = {"bear", "range", "reversal_probe"}
     for t in trades:
         sector = t.get("sector_key", "")
         if not sector or not t.get("exit_date"):
@@ -400,8 +401,9 @@ def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct,
         code = t["code"]
         check = entry_dt
         while check <= exit_dt:
+            regime_at = daily_regime.get(check, "range")
             spct = daily_sec_slope_pct.get(check, {}).get(sector, 50.0)
-            if spct < threshold:
+            if regime_at in SECTOR_EXIT_REGIMES and spct < threshold:
                 si = stock_date_idx.get(code, {}).get(check)
                 if si is not None:
                     sd   = stock_data[code]
@@ -692,6 +694,7 @@ def main():
     sector_rs_history  = defaultdict(lambda: deque(maxlen=20))  # 類股 RS 歷史（供 slope 計算）
     gate_blocked_log      = []   # debug：被 sector gate 擋掉的紀錄
     daily_sec_slope_pct   = {}   # {date: {sector: slope_pct}}，供 sector exit post-process 使用
+    daily_regime          = {}   # {date: regime}，供 sector exit 判斷相位
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
     beta_trades        = []
@@ -824,8 +827,9 @@ def main():
             for sk in _sec_avg
         }
 
-        # 記錄每日類股斜率百分位（供 sector exit post-process 使用）
+        # 記錄每日類股斜率百分位與相位（供 sector exit post-process 使用）
         daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
+        daily_regime[q_date]        = _eff_regime
 
         # 類股主導偵測：第一名比第二名高出 SECTOR_DOMINANCE_GAP 且第一名 > SECTOR_DOMINANCE_MIN
         _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
@@ -1179,7 +1183,7 @@ def main():
     by_month    = defaultdict(list)
     # ── Sector Exit Post-Process：用完整的 daily_sec_slope_pct 覆蓋惡化類股的出場
     trades = _apply_sector_exits(
-        trades, stock_data, stock_date_idx, daily_sec_slope_pct, SECTOR_EXIT_THRESHOLD
+        trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
     )
 
     by_quarter  = defaultdict(list)

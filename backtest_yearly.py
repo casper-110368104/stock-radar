@@ -198,6 +198,7 @@ def main():
         sector_rs_history   = defaultdict(lambda: deque(maxlen=20))
         gate_blocked_log    = []
         daily_sec_slope_pct = {}   # {date: {sector: slope_pct}}
+        daily_regime        = {}   # {date: regime}
 
         # ── RS Beta Layer 狀態（每年重置）
         beta_trades        = []
@@ -316,8 +317,9 @@ def main():
                 for sk in _sec_avg
             }
 
-            # 記錄每日類股斜率百分位
+            # 記錄每日類股斜率百分位與相位
             daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
+            daily_regime[q_date]        = _eff_regime
 
             # 類股主導偵測
             _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
@@ -644,7 +646,7 @@ def main():
 
         # Sector Exit Post-Process
         trades = _apply_sector_exits(
-            trades, year_data, year_date_idx, daily_sec_slope_pct, SECTOR_EXIT_THRESHOLD
+            trades, year_data, year_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
         )
 
         # 統計（信號交易）
