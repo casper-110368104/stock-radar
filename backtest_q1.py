@@ -55,7 +55,6 @@ MAX_HEAT     = 0.15   # 向後相容備用
 # - 配置：market_factor × BETA_ALLOC_MAX（bull 強時多配，弱時少配，無新參數）
 BETA_ALLOC_MAX     = 0.50   # bull 相位最大 beta 曝險（market_factor=1.0 時 = 50%）
 BETA_TOP_N         = 10     # beta 持股數
-BETA_TOP_SECTORS   = 3      # beta pool 限縮在前 N 強類股（方向2）
 SECTOR_GATE_THRESHOLD = 30.0  # 類股綜合分數低於此值，bull/bull_pullback 不進場
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
@@ -839,10 +838,7 @@ def main():
 
         # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（限縮在前 N 強類股）
         if beta_mode is None and _in_bull:
-            _top_sec_keys = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)[:BETA_TOP_SECTORS]
-            _top_sec_set  = set(_top_sec_keys)
-            _beta_pool    = [c for c in rs_pct_map if sector_map.get(c, "") in _top_sec_set]
-            top_codes     = sorted(_beta_pool, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+            top_codes = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
             _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
             new_beta = {}
             for b_code in top_codes:

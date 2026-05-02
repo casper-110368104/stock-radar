@@ -25,7 +25,7 @@ from backtest_q1 import (
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
-    BETA_ALLOC_MAX, BETA_TOP_N, BETA_TOP_SECTORS, SECTOR_GATE_THRESHOLD,
+    BETA_ALLOC_MAX, BETA_TOP_N, SECTOR_GATE_THRESHOLD,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -363,10 +363,7 @@ def main():
 
             # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（限縮在前 N 強類股）
             if beta_mode is None and _in_bull:
-                _top_sec_keys = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)[:BETA_TOP_SECTORS]
-                _top_sec_set  = set(_top_sec_keys)
-                _beta_pool    = [c for c in rs_pct_map if sector_map.get(c, "") in _top_sec_set]
-                top_codes     = sorted(_beta_pool, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                top_codes = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
                 _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
