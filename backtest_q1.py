@@ -53,10 +53,13 @@ MAX_HEAT     = 0.15   # 向後相容備用
 # - 觸發：只在 bull（MA60+MA120+廣度三重確認），離開 bull 即平倉
 # - 持股：前 10 強 RS 個股（集中動能，非純分散 beta）
 # - 配置：market_factor × BETA_ALLOC_MAX（bull 強時多配，弱時少配，無新參數）
-BETA_ALLOC_MAX     = 0.50   # bull 相位最大 beta 曝險（market_factor=1.0 時 = 50%）
-BETA_TOP_N         = 10     # beta 持股數
-BETA_TOP_SECTORS   = 3      # beta pool 限縮在前 N 強類股（方向2）
-SECTOR_GATE_THRESHOLD = 30.0  # 類股綜合分數低於此值，bull/bull_pullback 不進場
+BETA_ALLOC_MAX        = 0.50   # bull 相位最大 beta 曝險（market_factor=1.0 時 = 50%）
+BETA_ALLOC_DOMINANT   = 0.70   # 類股主導模式 beta 上限（一個類股明顯斷層領先時）
+BETA_TOP_N            = 10     # beta 持股數
+SECTOR_DOMINANCE_GAP  = 25.0   # 主導判定：第一名比第二名高出此值（combined_pct 點數）
+SECTOR_DOMINANCE_MIN  = 70.0   # 主導判定：第一名至少達此 combined_pct
+SECTOR_EXIT_THRESHOLD = 10.0   # 類股斜率百分位低於此值 → 強制出場（消息面惡化）
+SECTOR_GATE_THRESHOLD = 30.0   # 保留常數（其他地方可能參照）
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
     "breakout":        1.2,   # 高確信度 + 中期持有
@@ -383,6 +386,37 @@ def _stock_phase(rs_pct, m_z, snap):
 
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
+def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct, threshold):
+    """Post-process：若持倉期間類股斜率跌至末段，覆蓋出場日期與損益。"""
+    for t in trades:
+        sector = t.get("sector_key", "")
+        if not sector or not t.get("exit_date"):
+            continue
+        try:
+            entry_dt = datetime.strptime(t["date"],      "%Y-%m-%d").date() + timedelta(1)
+            exit_dt  = datetime.strptime(t["exit_date"], "%Y-%m-%d").date()
+        except Exception:
+            continue
+        code = t["code"]
+        check = entry_dt
+        while check <= exit_dt:
+            spct = daily_sec_slope_pct.get(check, {}).get(sector, 50.0)
+            if spct < threshold:
+                si = stock_date_idx.get(code, {}).get(check)
+                if si is not None:
+                    sd   = stock_data[code]
+                    opx  = sd["opens"][si] if si < len(sd["opens"]) else 0.0
+                    entry = t["entry"]
+                    if not math.isnan(opx) and opx > 0 and entry > 0:
+                        t["gain_pct"]  = round((opx - entry) / entry * 100, 2)
+                        t["outcome"]   = "win" if opx > entry else "loss"
+                        t["exit_type"] = "sector_exit"
+                        t["exit_date"] = check.strftime("%Y-%m-%d")
+                break
+            check += timedelta(1)
+    return trades
+
+
 def _gate_blocked_summary(log):
     if not log:
         return {"total": 0, "by_sector": {}, "avg_combined": 0.0}
@@ -656,7 +690,8 @@ def main():
     breadth_history    = deque(maxlen=15)   # 近 15 日廣度，供廣度背離偵測
     vix_history        = deque(maxlen=25)   # 近 25 日 VIX，供 reversal_probe 峰值偵測
     sector_rs_history  = defaultdict(lambda: deque(maxlen=20))  # 類股 RS 歷史（供 slope 計算）
-    gate_blocked_log   = []  # debug：被 sector gate 擋掉的紀錄
+    gate_blocked_log      = []   # debug：被 sector gate 擋掉的紀錄
+    daily_sec_slope_pct   = {}   # {date: {sector: slope_pct}}，供 sector exit post-process 使用
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
     beta_trades        = []
@@ -789,6 +824,17 @@ def main():
             for sk in _sec_avg
         }
 
+        # 記錄每日類股斜率百分位（供 sector exit post-process 使用）
+        daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
+
+        # 類股主導偵測：第一名比第二名高出 SECTOR_DOMINANCE_GAP 且第一名 > SECTOR_DOMINANCE_MIN
+        _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
+        _sector_dominant = (
+            len(_sorted_by_combined) >= 2
+            and _sec_combined_pct[_sorted_by_combined[0]] >= SECTOR_DOMINANCE_MIN
+            and (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]) >= SECTOR_DOMINANCE_GAP
+        )
+
         # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
         # 使用 regime（非 eff_regime）：基於基本面相位，不受 VIX 短線擾動
         _in_bull = (regime == "bull")
@@ -837,13 +883,12 @@ def main():
             beta_alloc_at_open = 0.0
             beta_open_regime   = None
 
-        # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（限縮在前 N 強類股）
+        # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS
+        # 類股主導時上限提高至 BETA_ALLOC_DOMINANT，否則維持 BETA_ALLOC_MAX
         if beta_mode is None and _in_bull:
-            _top_sec_keys = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)[:BETA_TOP_SECTORS]
-            _top_sec_set  = set(_top_sec_keys)
-            _beta_pool    = [c for c in rs_pct_map if sector_map.get(c, "") in _top_sec_set]
-            top_codes     = sorted(_beta_pool, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-            _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
+            top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+            _alloc_cap  = BETA_ALLOC_DOMINANT if _sector_dominant else BETA_ALLOC_MAX
+            _beta_alloc = round(market_factor * _alloc_cap, 3)
             new_beta = {}
             for b_code in top_codes:
                 b_si = stock_date_idx[b_code].get(q_date)
@@ -888,16 +933,6 @@ def main():
             _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
             _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
-            # ── 類股門檻：多頭環境不在末段班類股開倉（底部三分之一排除）
-            if _eff_regime in ("bull", "bull_pullback") and _code_sec_combined < SECTOR_GATE_THRESHOLD:
-                gate_blocked_log.append({
-                    "date":     q_date.strftime("%Y-%m-%d"),
-                    "code":     code,
-                    "sector":   _code_sk,
-                    "combined": _code_sec_combined,
-                    "regime":   _eff_regime,
-                })
-                continue
 
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
@@ -1006,7 +1041,8 @@ def main():
                 _fsi = final_si
                 while _fsi > ni and math.isnan(sd["closes"][_fsi]):
                     _fsi -= 1
-                exit_px = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+                exit_px    = sd["closes"][_fsi] if not math.isnan(sd["closes"][_fsi]) else actual_entry
+                _exit_si_at = _fsi   # 預設 expired；stop/target 時由迴圈覆蓋
 
                 _is_trend      = sig_type in TREND_TYPES
                 trail_stop     = stop
@@ -1035,15 +1071,16 @@ def main():
 
                     hit_s = fl <= trail_stop
                     if hit_t and hit_s:
-                        outcome = "win" if fo >= (target + trail_stop) / 2 else "loss"
-                        exit_px = target if outcome == "win" else trail_stop
+                        outcome     = "win" if fo >= (target + trail_stop) / 2 else "loss"
+                        exit_px     = target if outcome == "win" else trail_stop
+                        _exit_si_at = ni + d
                         break
                     elif hit_t:
-                        outcome = "win";  exit_px = target;     break
+                        outcome = "win";  exit_px = target;  _exit_si_at = ni + d;  break
                     elif hit_s:
-                        # MA 追蹤出場可能在成本以上（記錄實際出場價判斷勝負）
-                        exit_px = trail_stop
-                        outcome = "win" if exit_px > actual_entry else "loss"
+                        exit_px     = trail_stop
+                        outcome     = "win" if exit_px > actual_entry else "loss"
+                        _exit_si_at = ni + d
                         break
 
                 if outcome == "inconclusive":
@@ -1069,6 +1106,7 @@ def main():
                     "target":        round(target,       2),
                     "entry_type":    entry_type,
                     "exit_type":     exit_type,
+                    "exit_date":     sd["dates"][_exit_si_at].strftime("%Y-%m-%d"),
                     "outcome":       outcome,
                     "gain_pct":      gain_pct,
                     "actual_rr":     actual_rr,
@@ -1139,6 +1177,11 @@ def main():
     by_type     = defaultdict(list)
     by_strength = defaultdict(list)
     by_month    = defaultdict(list)
+    # ── Sector Exit Post-Process：用完整的 daily_sec_slope_pct 覆蓋惡化類股的出場
+    trades = _apply_sector_exits(
+        trades, stock_data, stock_date_idx, daily_sec_slope_pct, SECTOR_EXIT_THRESHOLD
+    )
+
     by_quarter  = defaultdict(list)
     by_regime   = defaultdict(list)
     by_conf     = defaultdict(list)
