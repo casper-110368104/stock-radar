@@ -23,7 +23,7 @@ from backtest_q1 import (
     _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
     _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
-    MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MA_TRAIL_BUFFER,
+    MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MAX_HOLD_IG, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
     BETA_ALLOC_MAX, BETA_ALLOC_DOMINANT, BETA_TOP_N,
     SECTOR_DOMINANCE_GAP, SECTOR_DOMINANCE_MIN, SECTOR_EXIT_THRESHOLD, SECTOR_GATE_THRESHOLD,
@@ -510,6 +510,8 @@ def main():
 
                     if sig_type == "high_base":
                         max_days = MAX_HOLD_LONG
+                    elif sig_type == "momentum_ignition":
+                        max_days = MAX_HOLD_IG
                     elif sig_type == "ma_pullback":
                         max_days = MAX_HOLD_PULLBACK
                     elif sig_type in TREND_TYPES:
@@ -532,6 +534,7 @@ def main():
                     trail_stop    = stop
                     _mid_target   = actual_entry + 0.5 * (target - actual_entry)
                     _be_activated = False
+                    _ig_anchor    = snap.get("swing_anchor_idx") if sig_type == "momentum_ignition" else None
 
                     for d_off in range(1, final_si - ni + 1):
                         fh   = sd["highs"][ni + d_off]
@@ -540,9 +543,17 @@ def main():
                         _idx = ni + d_off
 
                         if _is_trend:
-                            if _idx >= 10:
-                                _ma10 = sum(sd["closes"][_idx - 9: _idx + 1]) / 10
-                                trail_stop = max(trail_stop, _ma10 * (1 - MA_TRAIL_BUFFER))
+                            if sig_type == "momentum_ignition" and _ig_anchor is not None:
+                                _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
+                                          for k in range(_ig_anchor, _idx + 1))
+                                _vv = sum(sd["vols"][k] for k in range(_ig_anchor, _idx + 1))
+                                if _vv > 0:
+                                    _cur_avwap = _av / _vv
+                                    trail_stop = max(trail_stop, _cur_avwap * 0.98)
+                            else:
+                                if _idx >= 10:
+                                    _ma10 = sum(sd["closes"][_idx - 9: _idx + 1]) / 10
+                                    trail_stop = max(trail_stop, _ma10 * (1 - MA_TRAIL_BUFFER))
                             hit_t = False
                         else:
                             if not _be_activated and fh >= _mid_target:
