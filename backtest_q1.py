@@ -68,7 +68,7 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
     "false_breakdown":    0.8,
     "trend_cont":         1.0,
     "retest":             0.0,   # 降為候選清單，公平宇宙回測無 alpha
-    "momentum_ignition":  0.5,   # 動能點火：半倉追高，60日新高+RS>80%+RS斜率上升
+    "momentum_ignition":  0.8,   # 類股早進：板塊強勢+RS55~75%剛轉正，早於beta layer佈局
 }
 
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
@@ -941,10 +941,10 @@ def main():
             _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
 
-            snap["m_z"]            = m_z
-            snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = _code_sec_pct
-            snap["high60"]         = round(max(sd["highs"][max(0, si - 59):si + 1]), 2)
+            snap["m_z"]             = m_z
+            snap["rs_trend_stock"]  = slope
+            snap["sector_rs"]       = _code_sec_pct
+            snap["sector_combined"] = _code_sec_combined
 
             phase = _stock_phase(rs_pct, m_z, snap)
 

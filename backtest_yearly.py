@@ -425,10 +425,10 @@ def main():
                 _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
 
-                snap["m_z"]            = m_z
-                snap["rs_trend_stock"] = slope
-                snap["sector_rs"]      = _code_sec_pct
-                snap["high60"]         = round(max(sd["highs"][max(0, si - 59):si + 1]), 2)
+                snap["m_z"]             = m_z
+                snap["rs_trend_stock"]  = slope
+                snap["sector_rs"]       = _code_sec_pct
+                snap["sector_combined"] = _code_sec_combined
 
                 phase = _stock_phase(rs_pct, m_z, snap)
                 sigs  = calc_signals(snap, {}, rs_pct,
