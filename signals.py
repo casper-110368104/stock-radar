@@ -32,10 +32,10 @@ _ATR_BUFFER = {
 
 _ALLOWED_SIGNALS = {
     "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base",
-                      "retest", "trend_cont"},
+                      "retest", "trend_cont", "momentum_ignition"},
     # ma60_support 只在個股回檔期才有意義（BULL 時價格遠高於 MA60，觸碰 MA60 = 趨勢轉弱）
     "BULL_PULLBACK": {"ma_pullback", "retest", "ma60_support"},
-    "RANGE":         {"ma_pullback", "retest"},
+    "RANGE":         {"ma_pullback", "retest", "momentum_ignition"},  # RS 55-60% 的股可能落在 RANGE 相位
     "BEAR_WEAK":     {"false_breakdown", "retest"},
     "BEAR_STRONG":   {"false_breakdown"},
 }
@@ -356,5 +356,20 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         s = _sig("trend_cont", "趨勢延伸", "medium", price, _stop_tc,
                  f"主升段均線多頭排列，RS百分位{rs_pct}，M={_m_str}，已站上所有均線✓")
         if s: signals.append(s)
+
+    # 6. 類股早進（Momentum Ignition v2）：強勢類群 + 個股 RS 中段剛轉正
+    # 邏輯：板塊 combined >= 60 確認類群強勢，個股 RS 55-75% 剛轉正 = 早期進場窗口
+    # 比等 RS>80% 早進，比 beta layer 更早佈局；avwap_swing 確保趨勢未破
+    sector_combined = yahoo.get("sector_combined") or 0
+    if (sector_combined >= 60
+            and 55 <= rs_pct <= 75
+            and rs_trend_val is not None and rs_trend_val > 0
+            and avwap_swing is not None and price >= avwap_swing
+            and market_regime == "bull"):
+        _stop_ig = round(avwap_swing * 0.98, 2)
+        s = _sig("momentum_ignition", "類股早進", "medium", price, _stop_ig,
+                 f"板塊combined={sector_combined:.0f}，RS百分位{rs_pct}(55~75)剛轉正，站上AVWAP支撐")
+        if s:
+            signals.append(s)
 
     return signals

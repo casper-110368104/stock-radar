@@ -36,7 +36,7 @@ SLIP           = 0.002    # 滑價估計 0.2%
 MIN_HIST_DAYS  = 70
 HEADERS        = {"User-Agent": "Mozilla/5.0 (stock-radar-backtest/1.0)"}
 
-TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+TREND_TYPES = {"breakout", "high_base", "trend_cont", "momentum_ignition"}
 
 # ── 優化：訊號分級 × Portfolio Heat ──────────────────────────────────
 # 相位分離倉位：bull 主動重壓，震盪/空頭收縮；結構設計，非回測最佳化
@@ -61,18 +61,19 @@ SECTOR_DOMINANCE_MIN  = 70.0   # 主導判定：第一名至少達此 combined_p
 SECTOR_EXIT_THRESHOLD = 10.0   # 類股斜率百分位低於此值 → 強制出場（消息面惡化）
 SECTOR_GATE_THRESHOLD = 30.0   # 保留常數（其他地方可能參照）
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
-    "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
-    "breakout":        1.2,   # 高確信度 + 中期持有
-    "ma_pullback":     1.0,
-    "ma60_support":    0.0,   # 不單獨進場；MA60 近支撐改為第 7 個確認旗標（signals.py）
-    "false_breakdown": 0.8,
-    "trend_cont":      1.0,
-    "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
+    "high_base":          1.5,   # 高確信度（conf≥4）+ 長期持有
+    "breakout":           1.2,   # 高確信度 + 中期持有
+    "ma_pullback":        1.0,
+    "ma60_support":       0.0,   # 不單獨進場；MA60 近支撐改為第 7 個確認旗標（signals.py）
+    "false_breakdown":    0.8,
+    "trend_cont":         1.0,
+    "retest":             0.0,   # 降為候選清單，公平宇宙回測無 alpha
+    "momentum_ignition":  0.8,   # 類股早進：板塊強勢+RS55~75%剛轉正，早於beta layer佈局
 }
 
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
-    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown"},
+    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
     "bull_pullback":  {"ma_pullback", "false_breakdown"},
     "range":          {"false_breakdown", "ma_pullback"},
     "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
@@ -82,13 +83,14 @@ REGIME_ACTIVE_SIGNALS = {
 BASE_R      = 0.012   # base risk per trade as fraction of capital (1.2%)
 
 GAP_LIMIT   = {
-    "breakout":        0.04,
-    "trend_cont":      0.04,
-    "high_base":       0.03,
-    "ma_pullback":     0.015,
-    "retest":          0.015,
-    "ma60_support":    0.02,
-    "false_breakdown": 0.05,
+    "breakout":           0.04,
+    "trend_cont":         0.04,
+    "high_base":          0.03,
+    "ma_pullback":        0.015,
+    "retest":             0.015,
+    "ma60_support":       0.02,
+    "false_breakdown":    0.05,
+    "momentum_ignition":  0.03,  # 動能追高：允許 3% 跳空（新高突破常伴隨跳空）
 }
 
 
@@ -386,8 +388,9 @@ def _stock_phase(rs_pct, m_z, snap):
 
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
-def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct, threshold):
-    """Post-process：若持倉期間類股斜率跌至末段，覆蓋出場日期與損益。"""
+def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, threshold):
+    """Post-process：類股惡化強制出場，僅在非多頭相位觸發（bull/bull_pullback 下類股輪動屬正常）。"""
+    SECTOR_EXIT_REGIMES = {"bear", "range", "reversal_probe"}
     for t in trades:
         sector = t.get("sector_key", "")
         if not sector or not t.get("exit_date"):
@@ -400,8 +403,9 @@ def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct,
         code = t["code"]
         check = entry_dt
         while check <= exit_dt:
+            regime_at = daily_regime.get(check, "range")
             spct = daily_sec_slope_pct.get(check, {}).get(sector, 50.0)
-            if spct < threshold:
+            if regime_at in SECTOR_EXIT_REGIMES and spct < threshold:
                 si = stock_date_idx.get(code, {}).get(check)
                 if si is not None:
                     sd   = stock_data[code]
@@ -692,6 +696,7 @@ def main():
     sector_rs_history  = defaultdict(lambda: deque(maxlen=20))  # 類股 RS 歷史（供 slope 計算）
     gate_blocked_log      = []   # debug：被 sector gate 擋掉的紀錄
     daily_sec_slope_pct   = {}   # {date: {sector: slope_pct}}，供 sector exit post-process 使用
+    daily_regime          = {}   # {date: regime}，供 sector exit 判斷相位
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
     beta_trades        = []
@@ -824,8 +829,9 @@ def main():
             for sk in _sec_avg
         }
 
-        # 記錄每日類股斜率百分位（供 sector exit post-process 使用）
+        # 記錄每日類股斜率百分位與相位（供 sector exit post-process 使用）
         daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
+        daily_regime[q_date]        = _eff_regime
 
         # 類股主導偵測：第一名比第二名高出 SECTOR_DOMINANCE_GAP 且第一名 > SECTOR_DOMINANCE_MIN
         _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
@@ -906,6 +912,7 @@ def main():
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
         daily_bk_cnt  = 0   # 當日 breakout 進場上限計數
+        daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
 
         # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
         for code, sd in sorted(stock_data.items(),
@@ -934,9 +941,10 @@ def main():
             _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
 
-            snap["m_z"]            = m_z
-            snap["rs_trend_stock"] = slope
-            snap["sector_rs"]      = _code_sec_pct
+            snap["m_z"]             = m_z
+            snap["rs_trend_stock"]  = slope
+            snap["sector_rs"]       = _code_sec_pct
+            snap["sector_combined"] = _code_sec_combined
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
@@ -1010,6 +1018,10 @@ def main():
                     if daily_bk_cnt >= 2:
                         continue
                     daily_bk_cnt += 1
+                elif sig_type == "momentum_ignition":
+                    if daily_ig_cnt >= 2:
+                        continue
+                    daily_ig_cnt += 1
 
                 # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 confs      = sig.get("confirmations", 0)
@@ -1179,7 +1191,7 @@ def main():
     by_month    = defaultdict(list)
     # ── Sector Exit Post-Process：用完整的 daily_sec_slope_pct 覆蓋惡化類股的出場
     trades = _apply_sector_exits(
-        trades, stock_data, stock_date_idx, daily_sec_slope_pct, SECTOR_EXIT_THRESHOLD
+        trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
     )
 
     by_quarter  = defaultdict(list)

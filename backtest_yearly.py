@@ -198,6 +198,7 @@ def main():
         sector_rs_history   = defaultdict(lambda: deque(maxlen=20))
         gate_blocked_log    = []
         daily_sec_slope_pct = {}   # {date: {sector: slope_pct}}
+        daily_regime        = {}   # {date: regime}
 
         # ── RS Beta Layer 狀態（每年重置）
         beta_trades        = []
@@ -316,8 +317,9 @@ def main():
                 for sk in _sec_avg
             }
 
-            # 記錄每日類股斜率百分位
+            # 記錄每日類股斜率百分位與相位
             daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
+            daily_regime[q_date]        = _eff_regime
 
             # 類股主導偵測
             _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
@@ -396,6 +398,7 @@ def main():
             day_count    = 0
             daily_hb_cnt = 0
             daily_bk_cnt = 0
+            daily_ig_cnt = 0
 
             for code, sd in sorted(year_data.items(),
                                    key=lambda x: rs_pct_map.get(x[0], 0),
@@ -422,9 +425,10 @@ def main():
                 _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
 
 
-                snap["m_z"]            = m_z
-                snap["rs_trend_stock"] = slope
-                snap["sector_rs"]      = _code_sec_pct
+                snap["m_z"]             = m_z
+                snap["rs_trend_stock"]  = slope
+                snap["sector_rs"]       = _code_sec_pct
+                snap["sector_combined"] = _code_sec_combined
 
                 phase = _stock_phase(rs_pct, m_z, snap)
                 sigs  = calc_signals(snap, {}, rs_pct,
@@ -477,7 +481,7 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
-                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
+                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
                             continue
@@ -486,6 +490,10 @@ def main():
                         if daily_bk_cnt >= 2:
                             continue
                         daily_bk_cnt += 1
+                    elif sig_type == "momentum_ignition":
+                        if daily_ig_cnt >= 2:
+                            continue
+                        daily_ig_cnt += 1
 
                     confs         = sig.get("confirmations", 0)
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
@@ -644,7 +652,7 @@ def main():
 
         # Sector Exit Post-Process
         trades = _apply_sector_exits(
-            trades, year_data, year_date_idx, daily_sec_slope_pct, SECTOR_EXIT_THRESHOLD
+            trades, year_data, year_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
         )
 
         # 統計（信號交易）
