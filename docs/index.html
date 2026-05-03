@@ -1467,8 +1467,9 @@ function _renderQ1Backtest(){
   '</div>';
   // ── 訊號類型拆分 ──
   var typeLabel={'breakout':'突破','high_base':'強整再突','false_breakdown':'假跌破',
-    'ma_pullback':'均線回測','retest':'縮量回測','ma60_support':'MA60支撐','trend_cont':'趨勢延伸'};
-  var typeOrder=['breakout','high_base','trend_cont','ma_pullback','retest','false_breakdown','ma60_support'];
+    'ma_pullback':'均線回測','retest':'縮量回測','ma60_support':'MA60支撐','trend_cont':'趨勢延伸',
+    'momentum_ignition':'類股早進'};
+  var typeOrder=['breakout','high_base','trend_cont','momentum_ignition','ma_pullback','retest','false_breakdown','ma60_support'];
   h+='<div style="'+cardStyle+'">'+
     '<div style="font-size:12px;font-weight:700;margin-bottom:8px">訊號類型拆分</div>';
   typeOrder.forEach(function(t){
