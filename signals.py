@@ -32,7 +32,7 @@ _ATR_BUFFER = {
 
 _ALLOWED_SIGNALS = {
     "BULL":          {"breakout", "false_breakdown", "ma_pullback", "high_base",
-                      "retest", "trend_cont"},
+                      "retest", "trend_cont", "momentum_ignition"},
     # ma60_support 只在個股回檔期才有意義（BULL 時價格遠高於 MA60，觸碰 MA60 = 趨勢轉弱）
     "BULL_PULLBACK": {"ma_pullback", "retest", "ma60_support"},
     "RANGE":         {"ma_pullback", "retest"},
@@ -356,5 +356,23 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
         s = _sig("trend_cont", "趨勢延伸", "medium", price, _stop_tc,
                  f"主升段均線多頭排列，RS百分位{rs_pct}，M={_m_str}，已站上所有均線✓")
         if s: signals.append(s)
+
+    # 6. 動能點火（Momentum Ignition）：60日新高 + RS≥80 + RS斜率上升
+    # 邏輯：股價突破半年高點且已是市場最強 RS 群，不需等回調直接追
+    # 倉位 0.5R（SIGNAL_SCALE 控制），追蹤停損，bull 相位限定
+    high60 = yahoo.get("high60")
+    if (high60 and price >= high60
+            and rs_pct >= 80
+            and rs_trend_val is not None and rs_trend_val > 0
+            and market_regime == "bull"):
+        _stop_ig = max(
+            low20 or price * 0.95,
+            round(avwap_swing * 0.99, 2) if avwap_swing else 0,
+        )
+        s = _sig("momentum_ignition", "動能點火", "strong", price, _stop_ig,
+                 f"60日新高({high60})突破，RS百分位{rs_pct}，RS斜率上升，不等回調")
+        if s:
+            s["trigger_price"] = price   # 直接以今收為觸發點，次日開盤即入場
+            signals.append(s)
 
     return signals

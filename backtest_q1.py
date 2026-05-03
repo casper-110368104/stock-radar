@@ -36,7 +36,7 @@ SLIP           = 0.002    # 滑價估計 0.2%
 MIN_HIST_DAYS  = 70
 HEADERS        = {"User-Agent": "Mozilla/5.0 (stock-radar-backtest/1.0)"}
 
-TREND_TYPES = {"breakout", "high_base", "trend_cont"}
+TREND_TYPES = {"breakout", "high_base", "trend_cont", "momentum_ignition"}
 
 # ── 優化：訊號分級 × Portfolio Heat ──────────────────────────────────
 # 相位分離倉位：bull 主動重壓，震盪/空頭收縮；結構設計，非回測最佳化
@@ -61,18 +61,19 @@ SECTOR_DOMINANCE_MIN  = 70.0   # 主導判定：第一名至少達此 combined_p
 SECTOR_EXIT_THRESHOLD = 10.0   # 類股斜率百分位低於此值 → 強制出場（消息面惡化）
 SECTOR_GATE_THRESHOLD = 30.0   # 保留常數（其他地方可能參照）
 SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
-    "high_base":       1.5,   # 高確信度（conf≥4）+ 長期持有
-    "breakout":        1.2,   # 高確信度 + 中期持有
-    "ma_pullback":     1.0,
-    "ma60_support":    0.0,   # 不單獨進場；MA60 近支撐改為第 7 個確認旗標（signals.py）
-    "false_breakdown": 0.8,
-    "trend_cont":      1.0,
-    "retest":          0.0,   # 降為候選清單，公平宇宙回測無 alpha
+    "high_base":          1.5,   # 高確信度（conf≥4）+ 長期持有
+    "breakout":           1.2,   # 高確信度 + 中期持有
+    "ma_pullback":        1.0,
+    "ma60_support":       0.0,   # 不單獨進場；MA60 近支撐改為第 7 個確認旗標（signals.py）
+    "false_breakdown":    0.8,
+    "trend_cont":         1.0,
+    "retest":             0.0,   # 降為候選清單，公平宇宙回測無 alpha
+    "momentum_ignition":  0.5,   # 動能點火：半倉追高，60日新高+RS>80%+RS斜率上升
 }
 
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
-    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown"},
+    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
     "bull_pullback":  {"ma_pullback", "false_breakdown"},
     "range":          {"false_breakdown", "ma_pullback"},
     "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
@@ -82,13 +83,14 @@ REGIME_ACTIVE_SIGNALS = {
 BASE_R      = 0.012   # base risk per trade as fraction of capital (1.2%)
 
 GAP_LIMIT   = {
-    "breakout":        0.04,
-    "trend_cont":      0.04,
-    "high_base":       0.03,
-    "ma_pullback":     0.015,
-    "retest":          0.015,
-    "ma60_support":    0.02,
-    "false_breakdown": 0.05,
+    "breakout":           0.04,
+    "trend_cont":         0.04,
+    "high_base":          0.03,
+    "ma_pullback":        0.015,
+    "retest":             0.015,
+    "ma60_support":       0.02,
+    "false_breakdown":    0.05,
+    "momentum_ignition":  0.03,  # 動能追高：允許 3% 跳空（新高突破常伴隨跳空）
 }
 
 
@@ -910,6 +912,7 @@ def main():
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
         daily_bk_cnt  = 0   # 當日 breakout 進場上限計數
+        daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
 
         # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
         for code, sd in sorted(stock_data.items(),
@@ -941,6 +944,7 @@ def main():
             snap["m_z"]            = m_z
             snap["rs_trend_stock"] = slope
             snap["sector_rs"]      = _code_sec_pct
+            snap["high60"]         = round(max(sd["highs"][max(0, si - 59):si + 1]), 2)
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
@@ -1014,6 +1018,10 @@ def main():
                     if daily_bk_cnt >= 2:
                         continue
                     daily_bk_cnt += 1
+                elif sig_type == "momentum_ignition":
+                    if daily_ig_cnt >= 2:
+                        continue
+                    daily_ig_cnt += 1
 
                 # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 confs      = sig.get("confirmations", 0)

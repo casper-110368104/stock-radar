@@ -398,6 +398,7 @@ def main():
             day_count    = 0
             daily_hb_cnt = 0
             daily_bk_cnt = 0
+            daily_ig_cnt = 0
 
             for code, sd in sorted(year_data.items(),
                                    key=lambda x: rs_pct_map.get(x[0], 0),
@@ -427,6 +428,7 @@ def main():
                 snap["m_z"]            = m_z
                 snap["rs_trend_stock"] = slope
                 snap["sector_rs"]      = _code_sec_pct
+                snap["high60"]         = round(max(sd["highs"][max(0, si - 59):si + 1]), 2)
 
                 phase = _stock_phase(rs_pct, m_z, snap)
                 sigs  = calc_signals(snap, {}, rs_pct,
@@ -479,7 +481,7 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
-                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
+                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
                             continue
@@ -488,6 +490,10 @@ def main():
                         if daily_bk_cnt >= 2:
                             continue
                         daily_bk_cnt += 1
+                    elif sig_type == "momentum_ignition":
+                        if daily_ig_cnt >= 2:
+                            continue
+                        daily_ig_cnt += 1
 
                     confs         = sig.get("confirmations", 0)
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
