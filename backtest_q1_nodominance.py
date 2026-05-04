@@ -861,7 +861,7 @@ def main():
             and _dom_gap >= SECTOR_DOMINANCE_GAP
         )
 
-        # BASELINE: dominance state machine disabled — always "normal"
+        # BASELINE: dominance state machine disabled — always "normal" (A/B comparison)
         dominance_state     = "normal"
         dominance_streak    = 0
         dominant_sector_key = None
