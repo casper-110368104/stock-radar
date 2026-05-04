@@ -360,15 +360,27 @@ def _rs_metrics(daily_rs):
     return round(m, 4), round(scalar, 4)
 
 
-def _rs_slope(daily_rs):
-    """5 日斜率，排除今天（用 [-6:-1]）"""
-    if len(daily_rs) < 6:
+def _rs_slope_window(vals):
+    if len(vals) < 5:
         return None
-    vals   = daily_rs[-6:-1]
     mu, xm = sum(vals) / 5, 2.0
     num    = sum((k - xm) * (vals[k] - mu) for k in range(5))
     den    = sum((k - xm) ** 2 for k in range(5))
     return round(num / den, 4) if den else 0.0
+
+def _rs_slope(daily_rs):
+    """5 日斜率，排除今天（用 [-6:-1]）"""
+    return _rs_slope_window(daily_rs[-6:-1]) if len(daily_rs) >= 6 else None
+
+def _rs_accel(daily_rs):
+    """RS 加速度：當前5日斜率 − 前5日斜率（正 = 動能在加速）"""
+    if len(daily_rs) < 11:
+        return None
+    s_now  = _rs_slope_window(daily_rs[-6:-1])
+    s_prev = _rs_slope_window(daily_rs[-11:-6])
+    if s_now is None or s_prev is None:
+        return None
+    return round(s_now - s_prev, 4)
 
 
 # ── 個股相位（簡化版，只用 rs_pct + M + MA）─────────────────────────
@@ -939,6 +951,7 @@ def main():
             dr     = rs_cache.get(code, [])
             m_z, _ = _rs_metrics(dr)
             slope  = _rs_slope(dr)
+            accel  = _rs_accel(dr)
 
             _code_sk           = sector_map.get(code, "")
             _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
@@ -947,6 +960,7 @@ def main():
 
             snap["m_z"]             = m_z
             snap["rs_trend_stock"]  = slope
+            snap["rs_accel"]        = accel
             snap["sector_rs"]       = _code_sec_pct
             snap["sector_combined"] = _code_sec_combined
 
@@ -1011,6 +1025,10 @@ def main():
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
+                # high_base：要求 RS 動能正在加速（二階導數 > 0），過濾峰值後退燒的訊號
+                if sig_type == "high_base" and (accel is None or accel <= 0):
+                    continue
+
                 # ── 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
                 if sig_type == "high_base":
                     if daily_hb_cnt >= 3:
@@ -1069,8 +1087,8 @@ def main():
                 trail_stop     = stop
                 _mid_target    = actual_entry + 0.5 * (target - actual_entry)
                 _be_activated  = False
-                # ig：進場時固定錨點 index，持倉期間每日重算 AVWAP 作為動態止損
-                _ig_anchor     = snap.get("swing_anchor_idx") if sig_type == "momentum_ignition" else None
+                # ig / high_base：進場時固定錨點 index，持倉期間每日重算 AVWAP 作為動態止損
+                _ig_anchor     = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
@@ -1079,7 +1097,7 @@ def main():
                     _idx = ni + d
 
                     if _is_trend:
-                        if sig_type == "momentum_ignition" and _ig_anchor is not None:
+                        if sig_type in ("momentum_ignition", "high_base") and _ig_anchor is not None:
                             # AVWAP 動態止損：從進場錨點到當日重算，趨勢破壞才出場
                             _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
                                       for k in range(_ig_anchor, _idx + 1))

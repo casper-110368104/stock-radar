@@ -20,7 +20,7 @@ from signals import calc_signals
 from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
-    _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
+    _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _stats, _capital_curves,
     _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MAX_HOLD_IG, MA_TRAIL_BUFFER,
@@ -422,6 +422,7 @@ def main():
                 dr          = rs_cache.get(code, [])
                 m_z, _      = _rs_metrics(dr)
                 slope       = _rs_slope(dr)
+                accel       = _rs_accel(dr)
                 _code_sk           = sector_map.get(code, "")
                 _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
                 _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
@@ -429,6 +430,7 @@ def main():
 
                 snap["m_z"]             = m_z
                 snap["rs_trend_stock"]  = slope
+                snap["rs_accel"]        = accel
                 snap["sector_rs"]       = _code_sec_pct
                 snap["sector_combined"] = _code_sec_combined
 
@@ -481,6 +483,10 @@ def main():
 
                     # RS 加速篩選：震盪/回檔相位只取 RS 持續上升的個股
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
+                        continue
+
+                    # high_base：要求 RS 動能正在加速（二階導數 > 0），過濾峰值後退燒的訊號
+                    if sig_type == "high_base" and (accel is None or accel <= 0):
                         continue
 
                     # 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
@@ -541,7 +547,7 @@ def main():
                     trail_stop    = stop
                     _mid_target   = actual_entry + 0.5 * (target - actual_entry)
                     _be_activated = False
-                    _ig_anchor    = snap.get("swing_anchor_idx") if sig_type == "momentum_ignition" else None
+                    _ig_anchor    = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
 
                     for d_off in range(1, final_si - ni + 1):
                         fh   = sd["highs"][ni + d_off]
@@ -550,7 +556,7 @@ def main():
                         _idx = ni + d_off
 
                         if _is_trend:
-                            if sig_type == "momentum_ignition" and _ig_anchor is not None:
+                            if sig_type in ("momentum_ignition", "high_base") and _ig_anchor is not None:
                                 _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
                                           for k in range(_ig_anchor, _idx + 1))
                                 _vv = sum(sd["vols"][k] for k in range(_ig_anchor, _idx + 1))
