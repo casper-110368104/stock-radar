@@ -234,7 +234,10 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
     above_ma60 = p > ma60
 
     # 非對稱快層：只保留下行保護，不設上行提前升相位
-    fast_deteriorating = breadth_slope < -0.10   # 廣度10日跌逾10pp → 多頭在瓦解
+    # ── 廣度快速惡化：10日廣度跌逾10pp
+    # ── 指數短期動能：5日跌逾4%（比廣度快2-3週，捕捉趨勢頂部初期轉折）
+    twii_roc5 = (bm_closes[i] / bm_closes[i - 5] - 1) if i >= 5 else 0.0
+    fast_deteriorating = breadth_slope < -0.10 or twii_roc5 < -0.04
 
     # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
     if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
