@@ -247,6 +247,7 @@ def _compute_m_a(daily_rs):
     m_tail  = m_series[-3:]
     a = m_tail[-1] - sum(m_tail) / len(m_tail)
 
+    rs_trend = rs_accel = None
     if len(daily_rs) >= 5:
         vals   = daily_rs[-5:]
         mu5    = sum(vals) / 5
@@ -254,10 +255,13 @@ def _compute_m_a(daily_rs):
         num    = sum((i - x_mean) * (vals[i] - mu5) for i in range(5))
         den    = sum((i - x_mean) ** 2 for i in range(5))
         rs_trend = round(num / den, 4) if den else 0.0
-    else:
-        rs_trend = None
+        if len(daily_rs) >= 10:
+            pvals = daily_rs[-10:-5]
+            pmu   = sum(pvals) / 5
+            pnum  = sum((i - x_mean) * (pvals[i] - pmu) for i in range(5))
+            rs_accel = round(rs_trend - (pnum / den if den else 0.0), 4)
 
-    return round(m_today, 4), round(a, 4), rs_trend
+    return round(m_today, 4), round(a, 4), rs_trend, rs_accel
 
 
 def classify_stock_phase(rs_pct, m_z, a_z, rs_trend, rs_slow_positive=None):
@@ -368,11 +372,12 @@ def fetch_yahoo_data(code):
         # ── RS 指標計算 ─────────────────────────────────
         global _bm_closes_exp
         _rs_scalar = None
-        m_z_val = a_z_val = rs_trend_val = None
+        m_z_val = a_z_val = rs_trend_val = rs_accel_val = None
+        stock_roc5_val = round(closes[-1] / closes[-6] - 1, 4) if len(closes) >= 6 else None
         if _bm_closes_exp:
             try:
                 daily_rs = _compute_rs_layers(closes, _bm_closes_exp)
-                m_z_val, a_z_val, rs_trend_val = _compute_m_a(daily_rs)
+                m_z_val, a_z_val, rs_trend_val, rs_accel_val = _compute_m_a(daily_rs)
                 # 相容舊 _rs_scalar（供 rs_pct 排序用）
                 _n = min(len(closes), len(_bm_closes_exp))
                 if _n >= 60:
@@ -410,6 +415,8 @@ def fetch_yahoo_data(code):
             "m_z":              round(m_z_val, 4) if m_z_val is not None else None,
             "a_z":              round(a_z_val, 4) if a_z_val is not None else None,
             "rs_trend":         rs_trend_val,
+            "rs_accel":         rs_accel_val,
+            "stock_roc5":       stock_roc5_val,
             "atr_14":           atr_14,
             # 原始序列供回測用，不寫入 JSON
             "_closes":          closes,
@@ -1042,7 +1049,9 @@ def main():
         yahoo["stock_phase"] = phase
 
         signals = calc_signals(yahoo, rs_pct=rs_pct, stock_phase=phase,
-                               market_regime=_market_regime_str)
+                               market_regime=_market_regime_str,
+                               rs_accel=yahoo.get("rs_accel"),
+                               stock_roc5=yahoo.get("stock_roc5"))
         if not signals:
             no_sig += 1
             continue
