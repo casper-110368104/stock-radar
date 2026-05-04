@@ -1103,10 +1103,9 @@ def main():
                 _stop_dist  = actual_risk / actual_entry if actual_entry > 0 else 0.05
                 pos_size   = min(target_R / _stop_dist, 0.20)
 
-                # ── 現金可用性（零股：按比例縮小倉位）
-                _beta_deployed  = beta_alloc_at_open if beta_mode == "active" else 0.0
+                # ── 現金可用性（零股：只在信號部位之間追蹤，beta 獨立池）
                 _sig_deployed   = sum(ps for _, ps in open_capital)
-                _available_cash = max(0.0, 1.0 - _sig_deployed - _beta_deployed)
+                _available_cash = max(0.0, 1.0 - _sig_deployed)
                 if pos_size > _available_cash:
                     pos_size = round(_available_cash, 4)
                 if pos_size < 0.005:
