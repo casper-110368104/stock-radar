@@ -400,7 +400,6 @@ def main():
 
             day_count    = 0
             daily_hb_cnt = 0
-            daily_bk_cnt = 0
             daily_ig_cnt = 0
 
             for code, sd in sorted(year_data.items(),
@@ -484,15 +483,11 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
-                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2、momentum_ignition ≤ 2
+                    # 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
                             continue
                         daily_hb_cnt += 1
-                    elif sig_type == "breakout":
-                        if daily_bk_cnt >= 2:
-                            continue
-                        daily_bk_cnt += 1
                     elif sig_type == "momentum_ignition":
                         if daily_ig_cnt >= 2:
                             continue

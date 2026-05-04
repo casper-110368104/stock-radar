@@ -74,7 +74,7 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
 
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
-    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
+    "bull":           {"high_base", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
     "bull_pullback":  {"ma_pullback", "false_breakdown"},
     "range":          {"false_breakdown", "ma_pullback"},
     "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
@@ -916,7 +916,6 @@ def main():
 
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
-        daily_bk_cnt  = 0   # 當日 breakout 進場上限計數
         daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
 
         # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
@@ -1012,17 +1011,11 @@ def main():
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
-                # ── 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
-                # 當大量股票同日出現相同型態 = 趨勢末段擁擠，不是機會
-                # 依 RS 排序後優先取強股，再超過上限的跳過
+                # ── 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
                 if sig_type == "high_base":
                     if daily_hb_cnt >= 3:
                         continue
                     daily_hb_cnt += 1
-                elif sig_type == "breakout":
-                    if daily_bk_cnt >= 2:
-                        continue
-                    daily_bk_cnt += 1
                 elif sig_type == "momentum_ignition":
                     if daily_ig_cnt >= 2:
                         continue
