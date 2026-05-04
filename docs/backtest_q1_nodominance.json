@@ -1,6 +1,6 @@
 {
   "period": "2024-Q1~2026-Q1",
-  "generated_at": "2026-05-04 10:17",
+  "generated_at": "2026-05-04 11:03",
   "universe_size": 300,
   "trading_days": 540,
   "overall": {
@@ -6938,7 +6938,7 @@
     },
     {
       "date": "2026-03-19",
-      "equity": 2.3999
+      "equity": 2.3998
     },
     {
       "date": "2026-03-20",
@@ -12698,7 +12698,7 @@
       "regime": "bull",
       "stock_phase": "BULL",
       "rs_pct": 96.3,
-      "entry": 542.8,
+      "entry": 542.79,
       "stop": 0.0,
       "target": 0.0,
       "entry_type": "beta",
