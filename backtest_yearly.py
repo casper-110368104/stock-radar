@@ -27,6 +27,7 @@ from backtest_q1 import (
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
     BETA_ALLOC_MAX, BETA_ALLOC_DOMINANT, BETA_TOP_N,
     SECTOR_DOMINANCE_GAP, SECTOR_DOMINANCE_MIN, SECTOR_EXIT_THRESHOLD, SECTOR_GATE_THRESHOLD,
+    _dominance_confirm_days,
 )
 
 YEARS              = [2022, 2023, 2024, 2025]
@@ -208,6 +209,13 @@ def main():
         beta_alloc_at_open = 0.0
         beta_open_regime   = None
 
+        # ── 板塊集中狀態機（每年重置）
+        dominance_state     = "normal"
+        dominance_streak    = 0
+        dominant_sector_key = None
+        beta_dom_state      = "normal"
+        open_capital        = []
+
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
             if bm_i is None:
@@ -272,7 +280,8 @@ def main():
                            if regime == "bear" and (_reversal_probe or _bd)
                            else regime)
 
-            open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
+            open_positions = [(ed, h)  for ed, h  in open_positions if ed > q_date]
+            open_capital   = [(ed, ps) for ed, ps in open_capital   if ed > q_date]
 
             # RS 百分位
             if len(rs_scalar_map) > 1:
@@ -321,21 +330,52 @@ def main():
             daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
             daily_regime[q_date]        = _eff_regime
 
-            # 類股主導偵測
+            # ── 板塊主導偵測 + 三段集中狀態機
             _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
+            _dom_gap     = (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]
+                            if len(_sorted_by_combined) >= 2 else 0.0)
+            _dom_top_key = _sorted_by_combined[0] if _sorted_by_combined else None
             _sector_dominant = (
                 len(_sorted_by_combined) >= 2
                 and _sec_combined_pct[_sorted_by_combined[0]] >= SECTOR_DOMINANCE_MIN
-                and (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]) >= SECTOR_DOMINANCE_GAP
+                and _dom_gap >= SECTOR_DOMINANCE_GAP
             )
 
-            # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
-            _in_bull = (regime == "bull")
+            if _dom_gap < 20:
+                dominance_state     = "normal"
+                dominance_streak    = 0
+                dominant_sector_key = None
+            elif _dom_gap >= 30:
+                if dominance_state == "normal":
+                    dominance_state     = "pre_concentration"
+                    dominance_streak    = 1
+                    dominant_sector_key = _dom_top_key
+                else:
+                    dominance_streak   += 1
+                    dominant_sector_key = _dom_top_key
+                if dominance_state == "pre_concentration" and dominance_streak >= _dominance_confirm_days(_dom_gap):
+                    dominance_state = "concentration"
+            elif _dom_gap >= 25:
+                if dominance_state in ("pre_concentration", "concentration"):
+                    dominance_streak   += 1
+                    dominant_sector_key = _dom_top_key
+                    if dominance_state == "pre_concentration" and dominance_streak >= _dominance_confirm_days(_dom_gap):
+                        dominance_state = "concentration"
+            elif _dom_gap >= 20:
+                if dominance_state == "concentration":
+                    dominance_state = "pre_concentration"
+                if dominance_state == "pre_concentration":
+                    dominant_sector_key = _dom_top_key
+                    dominance_streak    = max(0, dominance_streak - 1)
 
-            # 關閉 beta 部位：離開 bull 即出場
-            if beta_mode is not None and not _in_bull:
-                _n_beta  = max(len(beta_entries), 1)
-                _pf_each = round(beta_alloc_at_open / _n_beta, 4)
+            # ── RS Beta Layer：bull 相位持有，依集中狀態動態調整
+            _in_bull = (regime == "bull")
+            _beta_needs_rebalance = (beta_mode == "active" and _in_bull and beta_dom_state != dominance_state)
+
+            if beta_mode is not None and (not _in_bull or _beta_needs_rebalance):
+                _n_beta    = max(len(beta_entries), 1)
+                _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
+                _exit_type = "dominance_change" if _beta_needs_rebalance else "regime_change"
                 for b_code, b_entry_px in beta_entries.items():
                     b_si = year_date_idx.get(b_code, {}).get(q_date)
                     b_exit_px = b_entry_px
@@ -358,7 +398,7 @@ def main():
                         "stop":          0.0,
                         "target":        0.0,
                         "entry_type":    "beta",
-                        "exit_type":     "regime_change",
+                        "exit_type":     _exit_type,
                         "outcome":       "win" if b_gain >= 0 else "loss",
                         "gain_pct":      b_gain,
                         "actual_rr":     0.0,
@@ -375,11 +415,21 @@ def main():
                 beta_mode          = None
                 beta_alloc_at_open = 0.0
                 beta_open_regime   = None
+                beta_dom_state     = "normal"
 
-            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（類股主導時提高上限）
             if beta_mode is None and _in_bull:
-                top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-                _alloc_cap  = BETA_ALLOC_DOMINANT if _sector_dominant else BETA_ALLOC_MAX
+                if dominance_state == "concentration" and dominant_sector_key:
+                    top_codes  = sorted(
+                        [c for c in rs_pct_map if sector_map.get(c, "") == dominant_sector_key],
+                        key=lambda c: rs_pct_map[c], reverse=True
+                    )[:5]
+                    _alloc_cap = 0.80
+                elif dominance_state == "pre_concentration":
+                    top_codes  = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                    _alloc_cap = 0.60
+                else:
+                    top_codes  = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                    _alloc_cap = BETA_ALLOC_MAX
                 _beta_alloc = round(market_factor * _alloc_cap, 3)
                 new_beta = {}
                 for b_code in top_codes:
@@ -394,6 +444,7 @@ def main():
                     beta_mode          = "active"
                     beta_alloc_at_open = _beta_alloc
                     beta_open_regime   = "bull"
+                    beta_dom_state     = dominance_state
 
             day_count    = 0
             daily_hb_cnt = 0
@@ -481,6 +532,14 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
+                    # 集中模式：篩選非主導類股
+                    if dominance_state == "concentration" and dominant_sector_key:
+                        if _code_sk != dominant_sector_key:
+                            continue
+                    elif dominance_state == "pre_concentration" and dominant_sector_key:
+                        if _code_sk != dominant_sector_key and sig.get("confirmations", 0) < 4:
+                            continue
+
                     # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
@@ -502,9 +561,23 @@ def main():
                     target_R      = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                     _stop_dist    = actual_risk / actual_entry if actual_entry > 0 else 0.05
                     pos_size      = min(target_R / _stop_dist, 0.20)
+
+                    # 現金可用性（零股：按比例縮小）
+                    _beta_deployed  = beta_alloc_at_open if beta_mode == "active" else 0.0
+                    _sig_deployed   = sum(ps for _, ps in open_capital)
+                    _available_cash = max(0.0, 1.0 - _sig_deployed - _beta_deployed)
+                    if pos_size > _available_cash:
+                        pos_size = round(_available_cash, 4)
+                    if pos_size < 0.005:
+                        continue
+
                     _trade_heat   = round(pos_size * _stop_dist, 5)
                     _total_heat   = sum(h for _, h in open_positions)
                     _regime_heat  = MAX_HEAT_BY_REGIME.get(_eff_regime, 0.15)
+                    if dominance_state == "concentration":
+                        _regime_heat = min(_regime_heat, 0.10)
+                    elif dominance_state == "pre_concentration":
+                        _regime_heat = min(_regime_heat, 0.20)
                     if _total_heat + _trade_heat > _regime_heat:
                         continue
 
@@ -582,6 +655,9 @@ def main():
                         exit_type = "target" if (not _is_trend and outcome == "win") else "stop"
 
                     gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
+
+                    _actual_exit_date = sd["dates"][_exit_si_at]
+                    open_capital.append((_actual_exit_date + timedelta(days=1), pos_size))
 
                     trades.append({
                         "date":           q_date.strftime("%Y-%m-%d"),
