@@ -1088,7 +1088,11 @@ def main():
                 _mid_target    = actual_entry + 0.5 * (target - actual_entry)
                 _be_activated  = False
                 # ig / high_base：進場時固定錨點 index，持倉期間每日重算 AVWAP 作為動態止損
-                _ig_anchor     = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
+                # high_base 僅 bull 相位啟用 AVWAP（其他相位用 MA10 避免熊市損失擴大）
+                _ig_anchor  = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
+                _use_avwap  = (_ig_anchor is not None and
+                               (sig_type == "momentum_ignition" or
+                                (sig_type == "high_base" and _eff_regime == "bull")))
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
@@ -1097,7 +1101,7 @@ def main():
                     _idx = ni + d
 
                     if _is_trend:
-                        if sig_type in ("momentum_ignition", "high_base") and _ig_anchor is not None:
+                        if _use_avwap:
                             # AVWAP 動態止損：從進場錨點到當日重算，趨勢破壞才出場
                             _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
                                       for k in range(_ig_anchor, _idx + 1))

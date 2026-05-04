@@ -547,7 +547,10 @@ def main():
                     trail_stop    = stop
                     _mid_target   = actual_entry + 0.5 * (target - actual_entry)
                     _be_activated = False
-                    _ig_anchor    = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
+                    _ig_anchor  = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
+                    _use_avwap  = (_ig_anchor is not None and
+                                   (sig_type == "momentum_ignition" or
+                                    (sig_type == "high_base" and _eff_regime == "bull")))
 
                     for d_off in range(1, final_si - ni + 1):
                         fh   = sd["highs"][ni + d_off]
@@ -556,7 +559,7 @@ def main():
                         _idx = ni + d_off
 
                         if _is_trend:
-                            if sig_type in ("momentum_ignition", "high_base") and _ig_anchor is not None:
+                            if _use_avwap:
                                 _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
                                           for k in range(_ig_anchor, _idx + 1))
                                 _vv = sum(sd["vols"][k] for k in range(_ig_anchor, _idx + 1))
