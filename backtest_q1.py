@@ -202,12 +202,13 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
         2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
         3. 市場廣度靜態水位（% 股票在 MA20 以上）
         4. 52週百分位 + 10週動能（early_bear 早期預警）
-      快層（市場結構）
-        5a. breadth_slope < -0.10：廣度快速惡化 → 提前降相位（下行保護）
-        5b. breadth_slope > 0.12 且出發點 < 35%：廣度從低位快速回升 → 提前升相位（抓轉折）
-            只在低位觸發，避免高位震盪產生假訊號
+      非對稱快層（市場結構：跌快漲慢）
+        5. breadth_slope 10日廣度變化速率
+           fast_deteriorating < -0.10：廣度快速惡化 → 提前降相位（下行保護）
+           ── 刻意不設 fast_improving：底部確認需等慢層多重信號，
+              防止廣度短線反彈造成 bear→range 假升相位頻繁翻轉
 
-    效果：下行加速反應，上行從低位也加速反應，減少轉折後進場延遲。
+    效果：下行加速反應，上行留足確認空間，避免相位 flip-flop。
     """
     if i < 60:
         return "range"
@@ -232,25 +233,18 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
 
     above_ma60 = p > ma60
 
-    # 非對稱快層
-    fast_deteriorating = breadth_slope < -0.10          # 廣度10日跌逾10pp → 多頭在瓦解
-    breadth_10d_ago    = breadth_pct - breadth_slope     # 反推起點
-    fast_improving     = (breadth_slope > 0.12           # 廣度10日漲逾12pp
-                          and breadth_10d_ago < 0.35)    # 且出發自低位（<35%）→ 廣度噴發
+    # 非對稱快層：只保留下行保護，不設上行提前升相位
+    fast_deteriorating = breadth_slope < -0.10   # 廣度10日跌逾10pp → 多頭在瓦解
 
     # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
-    # 廣度噴發時門檻從 0.55 降至 0.42，讓轉折後更快進入 bull
-    _bull_breadth_gate = 0.42 if fast_improving else 0.55
-    if above_ma60 and above_ma120 and breadth_pct > _bull_breadth_gate and not early_bear and not fast_deteriorating:
+    if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
         return "bull"
-    # bull_pullback：MA60 above
+    # bull_pullback：MA60 above，但廣度快速惡化 → 直接降到 range（不停在 pullback）
     if above_ma60 and not early_bear:
         return "range" if fast_deteriorating else "bull_pullback"
     if above_ma60 and early_bear:
         return "range"
-    # 跌破 MA60：廣度噴發可提前升至 range（而非留在 bear）
-    if fast_improving and not early_bear:
-        return "range"
+    # 跌破 MA60：等慢層信號恢復，不用快層提前升相位
     if breadth_pct < 0.40 or early_bear:
         return "bear"
     return "range"
