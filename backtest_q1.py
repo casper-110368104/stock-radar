@@ -955,6 +955,8 @@ def main():
             m_z, _ = _rs_metrics(dr)
             slope  = _rs_slope(dr)
             accel  = _rs_accel(dr)
+            # 個股5日絕對動能（供 high_base 入場確認：股票本身需在上漲）
+            stock_roc5 = (sd["closes"][si] / sd["closes"][si - 5] - 1) if si >= 5 else 0.0
 
             _code_sk           = sector_map.get(code, "")
             _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
@@ -1009,6 +1011,9 @@ def main():
                 else:
                     continue   # 當日未觸發
 
+                # 止損距離上限 10%：AVWAP 結構止損過寬時收緊，單筆最大虧損可控
+                if actual_entry > 0 and (actual_entry - stop) / actual_entry > 0.10:
+                    stop = round(actual_entry * 0.90, 2)
                 actual_risk = actual_entry - stop
                 if actual_risk <= 0:
                     continue
@@ -1030,6 +1035,10 @@ def main():
 
                 # high_base：要求 RS 動能正在加速（二階導數 > 0），過濾峰值後退燒的訊號
                 if sig_type == "high_base" and (accel is None or accel <= 0):
+                    continue
+
+                # high_base：個股5日絕對動能確認（股票本身需在上漲，排除廣度好但個股已轉弱）
+                if sig_type == "high_base" and stock_roc5 <= 0:
                     continue
 
                 # ── 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
