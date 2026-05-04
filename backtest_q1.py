@@ -276,13 +276,6 @@ def _vol_flag(closes, i, n_fast=5, n_slow=60, threshold=2.0):
     return (fast_vol / slow_vol) >= threshold if slow_vol > 0 else False
 
 
-def _dominance_confirm_days(gap):
-    """板塊斷層越大，集中模式確認越快（1~5天）"""
-    if gap >= 20:    return 1
-    elif gap >= 15:  return 2
-    else:            return 5
-
-
 # ── VIX 風險敞口控制層 ────────────────────────────────────────────────
 def _vix_overlay(vix_val, vix_recent=None):
     """
@@ -707,11 +700,6 @@ def main():
     daily_sec_slope_pct   = {}   # {date: {sector: slope_pct}}，供 sector exit post-process 使用
     daily_regime          = {}   # {date: regime}，供 sector exit 判斷相位
 
-    # ── 板塊集中狀態機
-    dominance_state      = "normal"  # "normal" | "pre_concentration" | "concentration"
-    dominance_streak     = 0         # 連續達到集中門檻的天數
-    dominant_sector_key  = None      # 主導類股 key
-    beta_dom_state       = "normal"  # 上次開 beta 時的 dominance_state
     open_capital         = []        # [(expiry_date, pos_size)]：追蹤信號部位資金佔用
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
@@ -850,53 +838,24 @@ def main():
         daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
         daily_regime[q_date]        = _eff_regime
 
-        # ── 板塊主導偵測 + 三段集中狀態機
+        # ── 板塊主導偵測
         _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
         _dom_gap     = (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]
                         if len(_sorted_by_combined) >= 2 else 0.0)
-        _dom_top_key = _sorted_by_combined[0] if _sorted_by_combined else None
-        _sector_dominant = (  # 保留供向後相容
+        _sector_dominant = (
             len(_sorted_by_combined) >= 2
             and _sec_combined_pct[_sorted_by_combined[0]] >= SECTOR_DOMINANCE_MIN
             and _dom_gap >= SECTOR_DOMINANCE_GAP
         )
 
-        if _dom_gap < 20:
-            dominance_state     = "normal"
-            dominance_streak    = 0
-            dominant_sector_key = None
-        elif _dom_gap >= 30:
-            if dominance_state == "normal":
-                dominance_state     = "pre_concentration"
-                dominance_streak    = 1
-                dominant_sector_key = _dom_top_key
-            else:
-                dominance_streak   += 1
-                dominant_sector_key = _dom_top_key
-            if dominance_state == "pre_concentration" and dominance_streak >= _dominance_confirm_days(_dom_gap):
-                dominance_state = "concentration"
-        elif _dom_gap >= 25:
-            if dominance_state in ("pre_concentration", "concentration"):
-                dominance_streak   += 1
-                dominant_sector_key = _dom_top_key
-                if dominance_state == "pre_concentration" and dominance_streak >= _dominance_confirm_days(_dom_gap):
-                    dominance_state = "concentration"
-        elif _dom_gap >= 20:
-            if dominance_state == "concentration":
-                dominance_state = "pre_concentration"
-            if dominance_state == "pre_concentration":
-                dominant_sector_key = _dom_top_key
-                dominance_streak    = max(0, dominance_streak - 1)
-
-        # ── RS Beta Layer：bull 相位持有，配置與持股依集中狀態動態調整
+        # ── RS Beta Layer：bull 相位持有
         _in_bull = (regime == "bull")
-        _beta_needs_rebalance = (beta_mode == "active" and _in_bull and beta_dom_state != dominance_state)
 
-        # 關閉 beta 部位：離開 bull，或集中狀態切換（重新平衡）
-        if beta_mode is not None and (not _in_bull or _beta_needs_rebalance):
+        # 關閉 beta 部位：離開 bull
+        if beta_mode is not None and not _in_bull:
             _n_beta    = max(len(beta_entries), 1)
             _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
-            _exit_type = "dominance_change" if _beta_needs_rebalance else "regime_change"
+            _exit_type = "regime_change"
             for b_code, b_entry_px in beta_entries.items():
                 b_si = stock_date_idx[b_code].get(q_date)
                 b_exit_px = b_entry_px
@@ -936,26 +895,11 @@ def main():
             beta_mode          = None
             beta_alloc_at_open = 0.0
             beta_open_regime   = None
-            beta_dom_state     = "normal"
 
-        # 開新 beta 部位 / 重新平衡
+        # 開新 beta 部位
         if beta_mode is None and _in_bull:
-            if dominance_state == "concentration" and dominant_sector_key:
-                # 集中模式：只持主導類股前5強，配置80%
-                top_codes  = sorted(
-                    [c for c in rs_pct_map if sector_map.get(c, "") == dominant_sector_key],
-                    key=lambda c: rs_pct_map[c], reverse=True
-                )[:5]
-                _alloc_cap = 0.80
-            elif dominance_state == "pre_concentration":
-                # 集中準備：全市場前N強，配置60%
-                top_codes  = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-                _alloc_cap = 0.60
-            else:
-                # 正常：全市場前N強，配置50%
-                top_codes  = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-                _alloc_cap = BETA_ALLOC_MAX
-            _beta_alloc = round(market_factor * _alloc_cap, 3)
+            top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+            _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
             new_beta = {}
             for b_code in top_codes:
                 b_si = stock_date_idx[b_code].get(q_date)
@@ -969,7 +913,6 @@ def main():
                 beta_mode          = "active"
                 beta_alloc_at_open = _beta_alloc
                 beta_open_regime   = "bull"
-                beta_dom_state     = dominance_state
 
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
@@ -1069,14 +1012,6 @@ def main():
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
-                # ── 集中模式：篩選非主導類股
-                if dominance_state == "concentration" and dominant_sector_key:
-                    if _code_sk != dominant_sector_key:
-                        continue
-                elif dominance_state == "pre_concentration" and dominant_sector_key:
-                    if _code_sk != dominant_sector_key and sig.get("confirmations", 0) < 4:
-                        continue
-
                 # ── 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
                 # 當大量股票同日出現相同型態 = 趨勢末段擁擠，不是機會
                 # 依 RS 排序後優先取強股，再超過上限的跳過
@@ -1114,11 +1049,6 @@ def main():
                 _trade_heat  = round(pos_size * _stop_dist, 5)
                 _total_heat  = sum(h for _, h in open_positions)
                 _regime_heat = MAX_HEAT_BY_REGIME.get(_eff_regime, 0.15)
-                # 集中模式縮減信號熱度，資金往 beta 集中
-                if dominance_state == "concentration":
-                    _regime_heat = min(_regime_heat, 0.10)
-                elif dominance_state == "pre_concentration":
-                    _regime_heat = min(_regime_heat, 0.20)
                 if _total_heat + _trade_heat > _regime_heat:
                     continue   # 超過整體風險預算
 
