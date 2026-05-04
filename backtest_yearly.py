@@ -92,6 +92,11 @@ def main():
     except Exception as _ve:
         print(f"  VIX 下載失敗（{_ve}），overlay 跳過")
 
+    # 大盤 MA60 預算（供宏觀止損使用）
+    bm_ma60 = [None] * len(bm_closes)
+    for _i in range(60, len(bm_closes)):
+        bm_ma60[_i] = sum(bm_closes[_i - 59:_i + 1]) / 60
+
     # ── 下載個股（一次，各年共用）──────────────────────────────────
     print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
     candidates = []
@@ -541,6 +546,7 @@ def main():
                     trail_stop    = stop
                     _mid_target   = actual_entry + 0.5 * (target - actual_entry)
                     _be_activated = False
+                    _macro_exit   = False
                     _ig_anchor    = snap.get("swing_anchor_idx") if sig_type == "momentum_ignition" else None
 
                     for d_off in range(1, final_si - ni + 1):
@@ -582,11 +588,26 @@ def main():
                             _exit_si_at = ni + d_off
                             break
 
+                        # ── 宏觀止損：大盤收盤跌破 MA60，趨勢部位強制出場
+                        if _is_trend:
+                            _fwd_date = sd["dates"][_idx] if _idx < len(sd["dates"]) else None
+                            if _fwd_date:
+                                _bmi_fwd = bm_date_idx.get(_fwd_date)
+                                if (_bmi_fwd is not None and bm_ma60[_bmi_fwd] is not None
+                                        and bm_closes[_bmi_fwd] < bm_ma60[_bmi_fwd]):
+                                    exit_px     = sd["closes"][_idx]
+                                    outcome     = "win" if exit_px > actual_entry else "loss"
+                                    _exit_si_at = _idx
+                                    _macro_exit = True
+                                    break
+
                     if outcome == "inconclusive":
                         exit_type = "expired"
                         outcome   = "win" if exit_px > actual_entry else "loss"
                     else:
-                        exit_type = "target" if (not _is_trend and outcome == "win") else "stop"
+                        exit_type = ("macro_stop" if _macro_exit
+                                     else "target" if (not _is_trend and outcome == "win")
+                                     else "stop")
 
                     gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
 
