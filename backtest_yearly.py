@@ -240,12 +240,24 @@ def main():
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
+            # ── 快速廣度：5日正報酬股票比例
+            _above_5d   = sum(1 for code, sd in year_data.items()
+                              if (si5 := year_date_idx[code].get(q_date)) is not None
+                              and si5 >= 5
+                              and not math.isnan(sd["closes"][si5])
+                              and sd["closes"][si5] > sd["closes"][si5 - 5])
+            _fast_n     = sum(1 for code, sd in year_data.items()
+                              if (si5 := year_date_idx[code].get(q_date)) is not None
+                              and si5 >= 5
+                              and not math.isnan(sd["closes"][si5]))
+            fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
+
             # 廣度動能快層
             _b_hist = list(breadth_history)
             _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
             breadth_slope = round(breadth_pct - _b_ref, 4)
 
-            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
+            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0

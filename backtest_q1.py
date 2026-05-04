@@ -194,7 +194,7 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 
 
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
-def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
+def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadth_pct=0.5):
     """
     五重確認 regime（慢層 × 非對稱快層）：
       慢層（趨勢確認）
@@ -204,7 +204,8 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
         4. 52週百分位 + 10週動能（early_bear 早期預警）
       非對稱快層（市場結構：跌快漲慢）
         5. breadth_slope 10日廣度變化速率
-           fast_deteriorating < -0.10：廣度快速惡化 → 提前降相位（下行保護）
+        6. TWII 5日跌幅（ROC5 < -4%）
+        7. 快速廣度（5日正報酬股票比例 < 40%）：不依賴均線，直接測量市場動能
            ── 刻意不設 fast_improving：底部確認需等慢層多重信號，
               防止廣度短線反彈造成 bear→range 假升相位頻繁翻轉
 
@@ -236,8 +237,11 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
     # 非對稱快層：只保留下行保護，不設上行提前升相位
     # ── 廣度快速惡化：10日廣度跌逾10pp
     # ── 指數短期動能：5日跌逾4%（比廣度快2-3週，捕捉趨勢頂部初期轉折）
+    # ── 快速廣度：超過60%股票5日負報酬（不依賴均線，直測市場動能瓦解）
     twii_roc5 = (bm_closes[i] / bm_closes[i - 5] - 1) if i >= 5 else 0.0
-    fast_deteriorating = breadth_slope < -0.10 or twii_roc5 < -0.04
+    fast_deteriorating = (breadth_slope < -0.10
+                          or twii_roc5 < -0.04
+                          or fast_breadth_pct < 0.40)
 
     # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
     if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
@@ -756,13 +760,25 @@ def main():
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
+        # ── 快速廣度：5日正報酬股票比例（即時動能，不依賴均線）
+        _above_5d   = sum(1 for code, sd in stock_data.items()
+                          if (si5 := stock_date_idx[code].get(q_date)) is not None
+                          and si5 >= 5
+                          and not math.isnan(sd["closes"][si5])
+                          and sd["closes"][si5] > sd["closes"][si5 - 5])
+        _fast_n     = sum(1 for code, sd in stock_data.items()
+                          if (si5 := stock_date_idx[code].get(q_date)) is not None
+                          and si5 >= 5
+                          and not math.isnan(sd["closes"][si5]))
+        fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
+
         # ── 廣度動能（快層）：10日廣度變化速率，breadth_history 含截至昨日的資料
         _b_hist = list(breadth_history)
         _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
         breadth_slope = round(breadth_pct - _b_ref, 4)
 
         # ── regime 在廣度計算後判斷（慢層 MA60/MA120 × 快層廣度動能）
-        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
+        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
