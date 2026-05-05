@@ -214,6 +214,11 @@ def main():
         _breadth_alert       = False
         _breadth_recover_cnt = 0
 
+        # ── EMA（單向：只用於加速 bear 偵測，不影響 bull）
+        _ema5_r  = None;  _ema10_r = None;  _ema5_r_prev = None
+        _EMA5_A  = 2 / (5  + 1)
+        _EMA10_A = 2 / (10 + 1)
+
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
             if bm_i is None:
@@ -261,7 +266,16 @@ def main():
             _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
             breadth_slope = round(breadth_pct - _b_ref, 4)
 
-            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
+            # ── EMA 方向（單向 bear 偵測用）
+            _ema5_r_prev = _ema5_r
+            _px_r        = bm_closes[bm_i]
+            _ema5_r  = (_ema5_r  * (1 - _EMA5_A)  + _px_r * _EMA5_A)  if _ema5_r  is not None else _px_r
+            _ema10_r = (_ema10_r * (1 - _EMA10_A) + _px_r * _EMA10_A) if _ema10_r is not None else _px_r
+            _ema_bear = (_ema5_r < _ema10_r and
+                         _ema5_r_prev is not None and _ema5_r < _ema5_r_prev)
+
+            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct,
+                                    ema_bear=_ema_bear)
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0

@@ -194,7 +194,7 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 
 
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
-def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadth_pct=0.5):
+def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadth_pct=0.5, ema_bear=False):
     """
     五重確認 regime（慢層 × 非對稱快層）：
       慢層（趨勢確認）
@@ -242,6 +242,10 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadt
     fast_deteriorating = (breadth_slope < -0.10
                           or twii_roc5 < -0.04
                           or fast_breadth_pct < 0.40)
+
+    # EMA 快速解鎖：不等 MA60 穿越，提前宣告 bear（單向：只加速進入 bear，不加速進入 bull）
+    if ema_bear and fast_deteriorating:
+        return "bear"
 
     # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
     if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
@@ -725,6 +729,11 @@ def main():
     _breadth_alert       = False   # 廣度警戒中
     _breadth_recover_cnt = 0       # 連續廣度 > 50% 天數（非對稱恢復計數）
 
+    # ── EMA（單向：只用於加速 bear 偵測，不影響 bull）
+    _ema5_r  = None;  _ema10_r = None;  _ema5_r_prev = None
+    _EMA5_A  = 2 / (5  + 1)
+    _EMA10_A = 2 / (10 + 1)
+
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
     beta_trades        = []
     beta_mode          = None    # None / "active"
@@ -781,8 +790,17 @@ def main():
         _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
         breadth_slope = round(breadth_pct - _b_ref, 4)
 
+        # ── EMA 方向（單向 bear 偵測用）
+        _ema5_r_prev = _ema5_r
+        _px_r        = bm_closes[bm_i]
+        _ema5_r  = (_ema5_r  * (1 - _EMA5_A)  + _px_r * _EMA5_A)  if _ema5_r  is not None else _px_r
+        _ema10_r = (_ema10_r * (1 - _EMA10_A) + _px_r * _EMA10_A) if _ema10_r is not None else _px_r
+        _ema_bear = (_ema5_r < _ema10_r and
+                     _ema5_r_prev is not None and _ema5_r < _ema5_r_prev)
+
         # ── regime 在廣度計算後判斷（慢層 MA60/MA120 × 快層廣度動能）
-        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
+        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct,
+                                ema_bear=_ema_bear)
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
