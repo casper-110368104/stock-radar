@@ -210,13 +210,9 @@ def main():
 
         open_capital        = []
 
-        # ── TWII 均線糾結狀態機（每年重置）
-        _tangle_state    = "NORMAL"
-        _post_tangle_cnt = 0
-        _POST_TANGLE_WIN = 10
-        _ema5  = None;  _ema10 = None
-        _EMA5_A  = 2 / (5  + 1)
-        _EMA10_A = 2 / (10 + 1)
+        # ── 大盤快速切換狀態（廣度警戒 + SMA 糾結，取代 EMA 狀態機）
+        _breadth_alert       = False
+        _breadth_recover_cnt = 0
 
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
@@ -275,43 +271,31 @@ def main():
             _er_scale   = max(0.3, min(_er / 0.30, 1.2))
             _high_vol   = _vol_flag(bm_closes, bm_i)
             _vol_mult   = 0.5 if _high_vol else 1.0
-            # ── TWII 均線糾結 + EMA 方向狀態機
+            # ── SMA 糾結偵測（輔助，4MA spread）
             _ma5   = sum(bm_closes[bm_i - 4:bm_i + 1]) / 5   if bm_i >= 4  else bm_closes[bm_i]
             _ma10  = sum(bm_closes[bm_i - 9:bm_i + 1]) / 10  if bm_i >= 9  else bm_closes[bm_i]
             _ma20s = sum(bm_closes[bm_i - 19:bm_i + 1]) / 20 if bm_i >= 19 else bm_closes[bm_i]
             _ma60s = sum(bm_closes[bm_i - 59:bm_i + 1]) / 60 if bm_i >= 59 else bm_closes[bm_i]
             _spread    = (max(_ma5,_ma10,_ma20s,_ma60s) - min(_ma5,_ma10,_ma20s,_ma60s)) / _ma60s
             _in_tangle = _spread < 0.015
-            _px    = bm_closes[bm_i]
-            _ema5p = _ema5
-            _ema5  = (_ema5  * (1 - _EMA5_A)  + _px * _EMA5_A)  if _ema5  is not None else _ma5
-            _ema10 = (_ema10 * (1 - _EMA10_A) + _px * _EMA10_A) if _ema10 is not None else _ma10
-            _e5_up = _ema5p is not None and _ema5 > _ema5p
-            _e5_dn = _ema5p is not None and _ema5 < _ema5p
 
-            if _in_tangle:
-                _tangle_state    = "IN_TANGLE"
-                _post_tangle_cnt = 0
-            elif _tangle_state == "IN_TANGLE":
-                _post_tangle_cnt = 1
-                if   _ema5 > _ema10 and _e5_up:         _tangle_state = "POST_BULL"
-                elif _ema5 < _ema10 and _e5_dn:         _tangle_state = "POST_BEAR"
-                else:                                   _tangle_state = "NORMAL"
-            elif _tangle_state == "POST_BULL":
-                _post_tangle_cnt += 1
-                if _ema5 < _ema10 and _e5_dn:
-                    _tangle_state = "POST_BEAR"; _post_tangle_cnt = 1
-                elif _post_tangle_cnt > _POST_TANGLE_WIN:
-                    _tangle_state = "NORMAL";    _post_tangle_cnt = 0
-            elif _tangle_state == "POST_BEAR":
-                _post_tangle_cnt += 1
-                if _ema5 > _ema10 and _e5_up:
-                    _tangle_state = "POST_BULL"; _post_tangle_cnt = 1
-                elif _post_tangle_cnt > _POST_TANGLE_WIN:
-                    _tangle_state = "NORMAL";    _post_tangle_cnt = 0
+            # ── 廣度快速觸發（主要切換機）+ 非對稱恢復確認
+            _prev_breadth = breadth_history[-1] if breadth_history else breadth_pct
+            _b_drop       = _prev_breadth - breadth_pct
+            if breadth_pct < 0.35 or _b_drop >= 0.15:
+                _breadth_alert       = True
+                _breadth_recover_cnt = 0
+            elif _breadth_alert:
+                if breadth_pct > 0.50:
+                    _breadth_recover_cnt += 1
+                    if _breadth_recover_cnt >= 3:
+                        _breadth_alert       = False
+                        _breadth_recover_cnt = 0
+                else:
+                    _breadth_recover_cnt = 0
 
-            _tangle_mult  = {"IN_TANGLE": 0.7, "POST_BULL": 1.2, "POST_BEAR": 0.5}.get(_tangle_state, 1.0)
-            market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult * _tangle_mult)), 3)
+            _regime_mult  = 0.5 if _breadth_alert else (0.7 if _in_tangle else 1.0)
+            market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult * _regime_mult)), 3)
 
             # VIX overlay + 廣度背離
             breadth_history.append(breadth_pct)
