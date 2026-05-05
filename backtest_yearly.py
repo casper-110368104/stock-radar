@@ -269,6 +269,20 @@ def main():
             _vol_mult   = 0.5 if _high_vol else 1.0
             market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult)), 3)
 
+            # ── TWII 短期均線方向（快速方向判斷：5MA / 10MA / 20MA）
+            _twii_ma5      = sum(bm_closes[bm_i - 4:bm_i + 1]) / 5   if bm_i >= 4  else bm_closes[bm_i]
+            _twii_ma5_prev = sum(bm_closes[bm_i - 5:bm_i])     / 5   if bm_i >= 5  else _twii_ma5
+            _twii_ma10     = sum(bm_closes[bm_i - 9:bm_i + 1]) / 10  if bm_i >= 9  else bm_closes[bm_i]
+            _twii_ma20s    = sum(bm_closes[bm_i - 19:bm_i + 1]) / 20 if bm_i >= 19 else bm_closes[bm_i]
+            _dir_bullish   = (_twii_ma5 > _twii_ma5_prev) and (_twii_ma5 > _twii_ma10)
+            _ma_tangle     = abs(_twii_ma5 - _twii_ma20s) / _twii_ma20s < 0.008
+            if _ma_tangle:
+                _twii_dir_adj = -1
+            elif _dir_bullish:
+                _twii_dir_adj = +1
+            else:
+                _twii_dir_adj = 0
+
             # VIX overlay + 廣度背離
             breadth_history.append(breadth_pct)
             _vix_today = vix_dict.get(q_date)
@@ -518,9 +532,10 @@ def main():
                             continue
                         daily_ig_cnt += 1
 
-                    # ── 確認項門檻：< 4 項不進場（統計顯示 0-3 項為負期望值）
+                    # ── 確認項門檻（+ 大盤方向調整）
+                    # 糾結(-1)→需≥5；多頭確認(+1)→≥3即可；中性→≥4
                     confs         = sig.get("confirmations", 0)
-                    if confs < 4:
+                    if confs + _twii_dir_adj < 4:
                         continue
 
                     # ── ma_pullback：僅限 bull 相位且 RS ≥ 65
