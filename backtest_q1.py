@@ -1067,8 +1067,16 @@ def main():
                         continue
                     daily_ig_cnt += 1
 
-                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
+                # ── 確認項門檻：< 4 項不進場（統計顯示 0-3 項為負期望值）
                 confs      = sig.get("confirmations", 0)
+                if confs < 4:
+                    continue
+
+                # ── ma_pullback：僅限 bull 相位且 RS ≥ 65（其他相位/RS 較弱期望值為負）
+                if sig_type == "ma_pullback" and (_eff_regime != "bull" or rs_pct < 65):
+                    continue
+
+                # ── True R-based sizing（訊號設計屬性 × 確認數 × 市場因子 × 類股強度）
                 conf_mult  = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                 sig_scale  = SIGNAL_SCALE.get(sig_type, 1.0)
                 # 類股加權：靜態水位 + 動能方向綜合分數（0.70~1.30）
