@@ -32,7 +32,7 @@ MAX_HOLD_SWING   = 8    # false_breakdown / ma60_support 等短線
 MAX_HOLD_IG      = 120  # momentum_ignition：AVWAP 動態止損，讓板塊趨勢充分延伸
 MA_TRAIL_BUFFER  = 0.02 # MA10 追蹤停損緩衝（2%）：止跌點 = MA10 × (1 - buffer)
 BENCHMARK_TID  = "^TWII"
-OUTPUT_PATH    = "docs/backtest_q1.json"
+OUTPUT_PATH    = "docs/backtest_q1_nodominance.json"
 SLIP           = 0.002    # 滑價估計 0.2%
 MIN_HIST_DAYS  = 70
 HEADERS        = {"User-Agent": "Mozilla/5.0 (stock-radar-backtest/1.0)"}
@@ -74,7 +74,7 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
 
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
-    "bull":           {"high_base", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
+    "bull":           {"high_base", "breakout", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
     "bull_pullback":  {"ma_pullback", "false_breakdown"},
     "range":          {"false_breakdown", "ma_pullback"},
     "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
@@ -194,7 +194,7 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 
 
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
-def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadth_pct=0.5):
+def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0):
     """
     五重確認 regime（慢層 × 非對稱快層）：
       慢層（趨勢確認）
@@ -204,8 +204,7 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadt
         4. 52週百分位 + 10週動能（early_bear 早期預警）
       非對稱快層（市場結構：跌快漲慢）
         5. breadth_slope 10日廣度變化速率
-        6. TWII 5日跌幅（ROC5 < -4%）
-        7. 快速廣度（5日正報酬股票比例 < 40%）：不依賴均線，直接測量市場動能
+           fast_deteriorating < -0.10：廣度快速惡化 → 提前降相位（下行保護）
            ── 刻意不設 fast_improving：底部確認需等慢層多重信號，
               防止廣度短線反彈造成 bear→range 假升相位頻繁翻轉
 
@@ -235,13 +234,7 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadt
     above_ma60 = p > ma60
 
     # 非對稱快層：只保留下行保護，不設上行提前升相位
-    # ── 廣度快速惡化：10日廣度跌逾10pp
-    # ── 指數短期動能：5日跌逾4%（比廣度快2-3週，捕捉趨勢頂部初期轉折）
-    # ── 快速廣度：超過60%股票5日負報酬（不依賴均線，直測市場動能瓦解）
-    twii_roc5 = (bm_closes[i] / bm_closes[i - 5] - 1) if i >= 5 else 0.0
-    fast_deteriorating = (breadth_slope < -0.10
-                          or twii_roc5 < -0.04
-                          or fast_breadth_pct < 0.40)
+    fast_deteriorating = breadth_slope < -0.10   # 廣度10日跌逾10pp → 多頭在瓦解
 
     # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
     if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
@@ -281,6 +274,13 @@ def _vol_flag(closes, i, n_fast=5, n_slow=60, threshold=2.0):
     slow_vol = sum(abs(closes[k] / closes[k - 1] - 1)
                    for k in range(i - n_slow - n_fast + 1, i - n_fast + 1)) / n_slow
     return (fast_vol / slow_vol) >= threshold if slow_vol > 0 else False
+
+
+def _dominance_confirm_days(gap):
+    """板塊斷層越大，集中模式確認越快（1~5天）"""
+    if gap >= 20:    return 1
+    elif gap >= 15:  return 2
+    else:            return 5
 
 
 # ── VIX 風險敞口控制層 ────────────────────────────────────────────────
@@ -367,27 +367,15 @@ def _rs_metrics(daily_rs):
     return round(m, 4), round(scalar, 4)
 
 
-def _rs_slope_window(vals):
-    if len(vals) < 5:
+def _rs_slope(daily_rs):
+    """5 日斜率，排除今天（用 [-6:-1]）"""
+    if len(daily_rs) < 6:
         return None
+    vals   = daily_rs[-6:-1]
     mu, xm = sum(vals) / 5, 2.0
     num    = sum((k - xm) * (vals[k] - mu) for k in range(5))
     den    = sum((k - xm) ** 2 for k in range(5))
     return round(num / den, 4) if den else 0.0
-
-def _rs_slope(daily_rs):
-    """5 日斜率，排除今天（用 [-6:-1]）"""
-    return _rs_slope_window(daily_rs[-6:-1]) if len(daily_rs) >= 6 else None
-
-def _rs_accel(daily_rs):
-    """RS 加速度：當前5日斜率 − 前5日斜率（正 = 動能在加速）"""
-    if len(daily_rs) < 11:
-        return None
-    s_now  = _rs_slope_window(daily_rs[-6:-1])
-    s_prev = _rs_slope_window(daily_rs[-11:-6])
-    if s_now is None or s_prev is None:
-        return None
-    return round(s_now - s_prev, 4)
 
 
 # ── 個股相位（簡化版，只用 rs_pct + M + MA）─────────────────────────
@@ -719,6 +707,11 @@ def main():
     daily_sec_slope_pct   = {}   # {date: {sector: slope_pct}}，供 sector exit post-process 使用
     daily_regime          = {}   # {date: regime}，供 sector exit 判斷相位
 
+    # ── 板塊集中狀態機
+    dominance_state      = "normal"  # "normal" | "pre_concentration" | "concentration"
+    dominance_streak     = 0         # 連續達到集中門檻的天數
+    dominant_sector_key  = None      # 主導類股 key
+    beta_dom_state       = "normal"  # 上次開 beta 時的 dominance_state
     open_capital         = []        # [(expiry_date, pos_size)]：追蹤信號部位資金佔用
 
     # ── RS Beta Layer 狀態（獨立於信號交易，記錄在 beta_trades）
@@ -760,25 +753,13 @@ def main():
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-        # ── 快速廣度：5日正報酬股票比例（即時動能，不依賴均線）
-        _above_5d   = sum(1 for code, sd in stock_data.items()
-                          if (si5 := stock_date_idx[code].get(q_date)) is not None
-                          and si5 >= 5
-                          and not math.isnan(sd["closes"][si5])
-                          and sd["closes"][si5] > sd["closes"][si5 - 5])
-        _fast_n     = sum(1 for code, sd in stock_data.items()
-                          if (si5 := stock_date_idx[code].get(q_date)) is not None
-                          and si5 >= 5
-                          and not math.isnan(sd["closes"][si5]))
-        fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
-
         # ── 廣度動能（快層）：10日廣度變化速率，breadth_history 含截至昨日的資料
         _b_hist = list(breadth_history)
         _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
         breadth_slope = round(breadth_pct - _b_ref, 4)
 
         # ── regime 在廣度計算後判斷（慢層 MA60/MA120 × 快層廣度動能）
-        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
+        regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -869,24 +850,31 @@ def main():
         daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
         daily_regime[q_date]        = _eff_regime
 
-        # ── 板塊主導偵測
+        # ── 板塊主導偵測 + 三段集中狀態機
         _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
         _dom_gap     = (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]
                         if len(_sorted_by_combined) >= 2 else 0.0)
-        _sector_dominant = (
+        _dom_top_key = _sorted_by_combined[0] if _sorted_by_combined else None
+        _sector_dominant = (  # 保留供向後相容
             len(_sorted_by_combined) >= 2
             and _sec_combined_pct[_sorted_by_combined[0]] >= SECTOR_DOMINANCE_MIN
             and _dom_gap >= SECTOR_DOMINANCE_GAP
         )
 
-        # ── RS Beta Layer：bull 相位持有
-        _in_bull = (regime == "bull")
+        # BASELINE: dominance state machine disabled — always "normal" (A/B comparison)
+        dominance_state     = "normal"
+        dominance_streak    = 0
+        dominant_sector_key = None
 
-        # 關閉 beta 部位：離開 bull
-        if beta_mode is not None and not _in_bull:
+        # ── RS Beta Layer：bull 相位持有，配置與持股依集中狀態動態調整
+        _in_bull = (regime == "bull")
+        _beta_needs_rebalance = (beta_mode == "active" and _in_bull and beta_dom_state != dominance_state)
+
+        # 關閉 beta 部位：離開 bull，或集中狀態切換（重新平衡）
+        if beta_mode is not None and (not _in_bull or _beta_needs_rebalance):
             _n_beta    = max(len(beta_entries), 1)
             _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
-            _exit_type = "regime_change"
+            _exit_type = "dominance_change" if _beta_needs_rebalance else "regime_change"
             for b_code, b_entry_px in beta_entries.items():
                 b_si = stock_date_idx[b_code].get(q_date)
                 b_exit_px = b_entry_px
@@ -926,11 +914,26 @@ def main():
             beta_mode          = None
             beta_alloc_at_open = 0.0
             beta_open_regime   = None
+            beta_dom_state     = "normal"
 
-        # 開新 beta 部位
+        # 開新 beta 部位 / 重新平衡
         if beta_mode is None and _in_bull:
-            top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-            _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
+            if dominance_state == "concentration" and dominant_sector_key:
+                # 集中模式：只持主導類股前5強，配置80%
+                top_codes  = sorted(
+                    [c for c in rs_pct_map if sector_map.get(c, "") == dominant_sector_key],
+                    key=lambda c: rs_pct_map[c], reverse=True
+                )[:5]
+                _alloc_cap = 0.80
+            elif dominance_state == "pre_concentration":
+                # 集中準備：全市場前N強，配置60%
+                top_codes  = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                _alloc_cap = 0.60
+            else:
+                # 正常：全市場前N強，配置50%
+                top_codes  = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
+                _alloc_cap = BETA_ALLOC_MAX
+            _beta_alloc = round(market_factor * _alloc_cap, 3)
             new_beta = {}
             for b_code in top_codes:
                 b_si = stock_date_idx[b_code].get(q_date)
@@ -944,9 +947,11 @@ def main():
                 beta_mode          = "active"
                 beta_alloc_at_open = _beta_alloc
                 beta_open_regime   = "bull"
+                beta_dom_state     = dominance_state
 
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
+        daily_bk_cnt  = 0   # 當日 breakout 進場上限計數
         daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
 
         # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
@@ -970,9 +975,6 @@ def main():
             dr     = rs_cache.get(code, [])
             m_z, _ = _rs_metrics(dr)
             slope  = _rs_slope(dr)
-            accel  = _rs_accel(dr)
-            # 個股5日絕對動能（供 high_base 入場確認：股票本身需在上漲）
-            stock_roc5 = (sd["closes"][si] / sd["closes"][si - 5] - 1) if si >= 5 else 0.0
 
             _code_sk           = sector_map.get(code, "")
             _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
@@ -981,7 +983,6 @@ def main():
 
             snap["m_z"]             = m_z
             snap["rs_trend_stock"]  = slope
-            snap["rs_accel"]        = accel
             snap["sector_rs"]       = _code_sec_pct
             snap["sector_combined"] = _code_sec_combined
 
@@ -1027,9 +1028,6 @@ def main():
                 else:
                     continue   # 當日未觸發
 
-                # 止損距離上限 10%：AVWAP 結構止損過寬時收緊，單筆最大虧損可控
-                if actual_entry > 0 and (actual_entry - stop) / actual_entry > 0.10:
-                    stop = round(actual_entry * 0.90, 2)
                 actual_risk = actual_entry - stop
                 if actual_risk <= 0:
                     continue
@@ -1049,19 +1047,25 @@ def main():
                 if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                     continue
 
-                # high_base：要求 RS 動能正在加速（二階導數 > 0），過濾峰值後退燒的訊號
-                if sig_type == "high_base" and (accel is None or accel <= 0):
-                    continue
+                # ── 集中模式：篩選非主導類股
+                if dominance_state == "concentration" and dominant_sector_key:
+                    if _code_sk != dominant_sector_key:
+                        continue
+                elif dominance_state == "pre_concentration" and dominant_sector_key:
+                    if _code_sk != dominant_sector_key and sig.get("confirmations", 0) < 4:
+                        continue
 
-                # high_base：個股5日絕對動能確認（股票本身需在上漲，排除廣度好但個股已轉弱）
-                if sig_type == "high_base" and stock_roc5 <= 0:
-                    continue
-
-                # ── 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
+                # ── 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2
+                # 當大量股票同日出現相同型態 = 趨勢末段擁擠，不是機會
+                # 依 RS 排序後優先取強股，再超過上限的跳過
                 if sig_type == "high_base":
                     if daily_hb_cnt >= 3:
                         continue
                     daily_hb_cnt += 1
+                elif sig_type == "breakout":
+                    if daily_bk_cnt >= 2:
+                        continue
+                    daily_bk_cnt += 1
                 elif sig_type == "momentum_ignition":
                     if daily_ig_cnt >= 2:
                         continue
@@ -1088,6 +1092,11 @@ def main():
                 _trade_heat  = round(pos_size * _stop_dist, 5)
                 _total_heat  = sum(h for _, h in open_positions)
                 _regime_heat = MAX_HEAT_BY_REGIME.get(_eff_regime, 0.15)
+                # 集中模式縮減信號熱度，資金往 beta 集中
+                if dominance_state == "concentration":
+                    _regime_heat = min(_regime_heat, 0.10)
+                elif dominance_state == "pre_concentration":
+                    _regime_heat = min(_regime_heat, 0.20)
                 if _total_heat + _trade_heat > _regime_heat:
                     continue   # 超過整體風險預算
 
@@ -1115,12 +1124,8 @@ def main():
                 trail_stop     = stop
                 _mid_target    = actual_entry + 0.5 * (target - actual_entry)
                 _be_activated  = False
-                # ig / high_base：進場時固定錨點 index，持倉期間每日重算 AVWAP 作為動態止損
-                # high_base 僅 bull 相位啟用 AVWAP（其他相位用 MA10 避免熊市損失擴大）
-                _ig_anchor  = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
-                _use_avwap  = (_ig_anchor is not None and
-                               (sig_type == "momentum_ignition" or
-                                (sig_type == "high_base" and _eff_regime == "bull")))
+                # ig：進場時固定錨點 index，持倉期間每日重算 AVWAP 作為動態止損
+                _ig_anchor     = snap.get("swing_anchor_idx") if sig_type == "momentum_ignition" else None
 
                 for d in range(1, final_si - ni + 1):
                     fh = sd["highs"][ni + d]
@@ -1129,7 +1134,7 @@ def main():
                     _idx = ni + d
 
                     if _is_trend:
-                        if _use_avwap:
+                        if sig_type == "momentum_ignition" and _ig_anchor is not None:
                             # AVWAP 動態止損：從進場錨點到當日重算，趨勢破壞才出場
                             _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
                                       for k in range(_ig_anchor, _idx + 1))
@@ -1168,8 +1173,7 @@ def main():
                     exit_type = "expired"
                     outcome   = "win" if exit_px > actual_entry else "loss"
                 else:
-                    exit_type = ("target" if (not _is_trend and outcome == "win")
-                                 else "stop")
+                    exit_type = "target" if (not _is_trend and outcome == "win") else "stop"
 
                 gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
 

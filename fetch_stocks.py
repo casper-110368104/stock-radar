@@ -597,6 +597,7 @@ def _compute_m_a(daily_rs):
     a = m_tail[-1] - sum(m_tail) / len(m_tail)
 
     # rs_trend：日RS 5日線性斜率（用前5日，排除今天的未完成資料）
+    rs_trend = rs_accel = None
     if len(daily_rs) >= 6:
         vals   = daily_rs[-6:-1]  # 昨天往前5日，不含今天
         mu5    = sum(vals) / 5
@@ -604,10 +605,13 @@ def _compute_m_a(daily_rs):
         num    = sum((i - x_mean) * (vals[i] - mu5) for i in range(5))
         den    = sum((i - x_mean) ** 2 for i in range(5))
         rs_trend = round(num / den, 4) if den else 0.0
-    else:
-        rs_trend = None
+        if len(daily_rs) >= 11:
+            pvals = daily_rs[-11:-6]
+            pmu   = sum(pvals) / 5
+            pnum  = sum((i - x_mean) * (pvals[i] - pmu) for i in range(5))
+            rs_accel = round(rs_trend - (pnum / den if den else 0.0), 4)
 
-    return round(m_today, 4), round(a, 4), rs_trend
+    return round(m_today, 4), round(a, 4), rs_trend, rs_accel
 
 
 def classify_stock_phase(rs_pct, m_z, a_z, rs_trend, rs_slow_positive=None):
@@ -2851,7 +2855,7 @@ def process_stock(sid, category):
     stock_opens   = yahoo.pop("_opens",   [])
     size_cat  = yahoo.get("size_cat", "mid")
     bm_closes = _benchmark_closes.get(size_cat) or _benchmark_closes.get("mid", [])
-    m_z = a_z = rs_trend_stock = rs_slow_positive = None
+    m_z = a_z = rs_trend_stock = rs_accel_stock = rs_slow_positive = stock_roc5 = None
     if stock_closes and len(bm_closes) >= 240 and len(stock_closes) >= 240:
         try:
             def calc_rs_fn(sp, bp):
@@ -2865,11 +2869,12 @@ def process_stock(sid, category):
         except Exception:
             pass
 
-    # RS 日報酬差序列 + M/A/RS_trend（與類股輪動同頻率、同單位）
+    # RS 日報酬差序列 + M/A/RS_trend/RS_accel（與類股輪動同頻率、同單位）
+    stock_roc5 = round(stock_closes[-1] / stock_closes[-6] - 1, 4) if len(stock_closes) >= 6 else None
     if stock_closes and bm_closes:
         try:
             daily_rs = _compute_rs_layers(stock_closes, bm_closes)
-            m_z, a_z, rs_trend_stock = _compute_m_a(daily_rs)
+            m_z, a_z, rs_trend_stock, rs_accel_stock = _compute_m_a(daily_rs)
             # 慢速趨勢：近30日日RS均值是否 > 0（對應原來的240日累積方向）
             rs_slow_positive = (sum(daily_rs[-30:]) / 30 > 0) if len(daily_rs) >= 30 else None
         except Exception:
@@ -2954,6 +2959,8 @@ def process_stock(sid, category):
         "m_z":             round(m_z, 4) if m_z is not None else None,
         "a_z":             round(a_z, 4) if a_z is not None else None,
         "rs_trend_stock":  rs_trend_stock,
+        "rs_accel":        rs_accel_stock,
+        "stock_roc5":      stock_roc5,
         "rs_slow_positive": rs_slow_positive,
         "stock_phase":     "RANGE",  # 在 main() RS 百分位確定後填入
         "signals":         [],       # 在 main() RS 百分位確定後填入
@@ -3196,6 +3203,8 @@ def main():
                 composite_score=_ws,
                 structure=r.get("structure", ""),
                 sector_phase=_sector_rotation.get(r.get("sector_key", ""), {}).get("sub_phase", ""),
+                rs_accel=r.get("rs_accel"),
+                stock_roc5=r.get("stock_roc5"),
             )
 
     # ── 提取原始歷史序列供回測 + 型態偵測，同時從 results 移除（避免寫入 JSON）

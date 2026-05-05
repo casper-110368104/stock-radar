@@ -43,7 +43,7 @@ _ALLOWED_SIGNALS = {
 
 def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
                  market_regime="range", composite_score=0, structure="",
-                 sector_phase=""):
+                 sector_phase="", rs_accel=None, stock_roc5=None):
     """
     偵測技術面買點訊號，回傳 list of dict。
     每個訊號欄位：
@@ -304,7 +304,9 @@ def calc_signals(yahoo, chips=None, rs_pct=50, stock_phase="RANGE",
     _hb_rs_gate = 60 if market_regime == "bull" else 70
     _hb_pulled_back = yahoo.get("pulled_back_to_ma20", True)  # 預設 True 保持向後相容
     if (high20 and ma5 and price > ma5 and rs_pct >= _hb_rs_gate
-            and _short_ok and _bull_momentum and _hb_pulled_back):
+            and _short_ok and _bull_momentum and _hb_pulled_back
+            and (rs_accel is None or rs_accel > 0)
+            and (stock_roc5 is None or stock_roc5 > 0)):
         dist_high20 = (high20 - price) / high20
         if 0 <= dist_high20 <= 0.05:
             _stop_hb = round(avwap_swing * 0.99, 2) if avwap_swing else (ma10 or round(price * 0.95, 2))

@@ -20,7 +20,7 @@ from signals import calc_signals
 from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
-    _daily_rs, _rs_metrics, _rs_slope, _stock_phase, _stats, _capital_curves,
+    _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _stats, _capital_curves,
     _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MAX_HOLD_IG, MA_TRAIL_BUFFER,
@@ -208,6 +208,8 @@ def main():
         beta_alloc_at_open = 0.0
         beta_open_regime   = None
 
+        open_capital        = []
+
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
             if bm_i is None:
@@ -238,12 +240,24 @@ def main():
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
+            # ── 快速廣度：5日正報酬股票比例
+            _above_5d   = sum(1 for code, sd in year_data.items()
+                              if (si5 := year_date_idx[code].get(q_date)) is not None
+                              and si5 >= 5
+                              and not math.isnan(sd["closes"][si5])
+                              and sd["closes"][si5] > sd["closes"][si5 - 5])
+            _fast_n     = sum(1 for code, sd in year_data.items()
+                              if (si5 := year_date_idx[code].get(q_date)) is not None
+                              and si5 >= 5
+                              and not math.isnan(sd["closes"][si5]))
+            fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
+
             # 廣度動能快層
             _b_hist = list(breadth_history)
             _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
             breadth_slope = round(breadth_pct - _b_ref, 4)
 
-            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope)
+            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -272,7 +286,8 @@ def main():
                            if regime == "bear" and (_reversal_probe or _bd)
                            else regime)
 
-            open_positions = [(ed, h) for ed, h in open_positions if ed > q_date]
+            open_positions = [(ed, h)  for ed, h  in open_positions if ed > q_date]
+            open_capital   = [(ed, ps) for ed, ps in open_capital   if ed > q_date]
 
             # RS 百分位
             if len(rs_scalar_map) > 1:
@@ -321,21 +336,23 @@ def main():
             daily_sec_slope_pct[q_date] = dict(_sec_slope_pct)
             daily_regime[q_date]        = _eff_regime
 
-            # 類股主導偵測
+            # ── 板塊主導偵測
             _sorted_by_combined = sorted(_sec_combined_pct, key=lambda s: _sec_combined_pct[s], reverse=True)
+            _dom_gap     = (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]
+                            if len(_sorted_by_combined) >= 2 else 0.0)
             _sector_dominant = (
                 len(_sorted_by_combined) >= 2
                 and _sec_combined_pct[_sorted_by_combined[0]] >= SECTOR_DOMINANCE_MIN
-                and (_sec_combined_pct[_sorted_by_combined[0]] - _sec_combined_pct[_sorted_by_combined[1]]) >= SECTOR_DOMINANCE_GAP
+                and _dom_gap >= SECTOR_DOMINANCE_GAP
             )
 
-            # ── RS Beta Layer：bull 相位持有前 N 強股，配置隨 market_factor 連續縮放
+            # ── RS Beta Layer：bull 相位持有
             _in_bull = (regime == "bull")
 
-            # 關閉 beta 部位：離開 bull 即出場
             if beta_mode is not None and not _in_bull:
-                _n_beta  = max(len(beta_entries), 1)
-                _pf_each = round(beta_alloc_at_open / _n_beta, 4)
+                _n_beta    = max(len(beta_entries), 1)
+                _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
+                _exit_type = "regime_change"
                 for b_code, b_entry_px in beta_entries.items():
                     b_si = year_date_idx.get(b_code, {}).get(q_date)
                     b_exit_px = b_entry_px
@@ -358,7 +375,7 @@ def main():
                         "stop":          0.0,
                         "target":        0.0,
                         "entry_type":    "beta",
-                        "exit_type":     "regime_change",
+                        "exit_type":     _exit_type,
                         "outcome":       "win" if b_gain >= 0 else "loss",
                         "gain_pct":      b_gain,
                         "actual_rr":     0.0,
@@ -376,11 +393,9 @@ def main():
                 beta_alloc_at_open = 0.0
                 beta_open_regime   = None
 
-            # 開新 beta 部位：進入 bull 時，前 BETA_TOP_N 強 RS（類股主導時提高上限）
             if beta_mode is None and _in_bull:
                 top_codes   = sorted(rs_pct_map, key=lambda c: rs_pct_map[c], reverse=True)[:BETA_TOP_N]
-                _alloc_cap  = BETA_ALLOC_DOMINANT if _sector_dominant else BETA_ALLOC_MAX
-                _beta_alloc = round(market_factor * _alloc_cap, 3)
+                _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
                     b_si = year_date_idx.get(b_code, {}).get(q_date)
@@ -397,7 +412,6 @@ def main():
 
             day_count    = 0
             daily_hb_cnt = 0
-            daily_bk_cnt = 0
             daily_ig_cnt = 0
 
             for code, sd in sorted(year_data.items(),
@@ -420,6 +434,8 @@ def main():
                 dr          = rs_cache.get(code, [])
                 m_z, _      = _rs_metrics(dr)
                 slope       = _rs_slope(dr)
+                accel       = _rs_accel(dr)
+                stock_roc5  = (sd["closes"][si] / sd["closes"][si - 5] - 1) if si >= 5 else 0.0
                 _code_sk           = sector_map.get(code, "")
                 _code_sec_pct      = _sec_pct.get(_code_sk, 50.0)
                 _code_sec_combined = _sec_combined_pct.get(_code_sk, 50.0)
@@ -427,6 +443,7 @@ def main():
 
                 snap["m_z"]             = m_z
                 snap["rs_trend_stock"]  = slope
+                snap["rs_accel"]        = accel
                 snap["sector_rs"]       = _code_sec_pct
                 snap["sector_combined"] = _code_sec_combined
 
@@ -466,6 +483,8 @@ def main():
                     else:
                         continue
 
+                    if actual_entry > 0 and (actual_entry - stop) / actual_entry > 0.10:
+                        stop = round(actual_entry * 0.90, 2)
                     actual_risk = actual_entry - stop
                     if actual_risk <= 0:
                         continue
@@ -481,15 +500,19 @@ def main():
                     if _eff_regime in ("range", "bull_pullback") and slope <= 0:
                         continue
 
-                    # 每日信號密度上限：同日 high_base ≤ 3、breakout ≤ 2、momentum_ignition ≤ 2
+                    # high_base：要求 RS 動能正在加速（二階導數 > 0），過濾峰值後退燒的訊號
+                    if sig_type == "high_base" and (accel is None or accel <= 0):
+                        continue
+
+                    # high_base：個股5日絕對動能確認（股票本身需在上漲，排除廣度好但個股已轉弱）
+                    if sig_type == "high_base" and stock_roc5 <= 0:
+                        continue
+
+                    # 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
                             continue
                         daily_hb_cnt += 1
-                    elif sig_type == "breakout":
-                        if daily_bk_cnt >= 2:
-                            continue
-                        daily_bk_cnt += 1
                     elif sig_type == "momentum_ignition":
                         if daily_ig_cnt >= 2:
                             continue
@@ -502,6 +525,15 @@ def main():
                     target_R      = BASE_R * sig_scale * conf_mult * market_factor * _sector_mult
                     _stop_dist    = actual_risk / actual_entry if actual_entry > 0 else 0.05
                     pos_size      = min(target_R / _stop_dist, 0.20)
+
+                    # 現金可用性（零股：按比例縮小；beta 獨立資金池，不佔信號現金）
+                    _sig_deployed   = sum(ps for _, ps in open_capital)
+                    _available_cash = max(0.0, 1.0 - _sig_deployed)
+                    if pos_size > _available_cash:
+                        pos_size = round(_available_cash, 4)
+                    if pos_size < 0.005:
+                        continue
+
                     _trade_heat   = round(pos_size * _stop_dist, 5)
                     _total_heat   = sum(h for _, h in open_positions)
                     _regime_heat  = MAX_HEAT_BY_REGIME.get(_eff_regime, 0.15)
@@ -534,7 +566,10 @@ def main():
                     trail_stop    = stop
                     _mid_target   = actual_entry + 0.5 * (target - actual_entry)
                     _be_activated = False
-                    _ig_anchor    = snap.get("swing_anchor_idx") if sig_type == "momentum_ignition" else None
+                    _ig_anchor  = snap.get("swing_anchor_idx") if sig_type in ("momentum_ignition", "high_base") else None
+                    _use_avwap  = (_ig_anchor is not None and
+                                   (sig_type == "momentum_ignition" or
+                                    (sig_type == "high_base" and _eff_regime == "bull")))
 
                     for d_off in range(1, final_si - ni + 1):
                         fh   = sd["highs"][ni + d_off]
@@ -543,7 +578,7 @@ def main():
                         _idx = ni + d_off
 
                         if _is_trend:
-                            if sig_type == "momentum_ignition" and _ig_anchor is not None:
+                            if _use_avwap:
                                 _av = sum((sd["highs"][k] + sd["lows"][k] + sd["closes"][k]) / 3 * sd["vols"][k]
                                           for k in range(_ig_anchor, _idx + 1))
                                 _vv = sum(sd["vols"][k] for k in range(_ig_anchor, _idx + 1))
@@ -579,9 +614,13 @@ def main():
                         exit_type = "expired"
                         outcome   = "win" if exit_px > actual_entry else "loss"
                     else:
-                        exit_type = "target" if (not _is_trend and outcome == "win") else "stop"
+                        exit_type = ("target" if (not _is_trend and outcome == "win")
+                                     else "stop")
 
                     gain_pct = round((exit_px - actual_entry) / actual_entry * 100, 2)
+
+                    _actual_exit_date = sd["dates"][_exit_si_at]
+                    open_capital.append((_actual_exit_date + timedelta(days=1), pos_size))
 
                     trades.append({
                         "date":           q_date.strftime("%Y-%m-%d"),
