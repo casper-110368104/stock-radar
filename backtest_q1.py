@@ -1067,10 +1067,15 @@ def main():
                         continue
                     daily_ig_cnt += 1
 
-                # ── 確認項門檻：< 4 項不進場（統計顯示 0-3 項為負期望值）
+                # ── 確認項門檻（各訊號類型獨立設定）
                 confs      = sig.get("confirmations", 0)
-                if confs < 4:
-                    continue
+                if sig_type == "high_base":
+                    if confs < 3:
+                        continue
+                else:
+                    # ma_pullback / momentum_ignition：負期望值在 0-3，要求 ≥ 4
+                    if confs < 4:
+                        continue
 
                 # ── ma_pullback：僅限 bull 相位且 RS ≥ 65（其他相位/RS 較弱期望值為負）
                 if sig_type == "ma_pullback" and (_eff_regime != "bull" or rs_pct < 65):
