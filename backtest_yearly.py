@@ -260,10 +260,7 @@ def main():
             regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
 
             # market_factor（廣度 × 動能 × ER × vol）
-            twii_mom_20    = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
-            # ── TWII MA20 快速進場門檻（比 MA60 早 3× 反應）
-            _twii_ma20     = sum(bm_closes[bm_i - 19:bm_i + 1]) / 20 if bm_i >= 19 else bm_closes[bm_i]
-            twii_above_ma20 = bm_closes[bm_i] >= _twii_ma20
+            twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
             _brf        = max(0.3, min(1.5, breadth_pct / 0.5))
             _mmf        = max(0.3, min(1.5, 1.0 + twii_mom_20))
             _er         = _efficiency_ratio(bm_closes, bm_i, 20)
@@ -509,10 +506,6 @@ def main():
 
                     # high_base：個股5日絕對動能確認（股票本身需在上漲，排除廣度好但個股已轉弱）
                     if sig_type == "high_base" and stock_roc5 <= 0:
-                        continue
-
-                    # ── TWII MA20 快速進場門檻：收在 20 日均線下方不開新倉
-                    if not twii_above_ma20:
                         continue
 
                     # 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
