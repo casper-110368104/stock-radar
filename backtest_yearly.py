@@ -67,6 +67,7 @@ def main():
         print("TWII 下載失敗，中止"); sys.exit(1)
     bm_dates    = [d.date() for d in bm.index]
     bm_closes   = [float(v) for v in bm["Close"].tolist()]
+    bm_vols_raw = [float(v) for v in bm["Volume"].tolist()]
     bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
     print(f"  TWII：{len(bm_dates)} 日")
 
@@ -224,11 +225,12 @@ def main():
             if bm_i is None:
                 continue
 
-            # RS scalar + 廣度
+            # RS scalar + 廣度 + 個股60日新高比例
             rs_scalar_map = {}
             rs_cache      = {}
             _above_ma20   = 0
             _breadth_n    = 0
+            _at_new_hi60  = 0
             for code, sd in year_data.items():
                 si = year_date_idx[code].get(q_date)
                 if si is None or si < 10:
@@ -246,8 +248,23 @@ def main():
                         _breadth_n += 1
                         if _cl > _ma20v:
                             _above_ma20 += 1
+                        if si >= 59:
+                            _cl60hi = max(sd["closes"][si - 59:si + 1])
+                            if _cl >= _cl60hi * 0.97:
+                                _at_new_hi60 += 1
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
+            new_hi_pct  = _at_new_hi60 / _breadth_n if _breadth_n > 0 else 0.30
+
+            # ── TWII 量價品質（上漲日量 vs 下跌日量，10日）
+            if bm_i >= 10:
+                _up_vol = sum(bm_vols_raw[k] for k in range(bm_i - 9, bm_i + 1)
+                              if k > 0 and bm_closes[k] >= bm_closes[k - 1])
+                _dn_vol = sum(bm_vols_raw[k] for k in range(bm_i - 9, bm_i + 1)
+                              if k > 0 and bm_closes[k] < bm_closes[k - 1])
+                vol_quality = round(_up_vol / max(_dn_vol, 1), 3)
+            else:
+                vol_quality = 1.0
 
             # ── 快速廣度：5日正報酬股票比例
             _above_5d   = sum(1 for code, sd in year_data.items()
@@ -275,7 +292,7 @@ def main():
                          _ema5_r_prev is not None and _ema5_r < _ema5_r_prev)
 
             regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct,
-                                    ema_bear=_ema_bear)
+                                    ema_bear=_ema_bear, new_hi_pct=new_hi_pct, vol_quality=vol_quality)
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0

@@ -194,22 +194,23 @@ def _snapshot(closes, highs, lows, vols, opens, i):
 
 
 # ── 大盤相位（截至第 i 日的 TWII + 市場廣度 + 52週高點百分位 + 10週動能）────
-def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadth_pct=0.5, ema_bear=False):
+def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadth_pct=0.5,
+                   ema_bear=False, new_hi_pct=0.30, vol_quality=1.0):
     """
-    五重確認 regime（慢層 × 非對稱快層）：
-      慢層（趨勢確認）
-        1. MA60 趨勢方向（主判斷）
-        2. MA120（六個月均線）：過濾熊市反彈的假牛訊號
-        3. 市場廣度靜態水位（% 股票在 MA20 以上）
-        4. 52週百分位 + 10週動能（early_bear 早期預警）
-      非對稱快層（市場結構：跌快漲慢）
-        5. breadth_slope 10日廣度變化速率
-        6. TWII 5日跌幅（ROC5 < -4%）
-        7. 快速廣度（5日正報酬股票比例 < 40%）：不依賴均線，直接測量市場動能
-           ── 刻意不設 fast_improving：底部確認需等慢層多重信號，
-              防止廣度短線反彈造成 bear→range 假升相位頻繁翻轉
+    五重確認 regime + 三項領先指標：
 
-    效果：下行加速反應，上行留足確認空間，避免相位 flip-flop。
+    慢層（趨勢確認）
+      1. MA60 / MA120
+      2. 市場廣度靜態水位
+      3. 52週百分位 + 10週動能（early_bear）
+    快層（下行加速）
+      4. breadth_slope / TWII ROC5 / fast_breadth
+    領先指標（比價格早 1-3 週）
+      5. 個股 60日新高比例（new_hi_pct）：漲勢是否有廣度
+      6. TWII 量價品質（vol_quality）：是否有機構出貨
+      7. 崩後鎖定（_post_crash_lock）：大跌後須創 60日新高才解除
+    EMA 快速解鎖（單向，只加速進熊）
+      8. EMA5 < EMA10 且下降 + 任一惡化信號 → 直接 bear
     """
     if i < 60:
         return "range"
@@ -243,19 +244,44 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadt
                           or twii_roc5 < -0.04
                           or fast_breadth_pct < 0.40)
 
-    # EMA 快速解鎖：不等 MA60 穿越，提前宣告 bear（單向：只加速進入 bear，不加速進入 bull）
-    if ema_bear and fast_deteriorating:
+    # ── 領先指標 7：崩後鎖定
+    # 近 40 交易日內曾有 14 日跌幅 > 10%，且今天未創 60 日新高 → 熊市反彈風險
+    _had_crash = False
+    for _j in range(max(14, i - 39), i + 1):
+        _ref = max(bm_closes[_j - 14:_j + 1])
+        if _ref > 0 and bm_closes[_j] / _ref < 0.90:
+            _had_crash = True
+            break
+    _twii_hi60      = max(bm_closes[max(0, i - 59):i + 1])
+    _post_crash_lock = _had_crash and bm_closes[i] < _twii_hi60
+
+    # ── 領先指標 5：漲勢集中（窄幅多頭）
+    # 指數在 52週高位但個股 60日新高比例偏低 → 上漲失去廣度
+    _narrow_rally = pct52 > 0.65 and new_hi_pct < 0.15
+
+    # ── 領先指標 6：量價背離
+    _vol_dist = vol_quality < 0.80
+
+    # ── EMA 快速解鎖（加入領先指標為觸發條件）
+    _any_warn = fast_deteriorating or _narrow_rally or _vol_dist
+    if ema_bear and _any_warn:
         return "bear"
 
-    # bull：MA60 + MA120 + 廣度 + 非早期空頭 + 廣度沒有快速惡化
+    # ── bull：漲勢有廣度 + 無崩後鎖定 + 無窄幅多頭
     if above_ma60 and above_ma120 and breadth_pct > 0.55 and not early_bear and not fast_deteriorating:
+        if _post_crash_lock or _narrow_rally:
+            return "bull_pullback"   # 崩後反彈 or 窄幅多頭 → 保守
         return "bull"
-    # bull_pullback：MA60 above，但廣度快速惡化 → 直接降到 range（不停在 pullback）
+
+    # ── bull_pullback：崩後鎖定期間降為 range
     if above_ma60 and not early_bear:
-        return "range" if fast_deteriorating else "bull_pullback"
+        if fast_deteriorating or _post_crash_lock:
+            return "range"
+        return "bull_pullback"
+
     if above_ma60 and early_bear:
         return "range"
-    # 跌破 MA60：等慢層信號恢復，不用快層提前升相位
+    # 跌破 MA60
     if breadth_pct < 0.40 or early_bear:
         return "bear"
     return "range"
@@ -615,10 +641,11 @@ def main():
     bm = yf.Ticker(BENCHMARK_TID).history(start=DATA_START, end=DATA_END)
     if bm.empty:
         print("TWII 下載失敗，中止"); sys.exit(1)
-    bm_dates    = [d.date() for d in bm.index]
-    bm_closes   = [float(v) for v in bm["Close"].tolist()]
-    bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
-    q1_dates    = [d for d in bm_dates if BT_START <= d <= BT_END]
+    bm_dates     = [d.date() for d in bm.index]
+    bm_closes    = [float(v) for v in bm["Close"].tolist()]
+    bm_vols_raw  = [float(v) for v in bm["Volume"].tolist()]
+    bm_date_idx  = {d: i for i, d in enumerate(bm_dates)}
+    q1_dates     = [d for d in bm_dates if BT_START <= d <= BT_END]
     print(f"  TWII：{len(bm_dates)} 日 | 回測交易日：{len(q1_dates)} 天")
 
     # 0050 比較基準曲線（正規化到 BT_START = 1.0）
@@ -747,11 +774,12 @@ def main():
         if bm_i is None:
             continue
 
-        # ── 4a: RS scalar + 市場廣度（單次遍歷，廣度用於 regime 雙確認）
+        # ── 4a: RS scalar + 市場廣度 + 個股新高比例（單次遍歷）
         rs_scalar_map = {}
         rs_cache      = {}
         _above_ma20   = 0
         _breadth_n    = 0
+        _at_new_hi60  = 0   # 個股60日新高計數（領先指標）
         for code, sd in stock_data.items():
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 10:
@@ -762,7 +790,7 @@ def main():
             _, scalar      = _rs_metrics(dr)
             if scalar is not None:
                 rs_scalar_map[code] = scalar
-            # 廣度：同一次遍歷順帶計算（需 si >= 20）
+            # 廣度 + 新高比例：同一次遍歷順帶計算（需 si >= 20）
             if si >= 20:
                 _cl = sd["closes"][si]
                 if not math.isnan(_cl):
@@ -770,8 +798,24 @@ def main():
                     _breadth_n += 1
                     if _cl > _ma20v:
                         _above_ma20 += 1
+                    # 個股 60日新高：今日收盤在 60日最高收盤的 97% 以上
+                    if si >= 59:
+                        _cl60hi = max(sd["closes"][si - 59:si + 1])
+                        if _cl >= _cl60hi * 0.97:
+                            _at_new_hi60 += 1
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
+        new_hi_pct  = _at_new_hi60 / _breadth_n if _breadth_n > 0 else 0.30
+
+        # ── TWII 量價品質（上漲日量 vs 下跌日量，10日）
+        if bm_i >= 10:
+            _up_vol = sum(bm_vols_raw[k] for k in range(bm_i - 9, bm_i + 1)
+                          if k > 0 and bm_closes[k] >= bm_closes[k - 1])
+            _dn_vol = sum(bm_vols_raw[k] for k in range(bm_i - 9, bm_i + 1)
+                          if k > 0 and bm_closes[k] < bm_closes[k - 1])
+            vol_quality = round(_up_vol / max(_dn_vol, 1), 3)
+        else:
+            vol_quality = 1.0
 
         # ── 快速廣度：5日正報酬股票比例（即時動能，不依賴均線）
         _above_5d   = sum(1 for code, sd in stock_data.items()
@@ -800,7 +844,7 @@ def main():
 
         # ── regime 在廣度計算後判斷（慢層 MA60/MA120 × 快層廣度動能）
         regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct,
-                                ema_bear=_ema_bear)
+                                ema_bear=_ema_bear, new_hi_pct=new_hi_pct, vol_quality=vol_quality)
 
         # ── market_factor：連續縮放，與 regime 分類獨立運作
         twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
