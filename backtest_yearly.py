@@ -67,7 +67,6 @@ def main():
         print("TWII 下載失敗，中止"); sys.exit(1)
     bm_dates    = [d.date() for d in bm.index]
     bm_closes   = [float(v) for v in bm["Close"].tolist()]
-    bm_vols_raw = [float(v) for v in bm["Volume"].tolist()]
     bm_date_idx = {d: i for i, d in enumerate(bm_dates)}
     print(f"  TWII：{len(bm_dates)} 日")
 
@@ -211,26 +210,16 @@ def main():
 
         open_capital        = []
 
-        # ── 大盤快速切換狀態（廣度警戒 + SMA 糾結，取代 EMA 狀態機）
-        _breadth_alert       = False
-        _breadth_recover_cnt = 0
-
-        # ── EMA（單向：只用於加速 bear 偵測，不影響 bull）
-        _ema5_r  = None;  _ema10_r = None;  _ema5_r_prev = None
-        _EMA5_A  = 2 / (5  + 1)
-        _EMA10_A = 2 / (10 + 1)
-
         for q_date in year_dates:
             bm_i = bm_date_idx.get(q_date)
             if bm_i is None:
                 continue
 
-            # RS scalar + 廣度 + 個股60日新高比例
+            # RS scalar + 廣度
             rs_scalar_map = {}
             rs_cache      = {}
             _above_ma20   = 0
             _breadth_n    = 0
-            _at_new_hi60  = 0
             for code, sd in year_data.items():
                 si = year_date_idx[code].get(q_date)
                 if si is None or si < 10:
@@ -248,23 +237,8 @@ def main():
                         _breadth_n += 1
                         if _cl > _ma20v:
                             _above_ma20 += 1
-                        if si >= 59:
-                            _cl60hi = max(sd["closes"][si - 59:si + 1])
-                            if _cl >= _cl60hi * 0.97:
-                                _at_new_hi60 += 1
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
-            new_hi_pct  = _at_new_hi60 / _breadth_n if _breadth_n > 0 else 0.30
-
-            # ── TWII 量價品質（上漲日量 vs 下跌日量，10日）
-            if bm_i >= 10:
-                _up_vol = sum(bm_vols_raw[k] for k in range(bm_i - 9, bm_i + 1)
-                              if k > 0 and bm_closes[k] >= bm_closes[k - 1])
-                _dn_vol = sum(bm_vols_raw[k] for k in range(bm_i - 9, bm_i + 1)
-                              if k > 0 and bm_closes[k] < bm_closes[k - 1])
-                vol_quality = round(_up_vol / max(_dn_vol, 1), 3)
-            else:
-                vol_quality = 1.0
 
             # ── 快速廣度：5日正報酬股票比例
             _above_5d   = sum(1 for code, sd in year_data.items()
@@ -283,16 +257,7 @@ def main():
             _b_ref  = _b_hist[-10] if len(_b_hist) >= 10 else (_b_hist[0] if _b_hist else breadth_pct)
             breadth_slope = round(breadth_pct - _b_ref, 4)
 
-            # ── EMA 方向（單向 bear 偵測用）
-            _ema5_r_prev = _ema5_r
-            _px_r        = bm_closes[bm_i]
-            _ema5_r  = (_ema5_r  * (1 - _EMA5_A)  + _px_r * _EMA5_A)  if _ema5_r  is not None else _px_r
-            _ema10_r = (_ema10_r * (1 - _EMA10_A) + _px_r * _EMA10_A) if _ema10_r is not None else _px_r
-            _ema_bear = (_ema5_r < _ema10_r and
-                         _ema5_r_prev is not None and _ema5_r < _ema5_r_prev)
-
-            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct,
-                                    ema_bear=_ema_bear, new_hi_pct=new_hi_pct, vol_quality=vol_quality)
+            regime = _market_regime(bm_closes, bm_i, breadth_pct, breadth_slope, fast_breadth_pct)
 
             # market_factor（廣度 × 動能 × ER × vol）
             twii_mom_20 = (bm_closes[bm_i] / bm_closes[bm_i - 20] - 1) if bm_i >= 20 else 0.0
@@ -302,31 +267,7 @@ def main():
             _er_scale   = max(0.3, min(_er / 0.30, 1.2))
             _high_vol   = _vol_flag(bm_closes, bm_i)
             _vol_mult   = 0.5 if _high_vol else 1.0
-            # ── SMA 糾結偵測（輔助，4MA spread）
-            _ma5   = sum(bm_closes[bm_i - 4:bm_i + 1]) / 5   if bm_i >= 4  else bm_closes[bm_i]
-            _ma10  = sum(bm_closes[bm_i - 9:bm_i + 1]) / 10  if bm_i >= 9  else bm_closes[bm_i]
-            _ma20s = sum(bm_closes[bm_i - 19:bm_i + 1]) / 20 if bm_i >= 19 else bm_closes[bm_i]
-            _ma60s = sum(bm_closes[bm_i - 59:bm_i + 1]) / 60 if bm_i >= 59 else bm_closes[bm_i]
-            _spread    = (max(_ma5,_ma10,_ma20s,_ma60s) - min(_ma5,_ma10,_ma20s,_ma60s)) / _ma60s
-            _in_tangle = _spread < 0.015
-
-            # ── 廣度快速觸發（主要切換機）+ 非對稱恢復確認
-            _prev_breadth = breadth_history[-1] if breadth_history else breadth_pct
-            _b_drop       = _prev_breadth - breadth_pct
-            if breadth_pct < 0.35 or _b_drop >= 0.15:
-                _breadth_alert       = True
-                _breadth_recover_cnt = 0
-            elif _breadth_alert:
-                if breadth_pct > 0.50:
-                    _breadth_recover_cnt += 1
-                    if _breadth_recover_cnt >= 3:
-                        _breadth_alert       = False
-                        _breadth_recover_cnt = 0
-                else:
-                    _breadth_recover_cnt = 0
-
-            _regime_mult  = 0.5 if _breadth_alert else (0.7 if _in_tangle else 1.0)
-            market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult * _regime_mult)), 3)
+            market_factor = round(max(0.3, min(1.5, _brf * _mmf * _er_scale * _vol_mult)), 3)
 
             # VIX overlay + 廣度背離
             breadth_history.append(breadth_pct)
@@ -577,15 +518,7 @@ def main():
                             continue
                         daily_ig_cnt += 1
 
-                    # ── 確認項門檻：< 4 項不進場（統計顯示 0-3 項為負期望值）
                     confs         = sig.get("confirmations", 0)
-                    if confs < 4:
-                        continue
-
-                    # ── ma_pullback：僅限 bull 相位且 RS ≥ 65
-                    if sig_type == "ma_pullback" and (_eff_regime != "bull" or rs_pct < 65):
-                        continue
-
                     conf_mult     = 1.2 if confs >= 5 else (1.1 if confs >= 4 else 1.0)
                     sig_scale     = SIGNAL_SCALE.get(sig_type, 1.0)
                     _sector_mult  = round(0.7 + 0.006 * _code_sec_combined, 3)
