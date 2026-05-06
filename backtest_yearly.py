@@ -33,8 +33,7 @@ YEARS              = [2022, 2023, 2024, 2025]
 OUTPUT_PATH        = "docs/backtest_yearly.json"
 DATA_START         = "2020-01-01"   # 足夠計算 MA60 / RS240
 DATA_END           = "2026-06-01"
-UNIVERSE_CANDIDATES = 500
-UNIVERSE_FINAL      = 300
+UNIVERSE_DAILY_N = 300   # 每日動態候選池大小（依當日前60日均量排名）
 
 
 def main():
@@ -93,7 +92,7 @@ def main():
         print(f"  VIX 下載失敗（{_ve}），overlay 跳過")
 
     # ── 下載個股（一次，各年共用）──────────────────────────────────
-    print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
+    print(f"\n[2] 抓取所有 TWSE 上市股票代號...")
     candidates = []
     try:
         r = requests.get(
@@ -103,7 +102,6 @@ def main():
         fields  = _d.get("fields", [])
         rows    = _d.get("data", [])
         i_code  = fields.index("證券代號") if "證券代號" in fields else 0
-        i_vol   = fields.index("成交股數")  if "成交股數"  in fields else 2
         tmp = []
         for row in rows:
             try:
@@ -111,12 +109,10 @@ def main():
                 if not (code.isdigit() and len(code) == 4): continue
                 if code.startswith("00"): continue
                 if int(code) < 1000: continue
-                vol = int(row[i_vol].replace(",", ""))
-                tmp.append((code, vol))
+                tmp.append(code)
             except Exception:
                 continue
-        tmp.sort(key=lambda x: x[1], reverse=True)
-        candidates = [c for c, _ in tmp[:UNIVERSE_CANDIDATES]]
+        candidates = tmp
     except Exception as e:
         print(f"  TWSE API 失敗（{e}），使用內建清單")
         candidates = [
@@ -149,7 +145,13 @@ def main():
         time.sleep(0.4)
         if (idx + 1) % 20 == 0:
             time.sleep(3)
-    print(f"  → 下載完成：{len(stock_data)} 檔")
+    print(f"  → 下載完成：{len(stock_data)} 檔（每日動態依前60日均量選 Top {UNIVERSE_DAILY_N}）")
+
+    # 建立全域「日期 → 陣列 index」對照（各年共用）
+    stock_date_idx = {
+        code: {d: i for i, d in enumerate(sd["dates"])}
+        for code, sd in stock_data.items()
+    }
 
     # ── 逐年回測 ────────────────────────────────────────────────────
     yearly_results = {}
@@ -159,36 +161,13 @@ def main():
         print(f"  {year} 年回測")
         print(f"{'='*60}")
 
-        bt_start       = date(year, 1, 2)
-        bt_end         = date(year, 12, 31)
-        pre_vol_start  = date(year - 1, 1, 1)
-        pre_vol_end    = date(year - 1, 12, 31)
+        bt_start = date(year, 1, 2)
+        bt_end   = date(year, 12, 31)
 
         year_dates = [d for d in bm_dates if bt_start <= d <= bt_end]
         if not year_dates:
             print(f"  {year} 無交易日，跳過"); continue
         last_year_date = max(year_dates)
-
-        # 母體：前一年成交量（無向前看）
-        pre_vol = {}
-        for code, sd in stock_data.items():
-            vols = [sd["vols"][i] for i, d in enumerate(sd["dates"])
-                    if pre_vol_start <= d <= pre_vol_end
-                    and not math.isnan(sd["vols"][i]) and sd["vols"][i] > 0]
-            if vols:
-                pre_vol[code] = sum(vols) / len(vols)
-
-        universe  = sorted(pre_vol, key=lambda c: pre_vol[c], reverse=True)[:UNIVERSE_FINAL]
-        year_data = {c: stock_data[c] for c in universe if c in stock_data}
-        no_pre    = [c for c in stock_data if c not in pre_vol]
-        print(f"  母體：{len(year_data)} 檔（依 {year-1} 年成交量選出）")
-        if no_pre:
-            print(f"  排除 {len(no_pre)} 檔無 {year-1} 量能資料（新上市等）")
-
-        year_date_idx = {
-            code: {d: i for i, d in enumerate(sd["dates"])}
-            for code, sd in year_data.items()
-        }
 
         # Walk-Forward 主迴圈
         trades            = []
@@ -215,13 +194,12 @@ def main():
             if bm_i is None:
                 continue
 
-            # RS scalar + 廣度
+            # 動態宇宙 + RS scalar + 市場廣度（單次遍歷）
             rs_scalar_map = {}
             rs_cache      = {}
-            _above_ma20   = 0
-            _breadth_n    = 0
-            for code, sd in year_data.items():
-                si = year_date_idx[code].get(q_date)
+            _day_vols     = []
+            for code, sd in stock_data.items():
+                si = stock_date_idx[code].get(q_date)
                 if si is None or si < 10:
                     continue
                 n_align        = min(si + 1, bm_i + 1)
@@ -231,25 +209,44 @@ def main():
                 if scalar is not None:
                     rs_scalar_map[code] = scalar
                 if si >= 20:
-                    _cl = sd["closes"][si]
-                    if not math.isnan(_cl):
-                        _ma20v = sum(sd["closes"][si - 19:si + 1]) / 20
-                        _breadth_n += 1
-                        if _cl > _ma20v:
-                            _above_ma20 += 1
+                    _n = min(si, 59)
+                    _vslice = sd["vols"][si - _n: si + 1]
+                    _valid  = [v for v in _vslice if not math.isnan(v) and v > 0]
+                    if _valid:
+                        _day_vols.append((code, sum(_valid) / len(_valid)))
+
+            _day_vols.sort(key=lambda x: x[1], reverse=True)
+            _today_universe = {code for code, _ in _day_vols[:UNIVERSE_DAILY_N]}
+
+            # 廣度 — 只計算動態宇宙內的股票
+            _above_ma20 = 0
+            _breadth_n  = 0
+            for code in _today_universe:
+                si = stock_date_idx[code].get(q_date)
+                if si is None or si < 20:
+                    continue
+                _cl = stock_data[code]["closes"][si]
+                if not math.isnan(_cl):
+                    _ma20v = sum(stock_data[code]["closes"][si - 19:si + 1]) / 20
+                    _breadth_n += 1
+                    if _cl > _ma20v:
+                        _above_ma20 += 1
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-            # ── 快速廣度：5日正報酬股票比例
-            _above_5d   = sum(1 for code, sd in year_data.items()
-                              if (si5 := year_date_idx[code].get(q_date)) is not None
-                              and si5 >= 5
-                              and not math.isnan(sd["closes"][si5])
-                              and sd["closes"][si5] > sd["closes"][si5 - 5])
-            _fast_n     = sum(1 for code, sd in year_data.items()
-                              if (si5 := year_date_idx[code].get(q_date)) is not None
-                              and si5 >= 5
-                              and not math.isnan(sd["closes"][si5]))
+            # 快速廣度：5日正報酬（動態宇宙內）
+            _above_5d = 0
+            _fast_n   = 0
+            for code in _today_universe:
+                sd  = stock_data[code]
+                si5 = stock_date_idx[code].get(q_date)
+                if si5 is None or si5 < 5:
+                    continue
+                if math.isnan(sd["closes"][si5]):
+                    continue
+                _fast_n += 1
+                if sd["closes"][si5] > sd["closes"][si5 - 5]:
+                    _above_5d += 1
             fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
 
             # 廣度動能快層
@@ -354,10 +351,10 @@ def main():
                 _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
                 _exit_type = "regime_change"
                 for b_code, b_entry_px in beta_entries.items():
-                    b_si = year_date_idx.get(b_code, {}).get(q_date)
+                    b_si = stock_date_idx.get(b_code, {}).get(q_date)
                     b_exit_px = b_entry_px
-                    if b_si is not None and b_si < len(year_data[b_code]["closes"]):
-                        _px = year_data[b_code]["closes"][b_si]
+                    if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                        _px = stock_data[b_code]["closes"][b_si]
                         if not math.isnan(_px) and _px > 0:
                             b_exit_px = _px
                     b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
@@ -398,9 +395,9 @@ def main():
                 _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
-                    b_si = year_date_idx.get(b_code, {}).get(q_date)
-                    if b_si is not None and b_si < len(year_data[b_code]["closes"]):
-                        _px = year_data[b_code]["closes"][b_si]
+                    b_si = stock_date_idx.get(b_code, {}).get(q_date)
+                    if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                        _px = stock_data[b_code]["closes"][b_si]
                         if not math.isnan(_px) and _px > 0:
                             new_beta[b_code] = _px
                 if new_beta:
@@ -414,10 +411,11 @@ def main():
             daily_hb_cnt = 0
             daily_ig_cnt = 0
 
-            for code, sd in sorted(year_data.items(),
-                                   key=lambda x: rs_pct_map.get(x[0], 0),
-                                   reverse=True):
-                si = year_date_idx[code].get(q_date)
+            for code, sd in sorted(
+                    ((c, stock_data[c]) for c in _today_universe if c in stock_data),
+                    key=lambda x: rs_pct_map.get(x[0], 0),
+                    reverse=True):
+                si = stock_date_idx[code].get(q_date)
                 if si is None or si < 62:
                     continue
                 if sd["dates"][si] != q_date:
@@ -661,10 +659,10 @@ def main():
             _n_beta    = max(len(beta_entries), 1)
             _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
             for b_code, b_entry_px in beta_entries.items():
-                b_si = year_date_idx.get(b_code, {}).get(_yr_last_d)
+                b_si = stock_date_idx.get(b_code, {}).get(_yr_last_d)
                 b_exit_px = b_entry_px
-                if b_si is not None and b_si < len(year_data[b_code]["closes"]):
-                    _px = year_data[b_code]["closes"][b_si]
+                if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                    _px = stock_data[b_code]["closes"][b_si]
                     if not math.isnan(_px) and _px > 0:
                         b_exit_px = _px
                 b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
@@ -702,7 +700,7 @@ def main():
 
         # Sector Exit Post-Process
         trades = _apply_sector_exits(
-            trades, year_data, year_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
+            trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
         )
 
         # 統計（信號交易）
@@ -739,7 +737,7 @@ def main():
         yearly_results[str(year)] = {
             "year":           year,
             "trading_days":   len(year_dates),
-            "universe_size":  len(year_data),
+            "universe_size":  UNIVERSE_DAILY_N,
             "overall":        overall,
             "by_type":        {k: _stats(v) for k, v in by_type.items()},
             "by_regime":      {k: _stats(v) for k, v in by_regime.items()},

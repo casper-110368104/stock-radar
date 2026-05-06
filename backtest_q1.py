@@ -551,19 +551,15 @@ def main():
     except Exception as _e:
         print(f"  板塊對應載入失敗（{_e}），sector_rs 使用 None")
 
-    # ── Step 1: 決定候選母體 ─────────────────────────────────────
-    # 抗倖存者偏差設計：
-    #   1. TWSE API 取今日量能前 500 作為「候選池」（不直接用作母體）
-    #   2. 下載資料後，用「回測開始前一整年的平均成交量」重排，取前 300
-    #   → PRE_BT_VOL 動態計算（BT_START 前一年），確保任何測試區間都無向後看偏差
-    UNIVERSE_CANDIDATES = 500   # 候選池大小（下載後再篩）
-    UNIVERSE_FINAL      = 300   # 最終母體大小
-    PRE_BT_VOL_START    = date(BT_START.year - 1, 1, 1)
-    PRE_BT_VOL_END      = date(BT_START.year - 1, 12, 31)
+    # ── Step 1: 取得所有 TWSE 上市股票代號 ─────────────────────────
+    # 設計原則：
+    #   下載全部上市股票的歷史資料，回測迴圈每天以「當日前60日平均成交量」
+    #   動態決定當天的候選池（前 UNIVERSE_DAILY_N 名），不依賴固定名單。
+    #   → 消除「用今日排名選歷史股票」的前視偏差，每天的候選池反映當下市場環境。
+    UNIVERSE_DAILY_N = 300   # 每日動態候選池大小（依當日前60日均量排名）
 
-    print("\n[1] 抓取候選股票池（TWSE 量能前 500）...")
+    print("\n[1] 抓取所有 TWSE 上市股票代號...")
     print(f"  回測期間：{BT_START} ~ {BT_END}")
-    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（BT_START 前一整年，無向後看）")
     universe_candidates = []
     try:
         r = requests.get(
@@ -573,7 +569,6 @@ def main():
         fields   = d.get("fields", [])
         rows     = d.get("data", [])
         i_code   = fields.index("證券代號") if "證券代號" in fields else 0
-        i_vol    = fields.index("成交股數")  if "成交股數"  in fields else 2
         tmp = []
         for row in rows:
             try:
@@ -581,13 +576,11 @@ def main():
                 if not (code.isdigit() and len(code) == 4): continue
                 if code.startswith("00"): continue
                 if int(code) < 1000: continue
-                vol = int(row[i_vol].replace(",", ""))
-                tmp.append((code, vol))
+                tmp.append(code)
             except Exception:
                 continue
-        tmp.sort(key=lambda x: x[1], reverse=True)
-        universe_candidates = [c for c, _ in tmp[:UNIVERSE_CANDIDATES]]
-        print(f"  → 候選池：{len(universe_candidates)} 檔")
+        universe_candidates = tmp
+        print(f"  → 全市場股票：{len(universe_candidates)} 檔")
     except Exception as e:
         print(f"  TWSE API 失敗：{e}，使用內建候選清單")
         universe_candidates = [
@@ -675,33 +668,7 @@ def main():
 
     print(f"\n  → 下載完成：{len(stock_data)} 檔")
 
-    # ── Step 3b: 用回測前一年（2024）的平均成交量重排，取前 300 ──────
-    # 消除倖存者偏差：選股依據為 2024 已知資訊，不使用 2025+ 的未來量能
-    print(f"\n  [母體篩選] 計算 {PRE_BT_VOL_START}~{PRE_BT_VOL_END} 平均成交量...")
-    pre_bt_vol = {}
-    for code, sd in stock_data.items():
-        vols_2024 = [
-            sd["vols"][i] for i, d in enumerate(sd["dates"])
-            if PRE_BT_VOL_START <= d <= PRE_BT_VOL_END
-            and not math.isnan(sd["vols"][i]) and sd["vols"][i] > 0
-        ]
-        if vols_2024:
-            pre_bt_vol[code] = sum(vols_2024) / len(vols_2024)
-
-    sorted_by_pre_bt = sorted(pre_bt_vol, key=lambda c: pre_bt_vol[c], reverse=True)
-    final_universe   = sorted_by_pre_bt[:UNIVERSE_FINAL]
-
-    # 無 2024 量能資料的股票（IPO 太晚）不納入母體
-    no_pre_vol = [c for c in stock_data if c not in pre_bt_vol]
-    if no_pre_vol:
-        print(f"  [排除] {len(no_pre_vol)} 檔無 2024 量能資料（新上市等）")
-
-    # 只保留最終母體的資料，釋放記憶體
-    stock_data = {c: stock_data[c] for c in final_universe if c in stock_data}
-    print(f"  → 最終母體：{len(stock_data)} 檔（依 2024 平均成交量選出）")
-    if stock_data:
-        top5 = final_universe[:5]
-        print(f"  → 前 5 大：{', '.join(top5)}")
+    print(f"  → 全市場股票資料：{len(stock_data)} 檔（每日動態依當日前60日均量選 Top {UNIVERSE_DAILY_N}）")
 
     # 為每支股票建立「日期 → 陣列 index」的快速對照
     stock_date_idx = {}
@@ -734,11 +701,11 @@ def main():
         if bm_i is None:
             continue
 
-        # ── 4a: RS scalar + 市場廣度（單次遍歷，廣度用於 regime 雙確認）
+        # ── 4a: 動態宇宙 + RS scalar + 市場廣度（單次遍歷）
+        # Pass 1: 計算所有股票 RS、並收集當日前60日均量 → 選出 Top UNIVERSE_DAILY_N
         rs_scalar_map = {}
         rs_cache      = {}
-        _above_ma20   = 0
-        _breadth_n    = 0
+        _day_vols     = []   # (code, avg_vol_60d)
         for code, sd in stock_data.items():
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 10:
@@ -749,27 +716,47 @@ def main():
             _, scalar      = _rs_metrics(dr)
             if scalar is not None:
                 rs_scalar_map[code] = scalar
-            # 廣度：同一次遍歷順帶計算（需 si >= 20）
+            # 前60日均量（需 si >= 20 保障足夠資料）
             if si >= 20:
-                _cl = sd["closes"][si]
-                if not math.isnan(_cl):
-                    _ma20v = sum(sd["closes"][si - 19:si + 1]) / 20
-                    _breadth_n += 1
-                    if _cl > _ma20v:
-                        _above_ma20 += 1
+                _n = min(si, 59)
+                _vslice = sd["vols"][si - _n: si + 1]
+                _valid  = [v for v in _vslice if not math.isnan(v) and v > 0]
+                if _valid:
+                    _day_vols.append((code, sum(_valid) / len(_valid)))
+
+        # 依均量排序，取 Top N 為當日動態宇宙
+        _day_vols.sort(key=lambda x: x[1], reverse=True)
+        _today_universe = {code for code, _ in _day_vols[:UNIVERSE_DAILY_N]}
+
+        # Pass 2: 廣度 — 只計算動態宇宙內的股票
+        _above_ma20 = 0
+        _breadth_n  = 0
+        for code in _today_universe:
+            si = stock_date_idx[code].get(q_date)
+            if si is None or si < 20:
+                continue
+            _cl = stock_data[code]["closes"][si]
+            if not math.isnan(_cl):
+                _ma20v = sum(stock_data[code]["closes"][si - 19:si + 1]) / 20
+                _breadth_n += 1
+                if _cl > _ma20v:
+                    _above_ma20 += 1
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-        # ── 快速廣度：5日正報酬股票比例（即時動能，不依賴均線）
-        _above_5d   = sum(1 for code, sd in stock_data.items()
-                          if (si5 := stock_date_idx[code].get(q_date)) is not None
-                          and si5 >= 5
-                          and not math.isnan(sd["closes"][si5])
-                          and sd["closes"][si5] > sd["closes"][si5 - 5])
-        _fast_n     = sum(1 for code, sd in stock_data.items()
-                          if (si5 := stock_date_idx[code].get(q_date)) is not None
-                          and si5 >= 5
-                          and not math.isnan(sd["closes"][si5]))
+        # ── 快速廣度：5日正報酬股票比例（動態宇宙內）
+        _above_5d = 0
+        _fast_n   = 0
+        for code in _today_universe:
+            sd  = stock_data[code]
+            si5 = stock_date_idx[code].get(q_date)
+            if si5 is None or si5 < 5:
+                continue
+            if math.isnan(sd["closes"][si5]):
+                continue
+            _fast_n += 1
+            if sd["closes"][si5] > sd["closes"][si5 - 5]:
+                _above_5d += 1
         fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
 
         # ── 廣度動能（快層）：10日廣度變化速率，breadth_history 含截至昨日的資料
@@ -949,10 +936,11 @@ def main():
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
         daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
 
-        # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
-        for code, sd in sorted(stock_data.items(),
-                               key=lambda x: rs_pct_map.get(x[0], 0),
-                               reverse=True):
+        # ── 4c: 對每支股票產生訊號（限動態宇宙，依 RS 百分位由高到低掃描）
+        for code, sd in sorted(
+                ((c, stock_data[c]) for c in _today_universe if c in stock_data),
+                key=lambda x: rs_pct_map.get(x[0], 0),
+                reverse=True):
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 62:
                 continue
