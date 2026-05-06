@@ -245,11 +245,16 @@ def _market_regime(bm_closes, i, breadth_pct=0.5, breadth_slope=0.0, fast_breadt
                           or fast_breadth_pct < 0.40)
 
     # ── 領先指標 7：崩後鎖定
-    # 近 40 交易日內曾有 14 日跌幅 > 10%，且今天未創 60 日新高 → 熊市反彈風險
+    # 近 60 日內，滾動最高點之後曾有 > 10% 的回撤 → 熊市反彈風險
+    # 用「滾動最高點」而非固定窗口，確保能抓到距今 > 14 日的峰值（如 2024/7 高峰）
     _had_crash = False
-    for _j in range(max(14, i - 39), i + 1):
-        _ref = max(bm_closes[_j - 14:_j + 1])
-        if _ref > 0 and bm_closes[_j] / _ref < 0.90:
+    _win_s = max(0, i - 59)
+    _run_hi = bm_closes[_win_s]
+    for _k in range(_win_s + 1, i + 1):
+        _ck = bm_closes[_k]
+        if _ck > _run_hi:
+            _run_hi = _ck
+        elif _run_hi > 0 and _ck / _run_hi < 0.90:
             _had_crash = True
             break
     _twii_hi60      = max(bm_closes[max(0, i - 59):i + 1])
