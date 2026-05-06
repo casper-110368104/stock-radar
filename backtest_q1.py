@@ -535,9 +535,23 @@ def main():
     print("  原則：每日只用截至當日的已知資料，無向前看偏差")
     print("=" * 60)
 
-    # ── 板塊對應（從 stocks.json 讀取；板塊歸屬穩定，不含未來資訊）──────
+    # ── 板塊對應（sector_map.json 為主，stocks.json 補充；板塊歸屬穩定）──────
     sector_map   = {}   # code → sector_key
     sector_codes = defaultdict(list)   # sector_key → [codes]
+    # 先載 sector_map.json（全市場，由 build_sector_map.py 產生）
+    try:
+        with open("docs/sector_map.json", encoding="utf-8") as _f:
+            _sm = json.load(_f)
+        for _c, _sk in _sm.items():
+            if _c and _sk:
+                sector_map[_c] = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊（sector_map.json）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except FileNotFoundError:
+        print("  sector_map.json 不存在，回退至 stocks.json")
+    except Exception as _e:
+        print(f"  sector_map.json 載入失敗（{_e}）")
+    # stocks.json 覆蓋（已人工校正的 sector_key 優先）
     try:
         with open("docs/stocks.json", encoding="utf-8") as _f:
             _sj = json.load(_f)
@@ -545,11 +559,13 @@ def main():
             _c  = _s.get("code", "")
             _sk = _s.get("sector_key", "")
             if _c and _sk:
+                if _c not in sector_map:
+                    sector_codes[_sk].append(_c)
                 sector_map[_c] = _sk
-                sector_codes[_sk].append(_c)
-        print(f"  板塊對應：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+        print(f"  板塊（+stocks.json overlay）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
     except Exception as _e:
-        print(f"  板塊對應載入失敗（{_e}），sector_rs 使用 None")
+        if not sector_map:
+            print(f"  板塊載入失敗（{_e}），sector_rs 使用 None")
 
     # ── Step 1: 取得所有 TWSE 上市股票代號 ─────────────────────────
     # 設計原則：

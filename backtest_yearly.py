@@ -43,9 +43,21 @@ def main():
     print("  設計：每年 100 萬重算、12/31 強制平倉、無任何向前看")
     print("=" * 60)
 
-    # ── 板塊對應 ────────────────────────────────────────────────────
+    # ── 板塊對應（sector_map.json 為主，stocks.json 補充）──────────────
     sector_map   = {}
     sector_codes = defaultdict(list)
+    try:
+        with open("docs/sector_map.json", encoding="utf-8") as _f:
+            _sm = json.load(_f)
+        for _c, _sk in _sm.items():
+            if _c and _sk:
+                sector_map[_c] = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊（sector_map.json）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except FileNotFoundError:
+        print("  sector_map.json 不存在，回退至 stocks.json")
+    except Exception as _e:
+        print(f"  sector_map.json 載入失敗（{_e}）")
     try:
         with open("docs/stocks.json", encoding="utf-8") as _f:
             _sj = json.load(_f)
@@ -53,11 +65,13 @@ def main():
             _c  = _s.get("code", "")
             _sk = _s.get("sector_key", "")
             if _c and _sk:
-                sector_map[_c]  = _sk
-                sector_codes[_sk].append(_c)
-        print(f"  板塊：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+                if _c not in sector_map:
+                    sector_codes[_sk].append(_c)
+                sector_map[_c] = _sk
+        print(f"  板塊（+stocks.json overlay）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
     except Exception as _e:
-        print(f"  板塊載入失敗（{_e}）")
+        if not sector_map:
+            print(f"  板塊載入失敗（{_e}）")
 
     # ── 下載 TWII + 0050（一次，全區間共用）──────────────────────
     print(f"\n[1] 下載 TWII + 0050 + VIX...")
