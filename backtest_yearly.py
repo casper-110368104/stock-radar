@@ -20,7 +20,7 @@ from signals import calc_signals
 from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
-    _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _stats, _capital_curves,
+    _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _classify_structure, _stats, _capital_curves,
     _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MAX_HOLD_IG, MA_TRAIL_BUFFER,
@@ -458,12 +458,36 @@ def main():
                 snap["rs_accel"]        = accel
                 snap["sector_rs"]       = _code_sec_pct
                 snap["sector_combined"] = _code_sec_combined
+                snap["rs_pct_val"]      = rs_pct
 
                 phase = _stock_phase(rs_pct, m_z, snap)
+
+                _sk_slope = _sec_slope_pct.get(_code_sk, 50.0)
+                if _sk_slope >= 60:
+                    _sector_phase = "主升段"
+                elif _sk_slope >= 40:
+                    _sector_phase = "主升回檔"
+                elif _sk_slope <= 25:
+                    _sector_phase = "空頭"
+                else:
+                    _sector_phase = ""
+
+                structure = _classify_structure(snap, phase, _sector_phase)
+
+                _tech_score = min(100, max(0, round(
+                    rs_pct * 0.5
+                    + (20 if phase == "BULL" else 10 if phase == "BULL_PULLBACK" else 0)
+                    + (15 if snap.get("avwap_swing") and snap["price"] >= snap["avwap_swing"] else 0)
+                    + (10 if snap.get("avwap_vol")   and snap["price"] >= snap["avwap_vol"]   else 0)
+                    + (5  if snap.get("avwap_short") and snap["price"] >= snap["avwap_short"] else 0)
+                )))
+
                 sigs  = calc_signals(snap, {}, rs_pct,
                                      stock_phase=phase,
                                      market_regime=regime,
-                                     composite_score=50)
+                                     composite_score=_tech_score,
+                                     structure=structure,
+                                     sector_phase=_sector_phase)
                 if not sigs:
                     continue
 

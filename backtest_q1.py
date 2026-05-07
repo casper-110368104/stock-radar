@@ -408,6 +408,62 @@ def _stock_phase(rs_pct, m_z, snap):
     return "RANGE"
 
 
+# ── 個股結構分類（複製自 fetch_stocks.py classify_structure）──────────────
+def _classify_structure(snap, stock_phase, sector_phase=""):
+    """
+    依 MA 排列、AVWAP、RS 位置輸出結構標籤。
+    '主升段'/'主升段✓'/'主升段✓✓' | '突破準備'/'突破準備✓'/'突破準備✓✓'
+    | '回檔' | '盤整' | '弱勢'
+    """
+    price       = snap.get("price") or 0
+    ma5         = snap.get("ma5")
+    ma10        = snap.get("ma10")
+    ma20        = snap.get("ma20")
+    ma60        = snap.get("ma60")
+    high20      = snap.get("high20")
+    rs_pct_val  = snap.get("rs_pct_val")
+    avwap_swing = snap.get("avwap_swing")
+    avwap_vol   = snap.get("avwap_vol")
+    avwap_short = snap.get("avwap_short")
+
+    if not price or not ma20:
+        return "盤整"
+
+    if stock_phase in ("BEAR_STRONG", "BEAR_WEAK") or (ma60 and price < ma60 * 0.98):
+        label = "弱勢"
+    elif (stock_phase == "BULL" and ma5 and ma10 and ma20
+          and ma5 > ma10 > ma20 and price >= ma5):
+        label = "主升段"
+    elif (high20 and ma20 and price >= ma20
+          and 0 <= (high20 - price) / high20 <= 0.10
+          and (rs_pct_val is None or rs_pct_val >= 65)):
+        label = "突破準備"
+    elif (stock_phase in ("BULL", "BULL_PULLBACK")
+          and ma10 and ma20 and ma20 <= price <= ma10):
+        label = "回檔"
+    else:
+        label = "盤整"
+
+    _avwap_all_ok = (
+        avwap_swing and avwap_vol and avwap_short
+        and price >= avwap_swing and price >= avwap_vol and price >= avwap_short
+    )
+    _avwap_broken = avwap_swing and price < avwap_swing
+
+    if _avwap_broken and label in ("主升段", "突破準備"):
+        label = "回檔"
+
+    if label in ("主升段", "突破準備"):
+        if sector_phase in ("主升段", "準備噴", "主升回檔"):
+            label = label + ("✓✓" if _avwap_all_ok else "✓")
+        elif sector_phase == "空頭":
+            label = "盤整"
+        elif _avwap_all_ok:
+            label = label + "✓"
+
+    return label
+
+
 # ── 統計彙整 ──────────────────────────────────────────────────────
 def _apply_sector_exits(trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, threshold):
     """Post-process：類股惡化強制出場，僅在非多頭相位觸發（bull/bull_pullback 下類股輪動屬正常）。"""
@@ -988,14 +1044,40 @@ def main():
             snap["rs_accel"]        = accel
             snap["sector_rs"]       = _code_sec_pct
             snap["sector_combined"] = _code_sec_combined
+            snap["rs_pct_val"]      = rs_pct   # classify_structure 需要
 
             phase = _stock_phase(rs_pct, m_z, snap)
+
+            # 板塊相位（由板塊 RS slope 百分位近似）
+            _sk_slope = _sec_slope_pct.get(_code_sk, 50.0)
+            if _sk_slope >= 60:
+                _sector_phase = "主升段"
+            elif _sk_slope >= 40:
+                _sector_phase = "主升回檔"
+            elif _sk_slope <= 25:
+                _sector_phase = "空頭"
+            else:
+                _sector_phase = ""
+
+            # 個股結構標籤（供 trend_cont 判斷）
+            structure = _classify_structure(snap, phase, _sector_phase)
+
+            # 技術面綜合評分（近似）：RS 位置 + 多頭相位 + AVWAP 對齊
+            _tech_score = min(100, max(0, round(
+                rs_pct * 0.5
+                + (20 if phase == "BULL" else 10 if phase == "BULL_PULLBACK" else 0)
+                + (15 if snap.get("avwap_swing") and snap["price"] >= snap["avwap_swing"] else 0)
+                + (10 if snap.get("avwap_vol")   and snap["price"] >= snap["avwap_vol"]   else 0)
+                + (5  if snap.get("avwap_short") and snap["price"] >= snap["avwap_short"] else 0)
+            )))
 
             sigs = calc_signals(
                 snap, {}, rs_pct,
                 stock_phase=phase,
                 market_regime=regime,
-                composite_score=50,   # 中性，讓技術條件完整運作
+                composite_score=_tech_score,
+                structure=structure,
+                sector_phase=_sector_phase,
             )
             if not sigs:
                 continue
