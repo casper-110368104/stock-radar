@@ -355,16 +355,28 @@ def _daily_rs(stock_c, bm_c):
 
 
 def _rs_metrics(daily_rs):
-    """回傳 (M, RS_scalar)；RS_scalar 用於跨股百分位排名"""
+    """回傳 (M, RS_scalar)；M = 累積RS / MA10(累積RS)，與 fetch_expansion.py 一致；
+    RS_scalar 用於跨股百分位排名（保留 daily excess return 加權平均）。
+
+    修正：原實作用 daily_rs[-1] / mean(daily_rs[-10:]) 計算 M，
+    分母為近 10 日超額報酬均值，在空頭或崩跌後為負 → 符號翻轉，完全失去過濾能力。
+    正確做法：先將 daily excess returns 轉為累積 RS 比率（恆正），
+    再取 cumRS[-1] / MA10(cumRS)；> 1.0 代表 RS 正在擴張，< 1.0 代表 RS 收縮。
+    """
     if len(daily_rs) < 10:
         return None, None
-    ma10   = sum(daily_rs[-10:]) / 10
-    m      = max(-5.0, min(5.0, (daily_rs[-1] / ma10) if ma10 != 0 else 0.0))
+    # 將逐日超額報酬轉為累積 RS 比率（以序列起點為基準）
+    cum, cum_rs = 1.0, []
+    for dr in daily_rs:
+        cum *= (1 + dr / 100)
+        cum_rs.append(cum)
+    ma10 = sum(cum_rs[-10:]) / 10
+    m    = round(max(-5.0, min(5.0, (cum_rs[-1] / ma10) if ma10 > 0.001 else 0.0)), 4)
     n      = len(daily_rs)
     scalar = (0.4 * sum(daily_rs[-60:])  / 60  if n >= 60  else 0) + \
              (0.3 * sum(daily_rs[-120:]) / 120 if n >= 120 else 0) + \
              (0.3 * sum(daily_rs[-240:]) / 240 if n >= 240 else 0)
-    return round(m, 4), round(scalar, 4)
+    return m, round(scalar, 4)
 
 
 def _rs_slope_window(vals):
