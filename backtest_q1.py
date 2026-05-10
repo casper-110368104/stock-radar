@@ -19,7 +19,45 @@ import json, time, math, sys, requests
 import yfinance as yf
 from datetime import datetime, date, timedelta
 from collections import defaultdict, deque
+from pathlib import Path
 from signals import calc_signals
+
+def _compute_chips_score(f_net, f_con, t_net, t_con, d_net, vol_lots):
+    """計算三大法人籌碼分數（0~100），與 fetch_stocks.py calc_score chips 段落完全一致"""
+    chip_pts = 50
+    f_pct = f_net / vol_lots * 100
+    if   f_pct > 10: chip_pts += 30
+    elif f_pct >  5: chip_pts += 20
+    elif f_pct >  2: chip_pts += 12
+    elif f_pct >  0: chip_pts += 5
+    elif f_pct < -5: chip_pts -= 15
+    elif f_pct < -2: chip_pts -= 8
+
+    if   f_con >= 10: chip_pts += 15
+    elif f_con >=  5: chip_pts += 10
+    elif f_con >=  3: chip_pts += 6
+    elif f_con >=  1: chip_pts += 2
+    elif f_con <= -5: chip_pts -= 12
+    elif f_con <= -3: chip_pts -= 7
+    elif f_con <= -1: chip_pts -= 3
+
+    t_pct = t_net / vol_lots * 100
+    if   t_pct >  3: chip_pts += 10
+    elif t_pct >  1: chip_pts += 6
+    elif t_pct >  0: chip_pts += 2
+    elif t_pct < -1: chip_pts -= 5
+    if   t_con >= 5: chip_pts += 5
+    elif t_con >= 3: chip_pts += 3
+    elif t_con >= 1: chip_pts += 1
+    elif t_con <= -3: chip_pts -= 4
+
+    d_pct = d_net / vol_lots * 100
+    if   d_pct >  2: chip_pts += 3
+    elif d_pct >  0: chip_pts += 1
+    elif d_pct < -2: chip_pts -= 2
+
+    return max(0, min(chip_pts, 100))
+
 
 # ── 設定 ────────────────────────────────────────────────────────────
 BT_START       = date(2024, 1, 2)    # 回測起始（含 2024 OOS + 2025 in-sample）
@@ -635,6 +673,25 @@ def main():
         if not sector_map:
             print(f"  板塊載入失敗（{_e}），sector_rs 使用 None")
 
+    # ── 載入歷史籌碼資料 ───────────────────────────────────────────
+    _chips_hist = {}
+    _chips_hist_path = Path("docs/chips_history.json")
+    if _chips_hist_path.exists():
+        with open(_chips_hist_path, encoding="utf-8") as f:
+            _chips_hist = json.load(f)
+        print(f"  [籌碼] 載入 {len(_chips_hist)} 個交易日")
+    else:
+        print(f"  [籌碼] chips_history.json 不存在，籌碼分數使用中性 50")
+
+    _rev_hist = {}
+    _rev_hist_path = Path("docs/revenue_history.json")
+    if _rev_hist_path.exists():
+        with open(_rev_hist_path, encoding="utf-8") as f:
+            _rev_hist = json.load(f)
+        print(f"  [月營收] 載入 {len(_rev_hist)} 檔")
+    else:
+        print(f"  [月營收] revenue_history.json 不存在，月營收分數使用中性 50")
+
     # ── Step 1: 取得所有 TWSE 上市股票代號 ─────────────────────────
     # 設計原則：
     #   下載全部上市股票的歷史資料，回測迴圈每天以「當日前60日平均成交量」
@@ -1074,17 +1131,78 @@ def main():
             # 個股結構標籤（供 trend_cont 判斷）
             structure = _classify_structure(snap, phase, _sector_phase)
 
-            # 技術面綜合評分（近似）：RS 位置 + 多頭相位 + AVWAP 對齊
-            _tech_score = min(100, max(0, round(
-                rs_pct * 0.5
-                + (20 if phase == "BULL" else 10 if phase == "BULL_PULLBACK" else 0)
-                + (15 if snap.get("avwap_swing") and snap["price"] >= snap["avwap_swing"] else 0)
-                + (10 if snap.get("avwap_vol")   and snap["price"] >= snap["avwap_vol"]   else 0)
-                + (5  if snap.get("avwap_short") and snap["price"] >= snap["avwap_short"] else 0)
-            )))
+            # 1. 量能分數（與 fetch_stocks.py 一致）
+            _n_vol = min(si, 59)
+            _vslice60 = [sd["vols"][si - k] for k in range(min(60, si+1))]
+            _vslice20 = _vslice60[:20]
+            _vol60avg = sum(v for v in _vslice60 if v > 0) / max(sum(1 for v in _vslice60 if v > 0), 1)
+            _vol20avg = sum(v for v in _vslice20 if v > 0) / max(sum(1 for v in _vslice20 if v > 0), 1)
+            _vr = (_vol20avg / _vol60avg) if _vol60avg > 0 else 1.0
+            if   _vr > 2.0: _vol_score = 100
+            elif _vr > 1.5: _vol_score = 85
+            elif _vr > 1.3: _vol_score = 70
+            elif _vr > 1.1: _vol_score = 55
+            elif _vr > 1.0: _vol_score = 40
+            elif _vr > 0.8: _vol_score = 25
+            else:           _vol_score = 10
+
+            # 2. RS 分數
+            if   rs_pct >= 90: _rs_score = 100
+            elif rs_pct >= 80: _rs_score = 85
+            elif rs_pct >= 70: _rs_score = 70
+            elif rs_pct >= 50: _rs_score = 55
+            elif rs_pct >= 30: _rs_score = 40
+            else:              _rs_score = max(10, int(rs_pct * 0.8))
+
+            # 3. AVWAP 分數（0~15）
+            _avwap_cnt = sum([
+                bool(snap.get("avwap_swing") and snap["price"] >= snap["avwap_swing"]),
+                bool(snap.get("avwap_vol")   and snap["price"] >= snap["avwap_vol"]),
+                bool(snap.get("avwap_short") and snap["price"] >= snap["avwap_short"]),
+            ])
+            _avwap_score = _avwap_cnt * 5
+
+            # 4. 籌碼分數（從 chips_history）
+            _chips_raw = _chips_hist.get(q_date.strftime("%Y-%m-%d"), {}).get(code, {})
+            _vol_lots = max(sd["vols"][si] / 1000, 1)
+            _chips_score_val = _compute_chips_score(
+                _chips_raw.get("f", 0), _chips_raw.get("fc", 0),
+                _chips_raw.get("t", 0), _chips_raw.get("tc", 0),
+                _chips_raw.get("d", 0), _vol_lots
+            ) if _chips_raw else 50  # 無資料給中性分
+
+            # 5. 月營收分數
+            _rev_score = 50  # 預設中性
+            _code_rev = _rev_hist.get(code, {})
+            if _code_rev:
+                _cur_dt = datetime.combine(q_date, datetime.min.time())
+                _avail_month = (datetime(q_date.year, q_date.month, 1) - timedelta(days=40)).strftime("%Y-%m")
+                _yoy = _code_rev.get(_avail_month)
+                if _yoy is not None:
+                    if   _yoy > 40: _rev_score = 100
+                    elif _yoy > 20: _rev_score = 85
+                    elif _yoy > 10: _rev_score = 70
+                    elif _yoy >  5: _rev_score = 60
+                    elif _yoy >  0: _rev_score = 52
+                    elif _yoy > -5: _rev_score = 45
+                    elif _yoy >-20: _rev_score = 30
+                    else:           _rev_score = 15
+
+            # 6. 基本面分數（無歷史資料，用中性 50）
+            _fund_score = 50
+
+            # 7. 正確的 composite_score（與 fetch_stocks.py 完全對齊）
+            _tech_score = round(
+                _chips_score_val * 0.33 +
+                _fund_score      * 0.28 +
+                _vol_score       * 0.23 +
+                _rev_score       * 0.05 +
+                _rs_score        * 0.05 +
+                _avwap_score / 15 * 100 * 0.06
+            )
 
             sigs = calc_signals(
-                snap, {}, rs_pct,
+                snap, {"chips_score_val": _chips_score_val}, rs_pct,
                 stock_phase=phase,
                 market_regime=regime,
                 composite_score=_tech_score,
