@@ -445,6 +445,7 @@ def main():
             day_count    = 0
             daily_hb_cnt = 0
             daily_ig_cnt = 0
+            daily_tc_cnt = 0
 
             for code, sd in sorted(
                     ((c, stock_data[c]) for c in _today_universe if c in stock_data),
@@ -625,11 +626,15 @@ def main():
                     if sig_type == "high_base" and stock_roc5 <= 0:
                         continue
 
-                    # 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
+                    # 每日信號密度上限：high_base ≤ 3、trend_cont ≤ 4、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
                             continue
                         daily_hb_cnt += 1
+                    elif sig_type == "trend_cont":
+                        if daily_tc_cnt >= 4:
+                            continue
+                        daily_tc_cnt += 1
                     elif sig_type == "momentum_ignition":
                         if daily_ig_cnt >= 2:
                             continue

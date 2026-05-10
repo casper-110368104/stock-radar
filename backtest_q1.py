@@ -113,8 +113,8 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
     "bull":           {"high_base", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
-    "bull_pullback":  {"ma_pullback", "false_breakdown"},
-    "range":          {"false_breakdown", "ma_pullback"},
+    "bull_pullback":  {"false_breakdown"},   # ma_pullback 在回調相位 exp<0，停用
+    "range":          {"false_breakdown"},   # ma_pullback 在震盪相位 exp<0，停用
     "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
     "reversal_probe": {"false_breakdown"},  # 轉折試水：VIX 峰值逆轉 or 廣度背離，小倉卡位
 }
@@ -1076,6 +1076,7 @@ def main():
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
         daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
+        daily_tc_cnt  = 0   # 當日 trend_cont 進場上限計數
 
         # ── 4c: 對每支股票產生訊號（限動態宇宙，依 RS 百分位由高到低掃描）
         for code, sd in sorted(
@@ -1272,11 +1273,15 @@ def main():
                 if sig_type == "high_base" and stock_roc5 <= 0:
                     continue
 
-                # ── 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
+                # ── 每日信號密度上限：high_base ≤ 3、trend_cont ≤ 4、momentum_ignition ≤ 2
                 if sig_type == "high_base":
                     if daily_hb_cnt >= 3:
                         continue
                     daily_hb_cnt += 1
+                elif sig_type == "trend_cont":
+                    if daily_tc_cnt >= 4:
+                        continue
+                    daily_tc_cnt += 1
                 elif sig_type == "momentum_ignition":
                     if daily_ig_cnt >= 2:
                         continue
