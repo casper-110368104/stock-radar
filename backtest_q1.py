@@ -1175,7 +1175,6 @@ def main():
             _rev_score = 50  # 預設中性
             _code_rev = _rev_hist.get(code, {})
             if _code_rev:
-                _cur_dt = datetime.combine(q_date, datetime.min.time())
                 _avail_month = (datetime(q_date.year, q_date.month, 1) - timedelta(days=40)).strftime("%Y-%m")
                 _yoy = _code_rev.get(_avail_month)
                 if _yoy is not None:
