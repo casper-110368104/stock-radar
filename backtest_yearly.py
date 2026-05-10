@@ -22,6 +22,7 @@ from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
     _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _classify_structure, _stats, _capital_curves,
     _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
+    _compute_chips_score,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MAX_HOLD_IG, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
@@ -72,6 +73,26 @@ def main():
     except Exception as _e:
         if not sector_map:
             print(f"  板塊載入失敗（{_e}）")
+
+    # ── 載入歷史籌碼資料 ───────────────────────────────────────────
+    from pathlib import Path
+    _chips_hist = {}
+    _chips_hist_path = Path("docs/chips_history.json")
+    if _chips_hist_path.exists():
+        with open(_chips_hist_path, encoding="utf-8") as f:
+            _chips_hist = json.load(f)
+        print(f"  [籌碼] 載入 {len(_chips_hist)} 個交易日")
+    else:
+        print(f"  [籌碼] chips_history.json 不存在，籌碼分數使用中性 50")
+
+    _rev_hist = {}
+    _rev_hist_path = Path("docs/revenue_history.json")
+    if _rev_hist_path.exists():
+        with open(_rev_hist_path, encoding="utf-8") as f:
+            _rev_hist = json.load(f)
+        print(f"  [月營收] 載入 {len(_rev_hist)} 檔")
+    else:
+        print(f"  [月營收] revenue_history.json 不存在，月營收分數使用中性 50")
 
     # ── 下載 TWII + 0050（一次，全區間共用）──────────────────────
     print(f"\n[1] 下載 TWII + 0050 + VIX...")
