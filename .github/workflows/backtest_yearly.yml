@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Build sector map（全 TWSE 類股對照）
+        run: python build_sector_map.py
+
       - name: Run yearly backtest
         run: python backtest_yearly.py
 
@@ -36,7 +39,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/backtest_yearly.json
+          git add docs/sector_map.json docs/backtest_yearly.json
           git diff --staged --quiet || git commit -m "逐年回測結果：$(date +'%Y-%m-%d %H:%M')"
-          git pull --rebase origin ${{ github.ref_name }}
-          git push origin HEAD:${{ github.ref_name }}
+          for i in 1 2 3 4; do
+            git pull --rebase origin ${{ github.ref_name }} && \
+            git push origin HEAD:${{ github.ref_name }} && break
+            echo "Push attempt $i failed, retrying in $((i * 4))s..."
+            sleep $((i * 4))
+          done

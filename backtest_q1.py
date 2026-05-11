@@ -19,7 +19,45 @@ import json, time, math, sys, requests
 import yfinance as yf
 from datetime import datetime, date, timedelta
 from collections import defaultdict, deque
+from pathlib import Path
 from signals import calc_signals
+
+def _compute_chips_score(f_net, f_con, t_net, t_con, d_net, vol_lots):
+    """計算三大法人籌碼分數（0~100），與 fetch_stocks.py calc_score chips 段落完全一致"""
+    chip_pts = 50
+    f_pct = f_net / vol_lots * 100
+    if   f_pct > 10: chip_pts += 30
+    elif f_pct >  5: chip_pts += 20
+    elif f_pct >  2: chip_pts += 12
+    elif f_pct >  0: chip_pts += 5
+    elif f_pct < -5: chip_pts -= 15
+    elif f_pct < -2: chip_pts -= 8
+
+    if   f_con >= 10: chip_pts += 15
+    elif f_con >=  5: chip_pts += 10
+    elif f_con >=  3: chip_pts += 6
+    elif f_con >=  1: chip_pts += 2
+    elif f_con <= -5: chip_pts -= 12
+    elif f_con <= -3: chip_pts -= 7
+    elif f_con <= -1: chip_pts -= 3
+
+    t_pct = t_net / vol_lots * 100
+    if   t_pct >  3: chip_pts += 10
+    elif t_pct >  1: chip_pts += 6
+    elif t_pct >  0: chip_pts += 2
+    elif t_pct < -1: chip_pts -= 5
+    if   t_con >= 5: chip_pts += 5
+    elif t_con >= 3: chip_pts += 3
+    elif t_con >= 1: chip_pts += 1
+    elif t_con <= -3: chip_pts -= 4
+
+    d_pct = d_net / vol_lots * 100
+    if   d_pct >  2: chip_pts += 3
+    elif d_pct >  0: chip_pts += 1
+    elif d_pct < -2: chip_pts -= 2
+
+    return max(0, min(chip_pts, 100))
+
 
 # ── 設定 ────────────────────────────────────────────────────────────
 BT_START       = date(2024, 1, 2)    # 回測起始（含 2024 OOS + 2025 in-sample）
@@ -75,8 +113,8 @@ SIGNAL_SCALE = {      # 依設計屬性分層，非 EV 擬合
 # 每個市場相位允許的訊號類型：結構設計（不同相位適合不同進場邏輯），非 EV 擬合
 REGIME_ACTIVE_SIGNALS = {
     "bull":           {"high_base", "trend_cont", "ma_pullback", "false_breakdown", "momentum_ignition"},
-    "bull_pullback":  {"ma_pullback", "false_breakdown"},
-    "range":          {"false_breakdown", "ma_pullback"},
+    "bull_pullback":  {"false_breakdown"},   # ma_pullback 在回調相位 exp<0，停用
+    "range":          {"false_breakdown"},   # ma_pullback 在震盪相位 exp<0，停用
     "bear":           set(),   # 空頭不開個股單：留現金縮倉防禦，market_factor 已自動壓縮倉位
     "reversal_probe": {"false_breakdown"},  # 轉折試水：VIX 峰值逆轉 or 廣度背離，小倉卡位
 }
@@ -355,16 +393,28 @@ def _daily_rs(stock_c, bm_c):
 
 
 def _rs_metrics(daily_rs):
-    """回傳 (M, RS_scalar)；RS_scalar 用於跨股百分位排名"""
+    """回傳 (M, RS_scalar)；M = 累積RS / MA10(累積RS)，與 fetch_expansion.py 一致；
+    RS_scalar 用於跨股百分位排名（保留 daily excess return 加權平均）。
+
+    修正：原實作用 daily_rs[-1] / mean(daily_rs[-10:]) 計算 M，
+    分母為近 10 日超額報酬均值，在空頭或崩跌後為負 → 符號翻轉，完全失去過濾能力。
+    正確做法：先將 daily excess returns 轉為累積 RS 比率（恆正），
+    再取 cumRS[-1] / MA10(cumRS)；> 1.0 代表 RS 正在擴張，< 1.0 代表 RS 收縮。
+    """
     if len(daily_rs) < 10:
         return None, None
-    ma10   = sum(daily_rs[-10:]) / 10
-    m      = max(-5.0, min(5.0, (daily_rs[-1] / ma10) if ma10 != 0 else 0.0))
+    # 將逐日超額報酬轉為累積 RS 比率（以序列起點為基準）
+    cum, cum_rs = 1.0, []
+    for dr in daily_rs:
+        cum *= (1 + dr / 100)
+        cum_rs.append(cum)
+    ma10 = sum(cum_rs[-10:]) / 10
+    m    = round(max(-5.0, min(5.0, (cum_rs[-1] / ma10) if ma10 > 0.001 else 0.0)), 4)
     n      = len(daily_rs)
     scalar = (0.4 * sum(daily_rs[-60:])  / 60  if n >= 60  else 0) + \
              (0.3 * sum(daily_rs[-120:]) / 120 if n >= 120 else 0) + \
              (0.3 * sum(daily_rs[-240:]) / 240 if n >= 240 else 0)
-    return round(m, 4), round(scalar, 4)
+    return m, round(scalar, 4)
 
 
 def _rs_slope_window(vals):
@@ -406,6 +456,62 @@ def _stock_phase(rs_pct, m_z, snap):
     if rs_pct < 30 and m_z < 1.0 and not above60:
         return "BEAR_WEAK" if m_z > 0.5 else "BEAR_STRONG"
     return "RANGE"
+
+
+# ── 個股結構分類（複製自 fetch_stocks.py classify_structure）──────────────
+def _classify_structure(snap, stock_phase, sector_phase=""):
+    """
+    依 MA 排列、AVWAP、RS 位置輸出結構標籤。
+    '主升段'/'主升段✓'/'主升段✓✓' | '突破準備'/'突破準備✓'/'突破準備✓✓'
+    | '回檔' | '盤整' | '弱勢'
+    """
+    price       = snap.get("price") or 0
+    ma5         = snap.get("ma5")
+    ma10        = snap.get("ma10")
+    ma20        = snap.get("ma20")
+    ma60        = snap.get("ma60")
+    high20      = snap.get("high20")
+    rs_pct_val  = snap.get("rs_pct_val")
+    avwap_swing = snap.get("avwap_swing")
+    avwap_vol   = snap.get("avwap_vol")
+    avwap_short = snap.get("avwap_short")
+
+    if not price or not ma20:
+        return "盤整"
+
+    if stock_phase in ("BEAR_STRONG", "BEAR_WEAK") or (ma60 and price < ma60 * 0.98):
+        label = "弱勢"
+    elif (stock_phase == "BULL" and ma5 and ma10 and ma20
+          and ma5 > ma10 > ma20 and price >= ma5):
+        label = "主升段"
+    elif (high20 and ma20 and price >= ma20
+          and 0 <= (high20 - price) / high20 <= 0.10
+          and (rs_pct_val is None or rs_pct_val >= 65)):
+        label = "突破準備"
+    elif (stock_phase in ("BULL", "BULL_PULLBACK")
+          and ma10 and ma20 and ma20 <= price <= ma10):
+        label = "回檔"
+    else:
+        label = "盤整"
+
+    _avwap_all_ok = (
+        avwap_swing and avwap_vol and avwap_short
+        and price >= avwap_swing and price >= avwap_vol and price >= avwap_short
+    )
+    _avwap_broken = avwap_swing and price < avwap_swing
+
+    if _avwap_broken and label in ("主升段", "突破準備"):
+        label = "回檔"
+
+    if label in ("主升段", "突破準備"):
+        if sector_phase in ("主升段", "準備噴", "主升回檔"):
+            label = label + ("✓✓" if _avwap_all_ok else "✓")
+        elif sector_phase == "空頭":
+            label = "盤整"
+        elif _avwap_all_ok:
+            label = label + "✓"
+
+    return label
 
 
 # ── 統計彙整 ──────────────────────────────────────────────────────
@@ -535,9 +641,23 @@ def main():
     print("  原則：每日只用截至當日的已知資料，無向前看偏差")
     print("=" * 60)
 
-    # ── 板塊對應（從 stocks.json 讀取；板塊歸屬穩定，不含未來資訊）──────
+    # ── 板塊對應（sector_map.json 為主，stocks.json 補充；板塊歸屬穩定）──────
     sector_map   = {}   # code → sector_key
     sector_codes = defaultdict(list)   # sector_key → [codes]
+    # 先載 sector_map.json（全市場，由 build_sector_map.py 產生）
+    try:
+        with open("docs/sector_map.json", encoding="utf-8") as _f:
+            _sm = json.load(_f)
+        for _c, _sk in _sm.items():
+            if _c and _sk:
+                sector_map[_c] = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊（sector_map.json）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except FileNotFoundError:
+        print("  sector_map.json 不存在，回退至 stocks.json")
+    except Exception as _e:
+        print(f"  sector_map.json 載入失敗（{_e}）")
+    # stocks.json 覆蓋（已人工校正的 sector_key 優先）
     try:
         with open("docs/stocks.json", encoding="utf-8") as _f:
             _sj = json.load(_f)
@@ -545,25 +665,42 @@ def main():
             _c  = _s.get("code", "")
             _sk = _s.get("sector_key", "")
             if _c and _sk:
+                if _c not in sector_map:
+                    sector_codes[_sk].append(_c)
                 sector_map[_c] = _sk
-                sector_codes[_sk].append(_c)
-        print(f"  板塊對應：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+        print(f"  板塊（+stocks.json overlay）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
     except Exception as _e:
-        print(f"  板塊對應載入失敗（{_e}），sector_rs 使用 None")
+        if not sector_map:
+            print(f"  板塊載入失敗（{_e}），sector_rs 使用 None")
 
-    # ── Step 1: 決定候選母體 ─────────────────────────────────────
-    # 抗倖存者偏差設計：
-    #   1. TWSE API 取今日量能前 500 作為「候選池」（不直接用作母體）
-    #   2. 下載資料後，用「回測開始前一整年的平均成交量」重排，取前 300
-    #   → PRE_BT_VOL 動態計算（BT_START 前一年），確保任何測試區間都無向後看偏差
-    UNIVERSE_CANDIDATES = 500   # 候選池大小（下載後再篩）
-    UNIVERSE_FINAL      = 300   # 最終母體大小
-    PRE_BT_VOL_START    = date(BT_START.year - 1, 1, 1)
-    PRE_BT_VOL_END      = date(BT_START.year - 1, 12, 31)
+    # ── 載入歷史籌碼資料 ───────────────────────────────────────────
+    _chips_hist = {}
+    _chips_hist_path = Path("docs/chips_history.json")
+    if _chips_hist_path.exists():
+        with open(_chips_hist_path, encoding="utf-8") as f:
+            _chips_hist = json.load(f)
+        print(f"  [籌碼] 載入 {len(_chips_hist)} 個交易日")
+    else:
+        print(f"  [籌碼] chips_history.json 不存在，籌碼分數使用中性 50")
 
-    print("\n[1] 抓取候選股票池（TWSE 量能前 500）...")
+    _rev_hist = {}
+    _rev_hist_path = Path("docs/revenue_history.json")
+    if _rev_hist_path.exists():
+        with open(_rev_hist_path, encoding="utf-8") as f:
+            _rev_hist = json.load(f)
+        print(f"  [月營收] 載入 {len(_rev_hist)} 檔")
+    else:
+        print(f"  [月營收] revenue_history.json 不存在，月營收分數使用中性 50")
+
+    # ── Step 1: 取得所有 TWSE 上市股票代號 ─────────────────────────
+    # 設計原則：
+    #   下載全部上市股票的歷史資料，回測迴圈每天以「當日前60日平均成交量」
+    #   動態決定當天的候選池（前 UNIVERSE_DAILY_N 名），不依賴固定名單。
+    #   → 消除「用今日排名選歷史股票」的前視偏差，每天的候選池反映當下市場環境。
+    UNIVERSE_DAILY_N = 300   # 每日動態候選池大小（依當日前60日均量排名）
+
+    print("\n[1] 抓取所有 TWSE 上市股票代號...")
     print(f"  回測期間：{BT_START} ~ {BT_END}")
-    print(f"  母體選取依據：{PRE_BT_VOL_START} ~ {PRE_BT_VOL_END} 平均成交量（BT_START 前一整年，無向後看）")
     universe_candidates = []
     try:
         r = requests.get(
@@ -573,7 +710,6 @@ def main():
         fields   = d.get("fields", [])
         rows     = d.get("data", [])
         i_code   = fields.index("證券代號") if "證券代號" in fields else 0
-        i_vol    = fields.index("成交股數")  if "成交股數"  in fields else 2
         tmp = []
         for row in rows:
             try:
@@ -581,13 +717,11 @@ def main():
                 if not (code.isdigit() and len(code) == 4): continue
                 if code.startswith("00"): continue
                 if int(code) < 1000: continue
-                vol = int(row[i_vol].replace(",", ""))
-                tmp.append((code, vol))
+                tmp.append(code)
             except Exception:
                 continue
-        tmp.sort(key=lambda x: x[1], reverse=True)
-        universe_candidates = [c for c, _ in tmp[:UNIVERSE_CANDIDATES]]
-        print(f"  → 候選池：{len(universe_candidates)} 檔")
+        universe_candidates = tmp
+        print(f"  → 全市場股票：{len(universe_candidates)} 檔")
     except Exception as e:
         print(f"  TWSE API 失敗：{e}，使用內建候選清單")
         universe_candidates = [
@@ -675,33 +809,7 @@ def main():
 
     print(f"\n  → 下載完成：{len(stock_data)} 檔")
 
-    # ── Step 3b: 用回測前一年（2024）的平均成交量重排，取前 300 ──────
-    # 消除倖存者偏差：選股依據為 2024 已知資訊，不使用 2025+ 的未來量能
-    print(f"\n  [母體篩選] 計算 {PRE_BT_VOL_START}~{PRE_BT_VOL_END} 平均成交量...")
-    pre_bt_vol = {}
-    for code, sd in stock_data.items():
-        vols_2024 = [
-            sd["vols"][i] for i, d in enumerate(sd["dates"])
-            if PRE_BT_VOL_START <= d <= PRE_BT_VOL_END
-            and not math.isnan(sd["vols"][i]) and sd["vols"][i] > 0
-        ]
-        if vols_2024:
-            pre_bt_vol[code] = sum(vols_2024) / len(vols_2024)
-
-    sorted_by_pre_bt = sorted(pre_bt_vol, key=lambda c: pre_bt_vol[c], reverse=True)
-    final_universe   = sorted_by_pre_bt[:UNIVERSE_FINAL]
-
-    # 無 2024 量能資料的股票（IPO 太晚）不納入母體
-    no_pre_vol = [c for c in stock_data if c not in pre_bt_vol]
-    if no_pre_vol:
-        print(f"  [排除] {len(no_pre_vol)} 檔無 2024 量能資料（新上市等）")
-
-    # 只保留最終母體的資料，釋放記憶體
-    stock_data = {c: stock_data[c] for c in final_universe if c in stock_data}
-    print(f"  → 最終母體：{len(stock_data)} 檔（依 2024 平均成交量選出）")
-    if stock_data:
-        top5 = final_universe[:5]
-        print(f"  → 前 5 大：{', '.join(top5)}")
+    print(f"  → 全市場股票資料：{len(stock_data)} 檔（每日動態依當日前60日均量選 Top {UNIVERSE_DAILY_N}）")
 
     # 為每支股票建立「日期 → 陣列 index」的快速對照
     stock_date_idx = {}
@@ -734,11 +842,11 @@ def main():
         if bm_i is None:
             continue
 
-        # ── 4a: RS scalar + 市場廣度（單次遍歷，廣度用於 regime 雙確認）
+        # ── 4a: 動態宇宙 + RS scalar + 市場廣度（單次遍歷）
+        # Pass 1: 計算所有股票 RS、並收集當日前60日均量 → 選出 Top UNIVERSE_DAILY_N
         rs_scalar_map = {}
         rs_cache      = {}
-        _above_ma20   = 0
-        _breadth_n    = 0
+        _day_vols     = []   # (code, avg_vol_60d)
         for code, sd in stock_data.items():
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 10:
@@ -749,27 +857,47 @@ def main():
             _, scalar      = _rs_metrics(dr)
             if scalar is not None:
                 rs_scalar_map[code] = scalar
-            # 廣度：同一次遍歷順帶計算（需 si >= 20）
+            # 前60日均量（需 si >= 20 保障足夠資料）
             if si >= 20:
-                _cl = sd["closes"][si]
-                if not math.isnan(_cl):
-                    _ma20v = sum(sd["closes"][si - 19:si + 1]) / 20
-                    _breadth_n += 1
-                    if _cl > _ma20v:
-                        _above_ma20 += 1
+                _n = min(si, 59)
+                _vslice = sd["vols"][si - _n: si + 1]
+                _valid  = [v for v in _vslice if not math.isnan(v) and v > 0]
+                if _valid:
+                    _day_vols.append((code, sum(_valid) / len(_valid)))
+
+        # 依均量排序，取 Top N 為當日動態宇宙
+        _day_vols.sort(key=lambda x: x[1], reverse=True)
+        _today_universe = {code for code, _ in _day_vols[:UNIVERSE_DAILY_N]}
+
+        # Pass 2: 廣度 — 只計算動態宇宙內的股票
+        _above_ma20 = 0
+        _breadth_n  = 0
+        for code in _today_universe:
+            si = stock_date_idx[code].get(q_date)
+            if si is None or si < 20:
+                continue
+            _cl = stock_data[code]["closes"][si]
+            if not math.isnan(_cl):
+                _ma20v = sum(stock_data[code]["closes"][si - 19:si + 1]) / 20
+                _breadth_n += 1
+                if _cl > _ma20v:
+                    _above_ma20 += 1
 
         breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-        # ── 快速廣度：5日正報酬股票比例（即時動能，不依賴均線）
-        _above_5d   = sum(1 for code, sd in stock_data.items()
-                          if (si5 := stock_date_idx[code].get(q_date)) is not None
-                          and si5 >= 5
-                          and not math.isnan(sd["closes"][si5])
-                          and sd["closes"][si5] > sd["closes"][si5 - 5])
-        _fast_n     = sum(1 for code, sd in stock_data.items()
-                          if (si5 := stock_date_idx[code].get(q_date)) is not None
-                          and si5 >= 5
-                          and not math.isnan(sd["closes"][si5]))
+        # ── 快速廣度：5日正報酬股票比例（動態宇宙內）
+        _above_5d = 0
+        _fast_n   = 0
+        for code in _today_universe:
+            sd  = stock_data[code]
+            si5 = stock_date_idx[code].get(q_date)
+            if si5 is None or si5 < 5:
+                continue
+            if math.isnan(sd["closes"][si5]):
+                continue
+            _fast_n += 1
+            if sd["closes"][si5] > sd["closes"][si5 - 5]:
+                _above_5d += 1
         fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
 
         # ── 廣度動能（快層）：10日廣度變化速率，breadth_history 含截至昨日的資料
@@ -948,11 +1076,13 @@ def main():
         day_count     = 0
         daily_hb_cnt  = 0   # 當日 high_base 進場上限計數
         daily_ig_cnt  = 0   # 當日 momentum_ignition 進場上限計數
+        daily_tc_cnt  = 0   # 當日 trend_cont 進場上限計數
 
-        # ── 4c: 對每支股票產生訊號（依 RS 百分位由高到低掃描，確保優先取強股）
-        for code, sd in sorted(stock_data.items(),
-                               key=lambda x: rs_pct_map.get(x[0], 0),
-                               reverse=True):
+        # ── 4c: 對每支股票產生訊號（限動態宇宙，依 RS 百分位由高到低掃描）
+        for code, sd in sorted(
+                ((c, stock_data[c]) for c in _today_universe if c in stock_data),
+                key=lambda x: rs_pct_map.get(x[0], 0),
+                reverse=True):
             si = stock_date_idx[code].get(q_date)
             if si is None or si < 62:
                 continue
@@ -984,14 +1114,100 @@ def main():
             snap["rs_accel"]        = accel
             snap["sector_rs"]       = _code_sec_pct
             snap["sector_combined"] = _code_sec_combined
+            snap["rs_pct_val"]      = rs_pct   # classify_structure 需要
 
             phase = _stock_phase(rs_pct, m_z, snap)
 
+            # 板塊相位（由板塊 RS slope 百分位近似）
+            _sk_slope = _sec_slope_pct.get(_code_sk, 50.0)
+            if _sk_slope >= 60:
+                _sector_phase = "主升段"
+            elif _sk_slope >= 40:
+                _sector_phase = "主升回檔"
+            elif _sk_slope <= 25:
+                _sector_phase = "空頭"
+            else:
+                _sector_phase = ""
+
+            # 個股結構標籤（供 trend_cont 判斷）
+            structure = _classify_structure(snap, phase, _sector_phase)
+
+            # 1. 量能分數（與 fetch_stocks.py 一致）
+            _n_vol = min(si, 59)
+            _vslice60 = [sd["vols"][si - k] for k in range(min(60, si+1))]
+            _vslice20 = _vslice60[:20]
+            _vol60avg = sum(v for v in _vslice60 if v > 0) / max(sum(1 for v in _vslice60 if v > 0), 1)
+            _vol20avg = sum(v for v in _vslice20 if v > 0) / max(sum(1 for v in _vslice20 if v > 0), 1)
+            _vr = (_vol20avg / _vol60avg) if _vol60avg > 0 else 1.0
+            if   _vr > 2.0: _vol_score = 100
+            elif _vr > 1.5: _vol_score = 85
+            elif _vr > 1.3: _vol_score = 70
+            elif _vr > 1.1: _vol_score = 55
+            elif _vr > 1.0: _vol_score = 40
+            elif _vr > 0.8: _vol_score = 25
+            else:           _vol_score = 10
+
+            # 2. RS 分數
+            if   rs_pct >= 90: _rs_score = 100
+            elif rs_pct >= 80: _rs_score = 85
+            elif rs_pct >= 70: _rs_score = 70
+            elif rs_pct >= 50: _rs_score = 55
+            elif rs_pct >= 30: _rs_score = 40
+            else:              _rs_score = max(10, int(rs_pct * 0.8))
+
+            # 3. AVWAP 分數（0~15）
+            _avwap_cnt = sum([
+                bool(snap.get("avwap_swing") and snap["price"] >= snap["avwap_swing"]),
+                bool(snap.get("avwap_vol")   and snap["price"] >= snap["avwap_vol"]),
+                bool(snap.get("avwap_short") and snap["price"] >= snap["avwap_short"]),
+            ])
+            _avwap_score = _avwap_cnt * 5
+
+            # 4. 籌碼分數（從 chips_history）
+            _chips_raw = _chips_hist.get(q_date.strftime("%Y-%m-%d"), {}).get(code, {})
+            _vol_lots = max(sd["vols"][si] / 1000, 1)
+            _chips_score_val = _compute_chips_score(
+                _chips_raw.get("f", 0), _chips_raw.get("fc", 0),
+                _chips_raw.get("t", 0), _chips_raw.get("tc", 0),
+                _chips_raw.get("d", 0), _vol_lots
+            ) if _chips_raw else 50  # 無資料給中性分
+
+            # 5. 月營收分數
+            _rev_score = 50  # 預設中性
+            _code_rev = _rev_hist.get(code, {})
+            if _code_rev:
+                _avail_month = (datetime(q_date.year, q_date.month, 1) - timedelta(days=40)).strftime("%Y-%m")
+                _yoy = _code_rev.get(_avail_month)
+                if _yoy is not None:
+                    if   _yoy > 40: _rev_score = 100
+                    elif _yoy > 20: _rev_score = 85
+                    elif _yoy > 10: _rev_score = 70
+                    elif _yoy >  5: _rev_score = 60
+                    elif _yoy >  0: _rev_score = 52
+                    elif _yoy > -5: _rev_score = 45
+                    elif _yoy >-20: _rev_score = 30
+                    else:           _rev_score = 15
+
+            # 6. 基本面分數（無歷史資料，用中性 50）
+            _fund_score = 50
+
+            # 7. 正確的 composite_score（與 fetch_stocks.py 完全對齊）
+            _tech_score = round(
+                _chips_score_val * 0.33 +
+                _fund_score      * 0.28 +
+                _vol_score       * 0.23 +
+                _rev_score       * 0.05 +
+                _rs_score        * 0.05 +
+                _avwap_score / 15 * 100 * 0.06
+            )
+
             sigs = calc_signals(
-                snap, {}, rs_pct,
+                snap, {"chips_score_val": _chips_score_val}, rs_pct,
                 stock_phase=phase,
                 market_regime=regime,
-                composite_score=50,   # 中性，讓技術條件完整運作
+                composite_score=_tech_score,
+                structure=structure,
+                sector_phase=_sector_phase,
             )
             if not sigs:
                 continue
@@ -1057,11 +1273,15 @@ def main():
                 if sig_type == "high_base" and stock_roc5 <= 0:
                     continue
 
-                # ── 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
+                # ── 每日信號密度上限：high_base ≤ 3、trend_cont ≤ 4、momentum_ignition ≤ 2
                 if sig_type == "high_base":
                     if daily_hb_cnt >= 3:
                         continue
                     daily_hb_cnt += 1
+                elif sig_type == "trend_cont":
+                    if daily_tc_cnt >= 4:
+                        continue
+                    daily_tc_cnt += 1
                 elif sig_type == "momentum_ignition":
                     if daily_ig_cnt >= 2:
                         continue

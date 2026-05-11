@@ -20,8 +20,9 @@ from signals import calc_signals
 from collections import deque
 from backtest_q1 import (
     _snapshot, _market_regime, _efficiency_ratio, _vol_flag,
-    _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _stats, _capital_curves,
+    _daily_rs, _rs_metrics, _rs_slope, _rs_accel, _stock_phase, _classify_structure, _stats, _capital_curves,
     _vix_overlay, _breadth_divergence, _gate_blocked_summary, _apply_sector_exits,
+    _compute_chips_score,
     SIGNAL_SCALE, REGIME_ACTIVE_SIGNALS, BASE_R, GAP_LIMIT, SLIP,
     MAX_HOLD_LONG, MAX_HOLD_TREND, MAX_HOLD_PULLBACK, MAX_HOLD_SWING, MAX_HOLD_IG, MA_TRAIL_BUFFER,
     MAX_HEAT_BY_REGIME, TREND_TYPES, MIN_HIST_DAYS, BENCHMARK_TID, HEADERS,
@@ -33,8 +34,7 @@ YEARS              = [2022, 2023, 2024, 2025]
 OUTPUT_PATH        = "docs/backtest_yearly.json"
 DATA_START         = "2020-01-01"   # 足夠計算 MA60 / RS240
 DATA_END           = "2026-06-01"
-UNIVERSE_CANDIDATES = 500
-UNIVERSE_FINAL      = 300
+UNIVERSE_DAILY_N = 300   # 每日動態候選池大小（依當日前60日均量排名）
 
 
 def main():
@@ -44,9 +44,21 @@ def main():
     print("  設計：每年 100 萬重算、12/31 強制平倉、無任何向前看")
     print("=" * 60)
 
-    # ── 板塊對應 ────────────────────────────────────────────────────
+    # ── 板塊對應（sector_map.json 為主，stocks.json 補充）──────────────
     sector_map   = {}
     sector_codes = defaultdict(list)
+    try:
+        with open("docs/sector_map.json", encoding="utf-8") as _f:
+            _sm = json.load(_f)
+        for _c, _sk in _sm.items():
+            if _c and _sk:
+                sector_map[_c] = _sk
+                sector_codes[_sk].append(_c)
+        print(f"  板塊（sector_map.json）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+    except FileNotFoundError:
+        print("  sector_map.json 不存在，回退至 stocks.json")
+    except Exception as _e:
+        print(f"  sector_map.json 載入失敗（{_e}）")
     try:
         with open("docs/stocks.json", encoding="utf-8") as _f:
             _sj = json.load(_f)
@@ -54,11 +66,33 @@ def main():
             _c  = _s.get("code", "")
             _sk = _s.get("sector_key", "")
             if _c and _sk:
-                sector_map[_c]  = _sk
-                sector_codes[_sk].append(_c)
-        print(f"  板塊：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
+                if _c not in sector_map:
+                    sector_codes[_sk].append(_c)
+                sector_map[_c] = _sk
+        print(f"  板塊（+stocks.json overlay）：{len(sector_map)} 檔 / {len(sector_codes)} 板塊")
     except Exception as _e:
-        print(f"  板塊載入失敗（{_e}）")
+        if not sector_map:
+            print(f"  板塊載入失敗（{_e}）")
+
+    # ── 載入歷史籌碼資料 ───────────────────────────────────────────
+    from pathlib import Path
+    _chips_hist = {}
+    _chips_hist_path = Path("docs/chips_history.json")
+    if _chips_hist_path.exists():
+        with open(_chips_hist_path, encoding="utf-8") as f:
+            _chips_hist = json.load(f)
+        print(f"  [籌碼] 載入 {len(_chips_hist)} 個交易日")
+    else:
+        print(f"  [籌碼] chips_history.json 不存在，籌碼分數使用中性 50")
+
+    _rev_hist = {}
+    _rev_hist_path = Path("docs/revenue_history.json")
+    if _rev_hist_path.exists():
+        with open(_rev_hist_path, encoding="utf-8") as f:
+            _rev_hist = json.load(f)
+        print(f"  [月營收] 載入 {len(_rev_hist)} 檔")
+    else:
+        print(f"  [月營收] revenue_history.json 不存在，月營收分數使用中性 50")
 
     # ── 下載 TWII + 0050（一次，全區間共用）──────────────────────
     print(f"\n[1] 下載 TWII + 0050 + VIX...")
@@ -93,7 +127,7 @@ def main():
         print(f"  VIX 下載失敗（{_ve}），overlay 跳過")
 
     # ── 下載個股（一次，各年共用）──────────────────────────────────
-    print(f"\n[2] 抓取候選股票池（TWSE 量能前 {UNIVERSE_CANDIDATES}）...")
+    print(f"\n[2] 抓取所有 TWSE 上市股票代號...")
     candidates = []
     try:
         r = requests.get(
@@ -103,7 +137,6 @@ def main():
         fields  = _d.get("fields", [])
         rows    = _d.get("data", [])
         i_code  = fields.index("證券代號") if "證券代號" in fields else 0
-        i_vol   = fields.index("成交股數")  if "成交股數"  in fields else 2
         tmp = []
         for row in rows:
             try:
@@ -111,12 +144,10 @@ def main():
                 if not (code.isdigit() and len(code) == 4): continue
                 if code.startswith("00"): continue
                 if int(code) < 1000: continue
-                vol = int(row[i_vol].replace(",", ""))
-                tmp.append((code, vol))
+                tmp.append(code)
             except Exception:
                 continue
-        tmp.sort(key=lambda x: x[1], reverse=True)
-        candidates = [c for c, _ in tmp[:UNIVERSE_CANDIDATES]]
+        candidates = tmp
     except Exception as e:
         print(f"  TWSE API 失敗（{e}），使用內建清單")
         candidates = [
@@ -149,7 +180,13 @@ def main():
         time.sleep(0.4)
         if (idx + 1) % 20 == 0:
             time.sleep(3)
-    print(f"  → 下載完成：{len(stock_data)} 檔")
+    print(f"  → 下載完成：{len(stock_data)} 檔（每日動態依前60日均量選 Top {UNIVERSE_DAILY_N}）")
+
+    # 建立全域「日期 → 陣列 index」對照（各年共用）
+    stock_date_idx = {
+        code: {d: i for i, d in enumerate(sd["dates"])}
+        for code, sd in stock_data.items()
+    }
 
     # ── 逐年回測 ────────────────────────────────────────────────────
     yearly_results = {}
@@ -159,36 +196,13 @@ def main():
         print(f"  {year} 年回測")
         print(f"{'='*60}")
 
-        bt_start       = date(year, 1, 2)
-        bt_end         = date(year, 12, 31)
-        pre_vol_start  = date(year - 1, 1, 1)
-        pre_vol_end    = date(year - 1, 12, 31)
+        bt_start = date(year, 1, 2)
+        bt_end   = date(year, 12, 31)
 
         year_dates = [d for d in bm_dates if bt_start <= d <= bt_end]
         if not year_dates:
             print(f"  {year} 無交易日，跳過"); continue
         last_year_date = max(year_dates)
-
-        # 母體：前一年成交量（無向前看）
-        pre_vol = {}
-        for code, sd in stock_data.items():
-            vols = [sd["vols"][i] for i, d in enumerate(sd["dates"])
-                    if pre_vol_start <= d <= pre_vol_end
-                    and not math.isnan(sd["vols"][i]) and sd["vols"][i] > 0]
-            if vols:
-                pre_vol[code] = sum(vols) / len(vols)
-
-        universe  = sorted(pre_vol, key=lambda c: pre_vol[c], reverse=True)[:UNIVERSE_FINAL]
-        year_data = {c: stock_data[c] for c in universe if c in stock_data}
-        no_pre    = [c for c in stock_data if c not in pre_vol]
-        print(f"  母體：{len(year_data)} 檔（依 {year-1} 年成交量選出）")
-        if no_pre:
-            print(f"  排除 {len(no_pre)} 檔無 {year-1} 量能資料（新上市等）")
-
-        year_date_idx = {
-            code: {d: i for i, d in enumerate(sd["dates"])}
-            for code, sd in year_data.items()
-        }
 
         # Walk-Forward 主迴圈
         trades            = []
@@ -215,13 +229,12 @@ def main():
             if bm_i is None:
                 continue
 
-            # RS scalar + 廣度
+            # 動態宇宙 + RS scalar + 市場廣度（單次遍歷）
             rs_scalar_map = {}
             rs_cache      = {}
-            _above_ma20   = 0
-            _breadth_n    = 0
-            for code, sd in year_data.items():
-                si = year_date_idx[code].get(q_date)
+            _day_vols     = []
+            for code, sd in stock_data.items():
+                si = stock_date_idx[code].get(q_date)
                 if si is None or si < 10:
                     continue
                 n_align        = min(si + 1, bm_i + 1)
@@ -231,25 +244,44 @@ def main():
                 if scalar is not None:
                     rs_scalar_map[code] = scalar
                 if si >= 20:
-                    _cl = sd["closes"][si]
-                    if not math.isnan(_cl):
-                        _ma20v = sum(sd["closes"][si - 19:si + 1]) / 20
-                        _breadth_n += 1
-                        if _cl > _ma20v:
-                            _above_ma20 += 1
+                    _n = min(si, 59)
+                    _vslice = sd["vols"][si - _n: si + 1]
+                    _valid  = [v for v in _vslice if not math.isnan(v) and v > 0]
+                    if _valid:
+                        _day_vols.append((code, sum(_valid) / len(_valid)))
+
+            _day_vols.sort(key=lambda x: x[1], reverse=True)
+            _today_universe = {code for code, _ in _day_vols[:UNIVERSE_DAILY_N]}
+
+            # 廣度 — 只計算動態宇宙內的股票
+            _above_ma20 = 0
+            _breadth_n  = 0
+            for code in _today_universe:
+                si = stock_date_idx[code].get(q_date)
+                if si is None or si < 20:
+                    continue
+                _cl = stock_data[code]["closes"][si]
+                if not math.isnan(_cl):
+                    _ma20v = sum(stock_data[code]["closes"][si - 19:si + 1]) / 20
+                    _breadth_n += 1
+                    if _cl > _ma20v:
+                        _above_ma20 += 1
 
             breadth_pct = _above_ma20 / _breadth_n if _breadth_n > 0 else 0.5
 
-            # ── 快速廣度：5日正報酬股票比例
-            _above_5d   = sum(1 for code, sd in year_data.items()
-                              if (si5 := year_date_idx[code].get(q_date)) is not None
-                              and si5 >= 5
-                              and not math.isnan(sd["closes"][si5])
-                              and sd["closes"][si5] > sd["closes"][si5 - 5])
-            _fast_n     = sum(1 for code, sd in year_data.items()
-                              if (si5 := year_date_idx[code].get(q_date)) is not None
-                              and si5 >= 5
-                              and not math.isnan(sd["closes"][si5]))
+            # 快速廣度：5日正報酬（動態宇宙內）
+            _above_5d = 0
+            _fast_n   = 0
+            for code in _today_universe:
+                sd  = stock_data[code]
+                si5 = stock_date_idx[code].get(q_date)
+                if si5 is None or si5 < 5:
+                    continue
+                if math.isnan(sd["closes"][si5]):
+                    continue
+                _fast_n += 1
+                if sd["closes"][si5] > sd["closes"][si5 - 5]:
+                    _above_5d += 1
             fast_breadth_pct = _above_5d / _fast_n if _fast_n > 0 else 0.5
 
             # 廣度動能快層
@@ -354,10 +386,10 @@ def main():
                 _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
                 _exit_type = "regime_change"
                 for b_code, b_entry_px in beta_entries.items():
-                    b_si = year_date_idx.get(b_code, {}).get(q_date)
+                    b_si = stock_date_idx.get(b_code, {}).get(q_date)
                     b_exit_px = b_entry_px
-                    if b_si is not None and b_si < len(year_data[b_code]["closes"]):
-                        _px = year_data[b_code]["closes"][b_si]
+                    if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                        _px = stock_data[b_code]["closes"][b_si]
                         if not math.isnan(_px) and _px > 0:
                             b_exit_px = _px
                     b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
@@ -398,9 +430,9 @@ def main():
                 _beta_alloc = round(market_factor * BETA_ALLOC_MAX, 3)
                 new_beta = {}
                 for b_code in top_codes:
-                    b_si = year_date_idx.get(b_code, {}).get(q_date)
-                    if b_si is not None and b_si < len(year_data[b_code]["closes"]):
-                        _px = year_data[b_code]["closes"][b_si]
+                    b_si = stock_date_idx.get(b_code, {}).get(q_date)
+                    if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                        _px = stock_data[b_code]["closes"][b_si]
                         if not math.isnan(_px) and _px > 0:
                             new_beta[b_code] = _px
                 if new_beta:
@@ -413,11 +445,13 @@ def main():
             day_count    = 0
             daily_hb_cnt = 0
             daily_ig_cnt = 0
+            daily_tc_cnt = 0
 
-            for code, sd in sorted(year_data.items(),
-                                   key=lambda x: rs_pct_map.get(x[0], 0),
-                                   reverse=True):
-                si = year_date_idx[code].get(q_date)
+            for code, sd in sorted(
+                    ((c, stock_data[c]) for c in _today_universe if c in stock_data),
+                    key=lambda x: rs_pct_map.get(x[0], 0),
+                    reverse=True):
+                si = stock_date_idx[code].get(q_date)
                 if si is None or si < 62:
                     continue
                 if sd["dates"][si] != q_date:
@@ -446,12 +480,96 @@ def main():
                 snap["rs_accel"]        = accel
                 snap["sector_rs"]       = _code_sec_pct
                 snap["sector_combined"] = _code_sec_combined
+                snap["rs_pct_val"]      = rs_pct
 
                 phase = _stock_phase(rs_pct, m_z, snap)
-                sigs  = calc_signals(snap, {}, rs_pct,
+
+                _sk_slope = _sec_slope_pct.get(_code_sk, 50.0)
+                if _sk_slope >= 60:
+                    _sector_phase = "主升段"
+                elif _sk_slope >= 40:
+                    _sector_phase = "主升回檔"
+                elif _sk_slope <= 25:
+                    _sector_phase = "空頭"
+                else:
+                    _sector_phase = ""
+
+                structure = _classify_structure(snap, phase, _sector_phase)
+
+                # 1. 量能分數（與 fetch_stocks.py 一致）
+                _vslice60 = [sd["vols"][si - k] for k in range(min(60, si+1))]
+                _vslice20 = _vslice60[:20]
+                _vol60avg = sum(v for v in _vslice60 if v > 0) / max(sum(1 for v in _vslice60 if v > 0), 1)
+                _vol20avg = sum(v for v in _vslice20 if v > 0) / max(sum(1 for v in _vslice20 if v > 0), 1)
+                _vr = (_vol20avg / _vol60avg) if _vol60avg > 0 else 1.0
+                if   _vr > 2.0: _vol_score = 100
+                elif _vr > 1.5: _vol_score = 85
+                elif _vr > 1.3: _vol_score = 70
+                elif _vr > 1.1: _vol_score = 55
+                elif _vr > 1.0: _vol_score = 40
+                elif _vr > 0.8: _vol_score = 25
+                else:           _vol_score = 10
+
+                # 2. RS 分數
+                if   rs_pct >= 90: _rs_score = 100
+                elif rs_pct >= 80: _rs_score = 85
+                elif rs_pct >= 70: _rs_score = 70
+                elif rs_pct >= 50: _rs_score = 55
+                elif rs_pct >= 30: _rs_score = 40
+                else:              _rs_score = max(10, int(rs_pct * 0.8))
+
+                # 3. AVWAP 分數（0~15）
+                _avwap_cnt = sum([
+                    bool(snap.get("avwap_swing") and snap["price"] >= snap["avwap_swing"]),
+                    bool(snap.get("avwap_vol")   and snap["price"] >= snap["avwap_vol"]),
+                    bool(snap.get("avwap_short") and snap["price"] >= snap["avwap_short"]),
+                ])
+                _avwap_score = _avwap_cnt * 5
+
+                # 4. 籌碼分數（從 chips_history）
+                _chips_raw = _chips_hist.get(q_date.strftime("%Y-%m-%d"), {}).get(code, {})
+                _vol_lots = max(sd["vols"][si] / 1000, 1)
+                _chips_score_val = _compute_chips_score(
+                    _chips_raw.get("f", 0), _chips_raw.get("fc", 0),
+                    _chips_raw.get("t", 0), _chips_raw.get("tc", 0),
+                    _chips_raw.get("d", 0), _vol_lots
+                ) if _chips_raw else 50  # 無資料給中性分
+
+                # 5. 月營收分數
+                _rev_score = 50  # 預設中性
+                _code_rev = _rev_hist.get(code, {})
+                if _code_rev:
+                    _avail_month = (datetime(q_date.year, q_date.month, 1) - timedelta(days=40)).strftime("%Y-%m")
+                    _yoy = _code_rev.get(_avail_month)
+                    if _yoy is not None:
+                        if   _yoy > 40: _rev_score = 100
+                        elif _yoy > 20: _rev_score = 85
+                        elif _yoy > 10: _rev_score = 70
+                        elif _yoy >  5: _rev_score = 60
+                        elif _yoy >  0: _rev_score = 52
+                        elif _yoy > -5: _rev_score = 45
+                        elif _yoy >-20: _rev_score = 30
+                        else:           _rev_score = 15
+
+                # 6. 基本面分數（無歷史資料，用中性 50）
+                _fund_score = 50
+
+                # 7. 正確的 composite_score（與 fetch_stocks.py 完全對齊）
+                _tech_score = round(
+                    _chips_score_val * 0.33 +
+                    _fund_score      * 0.28 +
+                    _vol_score       * 0.23 +
+                    _rev_score       * 0.05 +
+                    _rs_score        * 0.05 +
+                    _avwap_score / 15 * 100 * 0.06
+                )
+
+                sigs  = calc_signals(snap, {"chips_score_val": _chips_score_val}, rs_pct,
                                      stock_phase=phase,
                                      market_regime=regime,
-                                     composite_score=50)
+                                     composite_score=_tech_score,
+                                     structure=structure,
+                                     sector_phase=_sector_phase)
                 if not sigs:
                     continue
 
@@ -508,11 +626,15 @@ def main():
                     if sig_type == "high_base" and stock_roc5 <= 0:
                         continue
 
-                    # 每日信號密度上限：同日 high_base ≤ 3、momentum_ignition ≤ 2
+                    # 每日信號密度上限：high_base ≤ 3、trend_cont ≤ 4、momentum_ignition ≤ 2
                     if sig_type == "high_base":
                         if daily_hb_cnt >= 3:
                             continue
                         daily_hb_cnt += 1
+                    elif sig_type == "trend_cont":
+                        if daily_tc_cnt >= 4:
+                            continue
+                        daily_tc_cnt += 1
                     elif sig_type == "momentum_ignition":
                         if daily_ig_cnt >= 2:
                             continue
@@ -669,10 +791,10 @@ def main():
             _n_beta    = max(len(beta_entries), 1)
             _pf_each   = round(beta_alloc_at_open / _n_beta, 4)
             for b_code, b_entry_px in beta_entries.items():
-                b_si = year_date_idx.get(b_code, {}).get(_yr_last_d)
+                b_si = stock_date_idx.get(b_code, {}).get(_yr_last_d)
                 b_exit_px = b_entry_px
-                if b_si is not None and b_si < len(year_data[b_code]["closes"]):
-                    _px = year_data[b_code]["closes"][b_si]
+                if b_si is not None and b_si < len(stock_data[b_code]["closes"]):
+                    _px = stock_data[b_code]["closes"][b_si]
                     if not math.isnan(_px) and _px > 0:
                         b_exit_px = _px
                 b_gain = round((b_exit_px - b_entry_px) / b_entry_px * 100, 2)
@@ -710,7 +832,7 @@ def main():
 
         # Sector Exit Post-Process
         trades = _apply_sector_exits(
-            trades, year_data, year_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
+            trades, stock_data, stock_date_idx, daily_sec_slope_pct, daily_regime, SECTOR_EXIT_THRESHOLD
         )
 
         # 統計（信號交易）
@@ -747,7 +869,7 @@ def main():
         yearly_results[str(year)] = {
             "year":           year,
             "trading_days":   len(year_dates),
-            "universe_size":  len(year_data),
+            "universe_size":  UNIVERSE_DAILY_N,
             "overall":        overall,
             "by_type":        {k: _stats(v) for k, v in by_type.items()},
             "by_regime":      {k: _stats(v) for k, v in by_regime.items()},
